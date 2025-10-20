@@ -1,52 +1,117 @@
 // index.tsx
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
-import LargeButton from '../../src/components/LargeButton';
+import {
+  Animated,
+  Dimensions,
+  Easing,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export default function TomatoHome() {
   const { t } = useTranslation();
   const router = useRouter();
   
-  const fadeAnim = new Animated.Value(0);
-  const slideAnim = new Animated.Value(50);
-  const scaleAnim = new Animated.Value(0.8);
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideUpTitle = useRef(new Animated.Value(50)).current;
+  const slideUpSubtitle = useRef(new Animated.Value(40)).current;
+  const button1Anim = useRef(new Animated.Value(0)).current;
+  const button2Anim = useRef(new Animated.Value(0)).current;
+  const footerAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.parallel([
+    // Sequence animations for better visual flow
+    Animated.sequence([
+      // Fade in background
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0.7,
         duration: 800,
-        easing: Easing.out(Easing.back(1.7)),
         useNativeDriver: true,
       }),
-      Animated.timing(scaleAnim, {
+      // Title animation
+      Animated.parallel([
+        Animated.timing(slideUpTitle, {
+          toValue: 0,
+          duration: 600,
+          easing: Easing.out(Easing.back(1.5)),
+          useNativeDriver: true,
+        }),
+        Animated.timing(rotateAnim, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.elastic(1.5),
+          useNativeDriver: true,
+        })
+      ]),
+      // Subtitle animation
+      Animated.timing(slideUpSubtitle, {
+        toValue: 0,
+        duration: 500,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      // Buttons animation with stagger
+      Animated.stagger(200, [
+        Animated.timing(button1Anim, {
+          toValue: 1,
+          duration: 600,
+          easing: Easing.out(Easing.back(1)),
+          useNativeDriver: true,
+        }),
+        Animated.timing(button2Anim, {
+          toValue: 1,
+          duration: 600,
+          easing: Easing.out(Easing.back(1)),
+          useNativeDriver: true,
+        }),
+      ]),
+      // Footer animation
+      Animated.timing(footerAnim, {
         toValue: 1,
-        duration: 900,
-        easing: Easing.elastic(1.2),
+        duration: 400,
         useNativeDriver: true,
-      }),
+      })
     ]).start();
+
+    // Continuous subtle animations
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 1.05,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
   }, []);
 
   const handleNavigation = (route: string) => {
-    Animated.parallel([
+    // Button press animation
+    Animated.sequence([
       Animated.timing(scaleAnim, {
-        toValue: 0.9,
-        duration: 200,
+        toValue: 0.95,
+        duration: 100,
         useNativeDriver: true,
       }),
-      Animated.timing(fadeAnim, {
-        toValue: 0.8,
-        duration: 200,
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
         useNativeDriver: true,
       }),
     ]).start(() => {
@@ -54,116 +119,303 @@ export default function TomatoHome() {
     });
   };
 
+  const rotateInterpolate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['-10deg', '0deg']
+  });
+
   return (
-    <LinearGradient colors={['#F7FFF7', '#E6FFFA']} style={styles.container}>
-      <Animated.View 
-        style={[
-          styles.header,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          }
-        ]}
-      >
-        <Ionicons name="leaf" size={48} color="#2F855A" style={styles.icon} />
-        <Text style={styles.title}>TomatoDx</Text>
-        <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
-      </Animated.View>
+    <View style={styles.container}>
+      {/* Background Animated Elements */}
+      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
+      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
+      
+      <View style={styles.content}>
+        {/* Header Section */}
+        <View style={styles.header}>
+          <Animated.View 
+            style={[
+              styles.logoContainer,
+              {
+                opacity: fadeAnim,
+                transform: [
+                  { translateY: slideUpTitle },
+                  { rotate: rotateInterpolate }
+                ]
+              }
+            ]}
+          >
+            <Animated.View 
+              style={[
+                styles.tomatoIcon,
+                { transform: [{ scale: scaleAnim }] }
+              ]}
+            >
+              <Text style={styles.tomatoEmoji}>🍅</Text>
+            </Animated.View>
+            <Text style={styles.title}>TomatoDx</Text>
+          </Animated.View>
 
-      <Animated.View 
-        style={[
-          styles.center,
-          {
-            opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }],
-          }
-        ]}
-      >
-        <LargeButton 
-          label={t('home.capture')} 
-          icon="camera"
-          onPress={() => handleNavigation('/tomatodx/capture')} 
-        />
-        <View style={{ height: 16 }} />
-        <LargeButton 
-          label={t('home.history')} 
-          icon="time"
-          onPress={() => handleNavigation('/tomatodx/history')} 
-        />
-      </Animated.View>
+          <Animated.Text 
+            style={[
+              styles.subtitle,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideUpSubtitle }]
+              }
+            ]}
+          >
+            {t('home.subtitle')}
+          </Animated.Text>
+        </View>
 
-      <Animated.View 
-        style={[
-          styles.footer,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          }
-        ]}
-      >
-        <Text 
-          style={styles.link} 
-          onPress={() => handleNavigation('/tomatodx/settings')}
+        {/* Buttons Section */}
+        <View style={styles.buttonsContainer}>
+          <Animated.View 
+            style={[
+              styles.buttonWrapper,
+              {
+                opacity: button1Anim,
+                transform: [
+                  { translateY: button1Anim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [50, 0]
+                  })},
+                  { scale: button1Anim }
+                ]
+              }
+            ]}
+          >
+            <TouchableOpacity 
+              style={[styles.button, styles.primaryButton]}
+              onPress={() => handleNavigation('/tomatodx/capture')}
+              activeOpacity={0.9}
+            >
+              <Text style={styles.buttonIcon}>📸</Text>
+              <Text style={[styles.buttonText, { color: '#ffffff' }]}>{t('home.capture')}</Text>
+            </TouchableOpacity>
+          </Animated.View>
+
+          <Animated.View 
+            style={[
+              styles.buttonWrapper,
+              {
+                opacity: button2Anim,
+                transform: [
+                  { translateY: button2Anim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [50, 0]
+                  })},
+                  { scale: button2Anim }
+                ]
+              }
+            ]}
+          >
+            <TouchableOpacity 
+              style={[styles.button, styles.secondaryButton]}
+              onPress={() => handleNavigation('/tomatodx/history')}
+              activeOpacity={0.9}
+            >
+              <Text style={styles.buttonIcon}>📊</Text>
+              <Text style={[styles.buttonText, { color: '#16a34a' }]}>{t('home.history')}</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+
+        {/* Footer Section */}
+        <Animated.View 
+          style={[
+            styles.footer,
+            {
+              opacity: footerAnim,
+              transform: [
+                { translateY: footerAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [30, 0]
+                })}
+              ]
+            }
+          ]}
         >
-          <Ionicons name="settings" size={16} /> {t('home.settings')}
-        </Text>
-        <Text 
-          style={styles.link} 
-          onPress={() => handleNavigation('/tomatodx/admin')}
-        >
-          <Ionicons name="shield" size={16} /> Admin
-        </Text>
-      </Animated.View>
-    </LinearGradient>
+          <TouchableOpacity 
+            style={styles.footerLink}
+            onPress={() => handleNavigation('/tomatodx/settings')}
+          >
+            <Text style={styles.footerIcon}>⚙️</Text>
+            <Text style={styles.footerText}>{t('home.settings')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.footerLink}
+            onPress={() => handleNavigation('/tomatodx/admin')}
+          >
+            <Text style={styles.footerIcon}>🔧</Text>
+            <Text style={styles.footerText}>Admin</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    padding: 20, 
-    justifyContent: 'center', 
+    backgroundColor: '#f0fdf4',
+    overflow: 'hidden',
   },
+  content: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'space-between',
+    zIndex: 1,
+  },
+  // Background elements
+  backgroundCircle: {
+    position: 'absolute',
+    borderRadius: 500,
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+  },
+  circle1: {
+    width: 300,
+    height: 300,
+    top: -100,
+    right: -100,
+  },
+  circle2: {
+    width: 200,
+    height: 200,
+    bottom: -50,
+    left: -50,
+    backgroundColor: 'rgba(134, 239, 172, 0.15)',
+  },
+  // Header styles
   header: {
     alignItems: 'center',
-    marginBottom: 60,
+    marginTop: height * 0.1,
   },
-  icon: {
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  tomatoIcon: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    borderWidth: 3,
+    borderColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  tomatoEmoji: {
+    fontSize: 48,
   },
   title: { 
-    fontSize: 42, 
+    fontSize: 48, 
     fontWeight: '800', 
     textAlign: 'center', 
-    marginBottom: 8, 
-    color: '#2F855A',
+    color: '#166534',
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
     letterSpacing: 1,
-    textShadowColor: 'rgba(0,0,0,0.1)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
   subtitle: { 
     textAlign: 'center', 
-    marginBottom: 24, 
-    color: '#4A5568',
-    fontSize: 16,
-    lineHeight: 24,
+    color: '#4b5563',
+    fontSize: 18,
+    lineHeight: 28,
+    fontWeight: '500',
+    maxWidth: '80%',
   },
-  center: { 
-    alignItems: 'center' 
+  // Button styles
+  buttonsContainer: {
+    alignItems: 'center',
+    gap: 20,
   },
+  buttonWrapper: {
+    width: '100%',
+    maxWidth: 280,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    borderRadius: 20,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    gap: 12,
+  },
+  primaryButton: {
+    backgroundColor: '#16a34a',
+  },
+  secondaryButton: {
+    backgroundColor: '#ffffff',
+    borderWidth: 2,
+    borderColor: '#16a34a',
+  },
+  buttonIcon: {
+    fontSize: 24,
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: '700',
+    flex: 1,
+    textAlign: 'center',
+  },
+  primaryButtonText: {
+    color: '#ffffff',
+  },
+  secondaryButtonText: {
+    color: '#16a34a',
+  },
+  // Footer styles
   footer: { 
     flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    marginTop: 60, 
-    paddingHorizontal: 8 
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+    marginBottom: 20,
   },
-  link: { 
-    color: '#2B6CB0', 
+  footerLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    gap: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  footerIcon: {
     fontSize: 16,
+  },
+  footerText: { 
+    color: '#1e40af', 
+    fontSize: 14,
     fontWeight: '600',
   }
 });
+
+// Update button text colors in the component
+const buttonStyles = StyleSheet.create({
+  primaryButtonText: {
+    color: '#ffffff',
+  },
+  secondaryButtonText: {
+    color: '#16a34a',
+  },
+});
+
+// Add these to the button Text components:
+// For primary button: style={[styles.buttonText, buttonStyles.primaryButtonText]}
+// For secondary button: style={[styles.buttonText, buttonStyles.secondaryButtonText]}

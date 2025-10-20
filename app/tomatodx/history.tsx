@@ -1,6 +1,7 @@
 // history.tsx
 import { router } from 'expo-router';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, FlatList, StyleSheet, Text } from 'react-native';
 import HistoryItem from '../../src/components/HistoryItem';
 
@@ -9,7 +10,8 @@ const mock = [
   { id: '2', disease: 'Healthy', date: '2025-10-10' }
 ];
 
-export default function HistoryScreen({ navigation }: any) {
+export default function HistoryScreen() {
+  const { t } = useTranslation();
   const fadeAnim = new Animated.Value(0);
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export default function HistoryScreen({ navigation }: any) {
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <Text style={styles.title}>History</Text>
+      <Text style={styles.title}>{t('history.title')}</Text>
       <FlatList
         data={mock}
         keyExtractor={i => i.id}

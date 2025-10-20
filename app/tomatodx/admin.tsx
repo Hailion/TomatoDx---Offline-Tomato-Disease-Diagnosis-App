@@ -1,8 +1,10 @@
 // admin.tsx
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 export default function AdminScreen() {
+  const { t } = useTranslation();
   const fadeAnim = new Animated.Value(0);
 
   useEffect(() => {
@@ -15,10 +17,10 @@ export default function AdminScreen() {
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <Text style={styles.title}>Admin / Model</Text>
-      <Text>Model version: v1.0.0</Text>
-      <TouchableOpacity style={styles.btn} onPress={() => alert('Model update instructions')}>
-        <Text style={{ color:'#fff' }}>Model update instructions</Text>
+      <Text style={styles.title}>{t('admin.title')}</Text>
+      <Text>{t('admin.version')}: v1.0.0</Text>
+      <TouchableOpacity style={styles.btn} onPress={() => alert(t('admin.updateInstructions'))}>
+        <Text style={{ color:'#fff' }}>{t('admin.updateInstructions')}</Text>
       </TouchableOpacity>
     </Animated.View>
   );

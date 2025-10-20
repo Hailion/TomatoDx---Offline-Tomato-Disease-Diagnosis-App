@@ -1,12 +1,16 @@
 // preview.tsx
 import { router } from 'expo-router';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Dimensions, StyleSheet } from 'react-native';
 import LargeButton from '../../src/components/LargeButton';
+
 
 const { width } = Dimensions.get('window');
 
 export default function PreviewScreen({ route, navigation }: { route: any, navigation: any }) {
+    const { t } = useTranslation();
+  
   const fadeAnim = new Animated.Value(0);
   const scaleAnim = new Animated.Value(0.95);
 
@@ -27,12 +31,13 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
 
   // Explicitly handle goBack to ensure navigation works
   const handleGoBack = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
+    if (router.canGoBack()) {
+      router.back();
     } else {
       // Fallback: Navigate to capture screen if no previous route
-      navigation.replace('capture');
+      router.replace('/tomatodx/capture');
     }
+    router.replace('/tomatodx/capture');
   };
 
   return (
@@ -43,9 +48,9 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
         resizeMode="contain" 
       />
       <Animated.View style={[styles.row, { opacity: fadeAnim }]}>
-        <LargeButton label="Retake" onPress={handleGoBack} />
+        <LargeButton label={t('preview.retake')} onPress={handleGoBack} />
         <LargeButton 
-          label="Use Photo" 
+          label={t('preview.usePhoto')} 
           onPress={() => router.push('/tomatodx/result')} 
         />
       </Animated.View>

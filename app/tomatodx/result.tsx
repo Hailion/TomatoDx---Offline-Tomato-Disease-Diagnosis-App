@@ -1,7 +1,9 @@
 // result.tsx
 import { router, useLocalSearchParams } from 'expo-router';
+import * as Sharing from 'expo-sharing';
 import React, { useEffect } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ResultCard from '../../src/components/ResultCard';
 
 // Mock data store
@@ -23,11 +25,39 @@ const mockDataStore = {
 };
 
 export default function ResultScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams();
   const mockResult = mockDataStore[id as keyof typeof mockDataStore] || mockDataStore['1'];
 
   const fadeAnim = new Animated.Value(0);
   const slideAnim = new Animated.Value(30);
+
+  const handleSave = () => {
+    // Save to history (mock implementation)
+    Alert.alert(
+      t('result.saveSuccess'),
+      t('result.saveMessage'),
+      [{ text: t('result.ok'), onPress: () => router.push('/tomatodx/history') }]
+    );
+  };
+
+  const handleShare = async () => {
+    try {
+      if (await Sharing.isAvailableAsync()) {
+        // Create a simple text to share
+        const shareText = `${t('result.shareText')}\n${t('result.disease')}: ${mockResult.nameEn}\n${t('result.confidence')}: ${Math.round(mockResult.confidence * 100)}%\n${t('result.advice')}: ${mockResult.advice}`;
+        
+        await Sharing.shareAsync('data:text/plain;charset=utf-8,' + encodeURIComponent(shareText), {
+          mimeType: 'text/plain',
+          dialogTitle: t('result.shareTitle')
+        });
+      } else {
+        Alert.alert(t('result.shareError'), t('result.shareNotAvailable'));
+      }
+    } catch (error) {
+      Alert.alert(t('result.shareError'), t('result.shareFailed'));
+    }
+  };
 
   useEffect(() => {
     Animated.parallel([
@@ -46,17 +76,17 @@ export default function ResultScreen() {
 
   return (
     <View style={styles.container}>
-      <Animated.Text style={[styles.title, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>Diagnosis</Animated.Text>
+      <Animated.Text style={[styles.title, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>{t('result.title')}</Animated.Text>
       <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
         <ResultCard result={mockResult} />
       </Animated.View>
 
       <Animated.View style={[styles.row, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-        <TouchableOpacity style={styles.save} onPress={() => router.push('/tomatodx/history')}>
-          <Text style={styles.saveText}>Save</Text>
+        <TouchableOpacity style={styles.save} onPress={handleSave}>
+          <Text style={styles.saveText}>{t('result.save')}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.share} onPress={() => alert('Share stub')}>
-          <Text style={styles.shareText}>Share</Text>
+        <TouchableOpacity style={styles.share} onPress={handleShare}>
+          <Text style={styles.shareText}>{t('result.share')}</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>

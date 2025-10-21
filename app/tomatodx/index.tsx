@@ -2,6 +2,7 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import {
   Animated,
   Dimensions,
@@ -390,11 +391,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     gap: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.3)', 
+   
   },
   footerIcon: {
     fontSize: 16,

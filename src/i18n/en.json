@@ -1,4 +1,38 @@
 {
   "home": { "subtitle": "Offline tomato disease diagnosis for smallholder farmers", "capture": "Capture", "history": "History", "settings": "Settings" },
-  "settings": { "title": "Settings", "language": "Language" }
+  "settings": { 
+    "title": "Settings", 
+    "language": "Language", 
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark", 
+    "system": "System"
+  },
+  "capture": { 
+    "title": "Capture Tomato", 
+    "subtitle": "Position the tomato within the frame", 
+    "preview": "Camera Preview", 
+    "align": "Align Tomato Here", 
+    "takePhoto": "Take Photo", 
+    "openGallery": "Open Gallery" 
+  },
+  "history": { "title": "History" },
+  "result": { 
+    "title": "Diagnosis", 
+    "save": "Save", 
+    "share": "Share",
+    "saveSuccess": "Saved Successfully",
+    "saveMessage": "Your diagnosis has been saved to history.",
+    "ok": "OK",
+    "shareText": "Tomato Disease Diagnosis Result",
+    "disease": "Disease",
+    "confidence": "Confidence",
+    "advice": "Advice",
+    "shareTitle": "Share Diagnosis",
+    "shareError": "Share Error",
+    "shareNotAvailable": "Sharing is not available on this device.",
+    "shareFailed": "Failed to share the diagnosis."
+  },
+  "preview": { "title": "Preview", "retake": "Retake", "usePhoto": "Use Photo" },
+  "admin": { "title": "Admin / Model", "version": "Model version", "updateInstructions": "Model update instructions" }
 }

@@ -1,4 +1,38 @@
 {
   "home": { "subtitle": "የቲማቲም በሽታ የውስጥ ምርመራ", "capture": "ፎቶ ይውሰዱ", "history": "ታሪክ", "settings": "ቅንብሮች" },
-  "settings": { "title": "ቅንብሮች", "language": "ቋንቋ" }
+  "settings": { 
+    "title": "ቅንብሮች", 
+    "language": "ቋንቋ", 
+    "theme": "ገጽታ",
+    "light": "ብርሃን",
+    "dark": "ጨለማ", 
+    "system": "ስርዓት"
+  },
+  "capture": { 
+    "title": "ቲማቲም ይውሰዱ", 
+    "subtitle": "ቲማቲሙን በፍሬሙ ውስጥ ያስቀምጡ", 
+    "preview": "ካሜራ ቅድሚያ", 
+    "align": "ቲማቲሙን እዚህ ያስቀምጡ", 
+    "takePhoto": "ፎቶ ይውሰዱ", 
+    "openGallery": "ጋለሪ ክፈት" 
+  },
+  "history": { "title": "ታሪክ" },
+  "result": { 
+    "title": "ምርመራ", 
+    "save": "አስቀምጥ", 
+    "share": "አጋራ",
+    "saveSuccess": "በተሳካ ተቀምጧል",
+    "saveMessage": "የእርስዎ ምርመራ በታሪክ ውስጥ ተቀምጧል።",
+    "ok": "እሺ",
+    "shareText": "የቲማቲም በሽታ ምርመራ ውጤት",
+    "disease": "በሽታ",
+    "confidence": "እምነት",
+    "advice": "ምክር",
+    "shareTitle": "ምርመራ አጋራ",
+    "shareError": "ማጋራት ስህተት",
+    "shareNotAvailable": "በዚህ መሳሪያ ላይ ማጋራት አይቻልም።",
+    "shareFailed": "ምርመራውን ማጋራት አልተሳካም።"
+  },
+  "preview": { "title": "ቅድሚያ", "retake": "እንደገና ይውሰዱ", "usePhoto": "ፎቶ ይጠቀሙ" },
+  "admin": { "title": "አስተዳደር / ሞዴል", "version": "የሞዴል ሥሪት", "updateInstructions": "የሞዴል ዝመና መመሪያዎች" }
 }

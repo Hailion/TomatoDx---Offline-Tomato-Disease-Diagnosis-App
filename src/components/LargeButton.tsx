@@ -1,13 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function LargeButton({ label, icon, onPress }: { label: string; icon?: string; onPress: () => void }) {
+import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+
+type Props = {
+  label: string;
+  icon?: string;
+  onPress: () => void;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+};
+
+export default function LargeButton({ label, icon, onPress, style, textStyle }: Props) {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.btn} accessibilityRole="button" accessibilityLabel={label}>
+    <TouchableOpacity onPress={onPress} style={[style, styles.btn]} accessibilityRole="button" accessibilityLabel={label}>
       <View style={styles.content}>
         {icon && <Ionicons name={icon as any} size={20} color="#fff" style={styles.icon} />}
-        <Text style={styles.txt}>{label}</Text>
+        <Text style={[styles.txt, textStyle]}>{label}</Text>
       </View>
     </TouchableOpacity>
   );

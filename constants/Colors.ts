@@ -44,9 +44,9 @@ const light: ThemeTokens = {
   textSecondary: '#374151',     // secondary text
   textTertiary: '#4b5563',      // tertiary
   muted: '#6b7280',             // muted text
-  mutedLight: '#9ca3af',
+  mutedLight: '#696f78ff',
   // borders / strokes
-  border: '#e5e7eb',
+  border: '#a8b0c1ff',
   // primary / success / accent
   primary: '#22c55e',           // green (button backgrounds)
   primaryDark: '#16a34a',

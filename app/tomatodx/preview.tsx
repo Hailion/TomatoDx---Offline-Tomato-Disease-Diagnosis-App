@@ -2,6 +2,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
+
 import { useTranslation } from 'react-i18next';
 import {
   Animated,
@@ -12,12 +13,17 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import Colors, { ThemeTokens } from '../../constants/Colors';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function PreviewScreen({ route, navigation }: { route: any, navigation: any }) {
   const { t } = useTranslation();
-  
+  const { theme } = useTheme();
+  const tokens = Colors[theme];
+  const styles = getStyles(tokens);
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -118,12 +124,13 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
 
   return (
     <View style={styles.container}>
+
       {/* Background Elements */}
       <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
       <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
-      
+
       {/* Header */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.header,
           {
@@ -132,12 +139,12 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
           }
         ]}
       >
-        <Text style={styles.title}>📷 Photo Preview</Text>
-        <Text style={styles.subtitle}>Review your captured tomato image</Text>
+        <Text style={styles.title}>📷 {t('preview.title')}</Text>
+        <Text style={styles.subtitle}>{t('preview.subtitle')}</Text>
       </Animated.View>
 
       {/* Image Preview */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.imageContainer,
           {
@@ -147,21 +154,21 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
         ]}
       >
         <View style={styles.imageWrapper}>
-          <Animated.Image 
-            source={require('../../assets/sample-tomato-leaf.png')} 
+          <Animated.Image
+            source={require('../../assets/sample-tomato-leaf.png')}
             style={[
-              styles.image, 
-              { 
-                transform: [{ scale: imageScaleAnim }] 
+              styles.image,
+              {
+                transform: [{ scale: imageScaleAnim }]
               }
-            ]} 
-            resizeMode="cover" 
+            ]}
+            resizeMode="cover"
           />
-          
+
           {/* Overlay Badge */}
           <View style={styles.overlayBadge}>
-            <Ionicons name="checkmark-circle" size={20} color="#22c55e" />
-            <Text style={styles.overlayText}>Ready for Analysis</Text>
+            <Ionicons name="checkmark-circle" size={20} color={tokens.primary} />
+            <Text style={styles.overlayText}>{t("preview.readyForAnalysis")}</Text>
           </View>
 
           {/* Image Frame */}
@@ -170,7 +177,7 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
       </Animated.View>
 
       {/* Action Buttons */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.actionsContainer,
           {
@@ -184,28 +191,28 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
             transform: [{ scale: pulseAnim }]
           }}
         >
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.primaryButton}
             onPress={handleUsePhoto}
             activeOpacity={0.8}
           >
-            <Ionicons name="analytics" size={24} color="#ffffff" />
-            <Text style={styles.primaryButtonText}>Analyze Photo</Text>
+            <Ionicons name="analytics" size={24} color={tokens.whiteMuted} />
+            <Text style={styles.primaryButtonText}>{t("preview.analyzePhoto")}</Text>
           </TouchableOpacity>
         </Animated.View>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.secondaryButton}
           onPress={handleGoBack}
           activeOpacity={0.8}
         >
-          <Ionicons name="camera-reverse" size={20} color="#6b7280" />
-          <Text style={styles.secondaryButtonText}>Retake Photo</Text>
+          <Ionicons name="camera-reverse" size={20} color={tokens.muted} />
+          <Text style={styles.secondaryButtonText}>{t("preview.retake")}</Text>
         </TouchableOpacity>
       </Animated.View>
 
       {/* Help Text */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.helpContainer,
           {
@@ -215,17 +222,17 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
         ]}
       >
         <Text style={styles.helpText}>
-          ✅ Ensure the tomato is clearly visible and well-lit
+          ✅ {t("preview.tip")}
         </Text>
       </Animated.View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#000',
+const getStyles = (c: ThemeTokens) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: c.background,
   },
   // Background elements
   backgroundCircle: {
@@ -237,32 +244,33 @@ const styles = StyleSheet.create({
     height: 180,
     top: -60,
     right: -60,
-    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    backgroundColor: c.primaryOverlay2,
   },
   circle2: {
     width: 120,
     height: 120,
     bottom: 80,
     left: -40,
-    backgroundColor: 'rgba(134, 239, 172, 0.05)',
+    backgroundColor: c.successOverlay,
   },
   // Header
   header: {
     paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingTop: 50,
+    paddingBottom: 30,
+    
     alignItems: 'center',
   },
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#ffffff',
+    color: c.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#9ca3af',
+    color: c.mutedLight,
     textAlign: 'center',
   },
   // Image container
@@ -274,18 +282,18 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     position: 'relative',
-    borderRadius: 20,
+    borderRadius: 16,
     overflow: 'hidden',
   },
-  image: { 
-    width: width - 40,
-    height: (width - 40) * 1.2,
+  image: {
+    width: width - 30,
+    height: (width - 50) * 1.2,
     borderRadius: 16,
   },
   imageFrame: {
     ...StyleSheet.absoluteFillObject,
     borderWidth: 4,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: c.whiteOverlay,
     borderRadius: 20,
   },
   overlayBadge: {
@@ -294,26 +302,27 @@ const styles = StyleSheet.create({
     left: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: c.shadowDark,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
     gap: 6,
   },
   overlayText: {
-    color: '#ffffff',
+    color: c.whiteMuted,
     fontSize: 12,
     fontWeight: '600',
   },
   // Actions container
   actionsContainer: {
     paddingHorizontal: 24,
-    paddingBottom: 30,
-    gap: 12,
+    marginTop: 30,
+    paddingBottom: 20,
+    gap: 8,
   },
   primaryButton: {
     flexDirection: 'row',
-    backgroundColor: '#22c55e',
+    backgroundColor: c.primary,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 16,
@@ -321,13 +330,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 12,
     elevation: 8,
-    shadowColor: '#22c55e',
+    shadowColor: c.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
   primaryButtonText: {
-    color: '#ffffff',
+    color: c.whiteMuted,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -335,7 +344,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: '#374151',
+    borderColor: c.border,
     paddingVertical: 13,
     paddingHorizontal: 24,
     borderRadius: 16,
@@ -344,7 +353,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   secondaryButtonText: {
-    color: '#9ca3af',
+    color: c.mutedLight,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -355,7 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   helpText: {
-    color: '#6b7280',
+    color: c.muted,
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',

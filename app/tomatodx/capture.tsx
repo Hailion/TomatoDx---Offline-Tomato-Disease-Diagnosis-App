@@ -5,13 +5,17 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Animated, Dimensions, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Colors from '../../constants/Colors';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function CaptureScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  
+  const { theme } = useTheme();
+  const tokens = Colors[theme];
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -176,10 +180,10 @@ export default function CaptureScreen() {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: tokens.background }]}>
       {/* Animated Background Elements */}
-      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
-      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
+      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim, backgroundColor: tokens.primaryOverlay2 }]} />
+      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim, backgroundColor: tokens.successOverlay }]} />
       
       {/* Header */}
       <Animated.View 
@@ -191,8 +195,8 @@ export default function CaptureScreen() {
           }
         ]}
       >
-        <Text style={[styles.title,]}>{t('capture.title')}</Text>
-        <Text style={styles.subtitle}>{t('capture.subtitle')}</Text>
+        <Text style={[styles.title, { color: tokens.primaryDark }]}>{t('capture.title')}</Text>
+        <Text style={[styles.subtitle, { color: tokens.mutedLight }]}>{t('capture.subtitle')}</Text>
       </Animated.View>
 
       {/* Camera Preview Area */}
@@ -205,7 +209,7 @@ export default function CaptureScreen() {
           }
         ]}
       >
-        <View style={styles.cameraPlaceholder}>
+        <View style={[styles.cameraPlaceholder, { backgroundColor: tokens.surface, borderColor: tokens.border, shadowColor: tokens.shadowDark }]}>
           {/* Camera Icon with Shimmer */}
           <Animated.View 
             style={[
@@ -213,10 +217,10 @@ export default function CaptureScreen() {
               { backgroundColor: shimmerInterpolate }
             ]}
           >
-            <Ionicons name="camera" size={48} color="#ffffff" />
+            <Ionicons name="camera" size={48} color={tokens.whiteMuted} />
           </Animated.View>
           
-          <Text style={styles.camText}>{t('capture.preview')}</Text>
+          <Text style={[styles.camText, { color: tokens.whiteMuted }]}>{t('capture.preview')}</Text>
           
           {/* Animated Guide Overlay */}
           <Animated.View 
@@ -231,25 +235,25 @@ export default function CaptureScreen() {
               <Animated.View 
                 style={[
                   styles.corner, styles.cornerTL,
-                  { opacity: pulseAnim }
+                  { opacity: pulseAnim, borderColor: tokens.primary }
                 ]} 
               />
               <Animated.View 
                 style={[
                   styles.corner, styles.cornerTR,
-                  { opacity: pulseAnim }
+                  { opacity: pulseAnim, borderColor: tokens.primary }
                 ]} 
               />
               <Animated.View 
                 style={[
                   styles.corner, styles.cornerBL,
-                  { opacity: pulseAnim }
+                  { opacity: pulseAnim, borderColor: tokens.primary }
                 ]} 
               />
               <Animated.View 
                 style={[
                   styles.corner, styles.cornerBR,
-                  { opacity: pulseAnim }
+                  { opacity: pulseAnim, borderColor: tokens.primary }
                 ]} 
               />
             </View>
@@ -261,16 +265,16 @@ export default function CaptureScreen() {
                 { transform: [{ rotate: rotateInterpolate }] }
               ]}
             >
-              <Ionicons name="scan" size={28} color="#22c55e" />
+              <Ionicons name="scan" size={28} color={tokens.primary} />
             </Animated.View>
             
-            <Text style={styles.guideText}>{t('capture.align')}</Text>
+            <Text style={[styles.guideText, { color: tokens.primary }]}>{t('capture.align')}</Text>
           </Animated.View>
 
           {/* Grid Overlay */}
           <View style={styles.gridOverlay}>
-            <View style={styles.gridLineVertical} />
-            <View style={styles.gridLineHorizontal} />
+            <View style={[styles.gridLineVertical, { backgroundColor: tokens.whiteOverlay }]} />
+            <View style={[styles.gridLineHorizontal, { backgroundColor: tokens.whiteOverlay }]} />
           </View>
         </View>
       </Animated.View>
@@ -286,21 +290,21 @@ export default function CaptureScreen() {
         ]}
       >
         <TouchableOpacity 
-          style={styles.primaryButton}
+          style={[styles.primaryButton, { backgroundColor: tokens.primary, shadowColor: tokens.primary }]}
           onPress={handleCapture}
           activeOpacity={0.8}
         >
-          <Ionicons name="camera" size={24} color="#ffffff" />
-          <Text style={styles.primaryButtonText}>{t('capture.takePhoto')}</Text>
+          <Ionicons name="camera" size={24} color={tokens.whiteMuted} />
+          <Text style={[styles.primaryButtonText, { color: tokens.whiteMuted }]}>{t('capture.takePhoto')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={styles.secondaryButton}
+          style={[styles.secondaryButton, { borderColor: tokens.border }]}
           onPress={handleGallery}
-          activeOpacity={0.8}
+          activeOpacity={1}
         >
-          <Ionicons name="images" size={20} color="#22c55e" />
-          <Text style={styles.secondaryButtonText}>{t('capture.openGallery')}</Text>
+          <Ionicons name="images" size={20} color={tokens.primary} />
+          <Text style={[styles.secondaryButtonText, { color: tokens.muted }]}>{t('capture.openGallery')}</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -491,7 +495,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: '#374151',
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 16,
@@ -500,7 +503,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   secondaryButtonText: {
-    color: '#9ca3af',
+    // color: '#9ca3af',
     fontSize: 16,
     fontWeight: '600',
   },

@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import {
   Alert,
   Animated,
@@ -14,6 +15,8 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import Colors from '../../constants/Colors';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -45,7 +48,9 @@ export default function ResultScreen() {
   const { t } = useTranslation();
   const { id } = useLocalSearchParams();
   const mockResult = mockDataStore[id as keyof typeof mockDataStore] || mockDataStore['1'];
-  
+  const { theme } = useTheme();
+  const tokens = Colors[theme];
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideUpTitle = useRef(new Animated.Value(40)).current;
@@ -95,7 +100,7 @@ export default function ResultScreen() {
     try {
       if (await Sharing.isAvailableAsync()) {
         const shareText = `${t('result.shareText')}\n${t('result.disease')}: ${mockResult.nameEn}\n${t('result.confidence')}: ${Math.round(mockResult.confidence * 100)}%\n${t('result.advice')}: ${mockResult.advice}`;
-        
+
         await Sharing.shareAsync('data:text/plain;charset=utf-8,' + encodeURIComponent(shareText), {
           mimeType: 'text/plain',
           dialogTitle: t('result.shareTitle')
@@ -159,11 +164,11 @@ export default function ResultScreen() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return '#dc2626';
-      case 'high': return '#ea580c';
-      case 'medium': return '#d97706';
-      case 'low': return '#65a30d';
-      default: return '#16a34a';
+      case 'critical': return tokens.danger;
+      case 'high': return tokens.warning;
+      case 'medium': return tokens.warningDark;
+      case 'low': return tokens.primaryDarker;
+      default: return tokens.primaryDark;
     }
   };
 
@@ -178,13 +183,13 @@ export default function ResultScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: tokens.background }]}>
       {/* Background Elements */}
-      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
-      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
-      
+      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim, backgroundColor: tokens.primaryOverlay }]} />
+      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim, backgroundColor: tokens.successOverlay }]} />
+
       {/* Header */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.header,
           {
@@ -196,12 +201,12 @@ export default function ResultScreen() {
           }
         ]}
       >
-        <Text style={styles.title}>🔍 Diagnosis Result</Text>
-        <Text style={styles.subtitle}>AI-powered tomato disease detection</Text>
+        <Text style={[styles.title, { color: tokens.primaryDark }]}>🔍 {t('result.title')}</Text>
+        <Text style={[styles.subtitle, { color: tokens.muted }]}>{t("result.subtitle")}</Text>
       </Animated.View>
 
       {/* Result Card */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.cardContainer,
           {
@@ -210,28 +215,28 @@ export default function ResultScreen() {
           }
         ]}
       >
-        <View style={styles.resultCard}>
+        <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
           {/* Disease Header */}
           <View style={styles.diseaseHeader}>
             <View style={styles.diseaseIconContainer}>
               <Text style={styles.diseaseIcon}>{mockResult.image}</Text>
             </View>
             <View style={styles.diseaseInfo}>
-              <Text style={styles.diseaseName}>{mockResult.nameEn}</Text>
-              <Text style={styles.diseaseNameAm}>{mockResult.nameAm}</Text>
+              <Text style={[styles.diseaseName, { color: tokens.text }]}>{mockResult.nameEn}</Text>
+              <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{mockResult.nameAm}</Text>
             </View>
-            <View 
+            <View
               style={[
                 styles.severityBadge,
                 { backgroundColor: getSeverityColor(mockResult.severity) + '20' }
               ]}
             >
-              <Ionicons 
-                name={getSeverityIcon(mockResult.severity) as any} 
-                size={16} 
-                color={getSeverityColor(mockResult.severity)} 
+              <Ionicons
+                name={getSeverityIcon(mockResult.severity) as any}
+                size={16}
+                color={getSeverityColor(mockResult.severity)}
               />
-              <Text 
+              <Text
                 style={[
                   styles.severityText,
                   { color: getSeverityColor(mockResult.severity) }
@@ -245,23 +250,23 @@ export default function ResultScreen() {
           {/* Confidence Meter */}
           <View style={styles.confidenceSection}>
             <View style={styles.confidenceHeader}>
-              <Text style={styles.confidenceLabel}>Confidence Level</Text>
-              <Animated.Text style={styles.confidenceValue}>
+              <Text style={[styles.confidenceLabel, { color: tokens.textSecondary }]}>{t("result.confidenceLevel")}</Text>
+              <Animated.Text style={[styles.confidenceValue, { color: tokens.primaryDark }]}>
                 {Math.round(mockResult.confidence * 100)}%
               </Animated.Text>
             </View>
-            <View style={styles.confidenceBar}>
-              <Animated.View 
+            <View style={[styles.confidenceBar, { backgroundColor: tokens.backgroundAlt }]}>
+              <Animated.View
                 style={[
                   styles.confidenceFill,
-                  { 
+                  {
                     width: progressAnim.interpolate({
                       inputRange: [0, 1],
                       outputRange: ['0%', '100%']
                     }),
                     backgroundColor: getSeverityColor(mockResult.severity)
                   }
-                ]} 
+                ]}
               />
             </View>
           </View>
@@ -269,58 +274,58 @@ export default function ResultScreen() {
           {/* Advice Section */}
           <View style={styles.adviceSection}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="bulb" size={20} color="#f59e0b" />
-              <Text style={styles.sectionTitle}>Recommended Action</Text>
+              <Ionicons name="bulb" size={20} color={tokens.warning} />
+              <Text style={styles.sectionTitle}>{t('result.recommendation')}</Text>
             </View>
-            <Text style={styles.adviceText}>{mockResult.advice}</Text>
+            <Text style={[styles.adviceText, { color: tokens.textSecondary }]}>{mockResult.advice}</Text>
           </View>
 
           {/* Prevention Section */}
           <View style={styles.preventionSection}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="shield-checkmark" size={20} color="#10b981" />
-              <Text style={styles.sectionTitle}>Prevention Tips</Text>
+              <Ionicons name="shield-checkmark" size={20} color={tokens.success} />
+              <Text style={styles.sectionTitle}>{t('result.prevTips')} </Text>
             </View>
-            <Text style={styles.preventionText}>{mockResult.prevention}</Text>
+            <Text style={[styles.preventionText, { color: tokens.muted }]}>{mockResult.prevention}</Text>
           </View>
         </View>
 
-      {/* Action Buttons */}
-      <Animated.View 
-        style={[
-          styles.actionsContainer,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideUpButtons }]
-          }
-        ]}
+        {/* Action Buttons */}
+        <Animated.View
+          style={[
+            styles.actionsContainer,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideUpButtons }]
+            }
+          ]}
         >
-        <TouchableOpacity 
-          style={styles.saveButton}
-          onPress={handleSave}
-          activeOpacity={0.8}
+          <TouchableOpacity
+            style={[styles.saveButton, { backgroundColor: tokens.primary, shadowColor: tokens.primary }]}
+            onPress={handleSave}
+            activeOpacity={0.8}
           >
-          <Ionicons name="save" size={24} color="#ffffff" />
-          <Text style={styles.saveButtonText}>Save Result</Text>
-        </TouchableOpacity>
+            <Ionicons name="save" size={24} color={tokens.whiteMuted} />
+            <Text style={[styles.saveButtonText, { color: tokens.whiteMuted }]}>{t('result.save')}</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.shareButton}
-          onPress={handleShare}
-          activeOpacity={0.8}
+          <TouchableOpacity
+            style={[styles.shareButton, { backgroundColor: tokens.surface, borderColor: tokens.border }]}
+            onPress={handleShare}
+            activeOpacity={0.8}
           >
-          <Ionicons name="share" size={24} color="#1e40af" />
-          <Text style={styles.shareButtonText}>Share</Text>
-        </TouchableOpacity>
+            <Ionicons name="share" size={24} color={tokens.text} />
+            <Text style={[styles.shareButtonText, { color: tokens.text }]}>{t('result.share')}</Text>
+          </TouchableOpacity>
+        </Animated.View>
       </Animated.View>
-          </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
     backgroundColor: '#f8fffc',
   },
   // Background elements
@@ -345,13 +350,13 @@ const styles = StyleSheet.create({
   // Header
   header: {
     paddingHorizontal: 12,
-    paddingTop: 20,
+    paddingTop: 60,
     paddingBottom: 20,
     alignItems: 'center',
   },
-  title: { 
-    fontSize: 32, 
-    fontWeight: '800', 
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
     color: '#166534',
     textAlign: 'center',
     marginBottom: 8,
@@ -467,7 +472,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1f2937',
+    color: '#475569ff',
   },
   adviceText: {
     fontSize: 15,

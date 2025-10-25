@@ -12,35 +12,37 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import Colors from '../../constants/Colors';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 const mock = [
-  { 
-    id: '1', 
-    disease: 'Early Blight', 
+  {
+    id: '1',
+    disease: 'Early Blight',
     date: '2025-10-01',
     confidence: 0.92,
     severity: 'High',
     image: '🌱'
   },
-  { 
-    id: '2', 
-    disease: 'Healthy', 
+  {
+    id: '2',
+    disease: 'Healthy',
     date: '2025-10-10',
     confidence: 0.88,
     severity: 'None',
     image: '✅'
   },
-  { 
-    id: '3', 
-    disease: 'Late Blight', 
+  {
+    id: '3',
+    disease: 'Late Blight',
     date: '2025-10-15',
     confidence: 0.95,
     severity: 'Critical',
     image: '⚠️'
   },
-  { 
-    id: '4', 
-    disease: 'Bacterial Spot', 
+  {
+    id: '4',
+    disease: 'Bacterial Spot',
     date: '2025-10-20',
     confidence: 0.78,
     severity: 'Medium',
@@ -49,8 +51,10 @@ const mock = [
 ];
 
 export default function HistoryScreen() {
-  useTranslation();
-  
+    const { t } = useTranslation();
+  const { theme } = useTheme();
+  const tokens = Colors[theme];
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideUpHeader = useRef(new Animated.Value(30)).current;
@@ -110,11 +114,11 @@ export default function HistoryScreen() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return '#dc2626';
-      case 'high': return '#ea580c';
-      case 'medium': return '#d97706';
-      case 'low': return '#65a30d';
-      default: return '#16a34a';
+      case 'critical': return tokens.danger;
+      case 'high': return tokens.warning;
+      case 'medium': return tokens.warningDark;
+      case 'low': return tokens.primaryDarker;
+      default: return tokens.primaryDark;
     }
   };
 
@@ -158,7 +162,7 @@ export default function HistoryScreen() {
         }}
       >
         <TouchableOpacity
-          style={styles.historyItem}
+          style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
           onPress={() => handleItemPress(item.id)}
           activeOpacity={0.7}
         >
@@ -167,40 +171,40 @@ export default function HistoryScreen() {
               <Text style={styles.itemImage}>{item.image}</Text>
             </View>
             <View style={styles.itemInfo}>
-              <Text style={styles.diseaseName}>{item.disease}</Text>
-              <Text style={styles.date}>{item.date}</Text>
+              <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{item.disease}</Text>
+              <Text style={[styles.date, { color: tokens.muted }]}>{item.date}</Text>
               <View style={styles.confidenceContainer}>
                 <View style={styles.confidenceBar}>
-                  <View 
+                  <View
                     style={[
                       styles.confidenceFill,
-                      { 
+                      {
                         width: `${item.confidence * 100}%`,
                         backgroundColor: getSeverityColor(item.severity)
                       }
-                    ]} 
+                    ]}
                   />
                 </View>
-                <Text style={styles.confidenceText}>
+                <Text style={[styles.confidenceText, { color: tokens.muted }]}>
                   {Math.round(item.confidence * 100)}%
                 </Text>
               </View>
             </View>
           </View>
-          
+
           <View style={styles.itemRight}>
-            <View 
+            <View
               style={[
                 styles.severityBadge,
                 { backgroundColor: getSeverityColor(item.severity) + '20' }
               ]}
             >
-              <Ionicons 
-                name={getSeverityIcon(item.severity) as any} 
-                size={16} 
-                color={getSeverityColor(item.severity)} 
+              <Ionicons
+                name={getSeverityIcon(item.severity) as any}
+                size={16}
+                color={getSeverityColor(item.severity)}
               />
-              <Text 
+              <Text
                 style={[
                   styles.severityText,
                   { color: getSeverityColor(item.severity) }
@@ -217,13 +221,13 @@ export default function HistoryScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: tokens.background }]}>
       {/* Background Elements */}
-      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
-      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
-      
+      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim, backgroundColor: tokens.primaryOverlay }]} />
+      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim, backgroundColor: tokens.successOverlay }]} />
+
       {/* Header */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.header,
           {
@@ -237,22 +241,22 @@ export default function HistoryScreen() {
       >
         <View style={styles.headerContent}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>📋 Scan History</Text>
-            <Text style={styles.subtitle}>
-              {mock.length} recent tomato disease detections
+            <Text style={[styles.title, { color: tokens.primaryDark }]}>📋 {t("history.title")}</Text>
+            <Text style={[styles.subtitle, { color: tokens.muted }]}>
+              {mock.length} {t("history.subtitle")}
             </Text>
           </View>
           <View style={styles.statsContainer}>
             <View style={styles.stat}>
-              <Text style={styles.statNumber}>{mock.length}</Text>
-              <Text style={styles.statLabel}>Total</Text>
+              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{mock.length}</Text>
+              <Text style={[styles.statLabel, { color: tokens.muted } ]}>{t('history.total')}</Text>
             </View>
           </View>
         </View>
       </Animated.View>
 
       {/* History List */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.listContainer,
           {
@@ -270,7 +274,7 @@ export default function HistoryScreen() {
             )}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            ItemSeparatorComponent={() => <View style={[styles.separator, { backgroundColor: tokens.backgroundAlt }]} />}
           />
         ) : (
           <View style={styles.emptyState}>
@@ -287,8 +291,8 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
     backgroundColor: '#f8fffc',
   },
   // Background elements
@@ -324,9 +328,9 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
   },
-  title: { 
-    fontSize: 32, 
-    fontWeight: '800', 
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
     color: '#166534',
     marginBottom: 8,
   },

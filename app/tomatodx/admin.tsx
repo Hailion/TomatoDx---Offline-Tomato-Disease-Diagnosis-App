@@ -13,12 +13,16 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import Colors from '../../constants/Colors';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function AdminScreen() {
   const { t } = useTranslation();
-  
+  const { theme } = useTheme();
+  const tokens = Colors[theme];
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideUpHeader = useRef(new Animated.Value(40)).current;
@@ -104,8 +108,8 @@ export default function AdminScreen() {
       'This will remove all temporary files and scan history. Continue?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Clear', 
+        {
+          text: 'Clear',
           style: 'destructive',
           onPress: () => {
             Alert.alert('Success', 'Cache cleared successfully');
@@ -121,8 +125,8 @@ export default function AdminScreen() {
       'Export all scan history and analytics data?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Export', 
+        {
+          text: 'Export',
           onPress: () => {
             Alert.alert('Export Started', 'Data export has been initiated');
           }
@@ -140,18 +144,18 @@ export default function AdminScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: tokens.background }]}>
       {/* Background Elements */}
-      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
-      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
-      
-      <ScrollView 
+      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim, backgroundColor: tokens.primaryOverlay }]} />
+      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim, backgroundColor: tokens.successOverlay }]} />
+
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {/* Header */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.header,
             {
@@ -165,20 +169,21 @@ export default function AdminScreen() {
         >
           <View style={styles.headerContent}>
             <View style={styles.titleContainer}>
-              <Text style={styles.title}>🔧 Admin Panel</Text>
-              <Text style={styles.subtitle}>System management and configuration</Text>
+              <Text style={[styles.title, { color: tokens.primaryDark }]}>🔧 {t('admin.title')}</Text>
+              <Text style={[styles.subtitle, { color: tokens.muted }]}>{t("admin.subtitle")}</Text>
             </View>
-            <View style={styles.statusBadge}>
-              <View style={styles.statusIndicator} />
-              <Text style={styles.statusText}>Online</Text>
+            <View style={[styles.statusBadge, { backgroundColor: tokens.successBgLight }]}>
+              <View style={[styles.statusIndicator, { backgroundColor: tokens.success }]} />
+              <Text style={[styles.statusText, { color: tokens.primaryDark }]}>{t('admin.online')}</Text>
             </View>
           </View>
         </Animated.View>
 
         {/* System Info Card */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.card,
+            { backgroundColor: tokens.card, shadowColor: tokens.shadowLight },
             {
               opacity: fadeAnim,
               transform: [{ translateY: slideUpCards }]
@@ -186,34 +191,35 @@ export default function AdminScreen() {
           ]}
         >
           <View style={styles.cardHeader}>
-            <Ionicons name="information-circle" size={24} color="#3b82f6" />
-            <Text style={styles.cardTitle}>System Information</Text>
+            <Ionicons name="information-circle" size={24} color={tokens.text} />
+            <Text style={[styles.cardTitle, { color: tokens.text }]}>{t('admin.systemInformation')}</Text>
           </View>
-          
+
           <View style={styles.infoGrid}>
             <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>App Version</Text>
-              <Text style={styles.infoValue}>v1.2.0</Text>
+              <Text style={styles.infoLabel}>{t('admin.appVersion')}</Text>
+              <Text style={[styles.infoValue, { color: tokens.muted }]}>v1.2.0</Text>
             </View>
             <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>Model Version</Text>
-              <Text style={styles.infoValue}>tomato-v3.1.0</Text>
+              <Text style={styles.infoLabel}>{t('admin.modelVersion')}</Text>
+              <Text style={[styles.infoValue, { color: tokens.muted }]} > tomato - v3.1.0</Text>
             </View>
             <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>Last Updated</Text>
-              <Text style={styles.infoValue}>2024-01-15</Text>
+              <Text style={styles.infoLabel}>{t('admin.lastUpdated')}</Text>
+              <Text style={[styles.infoValue, { color: tokens.muted }]}>2024-01-15</Text>
             </View>
             <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>Total Scans</Text>
-              <Text style={styles.infoValue}>1,247</Text>
+              <Text style={styles.infoLabel}>{t('admin.totalScans')}</Text>
+              <Text style={[styles.infoValue, { color: tokens.muted }]}>1,247</Text>
             </View>
           </View>
         </Animated.View>
 
         {/* Model Management Card */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.card,
+            { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight },
             {
               opacity: fadeAnim,
               transform: [{ translateY: slideUpCards }]
@@ -221,39 +227,40 @@ export default function AdminScreen() {
           ]}
         >
           <View style={styles.cardHeader}>
-            <Ionicons name="cube" size={24} color="#8b5cf6" />
-            <Text style={styles.cardTitle}>Model Management</Text>
+            <Ionicons name="cube" size={24} color={tokens.text} />
+            <Text style={[styles.cardTitle, { color: tokens.text }]}>{t('admin.modelManagement.title')}</Text>
           </View>
-          
+
           <Text style={styles.cardDescription}>
-            Update and manage the AI model for disease detection
+            {t('admin.modelManagement.subtitle')}
           </Text>
 
           <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-            <TouchableOpacity 
-              style={[styles.button, styles.primaryButton]}
+            <TouchableOpacity
+              style={[styles.button, styles.primaryButton, { backgroundColor: tokens.primary, shadowColor: tokens.primary }]}
               onPress={handleUpdateInstructions}
               activeOpacity={0.8}
             >
-              <Ionicons name="cloud-download" size={20} color="#ffffff" />
-              <Text style={styles.primaryButtonText}>Update Model Instructions</Text>
+              <Ionicons name="cloud-download" size={20} color={tokens.whiteMuted} />
+              <Text style={[styles.primaryButtonText, { color: tokens.whiteMuted }]}>{t('admin.modelManagement.updateInstructions')}</Text>
             </TouchableOpacity>
           </Animated.View>
 
-          <TouchableOpacity 
-            style={[styles.button, styles.secondaryButton]}
+          <TouchableOpacity
+            style={[styles.button, styles.secondaryButton, { backgroundColor: tokens.backgroundAlt, borderColor: tokens.border }]}
             onPress={handleSystemCheck}
             activeOpacity={0.8}
           >
-            <Ionicons name="checkmark-done" size={20} color="#3b82f6" />
-            <Text style={styles.secondaryButtonText}>Run System Check</Text>
+            <Ionicons name="checkmark-done" size={20} color={tokens.text} />
+            <Text style={[styles.secondaryButtonText, { color: tokens.textSecondary }]}>{t('admin.modelManagement.runSystemCheck')}</Text>
           </TouchableOpacity>
         </Animated.View>
 
         {/* Data Management Card */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.card,
+            { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight },
             {
               opacity: fadeAnim,
               transform: [{ translateY: slideUpCards }]
@@ -261,35 +268,36 @@ export default function AdminScreen() {
           ]}
         >
           <View style={styles.cardHeader}>
-            <Ionicons name="server" size={24} color="#10b981" />
-            <Text style={styles.cardTitle}>Data Management</Text>
+            <Ionicons name="server" size={24} color={tokens.success} />
+            <Text style={[styles.cardTitle, { color: tokens.text }]}>{t('admin.dataManagement.title')}</Text>
           </View>
-          
+
           <View style={styles.buttonGroup}>
-            <TouchableOpacity 
-              style={[styles.button, styles.outlineButton]}
+            <TouchableOpacity
+              style={[styles.button, styles.outlineButton, { borderColor: tokens.border }]}
               onPress={handleExportData}
               activeOpacity={0.8}
             >
-              <Ionicons name="download" size={18} color="#6b7280" />
-              <Text style={styles.outlineButtonText}>Export Data</Text>
+              <Ionicons name="download" size={18} color={tokens.muted} />
+              <Text style={[styles.outlineButtonText, { color: tokens.muted }]}>{t('admin.dataManagement.exportData')}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={[styles.button, styles.dangerButton]}
+            <TouchableOpacity
+              style={[styles.button, styles.dangerButton, { borderColor: tokens.danger }]}
               onPress={handleClearCache}
               activeOpacity={0.8}
             >
-              <Ionicons name="trash" size={18} color="#dc2626" />
-              <Text style={styles.dangerButtonText}>Clear Cache</Text>
+              <Ionicons name="trash" size={18} color={tokens.danger} />
+              <Text style={[styles.dangerButtonText, { color: tokens.danger }]}>{t('admin.dataManagement.clearCache')}</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
 
         {/* Analytics Card */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.card,
+            { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight },
             {
               opacity: fadeAnim,
               transform: [{ translateY: slideUpCards }]
@@ -297,33 +305,33 @@ export default function AdminScreen() {
           ]}
         >
           <View style={styles.cardHeader}>
-            <Ionicons name="bar-chart" size={24} color="#f59e0b" />
-            <Text style={styles.cardTitle}>Analytics</Text>
+            <Ionicons name="bar-chart" size={24} color={tokens.warning} />
+            <Text style={[styles.cardTitle, { color: tokens.text }]}>{t('admin.analytics.title')}</Text>
           </View>
-          
+
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>92%</Text>
-              <Text style={styles.statLabel}>Accuracy</Text>
+              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>92%</Text>
+              <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('admin.analytics.accuracy')}</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>1.2s</Text>
-              <Text style={styles.statLabel}>Avg. Processing</Text>
+              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>1.2s</Text>
+              <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('admin.analytics.averageProcessingTime')}</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>98%</Text>
-              <Text style={styles.statLabel}>Uptime</Text>
+              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>98%</Text>
+              <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('admin.analytics.uptime')}</Text>
             </View>
           </View>
         </Animated.View>
       </ScrollView>
-    </View>
+    </View >
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
     backgroundColor: '#f8fffc',
   },
   scrollView: {
@@ -365,9 +373,9 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
   },
-  title: { 
-    fontSize: 32, 
-    fontWeight: '800', 
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
     color: '#166534',
     marginBottom: 8,
   },
@@ -375,6 +383,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6b7280',
     fontWeight: '500',
+    marginTop: 4,
+    paddingLeft: 10
   },
   statusBadge: {
     flexDirection: 'row',
@@ -500,7 +510,7 @@ const styles = StyleSheet.create({
   },
   dangerButtonText: {
     color: '#dc2626',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
   },
   buttonGroup: {

@@ -24,6 +24,8 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
   const tokens = Colors[theme];
   const styles = getStyles(tokens);
 
+  const imageUri = route?.params?.uri as string | undefined;
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -118,7 +120,7 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
         useNativeDriver: true,
       }),
     ]).start(() => {
-      router.push('/tomatodx/result');
+      router.push({ pathname: '/tomatodx/result', params: { uri: imageUri } });
     });
   };
 
@@ -139,7 +141,7 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
           }
         ]}
       >
-        <Text style={styles.title}>📷 {t('preview.title')}</Text>
+        <Text style={styles.title}> {t('preview.title')}</Text>
         <Text style={styles.subtitle}>{t('preview.subtitle')}</Text>
       </Animated.View>
 
@@ -155,7 +157,7 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
       >
         <View style={styles.imageWrapper}>
           <Animated.Image
-            source={require('../../assets/sample-tomato-leaf.png')}
+            source={imageUri ? { uri: imageUri } : require('../../assets/sample-tomato-leaf.png')}
             style={[
               styles.image,
               {
@@ -258,7 +260,7 @@ const getStyles = (c: ThemeTokens) => StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 50,
     paddingBottom: 30,
-    
+
     alignItems: 'center',
   },
   title: {

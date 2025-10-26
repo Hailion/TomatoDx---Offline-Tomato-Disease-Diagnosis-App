@@ -2,7 +2,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -17,6 +17,8 @@ import {
 } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { predictFromUri } from '../../src/ml/inference';
+import { initModel } from '../../src/ml/model';
 
 const { width, height } = Dimensions.get('window');
 
@@ -46,8 +48,12 @@ const mockDataStore = {
 
 export default function ResultScreen() {
   const { t } = useTranslation();
-  const { id } = useLocalSearchParams();
-  const mockResult = mockDataStore[id as keyof typeof mockDataStore] || mockDataStore['1'];
+  const params = useLocalSearchParams();
+  const uri = (params.uri as string) || undefined;
+  const id = (params.id as string) || undefined;
+  const [resultData, setResultData] = useState(
+    (id ? mockDataStore[id as keyof typeof mockDataStore] : undefined) || mockDataStore['1']
+  );
   const { theme } = useTheme();
   const tokens = Colors[theme];
 
@@ -59,6 +65,7 @@ export default function ResultScreen() {
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const didAnimateRef = useRef(false);
 
   const handleSave = () => {
     // Button press animation
@@ -99,7 +106,7 @@ export default function ResultScreen() {
 
     try {
       if (await Sharing.isAvailableAsync()) {
-        const shareText = `${t('result.shareText')}\n${t('result.disease')}: ${mockResult.nameEn}\n${t('result.confidence')}: ${Math.round(mockResult.confidence * 100)}%\n${t('result.advice')}: ${mockResult.advice}`;
+        const shareText = `${t('result.shareText')}\n${t('result.disease')}: ${resultData.nameEn}\n${t('result.confidence')}: ${Math.round(resultData.confidence * 100)}%\n${t('result.advice')}: ${resultData.advice}`;
 
         await Sharing.shareAsync('data:text/plain;charset=utf-8,' + encodeURIComponent(shareText), {
           mimeType: 'text/plain',
@@ -114,53 +121,54 @@ export default function ResultScreen() {
   };
 
   useEffect(() => {
-    // Progress animation for confidence
+    // Progress animation tracks current result confidence
     Animated.timing(progressAnim, {
-      toValue: mockResult.confidence,
+      toValue: resultData.confidence,
       duration: 1500,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
     }).start();
 
-    // Main entrance animations
+    if (didAnimateRef.current) return;
+    didAnimateRef.current = true;
+
+    // Main entrance animations (run once)
     Animated.sequence([
-      // Fade in background
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      // Title animation
+      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
       Animated.parallel([
-        Animated.timing(slideUpTitle, {
-          toValue: 0,
-          duration: 600,
-          easing: Easing.out(Easing.back(1.2)),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 700,
-          easing: Easing.elastic(1),
-          useNativeDriver: true,
-        })
+        Animated.timing(slideUpTitle, { toValue: 0, duration: 600, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1, duration: 700, easing: Easing.elastic(1), useNativeDriver: true })
       ]),
-      // Card animation
-      Animated.timing(slideUpCard, {
-        toValue: 0,
-        duration: 600,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }),
-      // Buttons animation
-      Animated.timing(slideUpButtons, {
-        toValue: 0,
-        duration: 500,
-        easing: Easing.out(Easing.back(1)),
-        useNativeDriver: true,
-      })
+      Animated.timing(slideUpCard, { toValue: 0, duration: 600, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+      Animated.timing(slideUpButtons, { toValue: 0, duration: 500, easing: Easing.out(Easing.back(1)), useNativeDriver: true })
     ]).start();
-  }, []);
+  }, [resultData.confidence]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!uri) return;
+      try {
+        await initModel();
+        const pred = await predictFromUri(uri);
+        if (cancelled) return;
+        const severity = pred.confidence >= 0.9 ? 'High' : pred.confidence >= 0.7 ? 'Medium' : 'Low';
+        setResultData({
+          diseaseId: pred.label,
+          nameEn: pred.label,
+          nameAm: pred.label,
+          confidence: pred.confidence,
+          advice: 'Inspect leaves and follow local best practices.',
+          severity,
+          prevention: 'Ensure good airflow and remove affected leaves.',
+          image: '🌿'
+        });
+      } catch (e) {
+        // keep fallback
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [uri]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
@@ -219,30 +227,30 @@ export default function ResultScreen() {
           {/* Disease Header */}
           <View style={styles.diseaseHeader}>
             <View style={styles.diseaseIconContainer}>
-              <Text style={styles.diseaseIcon}>{mockResult.image}</Text>
+              <Text style={styles.diseaseIcon}>{resultData.image}</Text>
             </View>
             <View style={styles.diseaseInfo}>
-              <Text style={[styles.diseaseName, { color: tokens.text }]}>{mockResult.nameEn}</Text>
-              <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{mockResult.nameAm}</Text>
+              <Text style={[styles.diseaseName, { color: tokens.text }]}>{resultData.nameEn}</Text>
+              <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{resultData.nameAm}</Text>
             </View>
             <View
               style={[
                 styles.severityBadge,
-                { backgroundColor: getSeverityColor(mockResult.severity) + '20' }
+                { backgroundColor: getSeverityColor(resultData.severity) + '20' }
               ]}
             >
               <Ionicons
-                name={getSeverityIcon(mockResult.severity) as any}
+                name={getSeverityIcon(resultData.severity) as any}
                 size={16}
-                color={getSeverityColor(mockResult.severity)}
+                color={getSeverityColor(resultData.severity)}
               />
               <Text
                 style={[
                   styles.severityText,
-                  { color: getSeverityColor(mockResult.severity) }
+                  { color: getSeverityColor(resultData.severity) }
                 ]}
               >
-                {mockResult.severity}
+                {resultData.severity}
               </Text>
             </View>
           </View>
@@ -252,7 +260,7 @@ export default function ResultScreen() {
             <View style={styles.confidenceHeader}>
               <Text style={[styles.confidenceLabel, { color: tokens.textSecondary }]}>{t("result.confidenceLevel")}</Text>
               <Animated.Text style={[styles.confidenceValue, { color: tokens.primaryDark }]}>
-                {Math.round(mockResult.confidence * 100)}%
+                {Math.round(resultData.confidence * 100)}%
               </Animated.Text>
             </View>
             <View style={[styles.confidenceBar, { backgroundColor: tokens.backgroundAlt }]}>
@@ -264,7 +272,7 @@ export default function ResultScreen() {
                       inputRange: [0, 1],
                       outputRange: ['0%', '100%']
                     }),
-                    backgroundColor: getSeverityColor(mockResult.severity)
+                    backgroundColor: getSeverityColor(resultData.severity)
                   }
                 ]}
               />
@@ -277,7 +285,7 @@ export default function ResultScreen() {
               <Ionicons name="bulb" size={20} color={tokens.warning} />
               <Text style={styles.sectionTitle}>{t('result.recommendation')}</Text>
             </View>
-            <Text style={[styles.adviceText, { color: tokens.textSecondary }]}>{mockResult.advice}</Text>
+            <Text style={[styles.adviceText, { color: tokens.textSecondary }]}>{resultData.advice}</Text>
           </View>
 
           {/* Prevention Section */}
@@ -286,7 +294,7 @@ export default function ResultScreen() {
               <Ionicons name="shield-checkmark" size={20} color={tokens.success} />
               <Text style={styles.sectionTitle}>{t('result.prevTips')} </Text>
             </View>
-            <Text style={[styles.preventionText, { color: tokens.muted }]}>{mockResult.prevention}</Text>
+            <Text style={[styles.preventionText, { color: tokens.muted }]}>{resultData.prevention}</Text>
           </View>
         </View>
 
@@ -538,4 +546,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
   },
-});
+})

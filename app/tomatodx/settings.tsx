@@ -24,7 +24,7 @@ export default function SettingsScreen() {
   const { theme, themeMode, setThemeMode } = useTheme();
   const tokens = Colors[theme];
 
-  const [username, setUsername] = useState('User');
+  const [username, setUsername] = useState(t('settings.username'));
   const [isEditingUsername, setIsEditingUsername] = useState(false);
 
   // Animation values
@@ -155,8 +155,8 @@ export default function SettingsScreen() {
             }
           ]}
         >
-          <Text style={[styles.title, { color: tokens.primaryDark }]}>⚙️ Settings</Text>
-          <Text style={[styles.subtitle, { color: tokens.muted }]}>Customize your app experience</Text>
+          <Text style={[styles.title, { color: tokens.primaryDark }]}>⚙️ {t('settings.title')}</Text>
+          <Text style={[styles.subtitle, { color: tokens.muted }]}>{t('settings.subtitle')}</Text>
         </Animated.View>
 
         {/* Profile Section */}
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   themeOptionActive: {
-    backgroundColor:'#d1fae5ca',
+    backgroundColor: '#d1fae5ca',
     borderColor: '#22c55e',
   },
   themeIconContainer: {

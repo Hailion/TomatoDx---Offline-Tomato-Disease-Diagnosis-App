@@ -1,46 +1,54 @@
 {
-  "home": { "subtitle": "Offline tomato disease diagnosis for smallholder farmers", "capture": "Capture", "history": "History", "settings": "Settings", "admin": "Admin" },
-  "settings": { 
-    "title": "Settings", 
-    "language": "Language", 
+  "home": {
+    "subtitle": "Offline tomato disease diagnosis for smallholder farmers",
+    "capture": "Capture",
+    "history": "History",
+    "settings": "Settings",
+    "admin": "Admin"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize your app experience",
+    "username": "User",
+    "language": "Language",
     "theme": "Theme",
-    "themeSubtitle":"Choose your preferred appearance",
+    "themeSubtitle": "Choose your preferred appearance",
     "light": "Light",
-    "dark": "Dark", 
+    "dark": "Dark",
     "system": "System",
-    "profile":"Profile",
-    "edit":"Edit",
-    "appInfo":{
-      "title":"App Information",
-      "version":"Version",
-      "build":"Build",
-      "developer":"Developer",
-      "contact":"Contact",
-      "website":"Website",
-      "lastUpdated":"Last Updated"
+    "profile": "Profile",
+    "edit": "Edit",
+    "appInfo": {
+      "title": "App Information",
+      "version": "Version",
+      "build": "Build",
+      "developer": "Developer",
+      "contact": "Contact",
+      "website": "Website",
+      "lastUpdated": "Last Updated"
     }
   },
-  "capture": { 
-    "title": "Capture Tomato", 
-    "subtitle": "Position the tomato within the frame", 
-    "preview": "Camera Preview", 
-    "align": "Align Tomato Here", 
-    "takePhoto": "Take Photo", 
+  "capture": {
+    "title": "Capture Tomato",
+    "subtitle": "Position the tomato within the frame",
+    "preview": "Camera Preview",
+    "align": "Align Tomato Here",
+    "takePhoto": "Take Photo",
     "openGallery": "Open Gallery",
-    "permissionReq":"Permission Required', 'Media library permission is needed to access photos."
+    "permissionReq": "Permission Required', 'Media library permission is needed to access photos."
   },
-  "history": { 
+  "history": {
     "title": "Scan History",
-    "subtitle":"recent tomato disease detections",
+    "subtitle": "recent tomato disease detections",
     "total": "Total"
-   },
-  "result": { 
-    "title": "Diagnosis Result", 
+  },
+  "result": {
+    "title": "Diagnosis Result",
     "subtitle": "AI-powered tomato disease detection",
-    "confidenceLevel":"Confidence Level",
-    "recommendation":"Recommended Action",
-    "prevTips":"Prevention Tips",
-    "save": "Save Result", 
+    "confidenceLevel": "Confidence Level",
+    "recommendation": "Recommended Action",
+    "prevTips": "Prevention Tips",
+    "save": "Save Result",
     "share": "Share",
     "saveSuccess": "Saved Successfully",
     "saveMessage": "Your diagnosis has been saved to history.",
@@ -54,57 +62,56 @@
     "shareNotAvailable": "Sharing is not available on this device.",
     "shareFailed": "Failed to share the diagnosis."
   },
-  "preview": { 
-    "title": "Photo Preview", 
+  "preview": {
+    "title": "Photo Preview",
     "subtitle": "Review your captured tomato image",
-    "readyForAnalysis":"Ready for Analysis",
-    "retake": "Retake Photo", 
-    "analyzePhoto": "Analyze Photo" ,
-    "tip":"Ensure the tomato is well-lit and clearly visible for accurate diagnosis." },
-  "admin": { 
-    "title": "Admin Panel", 
-    "subtitle":"System management and configuration",
-    "online":"Online", 
-    "version": "Model version", 
-    "updateInstructions": "Model update instructions", 
-    "systemInformation": "System Information", 
-    "appVersion": "App Version", 
-    "modelVersion": "Model Version", 
-    "lastUpdated": "Last Updated", 
+    "readyForAnalysis": "Ready for Analysis",
+    "retake": "Retake Photo",
+    "analyzePhoto": "Analyze Photo",
+    "tip": "Ensure the tomato is well-lit and clearly visible for accurate diagnosis."
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "System management and configuration",
+    "online": "Online",
+    "version": "Model version",
+    "updateInstructions": "Model update instructions",
+    "systemInformation": "System Information",
+    "appVersion": "App Version",
+    "modelVersion": "Model Version",
+    "lastUpdated": "Last Updated",
     "totalScans": "Total Scans",
-    "modelManagement":{
-      "title":"Model Management",
-      "subtitle":"Update and manage the AI model for disease detection",
+    "modelManagement": {
+      "title": "Model Management",
+      "subtitle": "Update and manage the AI model for disease detection",
       "updateInstructions": "Update Model Instructions",
-      "runSystemCheck":"Run System Check",
-      "currentModel":"Current Model",
-      "checkUpdates":"Check for Updates",
-      "lastChecked":"Last Checked",
-      "noUpdates":"No updates available",
-      "updateAvailable":"Update available",
-      "updating":"Updating...",
-      "updateSuccess":"Model updated successfully",
-      "updateFailed":"Model update failed"
+      "runSystemCheck": "Run System Check",
+      "currentModel": "Current Model",
+      "checkUpdates": "Check for Updates",
+      "lastChecked": "Last Checked",
+      "noUpdates": "No updates available",
+      "updateAvailable": "Update available",
+      "updating": "Updating...",
+      "updateSuccess": "Model updated successfully",
+      "updateFailed": "Model update failed"
     },
-    "dataManagement":{
-      "title":"Data Management",
-      "subtitle":"Manage captured images and diagnosis data",
-      "clearData":"Clear All Data",
-      "exportData":"Export Data",
-      "clearCache":"Clear Cache",
-      "confirmClear":"Are you sure you want to clear all data? This action cannot be undone.",
-      "clearSuccess":"All data cleared successfully",
-      "exportSuccess":"Data exported successfully",
-      "exportFailed":"Data export failed"    
+    "dataManagement": {
+      "title": "Data Management",
+      "subtitle": "Manage captured images and diagnosis data",
+      "clearData": "Clear All Data",
+      "exportData": "Export Data",
+      "clearCache": "Clear Cache",
+      "confirmClear": "Are you sure you want to clear all data? This action cannot be undone.",
+      "clearSuccess": "All data cleared successfully",
+      "exportSuccess": "Data exported successfully",
+      "exportFailed": "Data export failed"
     },
-    "analytics":{
-      "title":"Analytics",
-      "subtitle":"View usage statistics and diagnosis trends",
-      "accuracy":"Accuracy",
-      "averageProcessingTime":"Avg. Processing",
-      "uptime":"Uptime"
-
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "View usage statistics and diagnosis trends",
+      "accuracy": "Accuracy",
+      "averageProcessingTime": "Avg. Processing",
+      "uptime": "Uptime"
     }
   }
 }
-  

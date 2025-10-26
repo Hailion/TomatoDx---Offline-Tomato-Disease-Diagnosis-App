@@ -1,48 +1,55 @@
 {
-  "home": { "subtitle": "የቲማቲም በሽታ የውስጥ ምርመራ", "capture": "ፎቶ ይውሰዱ", "history": "ታሪክ", "settings": "ቅንብሮች", "admin": "አስተዳደር" },
-  "settings": { 
-    "title": "ቅንብሮች", 
-    "language": "ቋንቋ", 
+  "home": {
+    "subtitle": "ለአነስተኛ ገበሬዎች ከመስመር ውጭ የቲማቲም በሽታ ምርመራ",
+    "capture": "ፎቶ አንሳ",
+    "history": "ታሪክ",
+    "settings": "ቅንብሮች",
+    "admin": "አስተዳዳሪ"
+  },
+  "settings": {
+    "title": "ቅንብሮች",
+    "subtitle": "የእርስዎን መተግበሪያ ተሞክሮ ያብጁ",
+    "username": "ተጠቃሚ",
+    "language": "ቋንቋ",
     "theme": "ገጽታ",
-    "themeSubtitle":"የተመረጠ ቅርጸ ተንቀሳቃሽ ይምረጡ",
+    "themeSubtitle": "የእርስዎን ተመራጭ መልክ ይምረጡ",
     "light": "ብርሃን",
-    "dark": "ጨለማ", 
+    "dark": "ጨለማ",
     "system": "ስርዓት",
-    "profile":"መገለጫ",
-    "edit":"አርትዕ",
-    "appInfo":"የመተግበሪያ መረጃ",
-    "appInfo":{
-      "title":"የመተግበሪያ መረጃ",
-      "version":"ሥሪት",
-      "build":"የግንባታ ቀን",
-      "developer":"ገንቢ",
-      "contact":"እኛን ለማግኘት",
-      "website":"ድህረ ገጽ",
-      "lastUpdated":"ለመጨረሻ ጊዜ የተሻሻለው"
+    "profile": "መገለጫ",
+    "edit": "አርትዕ",
+    "appInfo": {
+      "title": "የመተግበሪያ መረጃ",
+      "version": "ሥሪት",
+      "build": "የግንባታ ቀን",
+      "developer": "ገንቢ",
+      "contact": "እኛን ለማግኘት",
+      "website": "ድህረ ገጽ",
+      "lastUpdated": "ለመጨረሻ ጊዜ የተሻሻለው"
     }
   },
-  "capture": { 
-    "title": "ቲማቲም ይውሰዱ", 
-    "subtitle": "ቲማቲሙን በፍሬሙ ውስጥ ያስቀምጡ", 
-    "preview": "ካሜራ ቅድሚያ", 
-    "align": "ቲማቲሙን እዚህ ያስቀምጡ", 
-    "takePhoto": "ፎቶ ይውሰዱ", 
+  "capture": {
+    "title": "ቲማቲም ይውሰዱ",
+    "subtitle": "ቲማቲሙን በፍሬሙ ውስጥ ያስቀምጡ",
+    "preview": "ካሜራ ቅድሚያ",
+    "align": "ቲማቲሙን እዚህ ያስቀምጡ",
+    "takePhoto": "ፎቶ ይውሰዱ",
     "openGallery": "ጋለሪ ክፈት",
-    "permissionReq":"ፈቃድ ያስፈልጋል'፣ ፎቶዎችን ለመድረስ የሚዲያ ቤተ-መጽሐፍት ፈቃድ ያስፈልጋል።"
+    "permissionReq": "ፈቃድ ያስፈልጋል'፣ ፎቶዎችን ለመድረስ የሚዲያ ቤተ-መጽሐፍት ፈቃድ ያስፈልጋል።"
   },
-  "history": { 
+  "history": {
     "title": "የምርመራ ታሪክ",
-    "subtitle":"የቅርብ ጊዜ የቲማቲም በሽታ ውጤት",
+    "subtitle": "የቅርብ ጊዜ የቲማቲም በሽታ ውጤት",
     "total": "ጠቅላላ"
-   },
-  "result": { 
-    "title": "የምርመራ ውጤት", 
+  },
+  "result": {
+    "title": "የምርመራ ውጤት",
     "subtitle": "በ AI የተጎላበተ የቲማቲም በሽታን መለየት",
-    "confidenceLevel":"የመተማመን ደረጃ",
-    "save":"ውጤት ያስቀምጡ",
+    "confidenceLevel": "የመተማመን ደረጃ",
+    "save": "ውጤት ያስቀምጡ",
     "share": "አጋራ",
-    "recommendation":"የሚመከር እርምጃ",
-    "prevTips":"የመከላከያ ምክሮች",
+    "recommendation": "የሚመከር እርምጃ",
+    "prevTips": "የመከላከያ ምክሮች",
     "saveSuccess": "በተሳካ ተቀምጧል",
     "saveMessage": "የእርስዎ ምርመራ በታሪክ ውስጥ ተቀምጧል።",
     "ok": "እሺ",
@@ -54,54 +61,52 @@
     "shareNotAvailable": "በዚህ መሳሪያ ላይ ማጋራት አይቻልም።",
     "shareFailed": "ምርመራውን ማጋራት አልተሳካም።"
   },
-  "preview": { 
+  "preview": {
     "title": "የፎቶ እይታ",
     "subtitle": "የተቀረጸውን የቲማቲም ምስል ይገምግሙ",
-    "readyForAnalysis":"ለምርመራ ዝግጁ ነው",
-    "retake": "ፎቶ ዳግም ይውሰዱ", 
-    "analyzePhoto":"ፎቶውን ይተንትኑ",
-    "tip":"ለትክክለኛ ምርመራ ቲማቲሙ በጥሩ ብርሃን ውስጥ እና ግልጽ ሆኖ እንዲታይ ያድርጉ።"
+    "readyForAnalysis": "ለምርመራ ዝግጁ ነው",
+    "retake": "ፎቶ ዳግም ይውሰዱ",
+    "analyzePhoto": "ፎቶውን ይተንትኑ",
+    "tip": "ለትክክለኛ ምርመራ ቲማቲሙ በጥሩ ብርሃን ውስጥ እና ግልጽ ሆኖ እንዲታይ ያድርጉ።"
   },
-  "admin": { 
+  "admin": {
     "title": "የአስተዳደር ገጽ",
-    "subtitle":"የስርዓት አስተዳደር እና ውቅር",
-    "online":"መስመር ላይ",
-    "updateInstructions": "የሞዴል ዝመና መመሪያዎች", 
-    "systemInformation": "የስርዓት መረጃ" , 
-    "appVersion": "የመተግበሪያ ሥሪት" ,  
+    "subtitle": "የስርዓት አስተዳደር እና ውቅር",
+    "online": "መስመር ላይ",
+    "updateInstructions": "የሞዴል ዝመና መመሪያዎች",
+    "systemInformation": "የስርዓት መረጃ",
+    "appVersion": "የመተግበሪያ ሥሪት",
     "modelVersion": "የሞዴል ሥሪት",
     "lastUpdated": "የመጨረሻ ዝመና",
     "totalScans": "ጠቅላላ ምርመራዎች",
-    "modelManagement":{
-      "title":"የሞዴል አስተዳደር",
-      "subtitle":"በሽታን ለመለየት የ AI ሞዴልን ያዘምኑ እና ያስተዳድሩ",
+    "modelManagement": {
+      "title": "የሞዴል አስተዳደር",
+      "subtitle": "በሽታን ለመለየት የ AI ሞዴልን ያዘምኑ እና ያስተዳድሩ",
       "updateInstructions": "የሞዴል ዝመና መመሪያዎች",
-      "runSystemCheck":"የስርዓት ፍተሻን ያሂዱ",
-      "currentModel":"የአሁኑ ሞዴል",
-      "checkUpdates":"ለዝመናዎች ፍቺ አድርግ",
-      "lastChecked":"የመጨረሻ ፍቺ",
-      "noUpdates":"ምንም ዝመናዎች አልተገኙም",
-      "updateAvailable":"ዝመና አለ",
-      "updating":"በመዘመን...",
-      "updateSuccess":"ሞዴሉ በተሳካ ተዘመነ",
-      "updateFailed":"የሞዴል ዝመና አልተሳካም"
-     },
-     "dataManagement":{
-      "title":"የውሂብ አስተዳደር",
-      "subtitle":"የተወሰኑ ምስሎችን እና የምርመራ ውሂብን ያስተዳድሩ",
-      "clearData":"ሁሉንም ውሂብ አጽዳ",
-      "exportData":"ውሂብ አስገባ",
-      "clearCache":"የምስል ካሽ አጽዳ",
-      "confirmClear":"ሁሉንም ውሂብ መጽዳት እንደ ፈለጉ እርግጠኛ ነዎት? ይህ እርምጃ አይመለስም።"
-     },
-     "analytics":{
-      "title":"ትንተና",
-      "subtitle":"የአገልግሎት ስታቲስቲኮችን እና የምርመራ እንቅስቃሴዎችን ይመልከቱ",
-      "accuracy":"ትክክለኛነት",
-      "averageProcessingTime":"አማካይ የማቀነባበሪያ ፍጥነት",
-      "uptime":"የመቆየት ጊዜ",
-     }
-
-
+      "runSystemCheck": "የስርዓት ፍተሻን ያሂዱ",
+      "currentModel": "የአሁኑ ሞዴል",
+      "checkUpdates": "ለዝመናዎች ፍቺ አድርግ",
+      "lastChecked": "የመጨረሻ ፍቺ",
+      "noUpdates": "ምንም ዝመናዎች አልተገኙም",
+      "updateAvailable": "ዝመና አለ",
+      "updating": "በመዘመን...",
+      "updateSuccess": "ሞዴሉ በተሳካ ተዘመነ",
+      "updateFailed": "የሞዴል ዝመና አልተሳካም"
+    },
+    "dataManagement": {
+      "title": "የውሂብ አስተዳደር",
+      "subtitle": "የተወሰኑ ምስሎችን እና የምርመራ ውሂብን ያስተዳድሩ",
+      "clearData": "ሁሉንም ውሂብ አጽዳ",
+      "exportData": "ውሂብ አስገባ",
+      "clearCache": "የምስል ካሽ አጽዳ",
+      "confirmClear": "ሁሉንም ውሂብ መጽዳት እንደ ፈለጉ እርግጠኛ ነዎት? ይህ እርምጃ አይመለስም።"
+    },
+    "analytics": {
+      "title": "ትንተና",
+      "subtitle": "የአገልግሎት ስታቲስቲኮችን እና የምርመራ እንቅስቃሴዎችን ይመልከቱ",
+      "accuracy": "ትክክለኛነት",
+      "averageProcessingTime": "አማካይ የማቀነባበሪያ ፍጥነት",
+      "uptime": "የመቆየት ጊዜ"
+    }
   }
 }

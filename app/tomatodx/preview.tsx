@@ -1,6 +1,6 @@
 // preview.tsx
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 
 import { useTranslation } from 'react-i18next';
@@ -18,13 +18,17 @@ import { useTheme } from '../../src/contexts/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
-export default function PreviewScreen({ route, navigation }: { route: any, navigation: any }) {
+export default function PreviewScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const tokens = Colors[theme];
   const styles = getStyles(tokens);
 
-  const imageUri = route?.params?.uri as string | undefined;
+  const params = useLocalSearchParams();
+  const rawUri = (params as any).uri;
+  const imageUri = typeof rawUri === 'string' ? rawUri : Array.isArray(rawUri) ? rawUri[0] : undefined;
+  const rawImageId = (params as any).imageId;
+  const imageId = typeof rawImageId === 'string' ? rawImageId : Array.isArray(rawImageId) ? rawImageId[0] : undefined;
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -120,7 +124,7 @@ export default function PreviewScreen({ route, navigation }: { route: any, navig
         useNativeDriver: true,
       }),
     ]).start(() => {
-      router.push({ pathname: '/tomatodx/result', params: { uri: imageUri } });
+      router.push({ pathname: '/tomatodx/result', params: { uri: imageUri, imageId } });
     });
   };
 

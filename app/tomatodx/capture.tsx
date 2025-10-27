@@ -5,8 +5,12 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Animated, Dimensions, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { insertImage } from '../../src/db/repository';
+import { initDb } from '../../src/db/schema';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,6 +29,7 @@ export default function CaptureScreen() {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    initDb();
     // Main entrance animation sequence
     Animated.sequence([
       // Fade in background and main container
@@ -125,7 +130,10 @@ export default function CaptureScreen() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        router.push(`/tomatodx/preview?uri=${encodeURIComponent(result.assets[0].uri)}`);
+        const uri = result.assets[0].uri;
+        const imageId = uuidv4();
+        insertImage(imageId, uri, new Date().toISOString(), undefined);
+        router.push(`/tomatodx/preview?uri=${encodeURIComponent(uri)}&imageId=${imageId}`);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to open camera');
@@ -162,7 +170,10 @@ export default function CaptureScreen() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        router.push(`/tomatodx/preview?uri=${encodeURIComponent(result.assets[0].uri)}`);
+        const uri = result.assets[0].uri;
+        const imageId = uuidv4();
+        insertImage(imageId, uri, new Date().toISOString(), undefined);
+        router.push(`/tomatodx/preview?uri=${encodeURIComponent(uri)}&imageId=${imageId}`);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to open gallery');
@@ -184,9 +195,9 @@ export default function CaptureScreen() {
       {/* Animated Background Elements */}
       <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim, backgroundColor: tokens.primaryOverlay2 }]} />
       <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim, backgroundColor: tokens.successOverlay }]} />
-      
+
       {/* Header */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.header,
           {
@@ -200,7 +211,7 @@ export default function CaptureScreen() {
       </Animated.View>
 
       {/* Camera Preview Area */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.cameraContainer,
           {
@@ -211,7 +222,7 @@ export default function CaptureScreen() {
       >
         <View style={[styles.cameraPlaceholder, { backgroundColor: tokens.surface, borderColor: tokens.border, shadowColor: tokens.shadowDark }]}>
           {/* Camera Icon with Shimmer */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.cameraIconContainer,
               { backgroundColor: shimmerInterpolate }
@@ -219,11 +230,11 @@ export default function CaptureScreen() {
           >
             <Ionicons name="camera" size={48} color={tokens.whiteMuted} />
           </Animated.View>
-          
+
           <Text style={[styles.camText, { color: tokens.whiteMuted }]}>{t('capture.preview')}</Text>
-          
+
           {/* Animated Guide Overlay */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.guideOverlay,
               {
@@ -232,34 +243,34 @@ export default function CaptureScreen() {
             ]}
           >
             <View style={styles.guideBorder}>
-              <Animated.View 
+              <Animated.View
                 style={[
                   styles.corner, styles.cornerTL,
                   { opacity: pulseAnim, borderColor: tokens.primary }
-                ]} 
+                ]}
               />
-              <Animated.View 
+              <Animated.View
                 style={[
                   styles.corner, styles.cornerTR,
                   { opacity: pulseAnim, borderColor: tokens.primary }
-                ]} 
+                ]}
               />
-              <Animated.View 
+              <Animated.View
                 style={[
                   styles.corner, styles.cornerBL,
                   { opacity: pulseAnim, borderColor: tokens.primary }
-                ]} 
+                ]}
               />
-              <Animated.View 
+              <Animated.View
                 style={[
                   styles.corner, styles.cornerBR,
                   { opacity: pulseAnim, borderColor: tokens.primary }
-                ]} 
+                ]}
               />
             </View>
-            
+
             {/* Rotating Scan Icon */}
-            <Animated.View 
+            <Animated.View
               style={[
                 styles.scanIconContainer,
                 { transform: [{ rotate: rotateInterpolate }] }
@@ -267,7 +278,7 @@ export default function CaptureScreen() {
             >
               <Ionicons name="scan" size={28} color={tokens.primary} />
             </Animated.View>
-            
+
             <Text style={[styles.guideText, { color: tokens.primary }]}>{t('capture.align')}</Text>
           </Animated.View>
 
@@ -280,7 +291,7 @@ export default function CaptureScreen() {
       </Animated.View>
 
       {/* Action Buttons */}
-      <Animated.View 
+      <Animated.View
         style={[
           styles.actionsContainer,
           {
@@ -289,7 +300,7 @@ export default function CaptureScreen() {
           }
         ]}
       >
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.primaryButton, { backgroundColor: tokens.primary, shadowColor: tokens.primary }]}
           onPress={handleCapture}
           activeOpacity={0.8}
@@ -298,7 +309,7 @@ export default function CaptureScreen() {
           <Text style={[styles.primaryButtonText, { color: tokens.whiteMuted }]}>{t('capture.takePhoto')}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.secondaryButton, { borderColor: tokens.border }]}
           onPress={handleGallery}
           activeOpacity={1}
@@ -312,10 +323,10 @@ export default function CaptureScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
     // backgroundColor: '#000',
-    backgroundColor:'#f2f2f2',  
+    backgroundColor: '#f2f2f2',
     paddingBottom: 40,
   },
   // Background elements
@@ -361,11 +372,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     justifyContent: 'center',
   },
-  cameraPlaceholder: { 
+  cameraPlaceholder: {
     height: width * 0.9,
-    borderRadius: 24, 
-    backgroundColor: '#1f2937', 
-    justifyContent: 'center', 
+    borderRadius: 24,
+    backgroundColor: '#1f2937',
+    justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
     borderColor: '#374151',
@@ -384,9 +395,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  camText: { 
-    color: '#d1d5db', 
-    fontSize: 16, 
+  camText: {
+    color: '#d1d5db',
+    fontSize: 16,
     fontWeight: '600',
     marginBottom: 20,
   },

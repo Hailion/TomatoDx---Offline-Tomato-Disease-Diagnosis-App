@@ -15,6 +15,8 @@ import {
 import Colors, { ThemeTokens } from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
+
+
 const { width, height } = Dimensions.get('window');
 
 export default function TomatoHome() {

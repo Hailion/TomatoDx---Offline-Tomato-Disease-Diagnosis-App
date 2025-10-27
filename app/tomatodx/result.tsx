@@ -15,8 +15,12 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { insertDiagnosis, upsertDisease } from '../../src/db/repository';
+import { initDb } from '../../src/db/schema';
 import { predictFromUri } from '../../src/ml/inference';
 import { initModel } from '../../src/ml/model';
 
@@ -50,10 +54,9 @@ export default function ResultScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams();
   const uri = (params.uri as string) || undefined;
+  const imageId = (params.imageId as string) || undefined;
   const id = (params.id as string) || undefined;
-  const [resultData, setResultData] = useState(
-    (id ? mockDataStore[id as keyof typeof mockDataStore] : undefined) || mockDataStore['1']
-  );
+  const [resultData, setResultData] = useState<any | null>(null);
   const { theme } = useTheme();
   const tokens = Colors[theme];
 
@@ -68,6 +71,10 @@ export default function ResultScreen() {
   const didAnimateRef = useRef(false);
 
   const handleSave = () => {
+    if (!resultData) {
+      Alert.alert(t('result.saveError') || 'Save Error', 'Please wait until analysis completes.');
+      return;
+    }
     // Button press animation
     Animated.sequence([
       Animated.timing(pulseAnim, {
@@ -81,11 +88,33 @@ export default function ResultScreen() {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      Alert.alert(
-        t('result.saveSuccess'),
-        t('result.saveMessage'),
-        [{ text: t('result.ok'), onPress: () => router.push('/tomatodx/history') }]
-      );
+      if (!imageId) {
+        Alert.alert(t('result.saveError') || 'Save Error', 'Missing imageId; retake or reselect the photo.');
+        return;
+      }
+      try {
+        // ensure DB
+        initDb();
+        // upsert disease names/advice seen on screen
+        upsertDisease(resultData.diseaseId, resultData.nameEn, resultData.nameAm, undefined, resultData.advice);
+        // persist diagnosis
+        const diagnosisId = uuidv4();
+        insertDiagnosis(
+          diagnosisId,
+          imageId,
+          resultData.diseaseId,
+          resultData.confidence,
+          new Date().toISOString(),
+          undefined
+        );
+        Alert.alert(
+          t('result.saveSuccess'),
+          t('result.saveMessage'),
+          [{ text: t('result.ok'), onPress: () => router.push('/tomatodx/history') }]
+        );
+      } catch (e) {
+        Alert.alert(t('result.saveError') || 'Save Error', t('result.saveFailed') || 'Failed to save result');
+      }
     });
   };
 
@@ -123,7 +152,7 @@ export default function ResultScreen() {
   useEffect(() => {
     // Progress animation tracks current result confidence
     Animated.timing(progressAnim, {
-      toValue: resultData.confidence,
+      toValue: resultData ? resultData.confidence : 0,
       duration: 1500,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
@@ -142,7 +171,7 @@ export default function ResultScreen() {
       Animated.timing(slideUpCard, { toValue: 0, duration: 600, easing: Easing.out(Easing.quad), useNativeDriver: true }),
       Animated.timing(slideUpButtons, { toValue: 0, duration: 500, easing: Easing.out(Easing.back(1)), useNativeDriver: true })
     ]).start();
-  }, [resultData.confidence]);
+  }, [resultData]);
 
   useEffect(() => {
     let cancelled = false;
@@ -163,8 +192,8 @@ export default function ResultScreen() {
           prevention: 'Ensure good airflow and remove affected leaves.',
           image: '🌿'
         });
-      } catch (e) {
-        // keep fallback
+      } catch (e: any) {
+        Alert.alert('Prediction Error', String(e?.message ?? e));
       }
     })();
     return () => { cancelled = true; };
@@ -223,80 +252,90 @@ export default function ResultScreen() {
           }
         ]}
       >
-        <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
-          {/* Disease Header */}
-          <View style={styles.diseaseHeader}>
-            <View style={styles.diseaseIconContainer}>
-              <Text style={styles.diseaseIcon}>{resultData.image}</Text>
+        {!resultData ? (
+          <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
+            <View style={{ alignItems: 'center', paddingVertical: 24 }}>
+              <Text style={[styles.title, { color: tokens.primaryDark }]}>{t('result.title')}</Text>
+              <Text style={[styles.subtitle, { color: tokens.muted }]}>{t('result.subtitle')}</Text>
+              <Text style={{ marginTop: 12, fontWeight: '700', color: tokens.text }}>{t('common.analyzing') || 'Analyzing...'}</Text>
             </View>
-            <View style={styles.diseaseInfo}>
-              <Text style={[styles.diseaseName, { color: tokens.text }]}>{resultData.nameEn}</Text>
-              <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{resultData.nameAm}</Text>
-            </View>
-            <View
-              style={[
-                styles.severityBadge,
-                { backgroundColor: getSeverityColor(resultData.severity) + '20' }
-              ]}
-            >
-              <Ionicons
-                name={getSeverityIcon(resultData.severity) as any}
-                size={16}
-                color={getSeverityColor(resultData.severity)}
-              />
-              <Text
+          </View>
+        ) : (
+          <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
+            {/* Disease Header */}
+            <View style={styles.diseaseHeader}>
+              <View style={styles.diseaseIconContainer}>
+                <Text style={styles.diseaseIcon}>{resultData.image}</Text>
+              </View>
+              <View style={styles.diseaseInfo}>
+                <Text style={[styles.diseaseName, { color: tokens.text }]}>{resultData.nameEn}</Text>
+                <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{resultData.nameAm}</Text>
+              </View>
+              <View
                 style={[
-                  styles.severityText,
-                  { color: getSeverityColor(resultData.severity) }
+                  styles.severityBadge,
+                  { backgroundColor: getSeverityColor(resultData.severity) + '20' }
                 ]}
               >
-                {resultData.severity}
-              </Text>
+                <Ionicons
+                  name={getSeverityIcon(resultData.severity) as any}
+                  size={16}
+                  color={getSeverityColor(resultData.severity)}
+                />
+                <Text
+                  style={[
+                    styles.severityText,
+                    { color: getSeverityColor(resultData.severity) }
+                  ]}
+                >
+                  {resultData.severity}
+                </Text>
+              </View>
             </View>
-          </View>
 
-          {/* Confidence Meter */}
-          <View style={styles.confidenceSection}>
-            <View style={styles.confidenceHeader}>
-              <Text style={[styles.confidenceLabel, { color: tokens.textSecondary }]}>{t("result.confidenceLevel")}</Text>
-              <Animated.Text style={[styles.confidenceValue, { color: tokens.primaryDark }]}>
-                {Math.round(resultData.confidence * 100)}%
-              </Animated.Text>
+            {/* Confidence Meter */}
+            <View style={styles.confidenceSection}>
+              <View style={styles.confidenceHeader}>
+                <Text style={[styles.confidenceLabel, { color: tokens.textSecondary }]}>{t("result.confidenceLevel")}</Text>
+                <Animated.Text style={[styles.confidenceValue, { color: tokens.primaryDark }]}>
+                  {Math.round(resultData.confidence * 100)}%
+                </Animated.Text>
+              </View>
+              <View style={[styles.confidenceBar, { backgroundColor: tokens.backgroundAlt }]}>
+                <Animated.View
+                  style={[
+                    styles.confidenceFill,
+                    {
+                      width: progressAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['0%', '100%']
+                      }),
+                      backgroundColor: getSeverityColor(resultData.severity)
+                    }
+                  ]}
+                />
+              </View>
             </View>
-            <View style={[styles.confidenceBar, { backgroundColor: tokens.backgroundAlt }]}>
-              <Animated.View
-                style={[
-                  styles.confidenceFill,
-                  {
-                    width: progressAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ['0%', '100%']
-                    }),
-                    backgroundColor: getSeverityColor(resultData.severity)
-                  }
-                ]}
-              />
-            </View>
-          </View>
 
-          {/* Advice Section */}
-          <View style={styles.adviceSection}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="bulb" size={20} color={tokens.warning} />
-              <Text style={styles.sectionTitle}>{t('result.recommendation')}</Text>
+            {/* Advice Section */}
+            <View style={styles.adviceSection}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="bulb" size={20} color={tokens.warning} />
+                <Text style={styles.sectionTitle}>{t('result.recommendation')}</Text>
+              </View>
+              <Text style={[styles.adviceText, { color: tokens.textSecondary }]}>{resultData.advice}</Text>
             </View>
-            <Text style={[styles.adviceText, { color: tokens.textSecondary }]}>{resultData.advice}</Text>
-          </View>
 
-          {/* Prevention Section */}
-          <View style={styles.preventionSection}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="shield-checkmark" size={20} color={tokens.success} />
-              <Text style={styles.sectionTitle}>{t('result.prevTips')} </Text>
+            {/* Prevention Section */}
+            <View style={styles.preventionSection}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="shield-checkmark" size={20} color={tokens.success} />
+                <Text style={styles.sectionTitle}>{t('result.prevTips')} </Text>
+              </View>
+              <Text style={[styles.preventionText, { color: tokens.muted }]}>{resultData.prevention}</Text>
             </View>
-            <Text style={[styles.preventionText, { color: tokens.muted }]}>{resultData.prevention}</Text>
           </View>
-        </View>
+        )}
 
         {/* Action Buttons */}
         <Animated.View
@@ -309,9 +348,10 @@ export default function ResultScreen() {
           ]}
         >
           <TouchableOpacity
-            style={[styles.saveButton, { backgroundColor: tokens.primary, shadowColor: tokens.primary }]}
+            style={[styles.saveButton, { backgroundColor: tokens.primary, shadowColor: tokens.primary, opacity: resultData ? 1 : 0.5 }]}
             onPress={handleSave}
             activeOpacity={0.8}
+            disabled={!resultData}
           >
             <Ionicons name="save" size={24} color={tokens.whiteMuted} />
             <Text style={[styles.saveButtonText, { color: tokens.whiteMuted }]}>{t('result.save')}</Text>
@@ -321,6 +361,7 @@ export default function ResultScreen() {
             style={[styles.shareButton, { backgroundColor: tokens.surface, borderColor: tokens.border }]}
             onPress={handleShare}
             activeOpacity={0.8}
+            disabled={!resultData}
           >
             <Ionicons name="share" size={24} color={tokens.text} />
             <Text style={[styles.shareButtonText, { color: tokens.text }]}>{t('result.share')}</Text>

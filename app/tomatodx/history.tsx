@@ -1,12 +1,13 @@
 // history.tsx
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Animated,
   Easing,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,44 +15,11 @@ import {
 } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
-
-const mock = [
-  {
-    id: '1',
-    disease: 'Early Blight',
-    date: '2025-10-01',
-    confidence: 0.92,
-    severity: 'High',
-    image: '🌱'
-  },
-  {
-    id: '2',
-    disease: 'Healthy',
-    date: '2025-10-10',
-    confidence: 0.88,
-    severity: 'None',
-    image: '✅'
-  },
-  {
-    id: '3',
-    disease: 'Late Blight',
-    date: '2025-10-15',
-    confidence: 0.95,
-    severity: 'Critical',
-    image: '⚠️'
-  },
-  {
-    id: '4',
-    disease: 'Bacterial Spot',
-    date: '2025-10-20',
-    confidence: 0.78,
-    severity: 'Medium',
-    image: '🦠'
-  }
-];
+import { getRecentDiagnoses } from '../../src/db/repository';
+import { initDb } from '../../src/db/schema';
 
 export default function HistoryScreen() {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const tokens = Colors[theme];
 
@@ -61,40 +29,24 @@ export default function HistoryScreen() {
   const slideUpList = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.98)).current;
 
-  useEffect(() => {
-    Animated.sequence([
-      // Fade in background
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      // Header animation
-      Animated.parallel([
-        Animated.timing(slideUpHeader, {
-          toValue: 0,
-          duration: 500,
-          easing: Easing.out(Easing.back(1)),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 600,
-          easing: Easing.elastic(1),
-          useNativeDriver: true,
-        })
-      ]),
-      // List animation
-      Animated.timing(slideUpList, {
-        toValue: 0,
-        duration: 600,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      })
-    ]).start();
-  }, [fadeAnim, scaleAnim, slideUpHeader, slideUpList]);
+  const [items, setItems] = useState<any[]>([]);
 
-  const handleItemPress = (itemId: string) => {
+  useEffect(() => {
+    initDb();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      try {
+        const rows = getRecentDiagnoses(50);
+        if (!cancelled) setItems(rows);
+      } catch { }
+      return () => { cancelled = true; };
+    }, [])
+  );
+
+  const handleItemPress = (item: any) => {
     // Button press animation feedback
     Animated.sequence([
       Animated.timing(scaleAnim, {
@@ -108,12 +60,18 @@ export default function HistoryScreen() {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      router.push(`/tomatodx/result?id=${itemId}`);
+      router.push({ pathname: '/tomatodx/result', params: { uri: item.filePath, imageId: item.imageId } });
     });
   };
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity.toLowerCase()) {
+  const deriveSeverity = (confidence?: number) => {
+    if (typeof confidence !== 'number') return 'Low';
+    return confidence >= 0.9 ? 'High' : confidence >= 0.7 ? 'Medium' : 'Low';
+  };
+
+  const getSeverityColor = (severity?: string, confidence?: number) => {
+    const s = (severity || deriveSeverity(confidence)).toLowerCase();
+    switch (s) {
       case 'critical': return tokens.danger;
       case 'high': return tokens.warning;
       case 'medium': return tokens.warningDark;
@@ -122,8 +80,9 @@ export default function HistoryScreen() {
     }
   };
 
-  const getSeverityIcon = (severity: string) => {
-    switch (severity.toLowerCase()) {
+  const getSeverityIcon = (severity?: string, confidence?: number) => {
+    const s = (severity || deriveSeverity(confidence)).toLowerCase();
+    switch (s) {
       case 'critical': return 'warning';
       case 'high': return 'alert-circle';
       case 'medium': return 'information-circle';
@@ -163,24 +122,28 @@ export default function HistoryScreen() {
       >
         <TouchableOpacity
           style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
-          onPress={() => handleItemPress(item.id)}
+          onPress={() => handleItemPress(item)}
           activeOpacity={0.7}
         >
           <View style={styles.itemLeft}>
             <View style={styles.imageContainer}>
-              <Text style={styles.itemImage}>{item.image}</Text>
+              {item.filePath ? (
+                <Image source={{ uri: item.filePath }} style={styles.itemImageThumb} resizeMode="cover" />
+              ) : (
+                <Text style={styles.itemImage}>🖼️</Text>
+              )}
             </View>
             <View style={styles.itemInfo}>
-              <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{item.disease}</Text>
-              <Text style={[styles.date, { color: tokens.muted }]}>{item.date}</Text>
+              <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{item.nameEn || item.diseaseId}</Text>
+              <Text style={[styles.date, { color: tokens.muted }]}>{new Date(item.diagnosedAt || item.capturedAt).toLocaleString()}</Text>
               <View style={styles.confidenceContainer}>
                 <View style={styles.confidenceBar}>
                   <View
                     style={[
                       styles.confidenceFill,
                       {
-                        width: `${item.confidence * 100}%`,
-                        backgroundColor: getSeverityColor(item.severity)
+                        width: `${Math.round((item.confidence || 0) * 100)}%`,
+                        backgroundColor: tokens.primaryDark
                       }
                     ]}
                   />
@@ -196,21 +159,21 @@ export default function HistoryScreen() {
             <View
               style={[
                 styles.severityBadge,
-                { backgroundColor: getSeverityColor(item.severity) + '20' }
+                { backgroundColor: getSeverityColor(item.severity, item.confidence) + '20' }
               ]}
             >
               <Ionicons
-                name={getSeverityIcon(item.severity) as any}
+                name={getSeverityIcon(item.severity, item.confidence) as any}
                 size={16}
-                color={getSeverityColor(item.severity)}
+                color={getSeverityColor(item.severity, item.confidence)}
               />
               <Text
                 style={[
                   styles.severityText,
-                  { color: getSeverityColor(item.severity) }
+                  { color: getSeverityColor(item.severity, item.confidence) }
                 ]}
               >
-                {item.severity}
+                {item.severity || deriveSeverity(item.confidence)}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
@@ -219,6 +182,39 @@ export default function HistoryScreen() {
       </Animated.View>
     );
   };
+
+  useEffect(() => {
+    Animated.sequence([
+      // Fade in background
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      // Header animation
+      Animated.parallel([
+        Animated.timing(slideUpHeader, {
+          toValue: 0,
+          duration: 500,
+          easing: Easing.out(Easing.back(1)),
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 600,
+          easing: Easing.elastic(1),
+          useNativeDriver: true,
+        })
+      ]),
+      // List animation
+      Animated.timing(slideUpList, {
+        toValue: 0,
+        duration: 600,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, [fadeAnim, scaleAnim, slideUpHeader, slideUpList]);
 
   return (
     <View style={[styles.container, { backgroundColor: tokens.background }]}>
@@ -243,13 +239,13 @@ export default function HistoryScreen() {
           <View style={styles.titleContainer}>
             <Text style={[styles.title, { color: tokens.primaryDark }]}>📋 {t("history.title")}</Text>
             <Text style={[styles.subtitle, { color: tokens.muted }]}>
-              {mock.length} {t("history.subtitle")}
+              {items.length} {t("history.subtitle")}
             </Text>
           </View>
           <View style={styles.statsContainer}>
             <View style={styles.stat}>
-              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{mock.length}</Text>
-              <Text style={[styles.statLabel, { color: tokens.muted } ]}>{t('history.total')}</Text>
+              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{items.length}</Text>
+              <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('history.total')}</Text>
             </View>
           </View>
         </View>
@@ -265,10 +261,10 @@ export default function HistoryScreen() {
           }
         ]}
       >
-        {mock.length > 0 ? (
+        {items.length > 0 ? (
           <FlatList
-            data={mock}
-            keyExtractor={i => i.id}
+            data={items}
+            keyExtractor={(i: any) => i.diagnosisId}
             renderItem={({ item, index }) => (
               <HistoryListItem item={item} index={index} />
             )}
@@ -400,6 +396,11 @@ const styles = StyleSheet.create({
   },
   itemImage: {
     fontSize: 20,
+  },
+  itemImageThumb: {
+    width: 46,
+    height: 46,
+    borderRadius: 10,
   },
   itemInfo: {
     flex: 1,

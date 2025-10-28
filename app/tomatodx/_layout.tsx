@@ -49,7 +49,7 @@ export default function TomatoDxLayout() {
 
   return (
     <Stack
-      screenOptions={{ headerShown: false, ...smoothTransition }}
+    // screenOptions={{ headerShown: false, ...smoothTransition }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="capture" options={{ title: t('capture.title') }} />

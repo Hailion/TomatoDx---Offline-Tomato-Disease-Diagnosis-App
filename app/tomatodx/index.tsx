@@ -1,6 +1,7 @@
 // index.tsx
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -14,8 +15,8 @@ import {
 } from 'react-native';
 import Colors, { ThemeTokens } from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
-
-
+import { getCurrentUser } from '../../src/db/repository';
+import { initDb } from '../../src/db/schema';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,6 +26,7 @@ export default function TomatoHome() {
   const { theme } = useTheme();
   const tokens = Colors[theme];
   const styles = getStyles(tokens);
+  const [userName, setUserName] = useState<string | null>(null);
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -37,6 +39,13 @@ export default function TomatoHome() {
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    try {
+      initDb();
+      const u = getCurrentUser();
+      if (u?.name && typeof u.name === 'string' && u.name.trim().length > 0) {
+        setUserName(u.name);
+      }
+    } catch { }
     // Sequence animations for better visual flow
     Animated.sequence([
       // Fade in background
@@ -109,6 +118,20 @@ export default function TomatoHome() {
     ).start();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      try {
+        initDb();
+        const u = getCurrentUser();
+        if (u?.name && typeof u.name === 'string' && u.name.trim().length > 0) {
+          setUserName(u.name);
+        } else {
+          setUserName(null);
+        }
+      } catch { }
+    }, [])
+  );
+
   const handleNavigation = (route: string) => {
     // Button press animation
     Animated.sequence([
@@ -163,6 +186,9 @@ export default function TomatoHome() {
               <Text style={styles.tomatoEmoji}>🍅</Text>
             </Animated.View>
             <Text style={styles.title}>TomatoDx</Text>
+            {userName ? (
+              <Text style={styles.greeting}>Hi, {userName} 👋</Text>
+            ) : null}
           </Animated.View>
 
           <Animated.Text
@@ -345,6 +371,13 @@ const getStyles = (c: ThemeTokens) =>
       lineHeight: 28,
       fontWeight: '500',
       maxWidth: '80%',
+    },
+    greeting: {
+      marginTop: 8,
+      fontSize: 18,
+      fontWeight: '700',
+      color: c.primaryDark,
+      textAlign: 'center',
     },
     // Button styles
     buttonsContainer: {

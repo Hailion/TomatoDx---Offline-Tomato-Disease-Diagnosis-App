@@ -1,11 +1,11 @@
 // history.tsx
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   Easing,
   FlatList,
@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { deleteDiagnosis, getDiagnosesPage } from '../../src/db/repository';
@@ -102,6 +103,7 @@ export default function HistoryScreen() {
       let cancelled = false;
       if (!cancelled) loadPage(0);
       return () => { cancelled = true; };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
 
@@ -111,6 +113,7 @@ export default function HistoryScreen() {
     setItems([]);
     requestKeyRef.current = null;
     loadPage(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, severity]);
 
   const handleItemPress = (item: HistoryItem) => {
@@ -131,24 +134,17 @@ export default function HistoryScreen() {
     });
   };
 
-  const handleDelete = (diagnosisId: string) => {
-    Alert.alert(
-      t('history.deleteTitle') || 'Delete Entry',
-      t('history.deleteConfirm') || 'Are you sure you want to delete this entry?',
-      [
-        { text: t('common.cancel') || 'Cancel', style: 'cancel' },
-        {
-          text: t('common.delete') || 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            try {
-              deleteDiagnosis(diagnosisId);
-              setItems(prev => prev.filter(i => i.diagnosisId !== diagnosisId));
-            } catch { }
-          }
-        }
-      ]
-    );
+  const handleDelete = (diagnosisId: string, showHaptic = true) => {
+    if (showHaptic) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
+    try {
+      deleteDiagnosis(diagnosisId);
+      setItems(prev => prev.filter(i => i.diagnosisId !== diagnosisId));
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
   };
 
   const deriveSeverity = (confidence?: number) => {
@@ -197,6 +193,17 @@ export default function HistoryScreen() {
     const dateObj = dateISO ? new Date(dateISO) : null;
     const dateText = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleString() : '';
 
+    const renderRightActions = () => (
+      <View style={styles.deleteAction}>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDelete(item.diagnosisId)}
+        >
+          <Ionicons name="trash" size={24} color="#ffffff" />
+        </TouchableOpacity>
+      </View>
+    );
+
     return (
       <Animated.View
         style={{
@@ -211,11 +218,15 @@ export default function HistoryScreen() {
           ],
         }}
       >
-        <TouchableOpacity
-          style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
-          onPress={() => handleItemPress(item)}
-          activeOpacity={0.7}
+        <Swipeable
+          renderRightActions={renderRightActions}
+          overshootRight={false}
         >
+          <TouchableOpacity
+            style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
+            onPress={() => handleItemPress(item)}
+            activeOpacity={0.7}
+          >
           <View style={styles.itemLeft}>
             <View style={styles.imageContainer}>
               {item.filePath ? (
@@ -267,12 +278,10 @@ export default function HistoryScreen() {
                 {item.severity || deriveSeverity(item.confidence)}
               </Text>
             </View>
-            <TouchableOpacity onPress={() => handleDelete(item.diagnosisId)} style={{ padding: 6, marginRight: 4 }}>
-              <Ionicons name="trash" size={18} color={tokens.danger || '#ef4444'} />
-            </TouchableOpacity>
             <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
           </View>
         </TouchableOpacity>
+        </Swipeable>
       </Animated.View>
     );
   };
@@ -635,5 +644,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: '80%',
     lineHeight: 20,
+  },
+  // Swipeable delete action
+  deleteAction: {
+    flex: 1,
+    backgroundColor: '#ef4444',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingRight: 20,
+  },
+  deleteButton: {
+    width: 70,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

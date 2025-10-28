@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, Dimensions, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Dimensions, Easing, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import Colors from '../../constants/Colors';
@@ -221,17 +221,23 @@ export default function CaptureScreen() {
         ]}
       >
         <View style={[styles.cameraPlaceholder, { backgroundColor: tokens.surface, borderColor: tokens.border, shadowColor: tokens.shadowDark }]}>
+          <ImageBackground
+            source={require('../../assets/sample-tomato-leaf.png')}
+            style={StyleSheet.absoluteFillObject as any}
+            imageStyle={{ borderRadius: 24 }}
+            resizeMode="cover"
+          />
           {/* Camera Icon with Shimmer */}
           <Animated.View
             style={[
               styles.cameraIconContainer,
-              { backgroundColor: shimmerInterpolate }
+              { backgroundColor: shimmerInterpolate, borderColor: tokens.successBg, borderWidth: 1 }
             ]}
           >
             <Ionicons name="camera" size={48} color={tokens.whiteMuted} />
           </Animated.View>
 
-          <Text style={[styles.camText, { color: tokens.whiteMuted }]}>{t('capture.preview')}</Text>
+          <Text style={[styles.camText, { color: tokens.successBg }]}>{t('capture.preview')}</Text>
 
           {/* Animated Guide Overlay */}
           <Animated.View
@@ -246,25 +252,25 @@ export default function CaptureScreen() {
               <Animated.View
                 style={[
                   styles.corner, styles.cornerTL,
-                  { opacity: pulseAnim, borderColor: tokens.primary }
+                  { opacity: pulseAnim, borderColor: tokens.shadowDark }
                 ]}
               />
               <Animated.View
                 style={[
                   styles.corner, styles.cornerTR,
-                  { opacity: pulseAnim, borderColor: tokens.primary }
+                  { opacity: pulseAnim, borderColor: tokens.shadowDark }
                 ]}
               />
               <Animated.View
                 style={[
                   styles.corner, styles.cornerBL,
-                  { opacity: pulseAnim, borderColor: tokens.primary }
+                  { opacity: pulseAnim, borderColor: tokens.shadowDark }
                 ]}
               />
               <Animated.View
                 style={[
                   styles.corner, styles.cornerBR,
-                  { opacity: pulseAnim, borderColor: tokens.primary }
+                  { opacity: pulseAnim, borderColor: tokens.shadowDark }
                 ]}
               />
             </View>
@@ -279,7 +285,7 @@ export default function CaptureScreen() {
               <Ionicons name="scan" size={28} color={tokens.primary} />
             </Animated.View>
 
-            <Text style={[styles.guideText, { color: tokens.primary }]}>{t('capture.align')}</Text>
+            <Text style={[styles.guideText, { color: tokens.primary, backgroundColor: tokens.shadowMedium }]}>{t('capture.align')}</Text>
           </Animated.View>
 
           {/* Grid Overlay */}
@@ -352,7 +358,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 24,
     paddingTop: 60,
-    paddingBottom: 20,
+    paddingBottom: 0,
     alignItems: 'center',
   },
   title: {
@@ -385,7 +391,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 12,
+    shadowRadius: 12
   },
   cameraIconContainer: {
     width: 80,
@@ -458,6 +464,10 @@ const styles = StyleSheet.create({
     color: '#22c55e',
     fontSize: 14,
     fontWeight: '600',
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 8,
+
   },
   // Grid overlay
   gridOverlay: {

@@ -48,6 +48,20 @@ export async function initModel() {
         labels = [];
     }
 
+    // Warm-up: run a dummy forward pass to initialize kernels/backends
+    try {
+        const warmupSize = 224;
+        const warm = tf.zeros([1, warmupSize, warmupSize, 3]);
+        const out = (model as any).predict(warm) as tf.Tensor;
+        await out.data();
+        warm.dispose();
+        out.dispose();
+    } catch { }
+
+    if (!labels || labels.length === 0) {
+        console.warn('model.ts: Labels not loaded from metadata.json; predictions will use class_{idx}.');
+    }
+
     initialized = true;
 }
 

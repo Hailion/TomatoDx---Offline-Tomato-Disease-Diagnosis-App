@@ -1,10 +1,9 @@
 // settings.tsx
 import { Ionicons } from '@expo/vector-icons';
-
+import * as Haptics from 'expo-haptics';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Alert,
   Animated,
   Easing,
   ScrollView,
@@ -16,6 +15,7 @@ import {
 } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { useToast } from '../../src/contexts/ToastContext';
 import { getCurrentUser, upsertUser } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
 
@@ -25,6 +25,7 @@ export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
   const { theme, themeMode, setThemeMode } = useTheme();
   const tokens = Colors[theme];
+  const { showToast } = useToast();
 
   const [username, setUsername] = useState(t('settings.username')); // placeholder; replaced by DB value if present
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -80,7 +81,10 @@ export default function SettingsScreen() {
   }, []);
 
   const toggleLanguage = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const newLang = i18n.language === 'en' ? 'Amharic' : 'English';
     i18n.changeLanguage(i18n.language === 'en' ? 'am' : 'en');
+    showToast(`Language changed to ${newLang}`, 'success', 3000);
   };
 
   const handleUsernameEdit = () => {
@@ -88,44 +92,46 @@ export default function SettingsScreen() {
   };
 
   const handleUsernameSave = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const trimmed = username.trim();
-    if (trimmed.length === 0) {
-      upsertUser('device'); // clears name
-      Alert.alert('Success', 'Username removed');
-    } else {
-      upsertUser('device', trimmed);
-      Alert.alert('Success', 'Username updated successfully!');
-    }
-    setIsEditingUsername(false);
-
-    Animated.sequence([
-      Animated.timing(inputScaleAnim, {
-        toValue: 0.95,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(inputScaleAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      try {
-        initDb();
-        const trimmed = username.trim();
-        if (trimmed.length === 0) {
-          upsertUser('device'); // clears name
-          Alert.alert('Success', 'Username removed');
-        } else {
-          upsertUser('device', trimmed);
-          Alert.alert('Success', 'Username updated successfully!');
-        }
-        setIsEditingUsername(false);
-        Alert.alert('Success', 'Username updated successfully!');
-      } catch {
-        Alert.alert('Error', 'Failed to save username');
+    try {
+      if (trimmed.length === 0) {
+        upsertUser('device'); // clears name
+        showToast('Username removed', 'info', 3000);
+      } else {
+        upsertUser('device', trimmed);
+        showToast('Username updated successfully!', 'success', 3000);
       }
-    });
+      setIsEditingUsername(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+      Animated.sequence([
+        Animated.timing(inputScaleAnim, {
+          toValue: 0.95,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(inputScaleAnim, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        try {
+          initDb();
+          const u = getCurrentUser();
+          if (u?.name && typeof u.name === 'string' && u.name.trim().length > 0) {
+            setUsername(u.name);
+          } else {
+            setUsername(t('settings.username'));
+          }
+        } catch {
+          // Ignore errors
+        }
+      });
+    } catch {
+      showToast('Failed to save username', 'error', 3000);
+    }
   };
 
   const handleUsernameCancel = () => {

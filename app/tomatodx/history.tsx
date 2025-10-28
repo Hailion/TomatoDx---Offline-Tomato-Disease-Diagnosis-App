@@ -4,19 +4,35 @@ import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  ActivityIndicator,
+  Alert,
   Animated,
   Easing,
   FlatList,
   Image,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
-import { getRecentDiagnoses } from '../../src/db/repository';
+import { deleteDiagnosis, getDiagnosesPage } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
+
+type HistoryItem = {
+  diagnosisId: string;
+  imageId: string;
+  diseaseId: string;
+  confidence?: number;
+  diagnosedAt?: string;
+  filePath?: string;
+  capturedAt?: string;
+  nameEn?: string;
+  nameAm?: string;
+  severity?: string;
+};
 
 export default function HistoryScreen() {
   const { t } = useTranslation();
@@ -28,25 +44,76 @@ export default function HistoryScreen() {
   const slideUpHeader = useRef(new Animated.Value(30)).current;
   const slideUpList = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.98)).current;
+  const requestKeyRef = useRef<string | null>(null);
 
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<HistoryItem[]>([]);
+  const PAGE_SIZE = 20;
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [search, setSearch] = useState('');
+  const [severity, setSeverity] = useState<'All' | 'Low' | 'Medium' | 'High'>('All');
 
   useEffect(() => {
     initDb();
   }, []);
 
+  const loadPage = useCallback((startOffset: number) => {
+    if ((startOffset !== 0 && loading) || (startOffset !== 0 && !hasMore)) return;
+    setLoading(true);
+    try {
+      const rows = getDiagnosesPage(
+        PAGE_SIZE,
+        startOffset,
+        {
+          search: search.trim() || undefined,
+          severity: severity !== 'All' ? severity : undefined,
+        }
+      ) as HistoryItem[];
+      setItems(prev => {
+        const existing = new Set(prev.map(i => i.diagnosisId));
+        const merged = [...prev, ...rows.filter(r => !existing.has(r.diagnosisId))];
+        return merged;
+      });
+      setOffset(startOffset + rows.length);
+      setHasMore(rows.length === PAGE_SIZE);
+    } catch { }
+    finally {
+      setLoading(false);
+    }
+  }, [loading, hasMore, search, severity]);
+
+  const loadInitial = useCallback(() => {
+    setHasMore(true);
+    setOffset(0);
+    setItems([]);
+    requestKeyRef.current = null;
+    loadPage(0);
+  }, [loadPage]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    try { loadInitial(); } finally { setRefreshing(false); }
+  }, [loadInitial]);
+
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
-      try {
-        const rows = getRecentDiagnoses(50);
-        if (!cancelled) setItems(rows);
-      } catch { }
+      if (!cancelled) loadPage(0);
       return () => { cancelled = true; };
     }, [])
   );
 
-  const handleItemPress = (item: any) => {
+  useEffect(() => {
+    setHasMore(true);
+    setOffset(0);
+    setItems([]);
+    requestKeyRef.current = null;
+    loadPage(0);
+  }, [search, severity]);
+
+  const handleItemPress = (item: HistoryItem) => {
     // Button press animation feedback
     Animated.sequence([
       Animated.timing(scaleAnim, {
@@ -60,8 +127,28 @@ export default function HistoryScreen() {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      router.push({ pathname: '/tomatodx/result', params: { uri: item.filePath, imageId: item.imageId } });
+      router.push({ pathname: '/tomatodx/result', params: { uri: item.filePath, imageId: item.imageId, diagnosisId: item.diagnosisId } });
     });
+  };
+
+  const handleDelete = (diagnosisId: string) => {
+    Alert.alert(
+      t('history.deleteTitle') || 'Delete Entry',
+      t('history.deleteConfirm') || 'Are you sure you want to delete this entry?',
+      [
+        { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+        {
+          text: t('common.delete') || 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            try {
+              deleteDiagnosis(diagnosisId);
+              setItems(prev => prev.filter(i => i.diagnosisId !== diagnosisId));
+            } catch { }
+          }
+        }
+      ]
+    );
   };
 
   const deriveSeverity = (confidence?: number) => {
@@ -92,7 +179,7 @@ export default function HistoryScreen() {
   };
 
   // Extracted list item into a proper component so hooks are used in a component
-  const HistoryListItem = ({ item, index }: { item: any; index: number }) => {
+  const HistoryListItem = ({ item, index }: { item: HistoryItem; index: number }) => {
     // keep ref object stable to avoid hook dependency issues
     const itemAnimRef = useRef(new Animated.Value(0));
 
@@ -105,6 +192,10 @@ export default function HistoryScreen() {
         useNativeDriver: true,
       }).start();
     }, [index]);
+
+    const dateISO = item.diagnosedAt ?? item.capturedAt ?? null;
+    const dateObj = dateISO ? new Date(dateISO) : null;
+    const dateText = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleString() : '';
 
     return (
       <Animated.View
@@ -135,21 +226,21 @@ export default function HistoryScreen() {
             </View>
             <View style={styles.itemInfo}>
               <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{item.nameEn || item.diseaseId}</Text>
-              <Text style={[styles.date, { color: tokens.muted }]}>{new Date(item.diagnosedAt || item.capturedAt).toLocaleString()}</Text>
+              <Text style={[styles.date, { color: tokens.muted }]}>{dateText}</Text>
               <View style={styles.confidenceContainer}>
                 <View style={styles.confidenceBar}>
                   <View
                     style={[
                       styles.confidenceFill,
                       {
-                        width: `${Math.round((item.confidence || 0) * 100)}%`,
+                        width: `${Math.round((item.confidence ?? 0) * 100)}%`,
                         backgroundColor: tokens.primaryDark
                       }
                     ]}
                   />
                 </View>
                 <Text style={[styles.confidenceText, { color: tokens.muted }]}>
-                  {Math.round(item.confidence * 100)}%
+                  {Math.round((item.confidence ?? 0) * 100)}%
                 </Text>
               </View>
             </View>
@@ -176,6 +267,9 @@ export default function HistoryScreen() {
                 {item.severity || deriveSeverity(item.confidence)}
               </Text>
             </View>
+            <TouchableOpacity onPress={() => handleDelete(item.diagnosisId)} style={{ padding: 6, marginRight: 4 }}>
+              <Ionicons name="trash" size={18} color={tokens.danger || '#ef4444'} />
+            </TouchableOpacity>
             <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
           </View>
         </TouchableOpacity>
@@ -245,11 +339,38 @@ export default function HistoryScreen() {
           <View style={styles.statsContainer}>
             <View style={styles.stat}>
               <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{items.length}</Text>
-              <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('history.total')}</Text>
+              <Text style={[styles.statLabel, { color: tokens.muted }]}>
+                {t('history.total')}
+              </Text>
             </View>
           </View>
         </View>
       </Animated.View>
+
+      {/* Filter Row */}
+      <View style={styles.filterRow}>
+        <TextInput
+          value={search}
+          onChangeText={setSearch}
+          placeholder={t('history.search') || 'Search disease'}
+          placeholderTextColor={tokens.muted}
+          style={[styles.searchInput, { borderColor: tokens.backgroundAlt, color: tokens.primaryDark }]}
+        />
+        <View style={styles.chipsRow}>
+          {(['All', 'Low', 'Medium', 'High'] as const).map(s => (
+            <TouchableOpacity
+              key={s}
+              onPress={() => setSeverity(s)}
+              style={[
+                styles.chip,
+                { backgroundColor: severity === s ? tokens.primaryOverlay : tokens.backgroundAlt, borderColor: tokens.backgroundAlt }
+              ]}
+            >
+              <Text style={[styles.chipText, { color: severity === s ? tokens.primaryDark : tokens.muted }]}>{s}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
 
       {/* History List */}
       <Animated.View
@@ -264,13 +385,22 @@ export default function HistoryScreen() {
         {items.length > 0 ? (
           <FlatList
             data={items}
-            keyExtractor={(i: any) => i.diagnosisId}
+            keyExtractor={(i: HistoryItem) => i.diagnosisId}
             renderItem={({ item, index }) => (
               <HistoryListItem item={item} index={index} />
             )}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
             ItemSeparatorComponent={() => <View style={[styles.separator, { backgroundColor: tokens.backgroundAlt }]} />}
+            onEndReachedThreshold={0.2}
+            onEndReached={() => loadPage(offset)}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            ListFooterComponent={loading && hasMore ? (
+              <View style={{ paddingVertical: 16 }}>
+                <ActivityIndicator size="small" color={tokens.primaryDark} />
+              </View>
+            ) : null}
           />
         ) : (
           <View style={styles.emptyState}>
@@ -358,6 +488,36 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 20,
+  },
+  filterRow: {
+    paddingHorizontal: 0,
+    marginHorizontal: 20,
+    paddingBottom: 12,
+  },
+  searchInput: {
+    height: 40,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    marginBottom: 8,
+    backgroundColor: '#ffffff',
+  },
+  chipsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 9999,
+    borderWidth: 1,
+  },
+  chipText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   separator: {
     height: 1,

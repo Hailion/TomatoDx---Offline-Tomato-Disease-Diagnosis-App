@@ -1,14 +1,13 @@
 // result.tsx
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-  Alert,
   Animated,
-  Dimensions,
   Easing,
   Image,
   ScrollView,
@@ -21,12 +20,12 @@ import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { useToast } from '../../src/contexts/ToastContext';
+import { getDiseaseInfo } from '../../src/data/diseaseInfo';
 import { insertDiagnosis, upsertDisease } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
 import { predictFromUri } from '../../src/ml/inference';
 import { initModel } from '../../src/ml/model';
-
-const { width, height } = Dimensions.get('window');
 
 // Mock data store
 // const mockDataStore = {
@@ -62,6 +61,7 @@ export default function ResultScreen() {
   const isFromHistory = !!diagnosisIdParam;
   const { theme } = useTheme();
   const tokens = Colors[theme];
+  const { showToast } = useToast();
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -75,12 +75,13 @@ export default function ResultScreen() {
   const predictedForUriRef = useRef<string | null>(null);
 
   const handleSave = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (isFromHistory) {
-      Alert.alert(t('result.alreadySaved') || 'Already saved', t('result.openedFromHistory') || 'This result is from your history and is already saved.');
+      showToast('This result is already saved in your history', 'info', 3000);
       return;
     }
     if (!resultData) {
-      Alert.alert(t('result.saveError') || 'Save Error', 'Please wait until analysis completes.');
+      showToast('Please wait for analysis to complete', 'warning', 3000);
       return;
     }
     // Button press animation
@@ -97,7 +98,7 @@ export default function ResultScreen() {
       }),
     ]).start(() => {
       if (!imageId) {
-        Alert.alert(t('result.saveError') || 'Save Error', 'Missing imageId; retake or reselect the photo.');
+        showToast('Missing image. Please retake the photo.', 'error', 4000);
         return;
       }
       try {
@@ -115,18 +116,19 @@ export default function ResultScreen() {
           new Date().toISOString(),
           undefined
         );
-        Alert.alert(
-          t('result.saveSuccess'),
-          t('result.saveMessage'),
-          [{ text: t('result.ok'), onPress: () => router.push('/tomatodx/history') }]
-        );
-      } catch (e) {
-        Alert.alert(t('result.saveError') || 'Save Error', t('result.saveFailed') || 'Failed to save result');
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        showToast('Result saved to history!', 'success', 3000, {
+          label: 'View History',
+          onPress: () => router.push('/tomatodx/history'),
+        });
+      } catch {
+        showToast('Failed to save result. Please try again.', 'error', 4000);
       }
     });
   };
 
   const handleShare = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // Button press animation
     Animated.sequence([
       Animated.timing(pulseAnim, {
@@ -150,10 +152,10 @@ export default function ResultScreen() {
           dialogTitle: t('result.shareTitle')
         });
       } else {
-        Alert.alert(t('result.shareError'), t('result.shareNotAvailable'));
+        showToast('Sharing is not available on this device', 'warning', 3000);
       }
-    } catch (error) {
-      Alert.alert(t('result.shareError'), t('result.shareFailed'));
+    } catch {
+      showToast('Failed to share result', 'error', 3000);
     }
   };
 
@@ -178,7 +180,8 @@ export default function ResultScreen() {
       ]),
       Animated.timing(slideUpCard, { toValue: 0, duration: 600, easing: Easing.out(Easing.quad), useNativeDriver: true }),
       Animated.timing(slideUpButtons, { toValue: 0, duration: 500, easing: Easing.out(Easing.back(1)), useNativeDriver: true })
-    ]).start();
+      ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resultData]);
 
   useEffect(() => {
@@ -191,22 +194,33 @@ export default function ResultScreen() {
         await initModel();
         const pred = await predictFromUri(uri);
         if (cancelled) return;
+        
+        // Get detailed disease information
+        const diseaseInfo = getDiseaseInfo(pred.label);
         const severity = pred.confidence >= 0.9 ? 'High' : pred.confidence >= 0.7 ? 'Medium' : 'Low';
+        
         setResultData({
           diseaseId: pred.label,
-          nameEn: pred.label,
-          nameAm: pred.label,
+          nameEn: diseaseInfo?.nameEn || pred.label,
+          nameAm: diseaseInfo?.nameAm || pred.label,
           confidence: pred.confidence,
-          advice: 'Inspect leaves and follow local best practices.',
-          severity,
-          prevention: 'Ensure good airflow and remove affected leaves.',
-          image: '🌿'
+          description: diseaseInfo?.description || 'Disease detected',
+          symptoms: diseaseInfo?.symptoms || [],
+          treatment: diseaseInfo?.treatment || {
+            immediate: ['Consult local agricultural expert', 'Apply recommended treatments', 'Monitor closely'],
+            longTerm: ['Practice good crop management', 'Use resistant varieties', 'Maintain plant health'],
+          },
+          preventionTips: diseaseInfo?.prevention || ['Ensure proper care', 'Monitor regularly', 'Maintain good practices'],
+          advice: diseaseInfo?.treatment.immediate[0] || 'Consult local agricultural expert for treatment',
+          severity: diseaseInfo?.severity || severity,
+          image: diseaseInfo?.image || '🌿'
         });
       } catch (e: any) {
-        Alert.alert('Prediction Error', String(e?.message ?? e));
+        showToast(`Prediction failed: ${e?.message || 'Unknown error'}`, 'error', 5000);
       }
     })();
     return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uri]);
 
   const getSeverityColor = (severity: string) => {
@@ -286,6 +300,9 @@ export default function ResultScreen() {
                 <View style={styles.diseaseInfo}>
                   <Text style={[styles.diseaseName, { color: tokens.text }]}>{resultData.nameEn}</Text>
                   <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{resultData.nameAm}</Text>
+                  {resultData.description && (
+                    <Text style={[styles.diseaseDescription, { color: tokens.muted }]}>{resultData.description}</Text>
+                  )}
                 </View>
                 <View
                   style={[
@@ -348,8 +365,59 @@ export default function ResultScreen() {
                   <Ionicons name="shield-checkmark" size={20} color={tokens.success} />
                   <Text style={styles.sectionTitle}>{t('result.prevTips')} </Text>
                 </View>
-                <Text style={[styles.preventionText, { color: tokens.muted }]}>{resultData.prevention}</Text>
+                {resultData.preventionTips?.map((tip: string, index: number) => (
+                  <View key={index} style={styles.tipItem}>
+                    <Ionicons name="checkmark-circle" size={16} color={tokens.success} />
+                    <Text style={[styles.tipText, { color: tokens.muted }]}>{tip}</Text>
+                  </View>
+                ))}
               </View>
+
+              {/* Symptoms Section */}
+              {resultData.symptoms && resultData.symptoms.length > 0 && (
+                <View style={styles.symptomsSection}>
+                  <View style={styles.sectionHeader}>
+                    <Ionicons name="eye" size={20} color={tokens.warning} />
+                    <Text style={styles.sectionTitle}>Symptoms</Text>
+                  </View>
+                  {resultData.symptoms.map((symptom: string, index: number) => (
+                    <View key={index} style={styles.symptomItem}>
+                      <Ionicons name="ellipse" size={8} color={tokens.warningDark} />
+                      <Text style={[styles.symptomText, { color: tokens.textSecondary }]}>{symptom}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {/* Detailed Treatment Section */}
+              {resultData.treatment && (
+                <View style={styles.treatmentSection}>
+                  <View style={styles.sectionHeader}>
+                    <Ionicons name="medical" size={20} color={tokens.primary} />
+                    <Text style={styles.sectionTitle}>Treatment Steps</Text>
+                  </View>
+                  
+                  <View style={styles.treatmentSubsection}>
+                    <Text style={[styles.subsectionTitle, { color: tokens.primary }]}>Immediate Actions:</Text>
+                    {resultData.treatment.immediate.map((step: string, index: number) => (
+                      <View key={index} style={styles.treatmentStep}>
+                        <Text style={[styles.stepNumber, { color: tokens.primary }]}>{index + 1}.</Text>
+                        <Text style={[styles.treatmentText, { color: tokens.textSecondary }]}>{step}</Text>
+                      </View>
+                    ))}
+                  </View>
+
+                  <View style={styles.treatmentSubsection}>
+                    <Text style={[styles.subsectionTitle, { color: tokens.primary }]}>Long-term Management:</Text>
+                    {resultData.treatment.longTerm.map((step: string, index: number) => (
+                      <View key={index} style={styles.treatmentStep}>
+                        <Text style={[styles.stepNumber, { color: tokens.primary }]}>{index + 1}.</Text>
+                        <Text style={[styles.treatmentText, { color: tokens.textSecondary }]}>{step}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
             </View>
           )}
 
@@ -500,6 +568,12 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     fontWeight: '600',
   },
+  diseaseDescription: {
+    fontSize: 14,
+    color: '#9ca3af',
+    marginTop: 4,
+    lineHeight: 18,
+  },
   severityBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -620,5 +694,63 @@ const styles = StyleSheet.create({
     color: '#1e40af',
     fontSize: 18,
     fontWeight: '700',
+  },
+  // Tip items
+  tipItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  tipText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '500',
+  },
+  // Symptoms section
+  symptomsSection: {
+    marginBottom: 20,
+  },
+  symptomItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 8,
+  },
+  symptomText: {
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '500',
+  },
+  // Treatment section
+  treatmentSection: {
+    marginBottom: 12,
+  },
+  treatmentSubsection: {
+    marginBottom: 16,
+  },
+  subsectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  treatmentStep: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    marginBottom: 10,
+  },
+  stepNumber: {
+    fontSize: 16,
+    fontWeight: '700',
+    width: 24,
+  },
+  treatmentText: {
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '500',
   },
 })

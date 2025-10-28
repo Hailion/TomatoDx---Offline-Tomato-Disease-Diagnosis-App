@@ -10,6 +10,8 @@ import {
   Animated,
   Dimensions,
   Easing,
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -27,36 +29,37 @@ import { initModel } from '../../src/ml/model';
 const { width, height } = Dimensions.get('window');
 
 // Mock data store
-const mockDataStore = {
-  '1': {
-    diseaseId: 'early_blight',
-    nameEn: 'Early Blight',
-    nameAm: 'ጥቂት ብርሃን',
-    confidence: 0.92,
-    advice: 'Remove affected leaves; apply fungicide. Ensure proper spacing between plants for air circulation.',
-    severity: 'High',
-    prevention: 'Rotate crops yearly, avoid overhead watering, remove plant debris.',
-    image: '🌱'
-  },
-  '2': {
-    diseaseId: 'healthy',
-    nameEn: 'Healthy',
-    nameAm: 'ጤናማ',
-    confidence: 0.95,
-    advice: 'Your tomato plant is healthy! Continue regular care and monitoring.',
-    severity: 'None',
-    prevention: 'Maintain current practices, regular watering, and proper nutrition.',
-    image: '✅'
-  }
-};
+// const mockDataStore = {
+//   '1': {
+//     diseaseId: 'early_blight',
+//     nameEn: 'Early Blight',
+//     nameAm: 'ጥቂት ብርሃን',
+//     confidence: 0.92,
+//     advice: 'Remove affected leaves; apply fungicide. Ensure proper spacing between plants for air circulation.',
+//     severity: 'High',
+//     prevention: 'Rotate crops yearly, avoid overhead watering, remove plant debris.',
+//     image: '🌱'
+//   },
+//   '2': {
+//     diseaseId: 'healthy',
+//     nameEn: 'Healthy',
+//     nameAm: 'ጤናማ',
+//     confidence: 0.95,
+//     advice: 'Your tomato plant is healthy! Continue regular care and monitoring.',
+//     severity: 'None',
+//     prevention: 'Maintain current practices, regular watering, and proper nutrition.',
+//     image: '✅'
+//   }
+// };
 
 export default function ResultScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams();
   const uri = (params.uri as string) || undefined;
   const imageId = (params.imageId as string) || undefined;
-  const id = (params.id as string) || undefined;
+  const diagnosisIdParam = (params.diagnosisId as string) || undefined;
   const [resultData, setResultData] = useState<any | null>(null);
+  const isFromHistory = !!diagnosisIdParam;
   const { theme } = useTheme();
   const tokens = Colors[theme];
 
@@ -69,8 +72,13 @@ export default function ResultScreen() {
   const progressAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const didAnimateRef = useRef(false);
+  const predictedForUriRef = useRef<string | null>(null);
 
   const handleSave = () => {
+    if (isFromHistory) {
+      Alert.alert(t('result.alreadySaved') || 'Already saved', t('result.openedFromHistory') || 'This result is from your history and is already saved.');
+      return;
+    }
     if (!resultData) {
       Alert.alert(t('result.saveError') || 'Save Error', 'Please wait until analysis completes.');
       return;
@@ -177,6 +185,8 @@ export default function ResultScreen() {
     let cancelled = false;
     (async () => {
       if (!uri) return;
+      if (predictedForUriRef.current === uri) return; // prevent duplicate predict for same uri
+      predictedForUriRef.current = uri;
       try {
         await initModel();
         const pred = await predictFromUri(uri);
@@ -252,121 +262,135 @@ export default function ResultScreen() {
           }
         ]}
       >
-        {!resultData ? (
-          <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
-            <View style={{ alignItems: 'center', paddingVertical: 24 }}>
-              <Text style={[styles.title, { color: tokens.primaryDark }]}>{t('result.title')}</Text>
-              <Text style={[styles.subtitle, { color: tokens.muted }]}>{t('result.subtitle')}</Text>
-              <Text style={{ marginTop: 12, fontWeight: '700', color: tokens.text }}>{t('common.analyzing') || 'Analyzing...'}</Text>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {!resultData ? (
+            <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
+              <View style={{ alignItems: 'center', paddingVertical: 24 }}>
+                <Text style={[styles.title, { color: tokens.primaryDark }]}>{t('result.title')}</Text>
+                <Text style={[styles.subtitle, { color: tokens.muted }]}>{t('result.subtitle')}</Text>
+                <Text style={{ marginTop: 12, fontWeight: '700', color: tokens.text }}>{t('common.analyzing') || 'Analyzing...'}</Text>
+              </View>
             </View>
-          </View>
-        ) : (
-          <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
-            {/* Disease Header */}
-            <View style={styles.diseaseHeader}>
-              <View style={styles.diseaseIconContainer}>
-                <Text style={styles.diseaseIcon}>{resultData.image}</Text>
-              </View>
-              <View style={styles.diseaseInfo}>
-                <Text style={[styles.diseaseName, { color: tokens.text }]}>{resultData.nameEn}</Text>
-                <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{resultData.nameAm}</Text>
-              </View>
-              <View
-                style={[
-                  styles.severityBadge,
-                  { backgroundColor: getSeverityColor(resultData.severity) + '20' }
-                ]}
-              >
-                <Ionicons
-                  name={getSeverityIcon(resultData.severity) as any}
-                  size={16}
-                  color={getSeverityColor(resultData.severity)}
-                />
-                <Text
+          ) : (
+            <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
+              {/* Image Preview */}
+              {uri ? (
+                <Image source={{ uri }} style={styles.imagePreview} resizeMode="cover" />
+              ) : null}
+
+              {/* Disease Header */}
+              <View style={styles.diseaseHeader}>
+                <View style={styles.diseaseIconContainer}>
+                  <Text style={styles.diseaseIcon}>{resultData.image}</Text>
+                </View>
+                <View style={styles.diseaseInfo}>
+                  <Text style={[styles.diseaseName, { color: tokens.text }]}>{resultData.nameEn}</Text>
+                  <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{resultData.nameAm}</Text>
+                </View>
+                <View
                   style={[
-                    styles.severityText,
-                    { color: getSeverityColor(resultData.severity) }
+                    styles.severityBadge,
+                    { backgroundColor: getSeverityColor(resultData.severity) + '20' }
                   ]}
                 >
-                  {resultData.severity}
-                </Text>
+                  <Ionicons
+                    name={getSeverityIcon(resultData.severity) as any}
+                    size={16}
+                    color={getSeverityColor(resultData.severity)}
+                  />
+                  <Text
+                    style={[
+                      styles.severityText,
+                      { color: getSeverityColor(resultData.severity) }
+                    ]}
+                  >
+                    {resultData.severity}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Confidence Meter */}
+              <View style={styles.confidenceSection}>
+                <View style={styles.confidenceHeader}>
+                  <Text style={[styles.confidenceLabel, { color: tokens.textSecondary }]}>{t("result.confidenceLevel")}</Text>
+                  <Animated.Text style={[styles.confidenceValue, { color: tokens.primaryDark }]}>
+                    {Math.round(resultData.confidence * 100)}%
+                  </Animated.Text>
+                </View>
+                <View style={[styles.confidenceBar, { backgroundColor: tokens.backgroundAlt }]}>
+                  <Animated.View
+                    style={[
+                      styles.confidenceFill,
+                      {
+                        width: progressAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ['0%', '100%']
+                        }),
+                        backgroundColor: getSeverityColor(resultData.severity)
+                      }
+                    ]}
+                  />
+                </View>
+              </View>
+
+              {/* Advice Section */}
+              <View style={styles.adviceSection}>
+                <View style={styles.sectionHeader}>
+                  <Ionicons name="bulb" size={20} color={tokens.warning} />
+                  <Text style={styles.sectionTitle}>{t('result.recommendation')}</Text>
+                </View>
+                <Text style={[styles.adviceText, { color: tokens.textSecondary }]}>{resultData.advice}</Text>
+              </View>
+
+              {/* Prevention Section */}
+              <View style={styles.preventionSection}>
+                <View style={styles.sectionHeader}>
+                  <Ionicons name="shield-checkmark" size={20} color={tokens.success} />
+                  <Text style={styles.sectionTitle}>{t('result.prevTips')} </Text>
+                </View>
+                <Text style={[styles.preventionText, { color: tokens.muted }]}>{resultData.prevention}</Text>
               </View>
             </View>
+          )}
 
-            {/* Confidence Meter */}
-            <View style={styles.confidenceSection}>
-              <View style={styles.confidenceHeader}>
-                <Text style={[styles.confidenceLabel, { color: tokens.textSecondary }]}>{t("result.confidenceLevel")}</Text>
-                <Animated.Text style={[styles.confidenceValue, { color: tokens.primaryDark }]}>
-                  {Math.round(resultData.confidence * 100)}%
-                </Animated.Text>
-              </View>
-              <View style={[styles.confidenceBar, { backgroundColor: tokens.backgroundAlt }]}>
-                <Animated.View
-                  style={[
-                    styles.confidenceFill,
-                    {
-                      width: progressAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ['0%', '100%']
-                      }),
-                      backgroundColor: getSeverityColor(resultData.severity)
-                    }
-                  ]}
-                />
-              </View>
-            </View>
-
-            {/* Advice Section */}
-            <View style={styles.adviceSection}>
-              <View style={styles.sectionHeader}>
-                <Ionicons name="bulb" size={20} color={tokens.warning} />
-                <Text style={styles.sectionTitle}>{t('result.recommendation')}</Text>
-              </View>
-              <Text style={[styles.adviceText, { color: tokens.textSecondary }]}>{resultData.advice}</Text>
-            </View>
-
-            {/* Prevention Section */}
-            <View style={styles.preventionSection}>
-              <View style={styles.sectionHeader}>
-                <Ionicons name="shield-checkmark" size={20} color={tokens.success} />
-                <Text style={styles.sectionTitle}>{t('result.prevTips')} </Text>
-              </View>
-              <Text style={[styles.preventionText, { color: tokens.muted }]}>{resultData.prevention}</Text>
-            </View>
-          </View>
-        )}
-
-        {/* Action Buttons */}
-        <Animated.View
-          style={[
-            styles.actionsContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideUpButtons }]
-            }
-          ]}
-        >
-          <TouchableOpacity
-            style={[styles.saveButton, { backgroundColor: tokens.primary, shadowColor: tokens.primary, opacity: resultData ? 1 : 0.5 }]}
-            onPress={handleSave}
-            activeOpacity={0.8}
-            disabled={!resultData}
+          {/* Action Buttons */}
+          <Animated.View
+            style={[
+              styles.actionsContainer,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideUpButtons }]
+              }
+            ]}
           >
-            <Ionicons name="save" size={24} color={tokens.whiteMuted} />
-            <Text style={[styles.saveButtonText, { color: tokens.whiteMuted }]}>{t('result.save')}</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.saveButton,
+                {
+                  backgroundColor: isFromHistory ? '#9ca3af' : tokens.primary,
+                  shadowColor: isFromHistory ? '#9ca3af' : tokens.primary,
+                  opacity: resultData ? 1 : 0.5
+                }
+              ]}
+              onPress={handleSave}
+              activeOpacity={0.8}
+              disabled={!resultData || isFromHistory}
+            >
+              <Ionicons name={isFromHistory ? 'checkmark-done' : 'save'} size={24} color={tokens.whiteMuted} />
+              <Text style={[styles.saveButtonText, { color: tokens.whiteMuted }]}>{isFromHistory ? (t('result.saved') || 'Saved') : t('result.save')}</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.shareButton, { backgroundColor: tokens.surface, borderColor: tokens.border }]}
-            onPress={handleShare}
-            activeOpacity={0.8}
-            disabled={!resultData}
-          >
-            <Ionicons name="share" size={24} color={tokens.text} />
-            <Text style={[styles.shareButtonText, { color: tokens.text }]}>{t('result.share')}</Text>
-          </TouchableOpacity>
-        </Animated.View>
+            <TouchableOpacity
+              style={[styles.shareButton, { backgroundColor: tokens.surface, borderColor: tokens.border }]}
+              onPress={handleShare}
+              activeOpacity={0.8}
+              disabled={!resultData}
+            >
+              <Ionicons name="share" size={24} color={tokens.text} />
+              <Text style={[styles.shareButtonText, { color: tokens.text }]}>{t('result.share')}</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </ScrollView>
       </Animated.View>
     </View>
   );
@@ -419,7 +443,11 @@ const styles = StyleSheet.create({
   // Card container
   cardContainer: {
     flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: 20,
+    paddingBottom: 24,
+    gap: 16,
   },
   resultCard: {
     backgroundColor: '#ffffff',
@@ -431,6 +459,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
+  },
+  imagePreview: {
+    width: '100%',
+    height: 260,
+    borderRadius: 16,
+    marginBottom: 16,
   },
   // Disease header
   diseaseHeader: {

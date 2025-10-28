@@ -19,6 +19,7 @@ import {
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import Colors from '../../constants/Colors';
+import LoadingIndicator from '../../src/components/LoadingIndicator';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { useToast } from '../../src/contexts/ToastContext';
 import { getDiseaseInfo } from '../../src/data/diseaseInfo';
@@ -58,6 +59,8 @@ export default function ResultScreen() {
   const imageId = (params.imageId as string) || undefined;
   const diagnosisIdParam = (params.diagnosisId as string) || undefined;
   const [resultData, setResultData] = useState<any | null>(null);
+  const [loadingStage, setLoadingStage] = useState('');
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const isFromHistory = !!diagnosisIdParam;
   const { theme } = useTheme();
   const tokens = Colors[theme];
@@ -190,14 +193,30 @@ export default function ResultScreen() {
       if (!uri) return;
       if (predictedForUriRef.current === uri) return; // prevent duplicate predict for same uri
       predictedForUriRef.current = uri;
+      
       try {
+        // Loading stages
+        setLoadingStage('Initializing model...');
+        setLoadingProgress(0.2);
         await initModel();
-        const pred = await predictFromUri(uri);
+        
         if (cancelled) return;
+        
+        setLoadingStage('Analyzing image...');
+        setLoadingProgress(0.5);
+        const pred = await predictFromUri(uri);
+        
+        if (cancelled) return;
+        
+        setLoadingStage('Processing results...');
+        setLoadingProgress(0.8);
         
         // Get detailed disease information
         const diseaseInfo = getDiseaseInfo(pred.label);
         const severity = pred.confidence >= 0.9 ? 'High' : pred.confidence >= 0.7 ? 'Medium' : 'Low';
+        
+        setLoadingProgress(1.0);
+        setLoadingStage('Complete');
         
         setResultData({
           diseaseId: pred.label,
@@ -217,6 +236,8 @@ export default function ResultScreen() {
         });
       } catch (e: any) {
         showToast(`Prediction failed: ${e?.message || 'Unknown error'}`, 'error', 5000);
+        setLoadingStage('');
+        setLoadingProgress(0);
       }
     })();
     return () => { cancelled = true; };
@@ -279,10 +300,8 @@ export default function ResultScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {!resultData ? (
             <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
-              <View style={{ alignItems: 'center', paddingVertical: 24 }}>
-                <Text style={[styles.title, { color: tokens.primaryDark }]}>{t('result.title')}</Text>
-                <Text style={[styles.subtitle, { color: tokens.muted }]}>{t('result.subtitle')}</Text>
-                <Text style={{ marginTop: 12, fontWeight: '700', color: tokens.text }}>{t('common.analyzing') || 'Analyzing...'}</Text>
+              <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+                <LoadingIndicator stage={loadingStage || 'Processing...'} progress={loadingProgress} />
               </View>
             </View>
           ) : (
@@ -752,5 +771,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     fontWeight: '500',
+  },
+  // Loading animation styles
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
   },
 })

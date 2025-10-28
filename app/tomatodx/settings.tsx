@@ -16,6 +16,8 @@ import {
 } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { getCurrentUser, upsertUser } from '../../src/db/repository';
+import { initDb } from '../../src/db/schema';
 
 // removed unused width/height
 
@@ -24,7 +26,7 @@ export default function SettingsScreen() {
   const { theme, themeMode, setThemeMode } = useTheme();
   const tokens = Colors[theme];
 
-  const [username, setUsername] = useState(t('settings.username'));
+  const [username, setUsername] = useState(t('settings.username')); // placeholder; replaced by DB value if present
   const [isEditingUsername, setIsEditingUsername] = useState(false);
 
   // Animation values
@@ -67,6 +69,16 @@ export default function SettingsScreen() {
     ]).start();
   }, [fadeAnim, scaleAnim, slideUpHeader, slideUpContent]);
 
+  useEffect(() => {
+    try {
+      initDb();
+      const u = getCurrentUser();
+      if (u?.name && typeof u.name === 'string' && u.name.trim().length > 0) {
+        setUsername(u.name);
+      }
+    } catch { }
+  }, []);
+
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'am' : 'en');
   };
@@ -76,10 +88,15 @@ export default function SettingsScreen() {
   };
 
   const handleUsernameSave = () => {
-    if (username.trim().length === 0) {
-      Alert.alert('Error', 'Username cannot be empty');
-      return;
+    const trimmed = username.trim();
+    if (trimmed.length === 0) {
+      upsertUser('device'); // clears name
+      Alert.alert('Success', 'Username removed');
+    } else {
+      upsertUser('device', trimmed);
+      Alert.alert('Success', 'Username updated successfully!');
     }
+    setIsEditingUsername(false);
 
     Animated.sequence([
       Animated.timing(inputScaleAnim, {
@@ -93,9 +110,21 @@ export default function SettingsScreen() {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      setIsEditingUsername(false);
-      // Here you would typically save to AsyncStorage or your backend
-      Alert.alert('Success', 'Username updated successfully!');
+      try {
+        initDb();
+        const trimmed = username.trim();
+        if (trimmed.length === 0) {
+          upsertUser('device'); // clears name
+          Alert.alert('Success', 'Username removed');
+        } else {
+          upsertUser('device', trimmed);
+          Alert.alert('Success', 'Username updated successfully!');
+        }
+        setIsEditingUsername(false);
+        Alert.alert('Success', 'Username updated successfully!');
+      } catch {
+        Alert.alert('Error', 'Failed to save username');
+      }
     });
   };
 

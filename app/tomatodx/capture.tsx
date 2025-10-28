@@ -1,14 +1,16 @@
 // capture.tsx
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, Dimensions, Easing, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Easing, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { useToast } from '../../src/contexts/ToastContext';
 import { insertImage } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
 
@@ -19,6 +21,7 @@ export default function CaptureScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const tokens = Colors[theme];
+  const { showToast } = useToast();
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -101,6 +104,7 @@ export default function CaptureScreen() {
   }, []);
 
   const handleCapture = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     // Button press animation
     Animated.sequence([
       Animated.timing(scaleAnim, {
@@ -118,7 +122,7 @@ export default function CaptureScreen() {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Camera permission is needed to take photos.');
+        showToast('Camera permission is required to take photos', 'error', 4000);
         return;
       }
 
@@ -133,14 +137,16 @@ export default function CaptureScreen() {
         const uri = result.assets[0].uri;
         const imageId = uuidv4();
         insertImage(imageId, uri, new Date().toISOString(), undefined);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         router.push(`/tomatodx/preview?uri=${encodeURIComponent(uri)}&imageId=${imageId}`);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to open camera');
+      showToast('Failed to open camera. Please try again.', 'error', 4000);
     }
   };
 
   const handleGallery = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // Button press animation
     Animated.sequence([
       Animated.timing(slideUpAnim, {
@@ -158,7 +164,7 @@ export default function CaptureScreen() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Media library permission is needed to access photos.');
+        showToast('Gallery permission is required', 'error', 4000);
         return;
       }
 
@@ -173,10 +179,11 @@ export default function CaptureScreen() {
         const uri = result.assets[0].uri;
         const imageId = uuidv4();
         insertImage(imageId, uri, new Date().toISOString(), undefined);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         router.push(`/tomatodx/preview?uri=${encodeURIComponent(uri)}&imageId=${imageId}`);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to open gallery');
+      showToast('Failed to open gallery. Please try again.', 'error', 4000);
     }
   };
 

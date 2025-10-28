@@ -40,13 +40,17 @@
   "history": {
     "title": "የምርመራ ታሪክ",
     "subtitle": "የቅርብ ጊዜ የቲማቲም በሽታ ውጤት",
-    "total": "ጠቅላላ"
+    "total": "ጠቅላላ",
+    "deleteTitle": "ሰርዝ",
+    "deleteConfirm": "እርግጠኛ ነዎት ይህን ግቤት መሰረዝ ይፈልጋሉ?",
+    "search": "ፈልግ"
   },
   "result": {
     "title": "የምርመራ ውጤት",
     "subtitle": "በ AI የተጎላበተ የቲማቲም በሽታን መለየት",
     "confidenceLevel": "የመተማመን ደረጃ",
     "save": "ውጤት ያስቀምጡ",
+    "saved": "ተቀምጧል",
     "share": "አጋራ",
     "recommendation": "የሚመከር እርምጃ",
     "prevTips": "የመከላከያ ምክሮች",
@@ -106,7 +110,15 @@
       "subtitle": "የአገልግሎት ስታቲስቲኮችን እና የምርመራ እንቅስቃሴዎችን ይመልከቱ",
       "accuracy": "ትክክለኛነት",
       "averageProcessingTime": "አማካይ የማቀነባበሪያ ፍጥነት",
-      "uptime": "የመቆየት ጊዜ"
+      "uptime": "የመቆየት ጊዜ",
+      "topDisease": "ከፍተኛ በሽታ",
+      "last7Days": "የመጨረሻ 7 ቀናት",
+      "severityDistribution": "ከባድነት ስርጭት"
     }
+  },
+  "common": {
+    "cancel": "አይ",
+    "delete": "አዎ",
+    "analyzing": "በመተንተን ላይ..."
   }
 }

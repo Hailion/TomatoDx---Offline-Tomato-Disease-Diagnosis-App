@@ -9,19 +9,41 @@ export async function uriToInputTensor(uri: string, size = 224) {
 
     await tf.ready();
 
-    // Ensure 224x224 and JPEG to simplify decoding
-    const { uri: resizedUri } = await ImageManipulator.manipulateAsync(
+    // 1) Aspect-preserving resize so the shorter side >= size
+    const first = await ImageManipulator.manipulateAsync(
         uri,
-        [{ resize: { width: size, height: size } }],
+        [{ resize: { width: size } }],
+        { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: false }
+    );
+
+    let resizedStep = first;
+    if ((first.height ?? 0) < size) {
+        // If height ended up smaller than target, resize by height instead
+        resizedStep = await ImageManipulator.manipulateAsync(
+            uri,
+            [{ resize: { height: size } }],
+            { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: false }
+        );
+    }
+
+    // 2) Center-crop to exactly size x size
+    const w = resizedStep.width ?? size;
+    const h = resizedStep.height ?? size;
+    const cropX = Math.max(0, Math.floor((w - size) / 2));
+    const cropY = Math.max(0, Math.floor((h - size) / 2));
+
+    const cropped = await ImageManipulator.manipulateAsync(
+        resizedStep.uri,
+        [{ crop: { originX: cropX, originY: cropY, width: size, height: size } }],
         { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: false }
     );
 
     try {
-        const file = await FileSystem.readAsStringAsync(resizedUri, { encoding: 'base64' });
+        const file = await FileSystem.readAsStringAsync(cropped.uri, { encoding: 'base64' });
         const raw = new Uint8Array(toByteArray(file));
         const { decodeJpeg } = await import('@tensorflow/tfjs-react-native');
         const image = decodeJpeg(raw, 3); // [H,W,3]
-        const input = image.toFloat().div(255).expandDims(0); // [1,224,224,3]
+        const input = image.toFloat().div(255).expandDims(0); // [1,size,size,3]
         image.dispose();
         return input;
     } catch (e: any) {

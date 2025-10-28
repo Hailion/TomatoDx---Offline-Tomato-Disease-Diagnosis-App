@@ -40,7 +40,10 @@
   "history": {
     "title": "Scan History",
     "subtitle": "recent tomato disease detections",
-    "total": "Total"
+    "total": "Total",
+    "deleteTitle": "Delete Entry",
+    "deleteConfirm": "Are you sure you want to delete this entry?",
+    "search": "Search"
   },
   "result": {
     "title": "Diagnosis Result",
@@ -49,6 +52,7 @@
     "recommendation": "Recommended Action",
     "prevTips": "Prevention Tips",
     "save": "Save Result",
+    "saved": "Saved Successfully",
     "share": "Share",
     "saveSuccess": "Saved Successfully",
     "saveMessage": "Your diagnosis has been saved to history.",
@@ -111,7 +115,15 @@
       "subtitle": "View usage statistics and diagnosis trends",
       "accuracy": "Accuracy",
       "averageProcessingTime": "Avg. Processing",
-      "uptime": "Uptime"
+      "uptime": "Uptime",
+      "topDisease": "Top Disease",
+      "last7Days": "Last 7 Days",
+      "severityDistribution": "Severity Distribution"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "analyzing": "Analyzing..."
     }
   }
 }

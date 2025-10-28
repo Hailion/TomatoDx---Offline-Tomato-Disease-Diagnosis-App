@@ -18,7 +18,7 @@ import { useTheme } from '../../src/contexts/ThemeContext';
 import { getCurrentUser } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
 
-const { width, height } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 export default function TomatoHome() {
   const { t } = useTranslation();
@@ -116,6 +116,7 @@ export default function TomatoHome() {
         }),
       ])
     ).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useFocusEffect(

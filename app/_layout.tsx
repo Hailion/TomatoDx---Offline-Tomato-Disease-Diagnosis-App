@@ -6,19 +6,16 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ThemeProvider as CustomThemeProvider, useTheme } from '../src/contexts/ThemeContext';
+import { ToastProvider } from '../src/contexts/ToastContext';
 import '../src/i18n/i18n';
 
 
 function AppContent() {
   const { theme } = useTheme();
 
-
   return (
     <ThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName="tomatodx">
-        <Stack.Screen name="tomatodx" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
+      <Stack screenOptions={{ headerShown: false }} />
       <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
   );
@@ -28,7 +25,9 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <CustomThemeProvider>
-        <AppContent />
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
       </CustomThemeProvider>
     </SafeAreaProvider>
   );

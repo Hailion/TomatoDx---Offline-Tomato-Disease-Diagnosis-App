@@ -1,6 +1,8 @@
 // admin.tsx
 import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useRef } from 'react';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -15,6 +17,7 @@ import {
 } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { getAllDiagnosesExport, getAnalyticsSummary, getDiagnosisCount, getLast7DaysCounts } from '../../src/db/repository';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,6 +25,9 @@ export default function AdminScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const tokens = Colors[theme];
+  const [totalScans, setTotalScans] = useState(0);
+  const [summary, setSummary] = useState<{ avgConfidence: number; total: number; low: number; medium: number; high: number; topDisease?: { diseaseId: string; nameEn?: string; nameAm?: string; c: number } | null }>({ avgConfidence: 0, total: 0, low: 0, medium: 0, high: 0, topDisease: null });
+  const [trend, setTrend] = useState<{ day: string; count: number }[]>([]);
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -30,7 +36,18 @@ export default function AdminScreen() {
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
+  const loadAnalytics = () => {
+    try {
+      setTotalScans(getDiagnosisCount());
+      const s = getAnalyticsSummary() as any;
+      const t = getLast7DaysCounts() as any[];
+      setSummary(s);
+      setTrend(t);
+    } catch { }
+  };
+
   useEffect(() => {
+    loadAnalytics();
     Animated.sequence([
       // Fade in background
       Animated.timing(fadeAnim, {
@@ -122,13 +139,39 @@ export default function AdminScreen() {
   const handleExportData = () => {
     Alert.alert(
       'Export Data',
-      'Export all scan history and analytics data?',
+      'Export all scan history as CSV?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Export',
-          onPress: () => {
-            Alert.alert('Export Started', 'Data export has been initiated');
+          onPress: async () => {
+            try {
+              const rows = getAllDiagnosesExport() as any[];
+              const headers = ['diagnosisId', 'imageId', 'filePath', 'diseaseId', 'nameEn', 'nameAm', 'confidence', 'diagnosedAt', 'capturedAt', 'notes'];
+              const esc = (v: any) => {
+                if (v === null || v === undefined) return '';
+                const s = String(v);
+                if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+                return s;
+              };
+              const csv = [headers.join(',')].concat(
+                rows.map(r => headers.map(h => esc((r as any)[h])).join(','))
+              ).join('\n');
+              const ts = new Date();
+              const stamp = `${ts.getFullYear()}${String(ts.getMonth() + 1).padStart(2, '0')}${String(ts.getDate()).padStart(2, '0')}-${String(ts.getHours()).padStart(2, '0')}${String(ts.getMinutes()).padStart(2, '0')}${String(ts.getSeconds()).padStart(2, '0')}`;
+              const dir = FileSystem.join(FileSystem.Paths.document, 'exports');
+              try { await FileSystem.makeDirectoryAsync(dir, { intermediates: true }); } catch { }
+              const fileUri = FileSystem.join(dir, `tomatodx-history-${stamp}.csv`);
+              await FileSystem.writeAsStringAsync(fileUri, csv);
+              const canShare = await Sharing.isAvailableAsync();
+              if (canShare) {
+                await Sharing.shareAsync(fileUri, { mimeType: 'text/csv', dialogTitle: 'Share Scan History CSV' });
+              } else {
+                Alert.alert('Exported', `Saved to: ${fileUri}`);
+              }
+            } catch (e) {
+              Alert.alert('Export Failed', 'Could not export data');
+            }
           }
         }
       ]
@@ -210,7 +253,7 @@ export default function AdminScreen() {
             </View>
             <View style={styles.infoItem}>
               <Text style={styles.infoLabel}>{t('admin.totalScans')}</Text>
-              <Text style={[styles.infoValue, { color: tokens.muted }]}>1,247</Text>
+              <Text style={[styles.infoValue, { color: tokens.muted }]}>{totalScans}</Text>
             </View>
           </View>
         </Animated.View>
@@ -304,24 +347,72 @@ export default function AdminScreen() {
             }
           ]}
         >
-          <View style={styles.cardHeader}>
-            <Ionicons name="bar-chart" size={24} color={tokens.warning} />
-            <Text style={[styles.cardTitle, { color: tokens.text }]}>{t('admin.analytics.title')}</Text>
+          <View style={[styles.cardHeader, { justifyContent: 'space-between' }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Ionicons name="bar-chart" size={24} color={tokens.warning} />
+              <Text style={[styles.cardTitle, { color: tokens.text }]}>{t('admin.analytics.title')}</Text>
+            </View>
+            <TouchableOpacity onPress={loadAnalytics} style={{ padding: 6 }}>
+              <Ionicons name="refresh" size={20} color={tokens.text} />
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.statsContainer}>
+          {/* Summary row */}
+          <View style={[styles.statsContainer, { marginBottom: 12 }]}>
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>92%</Text>
+              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{summary.total}</Text>
+              <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('admin.totalScans')}</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{Math.round((summary.avgConfidence || 0) * 100)}%</Text>
               <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('admin.analytics.accuracy')}</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>1.2s</Text>
-              <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('admin.analytics.averageProcessingTime')}</Text>
+              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{summary.topDisease?.nameEn || summary.topDisease?.diseaseId || '-'}</Text>
+              <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('admin.analytics.topDisease') || 'Top disease'}</Text>
             </View>
-            <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>98%</Text>
-              <Text style={[styles.statLabel, { color: tokens.muted }]}>{t('admin.analytics.uptime')}</Text>
-            </View>
+          </View>
+
+          <View style={{ marginBottom: 12 }}>
+            {summary.total === 0 ? (
+              <View style={{ padding: 16, backgroundColor: tokens.backgroundAlt, borderRadius: 12, alignItems: 'center' }}>
+                <Text style={{ color: tokens.muted }}>{t('admin.analytics.noData') || 'No analytics yet. Perform a scan to see insights.'}</Text>
+              </View>
+            ) : (
+              <>
+                <View style={{ padding: 12, backgroundColor: tokens.backgroundAlt, borderRadius: 12, marginBottom: 12 }}>
+                  <Text style={[styles.cardDescription, { marginBottom: 8, color: tokens.text }]}>{t('admin.analytics.severityDistribution') || 'Severity distribution'}</Text>
+                  <View style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-end' }}>
+                    {([
+                      { label: 'Low', value: summary.low, color: tokens.primaryDarker },
+                      { label: 'Medium', value: summary.medium, color: tokens.warning },
+                      { label: 'High', value: summary.high, color: tokens.warningDark },
+                    ] as const).map(s => (
+                      <View key={s.label} style={{ alignItems: 'center', flex: 1 }}>
+                        <View style={{ height: 60, width: '100%', justifyContent: 'flex-end' }}>
+                          <View style={{ height: summary.total ? Math.max(4, Math.round((s.value / Math.max(1, summary.total)) * 60)) : 4, backgroundColor: s.color, borderRadius: 6 }} />
+                        </View>
+                        <Text style={{ fontSize: 12, color: tokens.muted }}>{s.label}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                <View style={{ padding: 12, backgroundColor: tokens.backgroundAlt, borderRadius: 12 }}>
+                  <Text style={[styles.cardDescription, { marginBottom: 8, color: tokens.text }]}>{t('admin.analytics.last7Days') || 'Last 7 days'}</Text>
+                  <View style={{ flexDirection: 'row', gap: 6, alignItems: 'flex-end' }}>
+                    {trend.map(d => (
+                      <View key={d.day} style={{ alignItems: 'center' }}>
+                        <View style={{ height: 60, width: 18, justifyContent: 'flex-end' }}>
+                          <View style={{ height: Math.max(4, Math.min(60, d.count * 6)), backgroundColor: tokens.primary, borderRadius: 6, width: '100%' }} />
+                        </View>
+                        <Text style={{ fontSize: 10, color: tokens.muted }}>{d.day.slice(5)}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              </>
+            )}
           </View>
         </Animated.View>
       </ScrollView>

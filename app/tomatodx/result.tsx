@@ -220,17 +220,17 @@ export default function ResultScreen() {
         
         setResultData({
           diseaseId: pred.label,
-          nameEn: diseaseInfo?.nameEn || pred.label,
-          nameAm: diseaseInfo?.nameAm || pred.label,
+          nameEn: t(`diseases.${pred.label}.name`, { defaultValue: pred.label }),
+          nameAm: t(`diseases.${pred.label}.name`, { defaultValue: pred.label }),
           confidence: pred.confidence,
-          description: diseaseInfo?.description || 'Disease detected',
-          symptoms: diseaseInfo?.symptoms || [],
-          treatment: diseaseInfo?.treatment || {
-            immediate: ['Consult local agricultural expert', 'Apply recommended treatments', 'Monitor closely'],
-            longTerm: ['Practice good crop management', 'Use resistant varieties', 'Maintain plant health'],
+          description: t(`diseases.${pred.label}.description`, { defaultValue: 'Disease detected' }),
+          symptoms: t(`diseases.${pred.label}.symptoms`, { returnObjects: true }) as string[] || [],
+          treatment: {
+            immediate: t(`diseases.${pred.label}.treatment.immediate`, { returnObjects: true }) as string[] || [],
+            longTerm: t(`diseases.${pred.label}.treatment.longTerm`, { returnObjects: true }) as string[] || [],
           },
-          preventionTips: diseaseInfo?.prevention || ['Ensure proper care', 'Monitor regularly', 'Maintain good practices'],
-          advice: diseaseInfo?.treatment.immediate[0] || 'Consult local agricultural expert for treatment',
+          preventionTips: t(`diseases.${pred.label}.prevention`, { returnObjects: true }) as string[] || [],
+          advice: (t(`diseases.${pred.label}.treatment.immediate`, { returnObjects: true }) as string[])?.[0] || t('common.noTreatment'),
           severity: diseaseInfo?.severity || severity,
           image: diseaseInfo?.image || '🌿'
         });
@@ -397,7 +397,7 @@ export default function ResultScreen() {
                 <View style={styles.symptomsSection}>
                   <View style={styles.sectionHeader}>
                     <Ionicons name="eye" size={20} color={tokens.warning} />
-                    <Text style={styles.sectionTitle}>Symptoms</Text>
+                    <Text style={styles.sectionTitle}>{t('common.symptoms')}</Text>
                   </View>
                   {resultData.symptoms.map((symptom: string, index: number) => (
                     <View key={index} style={styles.symptomItem}>
@@ -413,11 +413,11 @@ export default function ResultScreen() {
                 <View style={styles.treatmentSection}>
                   <View style={styles.sectionHeader}>
                     <Ionicons name="medical" size={20} color={tokens.primary} />
-                    <Text style={styles.sectionTitle}>Treatment Steps</Text>
+                    <Text style={styles.sectionTitle}>{t('common.treatmentSteps')}</Text>
                   </View>
                   
                   <View style={styles.treatmentSubsection}>
-                    <Text style={[styles.subsectionTitle, { color: tokens.primary }]}>Immediate Actions:</Text>
+                    <Text style={[styles.subsectionTitle, { color: tokens.primary }]}>{t('common.immediateActions')}:</Text>
                     {resultData.treatment.immediate.map((step: string, index: number) => (
                       <View key={index} style={styles.treatmentStep}>
                         <Text style={[styles.stepNumber, { color: tokens.primary }]}>{index + 1}.</Text>
@@ -427,7 +427,7 @@ export default function ResultScreen() {
                   </View>
 
                   <View style={styles.treatmentSubsection}>
-                    <Text style={[styles.subsectionTitle, { color: tokens.primary }]}>Long-term Management:</Text>
+                    <Text style={[styles.subsectionTitle, { color: tokens.primary }]}>{t('common.longTermManagement')}:</Text>
                     {resultData.treatment.longTerm.map((step: string, index: number) => (
                       <View key={index} style={styles.treatmentStep}>
                         <Text style={[styles.stepNumber, { color: tokens.primary }]}>{index + 1}.</Text>

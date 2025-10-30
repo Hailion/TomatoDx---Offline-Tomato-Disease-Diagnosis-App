@@ -21,12 +21,12 @@ export const DISEASE_INFO: Record<string, DiseaseInfo> = {
   early_blight: {
     id: 'early_blight',
     severity: 'High',
-    image: '🍃',
+    image: '🍂',
   },
   late_blight: {
     id: 'late_blight',
     severity: 'Critical',
-    image: '🦠',
+    image: '🔥',
   },
   healthy: {
     id: 'healthy',
@@ -36,37 +36,37 @@ export const DISEASE_INFO: Record<string, DiseaseInfo> = {
   leaf_mold: {
     id: 'leaf_mold',
     severity: 'Medium',
-    image: '🌫️',
+    image: '🍄',
   },
   septoria_leaf_spot: {
     id: 'septoria_leaf_spot',
     severity: 'Medium',
-    image: '⚫',
+    image: '🔴',
   },
   tomato_yellow_leaf_curl: {
     id: 'tomato_yellow_leaf_curl',
     severity: 'Medium',
-    image: '🌫️',
+    image: '🔄',
   },
   target_spot: {
     id: 'target_spot',
     severity: 'Medium',
-    image: '⚫',
+    image: '🎯',
   },
   spider_mites_two_spotted_spider_mites: {
     id: 'spider_mites_two_spotted_spider_mites',
     severity: 'Medium',
-    image: '⚫',
+    image: '🕷️',
   },
   tomato_mosaic_virus: {
     id: 'tomato_mosaic_virus',
     severity: 'Medium',
-    image: '⚫',
+    image: '🧩',
   },
   bacterial_spot: {
     id: 'bacterial_spot',
     severity: 'Medium',
-    image: '⚫',
+    image: '💧',
   },
 };
 

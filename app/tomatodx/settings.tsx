@@ -95,40 +95,40 @@ export default function SettingsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const trimmed = username.trim();
     try {
-      if (trimmed.length === 0) {
-        upsertUser('device'); // clears name
+    if (trimmed.length === 0) {
+      upsertUser('device'); // clears name
         showToast('Username removed', 'info', 3000);
-      } else {
-        upsertUser('device', trimmed);
+    } else {
+      upsertUser('device', trimmed);
         showToast('Username updated successfully!', 'success', 3000);
-      }
-      setIsEditingUsername(false);
+    }
+    setIsEditingUsername(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-      Animated.sequence([
-        Animated.timing(inputScaleAnim, {
-          toValue: 0.95,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-        Animated.timing(inputScaleAnim, {
-          toValue: 1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        try {
-          initDb();
+    Animated.sequence([
+      Animated.timing(inputScaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(inputScaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      try {
+        initDb();
           const u = getCurrentUser();
           if (u?.name && typeof u.name === 'string' && u.name.trim().length > 0) {
             setUsername(u.name);
-          } else {
+        } else {
             setUsername(t('settings.username'));
-          }
-        } catch {
-          // Ignore errors
         }
-      });
+      } catch {
+          // Ignore errors
+      }
+    });
     } catch {
       showToast('Failed to save username', 'error', 3000);
     }

@@ -283,6 +283,156 @@
         "Keep leaves dry",
         "Remove lower leaves that touch soil"
       ]
+    },
+    "tomato_mosaic_virus": {
+      "name": "Tomato Mosaic Virus",
+      "description": "Viral disease causing mottling and leaf distortion in tomatoes",
+      "symptoms": [
+        "Mottled light and dark green patterns on leaves",
+        "Leaf distortion and reduced leaf size",
+        "Stunted plant growth",
+        "Reduced fruit size and yield"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove and destroy infected plants",
+          "Disinfect tools after use",
+          "Control aphids and other vectors",
+          "Avoid working with plants when wet"
+        ],
+        "longTerm": [
+          "Use virus-free certified seeds",
+          "Plant resistant varieties",
+          "Rotate crops to non-hosts",
+          "Implement strict sanitation practices"
+        ]
+      },
+      "prevention": [
+        "Wash hands and tools before handling plants",
+        "Control insect vectors",
+        "Avoid tobacco use near plants",
+        "Maintain field hygiene"
+      ]
+    },
+    "tomato_yellow_leaf_curl": {
+      "name": "Tomato Yellow Leaf Curl Virus",
+      "description": "Whitefly-transmitted virus causing leaf curling and yellowing",
+      "symptoms": [
+        "Upward leaf curling",
+        "Yellowing between veins",
+        "Stunted growth and reduced vigor",
+        "Poor fruit set"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove infected plants",
+          "Control whiteflies with appropriate measures",
+          "Use physical barriers (row covers)",
+          "Eliminate nearby weed hosts"
+        ],
+        "longTerm": [
+          "Grow resistant/tolerant varieties",
+          "Implement integrated pest management",
+          "Rotate with non-host crops",
+          "Use yellow sticky traps to monitor"
+        ]
+      },
+      "prevention": [
+        "Manage whitefly populations",
+        "Use reflective mulches",
+        "Plant virus-free transplants",
+        "Maintain field sanitation"
+      ]
+    },
+    "target_spot": {
+      "name": "Target Spot",
+      "description": "Fungal disease causing concentric ring lesions on leaves and fruit",
+      "symptoms": [
+        "Circular spots with target-like rings",
+        "Leaf yellowing and drop",
+        "Stem and fruit lesions",
+        "Reduced plant vigor"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove affected leaves and fruits",
+          "Apply recommended fungicides",
+          "Improve air circulation",
+          "Avoid overhead irrigation"
+        ],
+        "longTerm": [
+          "Rotate with non-host crops",
+          "Use resistant varieties if available",
+          "Maintain proper plant spacing",
+          "Remove crop debris after harvest"
+        ]
+      },
+      "prevention": [
+        "Water at the base of plants",
+        "Ensure good drainage",
+        "Mulch to reduce soil splash",
+        "Monitor regularly for early signs"
+      ]
+    },
+    "spider_mites_two_spotted_spider_mites": {
+      "name": "Spider Mites Two-spotted Spider Mite",
+      "description": "Pest infestation causing stippling and webbing on leaves",
+      "symptoms": [
+        "Fine yellow stippling on leaves",
+        "Silky webbing on undersides",
+        "Leaf bronzing and drop",
+        "Overall plant stress"
+      ],
+      "treatment": {
+        "immediate": [
+          "Spray water to dislodge mites",
+          "Use insecticidal soap or miticide",
+          "Isolate heavily infested plants",
+          "Increase humidity if possible"
+        ],
+        "longTerm": [
+          "Encourage natural predators",
+          "Avoid broad-spectrum insecticides",
+          "Maintain plant health to reduce stress",
+          "Monitor with regular inspections"
+        ]
+      },
+      "prevention": [
+        "Keep plants well-watered",
+        "Reduce dusty, dry conditions",
+        "Quarantine new plants",
+        "Clean tools and benches"
+      ]
+    },
+    "bacterial_spot": {
+      "name": "Bacterial Spot",
+      "description": "Bacterial disease causing leaf spots and fruit blemishes",
+      "symptoms": [
+        "Small water-soaked leaf spots",
+        "Darkening and tearing of leaf tissue",
+        "Raised scabby spots on fruit",
+        "Premature defoliation"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove infected plant material",
+          "Apply copper-based bactericides",
+          "Avoid working plants when wet",
+          "Improve airflow around plants"
+        ],
+        "longTerm": [
+          "Rotate to non-host crops",
+          "Use certified disease-free seed",
+          "Plant resistant varieties",
+          "Implement strict sanitation"
+        ]
+      },
+      "prevention": [
+        "Avoid overhead watering",
+        "Disinfect tools and stakes",
+        "Control splashing with mulch",
+        "Space plants appropriately"
+      ]
     }
   }
 }

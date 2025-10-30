@@ -138,13 +138,13 @@ export default function HistoryScreen() {
     if (showHaptic) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
-    try {
-      deleteDiagnosis(diagnosisId);
-      setItems(prev => prev.filter(i => i.diagnosisId !== diagnosisId));
+            try {
+              deleteDiagnosis(diagnosisId);
+              setItems(prev => prev.filter(i => i.diagnosisId !== diagnosisId));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    }
+        }
   };
 
   const deriveSeverity = (confidence?: number) => {
@@ -171,6 +171,38 @@ export default function HistoryScreen() {
       case 'medium': return 'information-circle';
       case 'low': return 'checkmark-circle';
       default: return 'leaf';
+    }
+  };
+
+  // Normalize stored diseaseId or raw labels to our i18n keys
+  const normalizeDiseaseId = (raw?: string) => {
+    const l = (raw || '').trim().toLowerCase();
+    switch (l) {
+      case 'late blight':
+        return 'late_blight';
+      case 'early blight':
+        return 'early_blight';
+      case 'leaf mold':
+        return 'leaf_mold';
+      case 'septoria leaf spot':
+        return 'septoria_leaf_spot';
+      case 'tomato yellow leaf curl':
+      case 'tomato yellow leaf curl virus':
+      case 'tomato_yellow_leaf_curl_virus':
+        return 'tomato_yellow_leaf_curl';
+      case 'spider mites two-spotted spider mite':
+      case 'spider_mites_two_spotted_spider_mite':
+      case 'spider_mites_two_spotted_spider_mites':
+        return 'spider_mites_two_spotted_spider_mites';
+      case 'tomato mosaic virus':
+        return 'tomato_mosaic_virus';
+      case 'bacterial_spot':
+      case 'bacterial spot':
+        return 'bacterial_spot';
+      case 'healthy':
+        return 'healthy';
+      default:
+        return l.replace(/[^a-z0-9]+/g, '_');
     }
   };
 
@@ -221,12 +253,12 @@ export default function HistoryScreen() {
         <Swipeable
           renderRightActions={renderRightActions}
           overshootRight={false}
+      >
+        <TouchableOpacity
+          style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
+          onPress={() => handleItemPress(item)}
+          activeOpacity={0.7}
         >
-          <TouchableOpacity
-            style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
-            onPress={() => handleItemPress(item)}
-            activeOpacity={0.7}
-          >
           <View style={styles.itemLeft}>
             <View style={styles.imageContainer}>
               {item.filePath ? (
@@ -236,7 +268,14 @@ export default function HistoryScreen() {
               )}
             </View>
             <View style={styles.itemInfo}>
-              <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{item.nameEn || item.diseaseId}</Text>
+              {(() => {
+                const normId = normalizeDiseaseId(item.diseaseId);
+                const fallback1 = t(`diseases.${item.diseaseId}.name`, { defaultValue: item.nameEn || item.diseaseId });
+                const display = t(`diseases.${normId}.name`, { defaultValue: fallback1 });
+                return (
+                  <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{display}</Text>
+                );
+              })()}
               <Text style={[styles.date, { color: tokens.muted }]}>{dateText}</Text>
               <View style={styles.confidenceContainer}>
                 <View style={styles.confidenceBar}>

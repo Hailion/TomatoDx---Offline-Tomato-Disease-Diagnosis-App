@@ -8,6 +8,13 @@
     "scheme": "tomatodx",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "updates": {
+      "checkAutomatically": "NEVER",
+      "fallbackToCacheTimeout": 0
+    },
     "ios": {
       "supportsTablet": true
     },

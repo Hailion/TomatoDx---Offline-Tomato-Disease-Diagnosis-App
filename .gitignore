@@ -14,3 +14,5 @@ node_modules
 # Ignore Android release APKs
 android/app/release/*.apk
 
+android/app/release/*.aab
+

@@ -23,6 +23,7 @@ import { initDb } from '../../src/db/schema';
 import { predictFromUri } from '../../src/ml/inference';
 import { initModel } from '../../src/ml/model';
 import { createButtonPressAnimation, createEntranceAnimation } from '../../src/utils/animations';
+import { formatEthiopianDate } from '../../src/utils/ethiopianCalendar';
 import { useScreenSetup } from '../../src/utils/screenSetup';
 import { handleShare } from '../../src/utils/shareUtils';
 
@@ -236,7 +237,9 @@ export default function ResultScreen() {
           preventionTips: prevention,
           advice: treatmentImmediate[0] || t('common.noTreatment'),
           severity: severity,
-          image: getDiseaseInfo(diseaseId)?.image || '🌿'
+          image: getDiseaseInfo(diseaseId)?.image || '🌿',
+          diagnosedAt: savedDiagnosis.diagnosedAt,
+          capturedAt: savedDiagnosis.capturedAt
         });
 
         setIsSaved(true); // Mark as already saved since it's from history
@@ -332,7 +335,8 @@ export default function ResultScreen() {
           advice: treatmentImmediate[0] || t('common.noTreatment'),
           severity: severity || diseaseInfo?.severity || 'low',
           // severity: diseaseInfo?.severity || 'low',
-          image: diseaseInfo?.image || '🌿'
+          image: diseaseInfo?.image || '🌿',
+          diagnosedAt: new Date().toISOString()
         });
 
       } catch (e: any) {
@@ -495,6 +499,25 @@ export default function ResultScreen() {
 
                     <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{resultData.secondaryName}</Text>
 
+                    {(() => {
+                      const dateISO = resultData.diagnosedAt ?? resultData.capturedAt ?? null;
+                      const dateObj = dateISO ? new Date(dateISO) : null;
+                      const dateText = dateObj && !isNaN(dateObj.getTime())
+                        ? (i18n.language === 'am'
+                          ? formatEthiopianDate(dateObj)
+                          : dateObj.toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          }))
+                        : '';
+                      return dateText ? (
+                        <Text style={[styles.diseaseDate, { color: tokens.muted }]}>{dateText}</Text>
+                      ) : null;
+                    })()}
 
                   </View>
                   <View style={styles.diseaseInfoContent}>
@@ -774,7 +797,6 @@ export default function ResultScreen() {
 }
 
 
-
 const styles = StyleSheet.create({
 
   container: {
@@ -959,6 +981,13 @@ const styles = StyleSheet.create({
 
     fontWeight: '600',
 
+  },
+
+  diseaseDate: {
+    fontSize: 13,
+    color: '#9ca3af',
+    fontWeight: '500',
+    marginTop: 6,
   },
 
   diseaseInfoContent: {

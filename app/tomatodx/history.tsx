@@ -74,6 +74,12 @@ export default function HistoryScreen() {
     initDb();
   }, []);
 
+  // Helper function to derive severity from confidence
+  const deriveSeverity = (confidence?: number) => {
+    if (typeof confidence !== 'number') return 'Low';
+    return confidence >= 0.9 ? 'High' : confidence >= 0.7 ? 'Medium' : 'Low';
+  };
+
   // Helper function to get date range based on filter
   const getDateRange = () => {
     const now = new Date();
@@ -112,7 +118,8 @@ export default function HistoryScreen() {
 
       // Severity filter
       if (severity !== 'All') {
-        if (item.severity !== severity) {
+        const itemSeverity = deriveSeverity(item.confidence);
+        if (itemSeverity !== severity) {
           return false;
         }
       }
@@ -294,10 +301,6 @@ export default function HistoryScreen() {
     setItemToDelete(null);
   };
 
-  const deriveSeverity = (confidence?: number) => {
-    if (typeof confidence !== 'number') return 'Low';
-    return confidence >= 0.9 ? 'High' : confidence >= 0.7 ? 'Medium' : 'Low';
-  };
 
   const getSeverityColor = (severity?: string, confidence?: number) => {
     const s = (severity || deriveSeverity(confidence)).toLowerCase();

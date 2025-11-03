@@ -80,13 +80,15 @@ export const formatEthiopianDate = (gregorianDate: Date) => {
     const ethDate = gregorianToEthiopian(gregorianDate);
     const monthName = ETHIOPIAN_MONTHS[ethDate.month - 1] || ETHIOPIAN_MONTHS[0];
 
-    // Format time in Ethiopian time system (6 hours ahead)
+    // Format time in Ethiopian time system
+    // Ethiopian time: 12:00 AM - 12:00 PM = Gregorian 6:00 AM - 6:00 PM (daytime)
+    // Ethiopian time: 12:00 PM - 12:00 AM = Gregorian 6:00 PM - 6:00 AM (nighttime)
     const hours = gregorianDate.getHours();
     const minutes = gregorianDate.getMinutes();
 
-    // Convert to Ethiopian time (add 6 hours, then adjust for 12-hour format)
-    let ethiopianHour = (hours + 6) % 24;
-    const isDay = ethiopianHour >= 0 && ethiopianHour < 12; // Day: 6AM-6PM, Night: 6PM-6AM
+    // Convert to Ethiopian time (subtract 6 hours)
+    let ethiopianHour = (hours - 6 + 24) % 24;
+    const isDay = ethiopianHour < 12; // Day: 0-11 (12AM-12PM), Night: 12-23 (12PM-12AM)
 
     // Convert to 12-hour format for display
     const displayHours = (ethiopianHour % 12) || 12;

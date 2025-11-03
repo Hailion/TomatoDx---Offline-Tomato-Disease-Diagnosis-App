@@ -10,3 +10,7 @@ node_modules
 .expo
 .idea/
 
+
+# Ignore Android release APKs
+android/app/release/*.apk
+

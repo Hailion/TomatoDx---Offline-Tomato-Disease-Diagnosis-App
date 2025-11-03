@@ -1,7 +1,7 @@
 // history.tsx
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { router, useFocusEffect } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -17,10 +17,12 @@ import {
   View
 } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { deleteDiagnosis, getDiagnosesPage } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
+import { NavigationUtils } from '../../src/utils/navigation';
 
 type HistoryItem = {
   diagnosisId: string;
@@ -39,6 +41,7 @@ export default function HistoryScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const tokens = Colors[theme];
+  const insets = useSafeAreaInsets();
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -117,20 +120,24 @@ export default function HistoryScreen() {
   }, [search, severity]);
 
   const handleItemPress = (item: HistoryItem) => {
-    // Button press animation feedback
+    // Quick animation feedback
     Animated.sequence([
       Animated.timing(scaleAnim, {
-        toValue: 0.99,
-        duration: 100,
+        toValue: 0.98,
+        duration: 80,
         useNativeDriver: true,
       }),
       Animated.timing(scaleAnim, {
         toValue: 1,
-        duration: 100,
+        duration: 80,
         useNativeDriver: true,
       }),
     ]).start(() => {
-      router.push({ pathname: '/tomatodx/result', params: { uri: item.filePath, imageId: item.imageId, diagnosisId: item.diagnosisId } });
+      NavigationUtils.push('/tomatodx/result', {
+        uri: item.filePath || '',
+        imageId: item.imageId,
+        diagnosisId: item.diagnosisId
+      });
     });
   };
 
@@ -138,13 +145,13 @@ export default function HistoryScreen() {
     if (showHaptic) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
-            try {
-              deleteDiagnosis(diagnosisId);
-              setItems(prev => prev.filter(i => i.diagnosisId !== diagnosisId));
+    try {
+      deleteDiagnosis(diagnosisId);
+      setItems(prev => prev.filter(i => i.diagnosisId !== diagnosisId));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        }
+    }
   };
 
   const deriveSeverity = (confidence?: number) => {
@@ -253,73 +260,73 @@ export default function HistoryScreen() {
         <Swipeable
           renderRightActions={renderRightActions}
           overshootRight={false}
-      >
-        <TouchableOpacity
-          style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
-          onPress={() => handleItemPress(item)}
-          activeOpacity={0.7}
         >
-          <View style={styles.itemLeft}>
-            <View style={styles.imageContainer}>
-              {item.filePath ? (
-                <Image source={{ uri: item.filePath }} style={styles.itemImageThumb} resizeMode="cover" />
-              ) : (
-                <Text style={styles.itemImage}>🖼️</Text>
-              )}
-            </View>
-            <View style={styles.itemInfo}>
-              {(() => {
-                const normId = normalizeDiseaseId(item.diseaseId);
-                const fallback1 = t(`diseases.${item.diseaseId}.name`, { defaultValue: item.nameEn || item.diseaseId });
-                const display = t(`diseases.${normId}.name`, { defaultValue: fallback1 });
-                return (
-                  <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{display}</Text>
-                );
-              })()}
-              <Text style={[styles.date, { color: tokens.muted }]}>{dateText}</Text>
-              <View style={styles.confidenceContainer}>
-                <View style={styles.confidenceBar}>
-                  <View
-                    style={[
-                      styles.confidenceFill,
-                      {
-                        width: `${Math.round((item.confidence ?? 0) * 100)}%`,
-                        backgroundColor: tokens.primaryDark
-                      }
-                    ]}
-                  />
+          <TouchableOpacity
+            style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
+            onPress={() => handleItemPress(item)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.itemLeft}>
+              <View style={styles.imageContainer}>
+                {item.filePath ? (
+                  <Image source={{ uri: item.filePath }} style={styles.itemImageThumb} resizeMode="cover" />
+                ) : (
+                  <Text style={styles.itemImage}>🖼️</Text>
+                )}
+              </View>
+              <View style={styles.itemInfo}>
+                {(() => {
+                  const normId = normalizeDiseaseId(item.diseaseId);
+                  const fallback1 = t(`diseases.${item.diseaseId}.name`, { defaultValue: item.nameEn || item.diseaseId });
+                  const display = t(`diseases.${normId}.name`, { defaultValue: fallback1 });
+                  return (
+                    <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{display}</Text>
+                  );
+                })()}
+                <Text style={[styles.date, { color: tokens.muted }]}>{dateText}</Text>
+                <View style={styles.confidenceContainer}>
+                  <View style={styles.confidenceBar}>
+                    <View
+                      style={[
+                        styles.confidenceFill,
+                        {
+                          width: `${Math.round((item.confidence ?? 0) * 100)}%`,
+                          backgroundColor: tokens.primaryDark
+                        }
+                      ]}
+                    />
+                  </View>
+                  <Text style={[styles.confidenceText, { color: tokens.muted }]}>
+                    {Math.round((item.confidence ?? 0) * 100)}%
+                  </Text>
                 </View>
-                <Text style={[styles.confidenceText, { color: tokens.muted }]}>
-                  {Math.round((item.confidence ?? 0) * 100)}%
-                </Text>
               </View>
             </View>
-          </View>
 
-          <View style={styles.itemRight}>
-            <View
-              style={[
-                styles.severityBadge,
-                { backgroundColor: getSeverityColor(item.severity, item.confidence) + '20' }
-              ]}
-            >
-              <Ionicons
-                name={getSeverityIcon(item.severity, item.confidence) as any}
-                size={16}
-                color={getSeverityColor(item.severity, item.confidence)}
-              />
-              <Text
+            <View style={styles.itemRight}>
+              <View
                 style={[
-                  styles.severityText,
-                  { color: getSeverityColor(item.severity, item.confidence) }
+                  styles.severityBadge,
+                  { backgroundColor: getSeverityColor(item.severity, item.confidence) + '20' }
                 ]}
               >
-                {item.severity || deriveSeverity(item.confidence)}
-              </Text>
+                <Ionicons
+                  name={getSeverityIcon(item.severity, item.confidence) as any}
+                  size={16}
+                  color={getSeverityColor(item.severity, item.confidence)}
+                />
+                <Text
+                  style={[
+                    styles.severityText,
+                    { color: getSeverityColor(item.severity, item.confidence) }
+                  ]}
+                >
+                  {item.severity || deriveSeverity(item.confidence)}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
         </Swipeable>
       </Animated.View>
     );
@@ -438,7 +445,7 @@ export default function HistoryScreen() {
               <HistoryListItem item={item} index={index} />
             )}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[styles.listContent, { paddingBottom: Math.max(20, insets.bottom) }]}
             ItemSeparatorComponent={() => <View style={[styles.separator, { backgroundColor: tokens.backgroundAlt }]} />}
             onEndReachedThreshold={0.2}
             onEndReached={() => loadPage(offset)}

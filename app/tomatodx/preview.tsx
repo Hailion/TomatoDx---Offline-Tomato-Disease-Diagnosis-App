@@ -1,8 +1,7 @@
 // preview.tsx
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
-
 import { useTranslation } from 'react-i18next';
 import {
   Animated,
@@ -13,8 +12,10 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors, { ThemeTokens } from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { NavigationUtils } from '../../src/utils/navigation';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +24,7 @@ export default function PreviewScreen() {
   const { theme } = useTheme();
   const tokens = Colors[theme];
   const styles = getStyles(tokens);
+  const insets = useSafeAreaInsets();
 
   const params = useLocalSearchParams();
   const rawUri = (params as any).uri;
@@ -89,42 +91,39 @@ export default function PreviewScreen() {
   }, []);
 
   const handleGoBack = () => {
-    // Button press animation
+    // Quick animation feedback
     Animated.sequence([
       Animated.timing(scaleAnim, {
         toValue: 0.95,
-        duration: 100,
+        duration: 80,
         useNativeDriver: true,
       }),
       Animated.timing(scaleAnim, {
         toValue: 1,
-        duration: 100,
+        duration: 80,
         useNativeDriver: true,
       }),
     ]).start(() => {
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.replace('/tomatodx/capture');
-      }
+      NavigationUtils.back();
     });
   };
 
   const handleUsePhoto = () => {
-    // Button press animation
+    if (!imageUri || !imageId) return;
+    // Quick animation feedback
     Animated.sequence([
       Animated.timing(pulseAnim, {
-        toValue: 0.9,
-        duration: 100,
+        toValue: 0.95,
+        duration: 80,
         useNativeDriver: true,
       }),
       Animated.timing(pulseAnim, {
         toValue: 1,
-        duration: 100,
+        duration: 80,
         useNativeDriver: true,
       }),
     ]).start(() => {
-      router.push({ pathname: '/tomatodx/result', params: { uri: imageUri, imageId } });
+      NavigationUtils.pushWithSuccess('/tomatodx/result', { uri: imageUri, imageId });
     });
   };
 
@@ -141,7 +140,8 @@ export default function PreviewScreen() {
           styles.header,
           {
             opacity: fadeAnim,
-            transform: [{ translateY: slideUpAnim }]
+            transform: [{ translateY: slideUpAnim }],
+            paddingBottom: Math.max(20, insets.bottom)
           }
         ]}
       >
@@ -188,7 +188,8 @@ export default function PreviewScreen() {
           styles.actionsContainer,
           {
             opacity: fadeAnim,
-            transform: [{ translateY: slideUpAnim }]
+            transform: [{ translateY: slideUpAnim }],
+            paddingBottom: Math.max(20, insets.bottom)
           }
         ]}
       >
@@ -223,7 +224,8 @@ export default function PreviewScreen() {
           styles.helpContainer,
           {
             opacity: fadeAnim,
-            transform: [{ translateY: slideUpAnim }]
+            transform: [{ translateY: slideUpAnim }],
+            paddingBottom: Math.max(40, insets.bottom)
           }
         ]}
       >
@@ -264,7 +266,6 @@ const getStyles = (c: ThemeTokens) => StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 50,
     paddingBottom: 30,
-
     alignItems: 'center',
   },
   title: {

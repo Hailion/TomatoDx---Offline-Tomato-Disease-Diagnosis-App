@@ -2,26 +2,27 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Dimensions, Easing, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import 'react-native-get-random-values';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { v4 as uuidv4 } from 'uuid';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { useToast } from '../../src/contexts/ToastContext';
 import { insertImage } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
+import { NavigationUtils } from '../../src/utils/navigation';
 
 const { width, height } = Dimensions.get('window');
 
 export default function CaptureScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
   const { theme } = useTheme();
   const tokens = Colors[theme];
   const { showToast } = useToast();
+  const insets = useSafeAreaInsets();
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -137,8 +138,7 @@ export default function CaptureScreen() {
         const uri = result.assets[0].uri;
         const imageId = uuidv4();
         insertImage(imageId, uri, new Date().toISOString(), undefined);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        router.push(`/tomatodx/preview?uri=${encodeURIComponent(uri)}&imageId=${imageId}`);
+        NavigationUtils.pushWithSuccess('/tomatodx/preview', { uri, imageId });
       }
     } catch (error) {
       showToast('Failed to open camera. Please try again.', 'error', 4000);
@@ -179,8 +179,7 @@ export default function CaptureScreen() {
         const uri = result.assets[0].uri;
         const imageId = uuidv4();
         insertImage(imageId, uri, new Date().toISOString(), undefined);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        router.push(`/tomatodx/preview?uri=${encodeURIComponent(uri)}&imageId=${imageId}`);
+        NavigationUtils.pushWithSuccess('/tomatodx/preview', { uri, imageId });
       }
     } catch (error) {
       showToast('Failed to open gallery. Please try again.', 'error', 4000);
@@ -309,7 +308,8 @@ export default function CaptureScreen() {
           styles.actionsContainer,
           {
             opacity: fadeAnim,
-            transform: [{ translateY: slideUpAnim }]
+            transform: [{ translateY: slideUpAnim }],
+            paddingBottom: Math.max(16, insets.bottom)
           }
         ]}
       >

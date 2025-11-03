@@ -1,6 +1,6 @@
 // admin.tsx
 import { Ionicons } from '@expo/vector-icons';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getAllDiagnosesExport, getAnalyticsSummary, getDiagnosisCount, getLast7DaysCounts } from '../../src/db/repository';
@@ -25,6 +26,7 @@ export default function AdminScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const tokens = Colors[theme];
+  const insets = useSafeAreaInsets();
   const [totalScans, setTotalScans] = useState(0);
   const [summary, setSummary] = useState<{ avgConfidence: number; total: number; low: number; medium: number; high: number; topDisease?: { diseaseId: string; nameEn?: string; nameAm?: string; c: number } | null }>({ avgConfidence: 0, total: 0, low: 0, medium: 0, high: 0, topDisease: null });
   const [trend, setTrend] = useState<{ day: string; count: number }[]>([]);
@@ -159,9 +161,11 @@ export default function AdminScreen() {
               ).join('\n');
               const ts = new Date();
               const stamp = `${ts.getFullYear()}${String(ts.getMonth() + 1).padStart(2, '0')}${String(ts.getDate()).padStart(2, '0')}-${String(ts.getHours()).padStart(2, '0')}${String(ts.getMinutes()).padStart(2, '0')}${String(ts.getSeconds()).padStart(2, '0')}`;
-              const dir = FileSystem.join(FileSystem.Paths.document, 'exports');
+              const docPath = FileSystem.documentDirectory;
+              const dir = docPath ? `${docPath}exports/` : undefined;
+              if (!dir) throw new Error('No documentDirectory available');
               try { await FileSystem.makeDirectoryAsync(dir, { intermediates: true }); } catch { }
-              const fileUri = FileSystem.join(dir, `tomatodx-history-${stamp}.csv`);
+              const fileUri = `${dir}tomatodx-history-${stamp}.csv`;
               await FileSystem.writeAsStringAsync(fileUri, csv);
               const canShare = await Sharing.isAvailableAsync();
               if (canShare) {
@@ -195,7 +199,7 @@ export default function AdminScreen() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(40, insets.bottom + 16) }]}
       >
         {/* Header */}
         <Animated.View

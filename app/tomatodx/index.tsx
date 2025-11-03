@@ -1,8 +1,8 @@
 // index.tsx
 import { useFocusEffect } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { NavigationUtils } from '../../src/utils/navigation';
 
 import {
   Animated,
@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors, { ThemeTokens } from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getCurrentUser } from '../../src/db/repository';
@@ -22,10 +23,10 @@ const { height } = Dimensions.get('window');
 
 export default function TomatoHome() {
   const { t } = useTranslation();
-  const router = useRouter();
   const { theme } = useTheme();
   const tokens = Colors[theme];
   const styles = getStyles(tokens);
+  const insets = useSafeAreaInsets();
   const [userName, setUserName] = useState<string | null>(null);
 
   // Animation values
@@ -134,20 +135,21 @@ export default function TomatoHome() {
   );
 
   const handleNavigation = (route: string) => {
-    // Button press animation
+    // Quick button press animation (reduced delay)
     Animated.sequence([
       Animated.timing(scaleAnim, {
         toValue: 0.95,
-        duration: 100,
+        duration: 80,
         useNativeDriver: true,
       }),
       Animated.timing(scaleAnim, {
         toValue: 1,
-        duration: 100,
+        duration: 80,
         useNativeDriver: true,
       }),
     ]).start(() => {
-      router.push(route as any);
+      // Use shared navigation utility for consistent experience
+      NavigationUtils.push(route);
     });
   };
 
@@ -163,7 +165,7 @@ export default function TomatoHome() {
       <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
       <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
 
-      <View style={styles.content}>
+      <View style={[styles.content, { paddingBottom: Math.max(16, insets.bottom) }]}>
         {/* Header Section */}
         <View style={styles.header}>
           <Animated.View
@@ -296,7 +298,7 @@ export default function TomatoHome() {
           </TouchableOpacity>
         </Animated.View>
       </View>
-    </View>
+    </View >
   );
 }
 

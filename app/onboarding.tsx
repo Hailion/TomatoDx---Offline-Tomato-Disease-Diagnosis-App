@@ -3,7 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Animated, Easing, PanResponder, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../constants/Colors';
 import { useTheme } from '../src/contexts/ThemeContext';
 import { upsertUser } from '../src/db/repository';
@@ -12,34 +14,22 @@ import { initDb } from '../src/db/schema';
 // const { width, height } = Dimensions.get('window');
 
 const ONBOARDING_STEPS = [
-  {
-    icon: '🍅',
-    title: 'Welcome to TomatoDx',
-    description: 'AI-powered tomato disease detection at your fingertips',
-  },
-  {
-    icon: '📸',
-    title: 'Capture & Scan',
-    description: 'Take a photo or upload from gallery to analyze tomato health',
-  },
-  {
-    icon: '🤖',
-    title: 'AI Analysis',
-    description: 'Get instant, accurate diagnosis powered by machine learning',
-  },
-  {
-    icon: '📊',
-    title: 'Track History',
-    description: 'Save and review your past diagnoses for better crop management',
-  },
+  { icon: '🍅', key: 'welcome' },
+  { icon: '📸', key: 'capture' },
+  { icon: '🤖', key: 'analysis' },
+  { icon: '📊', key: 'history' },
 ];
 
 export default function OnboardingScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const tokens = Colors[theme];
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const [currentStep, setCurrentStep] = useState(0);
+  const currentStepRef = useRef(0);
+  const stepCount = ONBOARDING_STEPS.length;
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -88,13 +78,22 @@ export default function OnboardingScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep]);
 
+  // Keep a ref of the current step for gesture handlers
+  useEffect(() => {
+    currentStepRef.current = currentStep;
+  }, [currentStep]);
+
   const handleNext = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (currentStep < ONBOARDING_STEPS.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
+    setCurrentStep(prev => {
+      const next = prev + 1;
+      if (next < ONBOARDING_STEPS.length) {
+        currentStepRef.current = next;
+        return next;
+      }
       handleGetStarted();
-    }
+      return prev;
+    });
   };
 
   const handleSkip = () => {
@@ -114,24 +113,61 @@ export default function OnboardingScreen() {
     router.replace('/tomatodx');
   };
 
-  const step = ONBOARDING_STEPS[currentStep];
-  const isLastStep = currentStep === ONBOARDING_STEPS.length - 1;
+  const steps = ONBOARDING_STEPS.map(s => ({
+    icon: s.icon,
+    title: t(`onboarding.steps.${s.key}.title`),
+    description: t(`onboarding.steps.${s.key}.description`),
+  }));
+  const step = steps[currentStep];
+  const isLastStep = currentStep === steps.length - 1;
+
+  const swipeNext = () => {
+    setCurrentStep(prev => {
+      const next = (prev + 1) % stepCount;
+      currentStepRef.current = next;
+      return next;
+    });
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_evt, gestureState) =>
+        Math.abs(gestureState.dx) > 10 && Math.abs(gestureState.dy) < 20,
+      onPanResponderRelease: (_evt, gestureState) => {
+        if (gestureState.dx <= -50) {
+          // swipe left -> next (wrap)
+          swipeNext();
+        } else if (gestureState.dx >= 50) {
+          // swipe right -> back (wrap)
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          setCurrentStep(prev => {
+            const next = (prev - 1 + stepCount) % stepCount;
+            currentStepRef.current = next;
+            return next;
+          });
+        }
+      },
+    })
+  ).current;
 
   return (
-    <View style={[styles.container, { backgroundColor: tokens.background }]}>
+    <View style={[styles.container, { backgroundColor: tokens.background, paddingBottom: Math.max(40, insets.bottom + 12) }]}>
       {/* Background Elements */}
       <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: 0.3, backgroundColor: tokens.primaryOverlay }]} />
       <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: 0.2, backgroundColor: tokens.successOverlay }]} />
 
       {/* Skip Button */}
-      {!isLastStep && (
-        <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-          <Text style={[styles.skipText, { color: tokens.muted }]}>Skip</Text>
-        </TouchableOpacity>
-      )}
+      {
+        !isLastStep && (
+          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+            <Text style={[styles.skipText, { color: tokens.muted }]}>{t('common.skip')}</Text>
+          </TouchableOpacity>
+        )
+      }
 
       {/* Content */}
       <Animated.View
+        {...panResponder.panHandlers}
         style={[
           styles.content,
           {
@@ -175,7 +211,7 @@ export default function OnboardingScreen() {
             }}
           >
             <Ionicons name="arrow-back" size={20} color={tokens.primary} />
-            <Text style={[styles.backButtonText, { color: tokens.primary }]}>Back</Text>
+            <Text style={[styles.backButtonText, { color: tokens.primary }]}>{t('common.back')}</Text>
           </TouchableOpacity>
         )}
 
@@ -183,11 +219,11 @@ export default function OnboardingScreen() {
           style={[styles.nextButton, { backgroundColor: tokens.primary, shadowColor: tokens.primary }]}
           onPress={handleNext}
         >
-          <Text style={styles.nextButtonText}>{isLastStep ? 'Get Started' : 'Next'}</Text>
+          <Text style={styles.nextButtonText}>{isLastStep ? t('onboarding.getStarted') : t('common.next')}</Text>
           <Ionicons name="arrow-forward" size={20} color="#ffffff" />
         </TouchableOpacity>
       </View>
-    </View>
+    </View >
   );
 }
 

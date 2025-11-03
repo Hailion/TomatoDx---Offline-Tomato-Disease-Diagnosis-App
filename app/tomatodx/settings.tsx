@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { useToast } from '../../src/contexts/ToastContext';
@@ -26,6 +27,7 @@ export default function SettingsScreen() {
   const { theme, themeMode, setThemeMode } = useTheme();
   const tokens = Colors[theme];
   const { showToast } = useToast();
+  const insets = useSafeAreaInsets();
 
   const [username, setUsername] = useState(t('settings.username')); // placeholder; replaced by DB value if present
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -95,40 +97,40 @@ export default function SettingsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const trimmed = username.trim();
     try {
-    if (trimmed.length === 0) {
-      upsertUser('device'); // clears name
+      if (trimmed.length === 0) {
+        upsertUser('device'); // clears name
         showToast('Username removed', 'info', 3000);
-    } else {
-      upsertUser('device', trimmed);
+      } else {
+        upsertUser('device', trimmed);
         showToast('Username updated successfully!', 'success', 3000);
-    }
-    setIsEditingUsername(false);
+      }
+      setIsEditingUsername(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-    Animated.sequence([
-      Animated.timing(inputScaleAnim, {
-        toValue: 0.95,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(inputScaleAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      try {
-        initDb();
+      Animated.sequence([
+        Animated.timing(inputScaleAnim, {
+          toValue: 0.95,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(inputScaleAnim, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        try {
+          initDb();
           const u = getCurrentUser();
           if (u?.name && typeof u.name === 'string' && u.name.trim().length > 0) {
             setUsername(u.name);
-        } else {
+          } else {
             setUsername(t('settings.username'));
-        }
-      } catch {
+          }
+        } catch {
           // Ignore errors
-      }
-    });
+        }
+      });
     } catch {
       showToast('Failed to save username', 'error', 3000);
     }

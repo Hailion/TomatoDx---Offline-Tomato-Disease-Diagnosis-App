@@ -2,6 +2,7 @@
 
 import { Ionicons } from '@expo/vector-icons';
 
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -20,7 +21,11 @@ import {
 
   Image,
 
+  Platform,
+
   ScrollView,
+
+  Share,
 
   StyleSheet,
 
@@ -35,6 +40,7 @@ import 'react-native-get-random-values';
 
 import { v4 as uuidv4 } from 'uuid';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
 
 import LoadingIndicator from '../../src/components/LoadingIndicator';
@@ -52,57 +58,9 @@ import { initModel } from '../../src/ml/model';
 
 
 
-// Mock data store
-
-// const mockDataStore = {
-
-//   '1': {
-
-//     diseaseId: 'early_blight',
-
-//     nameEn: 'Early Blight',
-
-//     nameAm: 'ጥቂት ብርሃን',
-
-//     confidence: 0.92,
-
-//     advice: 'Remove affected leaves; apply fungicide. Ensure proper spacing between plants for air circulation.',
-
-//     severity: 'High',
-
-//     prevention: 'Rotate crops yearly, avoid overhead watering, remove plant debris.',
-
-//     image: '🌱'
-
-//   },
-
-//   '2': {
-
-//     diseaseId: 'healthy',
-
-//     nameEn: 'Healthy',
-
-//     nameAm: 'ጤናማ',
-
-//     confidence: 0.95,
-
-//     advice: 'Your tomato plant is healthy! Continue regular care and monitoring.',
-
-//     severity: 'None',
-
-//     prevention: 'Maintain current practices, regular watering, and proper nutrition.',
-
-//     image: '✅'
-
-//   }
-
-// };
-
-
-
 export default function ResultScreen() {
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const params = useLocalSearchParams();
 
@@ -121,6 +79,7 @@ export default function ResultScreen() {
   const { theme } = useTheme();
 
   const tokens = Colors[theme];
+  const insets = useSafeAreaInsets();
 
   const { showToast } = useToast();
 
@@ -130,38 +89,25 @@ export default function ResultScreen() {
     return [];
   };
 
-  // Map model labels (e.g., "Late Blight") to our i18n keys (e.g., "late_blight")
+  // Map model labels from metadata.json to our i18n keys
+  // Model labels: ["Healthy","Tomato_mosaic_virus","Tomato_Yellow_Leaf_Curl_Virus","Target_Spot",
+  //               "Spider_mites Two-spotted_spider_mite","Septoria_leaf_spot","Leaf_Mold",
+  //               "Late_blight","Early_blight","Bacterial_spot"]
   const normalizeLabelToId = (label: string): string => {
-    const l = (label || '').trim().toLowerCase();
-    switch (l) {
-      case 'late blight':
-        return 'late_blight';
-      case 'early blight':
-        return 'early_blight';
-      case 'leaf mold':
-        return 'leaf_mold';
-      case 'septoria leaf spot':
-        return 'septoria_leaf_spot';
-      case 'tomato yellow leaf curl':
-      case 'tomato yellow leaf curl virus':
-      case 'tomato_yellow_leaf_curl_virus':
-        return 'tomato_yellow_leaf_curl';
-      case 'spider mites two-spotted spider mite':
-      case 'spider_mites_two_spotted_spider_mite':
-      case 'spider_mites_two_spotted_spider_mites':
-        return 'spider_mites_two_spotted_spider_mites';
-      case 'tomato mosaic virus':
-        return 'tomato_mosaic_virus';
-      case 'target spot':
-        return 'target_spot';
-      case 'bacterial_spot':
-      case 'bacterial spot':
-        return 'bacterial_spot';
-      case 'healthy':
-        return 'healthy';
-      default:
-        return l.replace(/[^a-z0-9]+/g, '_');
-    }
+    if (!label) return 'healthy';
+    const normalized = label.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+
+    // Map model labels to i18n keys
+    if (normalized.includes('spider_mites')) return 'spider_mites_two_spotted_spider_mites';
+    if (normalized === 'tomato_yellow_leaf_curl_virus') return 'tomato_yellow_leaf_curl';
+
+    // Direct matches (already normalized correctly)
+    const validIds = [
+      'healthy', 'late_blight', 'early_blight', 'leaf_mold',
+      'septoria_leaf_spot', 'tomato_mosaic_virus', 'target_spot', 'bacterial_spot'
+    ];
+
+    return validIds.includes(normalized) ? normalized : 'healthy';
   };
 
 
@@ -315,27 +261,138 @@ export default function ResultScreen() {
 
     try {
 
-      if (await Sharing.isAvailableAsync()) {
-
-        const shareText = `${t('result.shareText')}\n${t('result.disease')}: ${resultData.nameEn}\n${t('result.confidence')}: ${Math.round(resultData.confidence * 100)}%\n${t('result.advice')}: ${resultData.advice}`;
-
-
-
-        await Sharing.shareAsync('data:text/plain;charset=utf-8,' + encodeURIComponent(shareText), {
-
-          mimeType: 'text/plain',
-
-          dialogTitle: t('result.shareTitle')
-
-        });
-
-      } else {
-
-        showToast('Sharing is not available on this device', 'warning', 3000);
+      if (!resultData || !uri) {
+        showToast('No result or image to share', 'warning', 3000);
+        return;
       }
 
-    } catch {
-      showToast('Failed to share result', 'error', 3000);
+      if (!(await Sharing.isAvailableAsync())) {
+        showToast('Sharing is not available on this device', 'warning', 3000);
+        return;
+      }
+
+      // Build comprehensive share text
+      const shareText = `🍅 ${t('result.shareText')}\n\n` +
+        `📋 ${t('result.disease')}: ${resultData.primaryName}${resultData.secondaryName ? ` (${resultData.secondaryName})` : ''}\n` +
+        `📊 ${t('result.confidence')}: ${Math.round(resultData.confidence * 100)}%\n` +
+        `⚠️ ${t('result.recommendation')}: ${resultData.advice}\n\n` +
+        `Diagnosed via TomatoDx App`;
+
+      // Strategy: Use platform-specific approaches for best results
+      // iOS: Share API supports image + text together
+      // Android: Share image first, then text (more reliable)
+
+      if (Platform.OS === 'ios') {
+        // iOS: Try Share API with both image and text
+        try {
+          const shareOptions: any = {
+            message: shareText,
+            title: `${resultData.primaryName} - ${t('result.shareTitle')}` || 'Share Diagnosis',
+          };
+
+          if (uri && (uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('http://') || uri.startsWith('https://'))) {
+            shareOptions.url = uri;
+          }
+
+          const result = await Share.share(shareOptions);
+
+          if (result.action === Share.sharedAction) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            showToast('Shared successfully with both image and diagnosis details!', 'success', 2000);
+          } else if (result.action === Share.dismissedAction) {
+            return;
+          }
+          return;
+        } catch (iosShareError) {
+          console.warn('iOS Share API failed, falling back:', iosShareError);
+          // Fall through to expo-sharing
+        }
+      }
+
+      // Android or iOS fallback: Share image with expo-sharing (more reliable for images)
+      if (uri && (uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('http://') || uri.startsWith('https://'))) {
+        try {
+          // Share image first (this works reliably on both platforms)
+          await Sharing.shareAsync(uri, {
+            mimeType: 'image/jpeg',
+            dialogTitle: `${resultData.primaryName} - ${t('result.shareTitle')}` || 'Share Diagnosis',
+            UTI: 'public.jpeg',
+          });
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+          // On Android, immediately share text file to ensure both are available
+          if (Platform.OS === 'android') {
+            // Create text file for sharing
+            const textFileName = `tomatodx-diagnosis-${Date.now()}.txt`;
+            let textFileUri: string | null = null;
+
+            try {
+              // Use documentDirectory from legacy API
+              const docPath = FileSystem.documentDirectory;
+              if (docPath) {
+                const dir = `${docPath}shares/`;
+                await FileSystem.makeDirectoryAsync(dir, { intermediates: true }).catch(() => { });
+                textFileUri = `${dir}${textFileName}`;
+                await FileSystem.writeAsStringAsync(textFileUri, shareText);
+              }
+            } catch (fileErr) {
+              console.warn('Could not create text file:', fileErr);
+            }
+
+            // Share text file immediately after image (ensures both are shared)
+            if (textFileUri) {
+              setTimeout(async () => {
+                try {
+                  await Sharing.shareAsync(textFileUri!, {
+                    mimeType: 'text/plain',
+                    dialogTitle: 'Diagnosis Details',
+                  });
+
+                  // Clean up text file
+                  setTimeout(async () => {
+                    try {
+                      await FileSystem.deleteAsync(textFileUri!, { idempotent: true });
+                    } catch { }
+                  }, 2000);
+                } catch (textError) {
+                  console.warn('Text file sharing failed:', textError);
+                }
+              }, 400);
+            } else {
+              // If text file creation failed, share text as data URI
+              setTimeout(async () => {
+                try {
+                  await Share.share({
+                    message: shareText,
+                    title: 'Diagnosis Details',
+                  });
+                } catch { }
+              }, 400);
+            }
+          }
+          return;
+        } catch (imageShareError: any) {
+          // If image sharing fails, share text as fallback
+          console.warn('Image sharing failed, sharing text instead:', imageShareError);
+          await Share.share({
+            message: shareText,
+            title: t('result.shareTitle') || 'Share Diagnosis',
+          });
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+      } else {
+        // No image URI, share text only
+        await Share.share({
+          message: shareText,
+          title: t('result.shareTitle') || 'Share Diagnosis',
+        });
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+
+    } catch (error: any) {
+      console.error('Share error:', error);
+      showToast(`Failed to share: ${error?.message || 'Unknown error'}`, 'error', 4000);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
 
   };
@@ -445,12 +502,23 @@ export default function ResultScreen() {
           t(`diseases.${diseaseId}.prevention`, { returnObjects: true })
         );
 
+        // Get names in both languages
+        const nameEn = t(`diseases.${diseaseId}.name`, { lng: 'en' }) || diseaseId;
+        const nameAm = t(`diseases.${diseaseId}.name`, { lng: 'am' }) || diseaseId;
+
+        // Set primary name (current language) and secondary name (other language)
+        const currentLang = i18n.language || 'en';
+        const primaryName = currentLang === 'am' ? nameAm : nameEn;
+        const secondaryName = currentLang === 'am' ? nameEn : nameAm;
+
         setResultData({
 
           diseaseId,
 
-          nameEn: t(`diseases.${diseaseId}.name`, { lng: 'en', defaultValue: diseaseId }),
-          nameAm: t(`diseases.${diseaseId}.name`, { lng: 'am', defaultValue: diseaseId }),
+          nameEn,
+          nameAm,
+          primaryName,  // Name in current language
+          secondaryName, // Name in other language
           confidence: pred.confidence,
 
           description: t(`diseases.${diseaseId}.description`, { defaultValue: 'Disease detected' }),
@@ -588,7 +656,7 @@ export default function ResultScreen() {
 
       >
 
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(24, insets.bottom) }]} showsVerticalScrollIndicator={false}>
 
           {!resultData ? (
 
@@ -622,9 +690,9 @@ export default function ResultScreen() {
 
                   <View style={styles.diseaseInfo}>
 
-                    <Text style={[styles.diseaseName, { color: tokens.text }]}>{resultData.nameEn}</Text>
+                    <Text style={[styles.diseaseName, { color: tokens.text }]}>{resultData.primaryName}</Text>
 
-                    <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{resultData.nameAm}</Text>
+                    <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{resultData.secondaryName}</Text>
 
 
                   </View>

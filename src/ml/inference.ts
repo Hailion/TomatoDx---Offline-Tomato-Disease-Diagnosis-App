@@ -42,6 +42,18 @@ export async function predictFromUri(uri: string) {
 
     // 4) Read values and guard against NaNs/Infinities
     const values = Array.from(await probs.data());
+    
+    // DEBUG: Log raw output probabilities and class mapping (can be removed after verification)
+    if (__DEV__) {
+        const labels = getLabels();
+        console.log('[inference.ts] Raw output probabilities:', values.map((v, i) => ({
+            index: i,
+            label: labels[i] || `class_${i}`,
+            probability: v.toFixed(6)
+        })));
+        console.log('[inference.ts] Probabilities sum:', values.reduce((a, b) => a + b, 0).toFixed(6));
+    }
+    
     input.dispose(); out.dispose(); probs.dispose?.();
 
     if (!values.length || values.some((v) => !Number.isFinite(v))) {
@@ -56,6 +68,16 @@ export async function predictFromUri(uri: string) {
     const labels = getLabels();
     if (labels.length && labels.length !== values.length) {
         console.warn(`predictFromUri: labels length (${labels.length}) != output size (${values.length}).`);
+    }
+    
+    // DEBUG: Log final prediction (can be removed after verification)
+    if (__DEV__) {
+        console.log('[inference.ts] Final prediction:', {
+            index: bestIdx,
+            label: labels[bestIdx] ?? `class_${bestIdx}`,
+            confidence: bestVal.toFixed(6)
+        });
+        console.log('[inference.ts] Label order from metadata:', labels);
     }
 
     return { label: labels[bestIdx] ?? `class_${bestIdx}`, confidence: bestVal, all: values };

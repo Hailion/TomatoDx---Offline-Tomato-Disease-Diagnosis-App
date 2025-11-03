@@ -1,189 +1,56 @@
 // capture.tsx
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Animated, Dimensions, Easing, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import 'react-native-get-random-values';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { v4 as uuidv4 } from 'uuid';
-import Colors from '../../constants/Colors';
-import { useTheme } from '../../src/contexts/ThemeContext';
 import { useToast } from '../../src/contexts/ToastContext';
-import { insertImage } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
-import { NavigationUtils } from '../../src/utils/navigation';
+import { createButtonPressAnimation, createEntranceAnimation, createPulseAnimation, createRotationAnimation, createShimmerAnimation, useCommonAnimations } from '../../src/utils/animations';
+import { handleCameraCapture, handleGalleryPicker } from '../../src/utils/imagePicker';
+import { useScreenSetup } from '../../src/utils/screenSetup';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function CaptureScreen() {
-  const { t } = useTranslation();
-  const { theme } = useTheme();
-  const tokens = Colors[theme];
+  const { t, tokens, insets } = useScreenSetup();
   const { showToast } = useToast();
-  const insets = useSafeAreaInsets();
 
   // Animation values
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
-  const slideUpAnim = useRef(new Animated.Value(30)).current;
+  const { fadeAnim, scaleAnim, slideUpAnim, pulseAnim } = useCommonAnimations();
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     initDb();
+
     // Main entrance animation sequence
-    Animated.sequence([
-      // Fade in background and main container
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      // Scale up camera view
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 600,
-        easing: Easing.elastic(1),
-        useNativeDriver: true,
-      }),
-      // Slide up buttons
-      Animated.timing(slideUpAnim, {
-        toValue: 0,
-        duration: 500,
-        easing: Easing.out(Easing.back(1)),
-        useNativeDriver: true,
-      })
-    ]).start();
+    createEntranceAnimation(fadeAnim, scaleAnim, slideUpAnim).start();
 
-    // Continuous animations
-    Animated.loop(
-      Animated.sequence([
-        // Pulse animation for guide overlay
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
-    // Shimmer effect for camera icon
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(shimmerAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(shimmerAnim, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
-    // Subtle rotation for scan icon
-    Animated.loop(
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 4000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
+    // Start continuous animations
+    createPulseAnimation(pulseAnim).start();
+    createShimmerAnimation(shimmerAnim).start();
+    createRotationAnimation(rotateAnim).start();
   }, []);
 
   const handleCapture = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // Button press animation
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.95,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    createButtonPressAnimation(scaleAnim);
 
-    try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        showToast('Camera permission is required to take photos', 'error', 4000);
-        return;
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: 'images',
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const uri = result.assets[0].uri;
-        const imageId = uuidv4();
-        insertImage(imageId, uri, new Date().toISOString(), undefined);
-        NavigationUtils.pushWithSuccess('/tomatodx/preview', { uri, imageId });
-      }
-    } catch (error) {
-      showToast('Failed to open camera. Please try again.', 'error', 4000);
-    }
+    await handleCameraCapture({
+      showToast,
+      onError: (message) => showToast(t('capture.cameraPermissionRequired'), 'error', 4000),
+    });
   };
 
   const handleGallery = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Button press animation
-    Animated.sequence([
-      Animated.timing(slideUpAnim, {
-        toValue: 5,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideUpAnim, {
-        toValue: 0,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    createButtonPressAnimation(slideUpAnim);
 
-    try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        showToast('Gallery permission is required', 'error', 4000);
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: "images",
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const uri = result.assets[0].uri;
-        const imageId = uuidv4();
-        insertImage(imageId, uri, new Date().toISOString(), undefined);
-        NavigationUtils.pushWithSuccess('/tomatodx/preview', { uri, imageId });
-      }
-    } catch (error) {
-      showToast('Failed to open gallery. Please try again.', 'error', 4000);
-    }
+    await handleGalleryPicker({
+      showToast,
+      onError: (message) => showToast(t('capture.galleryPermissionRequired'), 'error', 4000),
+    });
   };
 
   const rotateInterpolate = rotateAnim.interpolate({

@@ -18,6 +18,12 @@
     "system": "System",
     "profile": "Profile",
     "edit": "Edit",
+    "languageChangedEng": "Language changed to",
+    "usernameRemoved": "Username removed",
+    "usernameUpdated": "Username updated successfully!",
+    "failedToSaveUsername": "Failed to save username",
+    "english": "English",
+    "amharic": "Amharic",
     "appInfo": {
       "title": "App Information",
       "version": "Version",
@@ -35,7 +41,10 @@
     "align": "Align Tomato Here",
     "takePhoto": "Take Photo",
     "openGallery": "Open Gallery",
-    "permissionReq": "Permission Required', 'Media library permission is needed to access photos."
+    "cameraPermissionRequired": "Camera permission is required to take photos",
+    "galleryPermissionRequired": "Gallery permission is required",
+    "failedToOpenCamera": "Failed to open camera. Please try again.",
+    "failedToOpenGallery": "Failed to open gallery. Please try again."
   },
   "history": {
     "title": "Scan History",
@@ -43,7 +52,24 @@
     "total": "Total",
     "deleteTitle": "Delete Entry",
     "deleteConfirm": "Are you sure you want to delete this entry?",
-    "search": "Search"
+    "search": "Search",
+    "filterByDate": "Filter by Date",
+    "dateFilters": {
+      "all": "All",
+      "today": "Today",
+      "week": "Week",
+      "month": "Month",
+      "custom": "Custom"
+    },
+    "customDatePicker": {
+      "title": "Select Specific Date",
+      "selectDate": "Enter a specific date to filter:",
+      "day": "Day",
+      "month": "Month",
+      "year": "Year",
+      "apply": "Apply",
+      "cancel": "Cancel"
+    }
   },
   "result": {
     "title": "Diagnosis Result",
@@ -64,7 +90,17 @@
     "shareTitle": "Share Diagnosis",
     "shareError": "Share Error",
     "shareNotAvailable": "Sharing is not available on this device.",
-    "shareFailed": "Failed to share the diagnosis."
+    "shareFailed": "Failed to share the diagnosis.",
+    "alreadySaved": "This result is already saved in your history",
+    "waitForAnalysis": "Please wait for analysis to complete",
+    "missingImage": "Missing image. Please retake the photo.",
+    "savedToHistory": "Result saved to history!",
+    "viewHistory": "View History",
+    "failedToSave": "Failed to save result. Please try again.",
+    "noResultToShare": "No result or image to share",
+    "shareSuccessful": "Shared successfully with both image and diagnosis details!",
+    "diagnosisDetails": "Diagnosis Details",
+    "predictionFailed": "Prediction failed"
   },
   "preview": {
     "title": "Photo Preview",
@@ -99,7 +135,6 @@
     "title": "Admin Panel",
     "subtitle": "System management and configuration",
     "online": "Online",
-    "version": "Model version",
     "updateInstructions": "Model update instructions",
     "systemInformation": "System Information",
     "appVersion": "App Version",
@@ -126,7 +161,6 @@
       "clearData": "Clear All Data",
       "exportData": "Export Data",
       "clearCache": "Clear Cache",
-      "confirmClear": "Are you sure you want to clear all data? This action cannot be undone.",
       "clearSuccess": "All data cleared successfully",
       "exportSuccess": "Data exported successfully",
       "exportFailed": "Data export failed"
@@ -140,11 +174,6 @@
       "topDisease": "Top Disease",
       "last7Days": "Last 7 Days",
       "severityDistribution": "Severity Distribution"
-    },
-    "common": {
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "analyzing": "Analyzing..."
     }
   },
   "common": {
@@ -158,7 +187,9 @@
     "noTreatment": "No specific treatment available",
     "skip": "Skip",
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "unknownError": "Unknown error",
+    "shareDiagnosis": "Share Diagnosis"
   },
   "diseases": {
     "early_blight": {

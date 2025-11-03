@@ -75,6 +75,21 @@ export function getDiagnosisCount() {
     return rows[0]?.count ?? 0;
 }
 
+export function getDiagnosisById(diagnosisId: string) {
+    const rows = getAll(
+        `SELECT d.diagnosisId, d.confidence, d.diagnosedAt, d.notes,
+            i.imageId, i.filePath, i.capturedAt,
+            ds.diseaseId, ds.nameEn, ds.nameAm, ds.symptoms, ds.advice
+         FROM Diagnosis d
+         JOIN Image i ON d.imageId = i.imageId
+         LEFT JOIN Disease ds ON d.diseaseId = ds.diseaseId
+         WHERE d.diagnosisId = ?
+         LIMIT 1`,
+        [diagnosisId]
+    );
+    return rows[0] ?? null;
+}
+
 export function getDiagnosesPage(
     limit: number,
     offset: number,

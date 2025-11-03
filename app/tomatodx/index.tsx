@@ -1,32 +1,25 @@
 // index.tsx
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { NavigationUtils } from '../../src/utils/navigation';
-
 import {
   Animated,
-  Dimensions,
   Easing,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Colors, { ThemeTokens } from '../../constants/Colors';
-import { useTheme } from '../../src/contexts/ThemeContext';
+import { ThemeTokens } from '../../constants/Colors';
 import { getCurrentUser } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
+import { createButtonPressAnimation } from '../../src/utils/animations';
+import { NavigationUtils } from '../../src/utils/navigation';
+import { useScreenSetup } from '../../src/utils/screenSetup';
 
-const { height } = Dimensions.get('window');
 
 export default function TomatoHome() {
-  const { t } = useTranslation();
-  const { theme } = useTheme();
-  const tokens = Colors[theme];
+  const { t, tokens, insets } = useScreenSetup();
   const styles = getStyles(tokens);
-  const insets = useSafeAreaInsets();
   const [userName, setUserName] = useState<string | null>(null);
 
   // Animation values
@@ -40,13 +33,6 @@ export default function TomatoHome() {
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    try {
-      initDb();
-      const u = getCurrentUser();
-      if (u?.name && typeof u.name === 'string' && u.name.trim().length > 0) {
-        setUserName(u.name);
-      }
-    } catch { }
     // Sequence animations for better visual flow
     Animated.sequence([
       // Fade in background
@@ -135,20 +121,7 @@ export default function TomatoHome() {
   );
 
   const handleNavigation = (route: string) => {
-    // Quick button press animation (reduced delay)
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.95,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      // Use shared navigation utility for consistent experience
+    createButtonPressAnimation(scaleAnim, () => {
       NavigationUtils.push(route);
     });
   };
@@ -160,7 +133,6 @@ export default function TomatoHome() {
 
   return (
     <View style={styles.container}>
-
       {/* Background Animated Elements */}
       <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
       <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
@@ -298,7 +270,7 @@ export default function TomatoHome() {
           </TouchableOpacity>
         </Animated.View>
       </View>
-    </View >
+    </View>
   );
 }
 
@@ -337,7 +309,7 @@ const getStyles = (c: ThemeTokens) =>
     // Header styles
     header: {
       alignItems: 'center',
-      marginTop: height * 0.1,
+      marginTop: 60,
     },
     logoContainer: {
       alignItems: 'center',
@@ -443,8 +415,7 @@ const getStyles = (c: ThemeTokens) =>
       backgroundColor: c.whiteOverlay,
       gap: 8,
       borderWidth: 1,
-      borderColor: c.border,
-
+      borderColor: c.border
     },
     footerIcon: {
       fontSize: 16,

@@ -6,10 +6,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   Easing,
   FlatList,
   Image,
+  Modal,
   StyleSheet,
   Text,
   TextInput,
@@ -22,6 +24,8 @@ import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { deleteDiagnosis, getDiagnosesPage } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
+import i18n from '../../src/i18n/i18n';
+import { ethiopianToGregorian, formatEthiopianDate } from '../../src/utils/ethiopianCalendar';
 import { NavigationUtils } from '../../src/utils/navigation';
 
 type HistoryItem = {
@@ -48,7 +52,6 @@ export default function HistoryScreen() {
   const slideUpHeader = useRef(new Animated.Value(30)).current;
   const slideUpList = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.98)).current;
-  const requestKeyRef = useRef<string | null>(null);
 
   const [items, setItems] = useState<HistoryItem[]>([]);
   const PAGE_SIZE = 20;
@@ -58,10 +61,136 @@ export default function HistoryScreen() {
   const [hasMore, setHasMore] = useState(true);
   const [search, setSearch] = useState('');
   const [severity, setSeverity] = useState<'All' | 'Low' | 'Medium' | 'High'>('All');
+  const [dateFilter, setDateFilter] = useState<'All' | 'Today' | 'Week' | 'Month' | 'Custom'>('All');
+  const [customDateRange, setCustomDateRange] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [customDay, setCustomDay] = useState('');
+  const [customMonth, setCustomMonth] = useState('');
+  const [customYear, setCustomYear] = useState('');
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     initDb();
   }, []);
+
+  // Helper function to get date range based on filter
+  const getDateRange = () => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    switch (dateFilter) {
+      case 'Today':
+        return { start: today, end: new Date(today.getTime() + 24 * 60 * 60 * 1000) };
+      case 'Week':
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - 7);
+        return { start: weekStart, end: now };
+      case 'Month':
+        const monthStart = new Date(today);
+        monthStart.setDate(today.getDate() - 30);
+        return { start: monthStart, end: now };
+      case 'Custom':
+        return customDateRange;
+      default:
+        return { start: null, end: null };
+    }
+  };
+
+  // Helper function to filter items by all criteria
+  const getFilteredItems = (items: HistoryItem[]) => {
+    return items.filter(item => {
+      // Search filter
+      if (search) {
+        const searchLower = search.toLowerCase();
+        const nameEn = (item.nameEn || '').toLowerCase();
+        const nameAm = (item.nameAm || '').toLowerCase();
+        if (!nameEn.includes(searchLower) && !nameAm.includes(searchLower)) {
+          return false;
+        }
+      }
+
+      // Severity filter
+      if (severity !== 'All') {
+        if (item.severity !== severity) {
+          return false;
+        }
+      }
+
+      // Date filter
+      if (dateFilter !== 'All') {
+        const { start, end } = getDateRange();
+        if (start && end) {
+          const itemDate = new Date(item.diagnosedAt || item.capturedAt || '');
+          if (isNaN(itemDate.getTime()) || itemDate < start || itemDate > end) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    });
+  };
+
+  // Computed filtered items for display
+  const filteredItems = getFilteredItems(items);
+
+  // Custom date input modal
+  const showCustomDatePicker = () => {
+    setShowDatePicker(true);
+  };
+
+  // Handle custom date input
+  const handleCustomDateInput = (day: string, month: string, year: string) => {
+    if (!day || !month || !year) {
+      Alert.alert(t('common.error') || 'Error', 'Please fill in all date fields.');
+      return;
+    }
+
+    const dayNum = parseInt(day);
+    const monthNum = parseInt(month);
+    const yearNum = parseInt(year);
+
+    try {
+      let selectedDate: Date;
+
+      if (i18n.language === 'am') {
+        // Handle Ethiopian calendar input
+        if (dayNum >= 1 && dayNum <= 30 && monthNum >= 1 && monthNum <= 13 && yearNum >= 1900) {
+          // Convert Ethiopian date to Gregorian
+          selectedDate = ethiopianToGregorian(yearNum, monthNum, dayNum);
+        } else {
+          Alert.alert(t('common.error') || 'Error', 'Please enter a valid Ethiopian date (Day: 1-30, Month: 1-13).');
+          return;
+        }
+      } else {
+        // Handle Gregorian calendar input
+        const gregorianMonth = monthNum - 1; // JavaScript months are 0-indexed
+        if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 1900 && yearNum <= new Date().getFullYear()) {
+          selectedDate = new Date(yearNum, gregorianMonth, dayNum);
+        } else {
+          Alert.alert(t('common.error') || 'Error', 'Please enter a valid date (Day: 1-31, Month: 1-12, Year: 1900-current year).');
+          return;
+        }
+      }
+
+      if (!isNaN(selectedDate.getTime()) && selectedDate <= new Date()) {
+        // Set date range for the specific date (start of day to end of day)
+        const startOfDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 0, 0, 0, 0);
+        const endOfDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 23, 59, 59, 999);
+        setCustomDateRange({ start: startOfDay, end: endOfDay });
+        setShowDatePicker(false);
+        // Clear input fields
+        setCustomDay('');
+        setCustomMonth('');
+        setCustomYear('');
+      } else {
+        Alert.alert(t('common.error') || 'Error', 'Please enter a valid date that is not in the future.');
+      }
+    } catch (error) {
+      Alert.alert(t('common.error') || 'Error', 'Invalid date format. Please check your input.');
+    }
+  };
 
   const loadPage = useCallback((startOffset: number) => {
     if ((startOffset !== 0 && loading) || (startOffset !== 0 && !hasMore)) return;
@@ -78,7 +207,7 @@ export default function HistoryScreen() {
       setItems(prev => {
         const existing = new Set(prev.map(i => i.diagnosisId));
         const merged = [...prev, ...rows.filter(r => !existing.has(r.diagnosisId))];
-        return merged;
+        return getFilteredItems(merged);
       });
       setOffset(startOffset + rows.length);
       setHasMore(rows.length === PAGE_SIZE);
@@ -86,13 +215,12 @@ export default function HistoryScreen() {
     finally {
       setLoading(false);
     }
-  }, [loading, hasMore, search, severity]);
+  }, [loading, hasMore, search, severity, dateFilter, customDateRange]);
 
   const loadInitial = useCallback(() => {
     setHasMore(true);
     setOffset(0);
     setItems([]);
-    requestKeyRef.current = null;
     loadPage(0);
   }, [loadPage]);
 
@@ -114,10 +242,9 @@ export default function HistoryScreen() {
     setHasMore(true);
     setOffset(0);
     setItems([]);
-    requestKeyRef.current = null;
     loadPage(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, severity]);
+  }, [search, severity, dateFilter, customDateRange]);
 
   const handleItemPress = (item: HistoryItem) => {
     // Quick animation feedback
@@ -141,17 +268,30 @@ export default function HistoryScreen() {
     });
   };
 
-  const handleDelete = (diagnosisId: string, showHaptic = true) => {
-    if (showHaptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    }
+  const showDeleteConfirmation = (diagnosisId: string) => {
+    setItemToDelete(diagnosisId);
+    setDeleteConfirmVisible(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!itemToDelete) return;
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     try {
-      deleteDiagnosis(diagnosisId);
-      setItems(prev => prev.filter(i => i.diagnosisId !== diagnosisId));
+      deleteDiagnosis(itemToDelete);
+      setItems(prev => prev.filter(i => i.diagnosisId !== itemToDelete));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
+
+    setDeleteConfirmVisible(false);
+    setItemToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirmVisible(false);
+    setItemToDelete(null);
   };
 
   const deriveSeverity = (confidence?: number) => {
@@ -230,13 +370,24 @@ export default function HistoryScreen() {
 
     const dateISO = item.diagnosedAt ?? item.capturedAt ?? null;
     const dateObj = dateISO ? new Date(dateISO) : null;
-    const dateText = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleString() : '';
+    const dateText = dateObj && !isNaN(dateObj.getTime())
+      ? (i18n.language === 'am'
+        ? formatEthiopianDate(dateObj)
+        : dateObj.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        }))
+      : '';
 
     const renderRightActions = () => (
       <View style={styles.deleteAction}>
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => handleDelete(item.diagnosisId)}
+          onPress={() => showDeleteConfirmation(item.diagnosisId)}
         >
           <Ionicons name="trash" size={24} color="#ffffff" />
         </TouchableOpacity>
@@ -388,12 +539,12 @@ export default function HistoryScreen() {
           <View style={styles.titleContainer}>
             <Text style={[styles.title, { color: tokens.primaryDark }]}>📋 {t("history.title")}</Text>
             <Text style={[styles.subtitle, { color: tokens.muted }]}>
-              {items.length} {t("history.subtitle")}
+              {filteredItems.length} {t("history.subtitle")}
             </Text>
           </View>
           <View style={styles.statsContainer}>
             <View style={styles.stat}>
-              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{items.length}</Text>
+              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{filteredItems.length}</Text>
               <Text style={[styles.statLabel, { color: tokens.muted }]}>
                 {t('history.total')}
               </Text>
@@ -425,6 +576,39 @@ export default function HistoryScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Date Filter */}
+        <View style={styles.dateFilterContainer}>
+          <Text style={[styles.filterLabel, { color: tokens.primaryDark }]}>{t('history.filterByDate')}:</Text>
+          <View style={styles.chipsRow}>
+            {(['All', 'Today', 'Week', 'Month', 'Custom'] as const).map(d => (
+              <TouchableOpacity
+                key={d}
+                onPress={() => {
+                  setDateFilter(d);
+                  if (d === 'Custom') {
+                    showCustomDatePicker();
+                  }
+                }}
+                style={[
+                  styles.chip,
+                  { backgroundColor: dateFilter === d ? tokens.primaryOverlay : tokens.backgroundAlt, borderColor: tokens.backgroundAlt }
+                ]}
+              >
+                <Text style={[styles.chipText, { color: dateFilter === d ? tokens.primaryDark : tokens.muted }]}>
+                  {t(`history.dateFilters.${d.toLowerCase()}`)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {dateFilter === 'Custom' && customDateRange.start && (
+            <View style={styles.customDateDisplay}>
+              <Text style={[styles.dateRangeText, { color: tokens.muted }]}>
+                📅 {customDateRange.start?.toLocaleDateString()}
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
 
       {/* History List */}
@@ -437,9 +621,9 @@ export default function HistoryScreen() {
           }
         ]}
       >
-        {items.length > 0 ? (
+        {filteredItems.length > 0 ? (
           <FlatList
-            data={items}
+            data={filteredItems}
             keyExtractor={(i: HistoryItem) => i.diagnosisId}
             renderItem={({ item, index }) => (
               <HistoryListItem item={item} index={index} />
@@ -467,6 +651,148 @@ export default function HistoryScreen() {
           </View>
         )}
       </Animated.View>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        visible={deleteConfirmVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleDeleteCancel}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: tokens.backgroundAlt }]}>
+            <View style={styles.modalHeader}>
+              <Ionicons name="warning" size={48} color={tokens.warning} />
+              <Text style={[styles.modalTitle, { color: tokens.primaryDark }]}>
+                {t('history.deleteTitle')}
+              </Text>
+              <Text style={[styles.modalMessage, { color: tokens.muted }]}>
+                {t('history.deleteConfirm')}
+              </Text>
+            </View>
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton, { backgroundColor: tokens.backgroundAlt, borderColor: tokens.muted }]}
+                onPress={handleDeleteCancel}
+              >
+                <Text style={[styles.modalButtonText, { color: tokens.muted }]}>
+                  {t('common.cancel')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, styles.deleteButtonModal, { backgroundColor: tokens.danger }]}
+                onPress={handleDeleteConfirm}
+              >
+                <Text style={[styles.modalButtonText, { color: '#ffffff' }]}>
+                  {t('common.delete')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Custom Date Input Modal */}
+      <Modal
+        visible={showDatePicker}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowDatePicker(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: tokens.backgroundAlt }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: tokens.primaryDark }]}>
+                {t('history.customDatePicker.title')}
+              </Text>
+              <Text style={[styles.modalMessage, { color: tokens.muted }]}>
+                {t('history.customDatePicker.selectDate')}
+              </Text>
+              {i18n.language === 'am' && (
+                <Text style={[styles.modalMessage, { color: tokens.primary, fontSize: 12, marginTop: 4 }]}>
+                  {t('history.customDatePicker.ethiopianNote')}
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.dateInputContainer}>
+              <View style={styles.dateInputRow}>
+                <View style={styles.dateInputField}>
+                  <Text style={[styles.dateInputLabel, { color: tokens.primaryDark }]}>
+                    {t('history.customDatePicker.day')}
+                  </Text>
+                  <TextInput
+                    style={[styles.dateInput, { borderColor: tokens.backgroundAlt, color: tokens.primaryDark }]}
+                    value={customDay}
+                    onChangeText={setCustomDay}
+                    placeholder="DD"
+                    placeholderTextColor={tokens.muted}
+                    keyboardType="numeric"
+                    maxLength={2}
+                  />
+                </View>
+
+                <View style={styles.dateInputField}>
+                  <Text style={[styles.dateInputLabel, { color: tokens.primaryDark }]}>
+                    {t('history.customDatePicker.month')}
+                  </Text>
+                  <TextInput
+                    style={[styles.dateInput, { borderColor: tokens.backgroundAlt, color: tokens.primaryDark }]}
+                    value={customMonth}
+                    onChangeText={setCustomMonth}
+                    placeholder="MM"
+                    placeholderTextColor={tokens.muted}
+                    keyboardType="numeric"
+                    maxLength={2}
+                  />
+                </View>
+
+                <View style={styles.dateInputField}>
+                  <Text style={[styles.dateInputLabel, { color: tokens.primaryDark }]}>
+                    {t('history.customDatePicker.year')}
+                  </Text>
+                  <TextInput
+                    style={[styles.dateInput, { borderColor: tokens.backgroundAlt, color: tokens.primaryDark }]}
+                    value={customYear}
+                    onChangeText={setCustomYear}
+                    placeholder="YYYY"
+                    placeholderTextColor={tokens.muted}
+                    keyboardType="numeric"
+                    maxLength={4}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton, { backgroundColor: tokens.backgroundAlt, borderColor: tokens.muted }]}
+                onPress={() => {
+                  setShowDatePicker(false);
+                  setCustomDay('');
+                  setCustomMonth('');
+                  setCustomYear('');
+                }}
+              >
+                <Text style={[styles.modalButtonText, { color: tokens.muted }]}>
+                  {t('history.customDatePicker.cancel')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: tokens.primary }]}
+                onPress={() => handleCustomDateInput(customDay, customMonth, customYear)}
+              >
+                <Text style={[styles.modalButtonText, { color: '#ffffff' }]}>
+                  {t('history.customDatePicker.apply')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -705,4 +1031,107 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  // Date Filter
+  dateFilterContainer: {
+    marginTop: 12,
+  },
+  filterLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  customDateDisplay: {
+    marginTop: 8,
+    alignItems: 'center',
+  },
+  dateRangeText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    width: '100%',
+    textAlign: 'center',
+    padding: 8,
+
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 320,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+  },
+  modalHeader: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginTop: 12,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    borderWidth: 1,
+  },
+  deleteButtonModal: {
+    backgroundColor: '#ef4444',
+  },
+  modalButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  dateInputContainer: {
+    marginBottom: 24,
+  },
+  dateInputRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  dateInputField: {
+    flex: 1,
+  },
+  dateInputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  dateInput: {
+    height: 48,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    textAlign: 'center',
+    backgroundColor: '#ffffff',
+  }
 });

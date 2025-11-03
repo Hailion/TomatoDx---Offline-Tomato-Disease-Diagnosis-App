@@ -2,7 +2,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import React, { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Animated,
   Easing,
@@ -13,21 +12,17 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { useToast } from '../../src/contexts/ToastContext';
 import { getCurrentUser, upsertUser } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
-
-// removed unused width/height
+import { createButtonPressAnimation, createEntranceAnimation } from '../../src/utils/animations';
+import { useScreenSetup } from '../../src/utils/screenSetup';
 
 export default function SettingsScreen() {
-  const { t, i18n } = useTranslation();
-  const { theme, themeMode, setThemeMode } = useTheme();
-  const tokens = Colors[theme];
+  const { t, i18n, theme, tokens, insets } = useScreenSetup();
+  const { themeMode, setThemeMode } = useTheme();
   const { showToast } = useToast();
-  const insets = useSafeAreaInsets();
 
   const [username, setUsername] = useState(t('settings.username')); // placeholder; replaced by DB value if present
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -40,36 +35,14 @@ export default function SettingsScreen() {
   const inputScaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.sequence([
-      // Fade in background
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      // Header animation
-      Animated.parallel([
-        Animated.timing(slideUpHeader, {
-          toValue: 0,
-          duration: 600,
-          easing: Easing.out(Easing.back(1.2)),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 700,
-          easing: Easing.elastic(1),
-          useNativeDriver: true,
-        })
-      ]),
-      // Content animation
-      Animated.timing(slideUpContent, {
-        toValue: 0,
-        duration: 600,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      })
-    ]).start();
+    createEntranceAnimation(fadeAnim, scaleAnim, slideUpContent).start();
+    // Header animation
+    Animated.timing(slideUpHeader, {
+      toValue: 0,
+      duration: 600,
+      easing: Easing.out(Easing.back(1.2)),
+      useNativeDriver: true,
+    }).start();
   }, [fadeAnim, scaleAnim, slideUpHeader, slideUpContent]);
 
   useEffect(() => {
@@ -84,9 +57,16 @@ export default function SettingsScreen() {
 
   const toggleLanguage = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const newLang = i18n.language === 'en' ? 'Amharic' : 'English';
+    const newLang = i18n.language === 'en' ? t('settings.amharic') : t('settings.english');
+    const currentLang = i18n.language;
     i18n.changeLanguage(i18n.language === 'en' ? 'am' : 'en');
-    showToast(`Language changed to ${newLang}`, 'success', 3000);
+
+    // Use the current language to determine the grammar structure
+    const toastMessage = currentLang === 'en'
+      ? `${t('settings.languageChangedEng')} ${newLang}`
+      : `${t('settings.languageChangedAmhPre')} ${newLang} ${t('settings.languageChangedAmhPost')}`;
+
+    showToast(toastMessage, 'success', 3000);
   };
 
   const handleUsernameEdit = () => {
@@ -99,26 +79,15 @@ export default function SettingsScreen() {
     try {
       if (trimmed.length === 0) {
         upsertUser('device'); // clears name
-        showToast('Username removed', 'info', 3000);
+        showToast(t('settings.usernameRemoved'), 'info', 3000);
       } else {
         upsertUser('device', trimmed);
-        showToast('Username updated successfully!', 'success', 3000);
+        showToast(t('settings.usernameUpdated'), 'success', 3000);
       }
       setIsEditingUsername(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-      Animated.sequence([
-        Animated.timing(inputScaleAnim, {
-          toValue: 0.95,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-        Animated.timing(inputScaleAnim, {
-          toValue: 1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
+      createButtonPressAnimation(inputScaleAnim, () => {
         try {
           initDb();
           const u = getCurrentUser();
@@ -132,7 +101,7 @@ export default function SettingsScreen() {
         }
       });
     } catch {
-      showToast('Failed to save username', 'error', 3000);
+      showToast(t('settings.failedToSaveUsername'), 'error', 3000);
     }
   };
 
@@ -227,7 +196,7 @@ export default function SettingsScreen() {
                       style={styles.usernameInput}
                       value={username}
                       onChangeText={setUsername}
-                      placeholder="Enter your username"
+                      placeholder={t('settings.username')}
                       autoFocus
                       maxLength={20}
                     />
@@ -287,12 +256,12 @@ export default function SettingsScreen() {
             <View style={styles.optionLeft}>
               <Ionicons name="globe" size={20} color={tokens.muted} />
               <Text style={styles.optionText}>
-                {i18n.language === 'en' ? 'English' : 'አማርኛ'}
+                {i18n.language === 'en' ? t('settings.english') : t('settings.amharic')}
               </Text>
             </View>
             <View style={styles.optionRight}>
               <Text style={styles.optionValue}>
-                {i18n.language === 'en' ? 'አማርኛ' : 'English'}
+                {i18n.language === 'en' ? t('settings.amharic') : t('settings.english')}
               </Text>
               <Ionicons name="chevron-forward" size={20} color={tokens.mutedLight} />
             </View>

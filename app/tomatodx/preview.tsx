@@ -2,7 +2,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Animated,
   Dimensions,
@@ -12,19 +11,16 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Colors, { ThemeTokens } from '../../constants/Colors';
-import { useTheme } from '../../src/contexts/ThemeContext';
+import { ThemeTokens } from '../../constants/Colors';
+import { createButtonPressAnimation, createEntranceAnimation, createPulseAnimation, useCommonAnimations } from '../../src/utils/animations';
 import { NavigationUtils } from '../../src/utils/navigation';
+import { useScreenSetup } from '../../src/utils/screenSetup';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function PreviewScreen() {
-  const { t } = useTranslation();
-  const { theme } = useTheme();
-  const tokens = Colors[theme];
+  const { t, tokens, insets } = useScreenSetup();
   const styles = getStyles(tokens);
-  const insets = useSafeAreaInsets();
 
   const params = useLocalSearchParams();
   const rawUri = (params as any).uri;
@@ -33,103 +29,40 @@ export default function PreviewScreen() {
   const imageId = typeof rawImageId === 'string' ? rawImageId : Array.isArray(rawImageId) ? rawImageId[0] : undefined;
 
   // Animation values
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
-  const slideUpAnim = useRef(new Animated.Value(50)).current;
+  const { fadeAnim, scaleAnim, slideUpAnim, pulseAnim } = useCommonAnimations();
   const imageScaleAnim = useRef(new Animated.Value(0.8)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.sequence([
-      // Fade in background
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      // Image scale animation
-      Animated.parallel([
-        Animated.timing(imageScaleAnim, {
-          toValue: 1,
-          duration: 700,
-          easing: Easing.elastic(1),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 600,
-          easing: Easing.out(Easing.back(1)),
-          useNativeDriver: true,
-        })
-      ]),
-      // Buttons slide up
-      Animated.timing(slideUpAnim, {
-        toValue: 0,
-        duration: 500,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      })
-    ]).start();
+    // Main entrance animation
+    createEntranceAnimation(fadeAnim, scaleAnim, slideUpAnim).start();
 
-    // Continuous pulse animation for action buttons
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.05,
-          duration: 1000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    // Image scale animation
+    Animated.timing(imageScaleAnim, {
+      toValue: 1,
+      duration: 700,
+      easing: Easing.elastic(1),
+      useNativeDriver: true,
+    }).start();
+
+    // Start pulse animation
+    createPulseAnimation(pulseAnim).start();
   }, []);
 
   const handleGoBack = () => {
-    // Quick animation feedback
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.95,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
+    createButtonPressAnimation(scaleAnim, () => {
       NavigationUtils.back();
     });
   };
 
   const handleUsePhoto = () => {
     if (!imageUri || !imageId) return;
-    // Quick animation feedback
-    Animated.sequence([
-      Animated.timing(pulseAnim, {
-        toValue: 0.95,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-      Animated.timing(pulseAnim, {
-        toValue: 1,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
+    createButtonPressAnimation(pulseAnim, () => {
       NavigationUtils.pushWithSuccess('/tomatodx/result', { uri: imageUri, imageId });
     });
   };
 
   return (
     <View style={styles.container}>
-
       {/* Background Elements */}
       <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
       <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
@@ -145,7 +78,7 @@ export default function PreviewScreen() {
           }
         ]}
       >
-        <Text style={styles.title}> {t('preview.title')}</Text>
+        <Text style={styles.title}>{t('preview.title')}</Text>
         <Text style={styles.subtitle}>{t('preview.subtitle')}</Text>
       </Animated.View>
 

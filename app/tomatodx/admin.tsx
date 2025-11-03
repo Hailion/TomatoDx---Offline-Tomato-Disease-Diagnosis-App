@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Animated,
-  Dimensions,
   Easing,
   ScrollView,
   StyleSheet,
@@ -19,8 +18,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getAllDiagnosesExport, getAnalyticsSummary, getDiagnosisCount, getLast7DaysCounts } from '../../src/db/repository';
-
-const { width, height } = Dimensions.get('window');
 
 export default function AdminScreen() {
   const { t } = useTranslation();
@@ -249,7 +246,7 @@ export default function AdminScreen() {
             </View>
             <View style={styles.infoItem}>
               <Text style={styles.infoLabel}>{t('admin.modelVersion')}</Text>
-              <Text style={[styles.infoValue, { color: tokens.muted }]} > tomato - v3.1.0</Text>
+              <Text style={[styles.infoValue, { color: tokens.muted }]} >tomato - v3.1.0</Text>
             </View>
             <View style={styles.infoItem}>
               <Text style={styles.infoLabel}>{t('admin.lastUpdated')}</Text>
@@ -420,7 +417,7 @@ export default function AdminScreen() {
           </View>
         </Animated.View>
       </ScrollView>
-    </View >
+    </View>
   );
 }
 

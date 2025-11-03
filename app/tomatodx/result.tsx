@@ -1,66 +1,36 @@
 // result.tsx
-
 import { Ionicons } from '@expo/vector-icons';
-
-import * as FileSystem from 'expo-file-system/legacy';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-
-import * as Sharing from 'expo-sharing';
-
 import React, { useEffect, useRef, useState } from 'react';
-
-import { useTranslation } from 'react-i18next';
-
-
-
 import {
   Animated,
-
   Easing,
-
   Image,
-
-  Platform,
-
   ScrollView,
-
-  Share,
-
   StyleSheet,
-
   Text,
-
   TouchableOpacity,
-
   View
 } from 'react-native';
-
 import 'react-native-get-random-values';
-
 import { v4 as uuidv4 } from 'uuid';
-
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Colors from '../../constants/Colors';
-
 import LoadingIndicator from '../../src/components/LoadingIndicator';
-import { useTheme } from '../../src/contexts/ThemeContext';
-
 import { useToast } from '../../src/contexts/ToastContext';
 import { getDiseaseInfo } from '../../src/data/diseaseInfo';
-import { insertDiagnosis, upsertDisease } from '../../src/db/repository';
-
+import { getDiagnosisById, insertDiagnosis, upsertDisease } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
-
 import { predictFromUri } from '../../src/ml/inference';
-
 import { initModel } from '../../src/ml/model';
-
-
+import { createButtonPressAnimation, createEntranceAnimation } from '../../src/utils/animations';
+import { useScreenSetup } from '../../src/utils/screenSetup';
+import { handleShare } from '../../src/utils/shareUtils';
 
 export default function ResultScreen() {
 
-  const { t, i18n } = useTranslation();
+  const { t, i18n, tokens, insets } = useScreenSetup();
+
+  const { showToast } = useToast();
 
   const params = useLocalSearchParams();
 
@@ -71,17 +41,22 @@ export default function ResultScreen() {
   const diagnosisIdParam = (params.diagnosisId as string) || undefined;
 
   const [resultData, setResultData] = useState<any | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   const [loadingStage, setLoadingStage] = useState('');
   const [loadingProgress, setLoadingProgress] = useState(0);
   const isFromHistory = !!diagnosisIdParam;
 
-  const { theme } = useTheme();
-
-  const tokens = Colors[theme];
-  const insets = useSafeAreaInsets();
-
-  const { showToast } = useToast();
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideUpTitle = useRef(new Animated.Value(40)).current;
+  const slideUpCard = useRef(new Animated.Value(50)).current;
+  const slideUpButtons = useRef(new Animated.Value(60)).current;
+  const scaleAnim = useRef(new Animated.Value(0.95)).current;
+  const progressAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const didAnimateRef = useRef(false);
+  const predictedForUriRef = useRef<string | null>(null);
 
   // Safely coerce i18n values to arrays when keys are missing or mis-typed
   const ensureStringArray = (value: unknown): string[] => {
@@ -111,342 +86,165 @@ export default function ResultScreen() {
   };
 
 
-  // Animation values
-
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  const slideUpTitle = useRef(new Animated.Value(40)).current;
-
-  const slideUpCard = useRef(new Animated.Value(50)).current;
-
-  const slideUpButtons = useRef(new Animated.Value(60)).current;
-
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
-
-  const progressAnim = useRef(new Animated.Value(0)).current;
-
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-
-  const didAnimateRef = useRef(false);
-
-  const predictedForUriRef = useRef<string | null>(null);
-
-
 
   const handleSave = () => {
-
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (isFromHistory) {
-
-      showToast('This result is already saved in your history', 'info', 3000);
+      showToast(t('result.alreadySaved'), 'info', 3000);
       return;
+    }
 
+    if (isSaved) {
+      showToast(t('result.saveSuccess'), 'info', 3000);
+      return;
     }
 
     if (!resultData) {
-
-      showToast('Please wait for analysis to complete', 'warning', 3000);
+      showToast(t('result.waitForAnalysis'), 'warning', 3000);
       return;
-
     }
 
-    // Button press animation
-
-    Animated.sequence([
-
-      Animated.timing(pulseAnim, {
-
-        toValue: 0.9,
-
-        duration: 100,
-
-        useNativeDriver: true,
-
-      }),
-
-      Animated.timing(pulseAnim, {
-
-        toValue: 1,
-
-        duration: 100,
-
-        useNativeDriver: true,
-
-      }),
-
-    ]).start(() => {
-
+    createButtonPressAnimation(pulseAnim, () => {
       if (!imageId) {
-
-        showToast('Missing image. Please retake the photo.', 'error', 4000);
+        showToast(t('result.missingImage'), 'error', 4000);
         return;
-
       }
 
       try {
-
         // ensure DB
-
         initDb();
 
         // upsert disease names/advice seen on screen
-
         upsertDisease(resultData.diseaseId, resultData.nameEn, resultData.nameAm, undefined, resultData.advice);
 
         // persist diagnosis
-
         const diagnosisId = uuidv4();
-
         insertDiagnosis(
-
           diagnosisId,
-
           imageId,
-
           resultData.diseaseId,
-
           resultData.confidence,
-
           new Date().toISOString(),
-
           undefined
-
         );
 
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        showToast('Result saved to history!', 'success', 3000, {
-          label: 'View History',
+        setIsSaved(true);
+        showToast(t('result.savedToHistory'), 'success', 3000, {
+          label: t('result.viewHistory'),
           onPress: () => router.push('/tomatodx/history'),
         });
       } catch {
-        showToast('Failed to save result. Please try again.', 'error', 4000);
+        showToast(t('result.failedToSave'), 'error', 4000);
       }
-
     });
 
   };
 
 
 
-  const handleShare = async () => {
-
+  const handleShareResult = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Button press animation
+    createButtonPressAnimation(pulseAnim);
 
-    Animated.sequence([
-
-      Animated.timing(pulseAnim, {
-
-        toValue: 0.9,
-
-        duration: 100,
-
-        useNativeDriver: true,
-
-      }),
-
-      Animated.timing(pulseAnim, {
-
-        toValue: 1,
-
-        duration: 100,
-
-        useNativeDriver: true,
-
-      }),
-
-    ]).start();
-
-
-
-    try {
-
-      if (!resultData || !uri) {
-        showToast('No result or image to share', 'warning', 3000);
-        return;
-      }
-
-      if (!(await Sharing.isAvailableAsync())) {
-        showToast('Sharing is not available on this device', 'warning', 3000);
-        return;
-      }
-
-      // Build comprehensive share text
-      const shareText = `🍅 ${t('result.shareText')}\n\n` +
-        `📋 ${t('result.disease')}: ${resultData.primaryName}${resultData.secondaryName ? ` (${resultData.secondaryName})` : ''}\n` +
-        `📊 ${t('result.confidence')}: ${Math.round(resultData.confidence * 100)}%\n` +
-        `⚠️ ${t('result.recommendation')}: ${resultData.advice}\n\n` +
-        `Diagnosed via TomatoDx App`;
-
-      // Strategy: Use platform-specific approaches for best results
-      // iOS: Share API supports image + text together
-      // Android: Share image first, then text (more reliable)
-
-      if (Platform.OS === 'ios') {
-        // iOS: Try Share API with both image and text
-        try {
-          const shareOptions: any = {
-            message: shareText,
-            title: `${resultData.primaryName} - ${t('result.shareTitle')}` || 'Share Diagnosis',
-          };
-
-          if (uri && (uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('http://') || uri.startsWith('https://'))) {
-            shareOptions.url = uri;
-          }
-
-          const result = await Share.share(shareOptions);
-
-          if (result.action === Share.sharedAction) {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            showToast('Shared successfully with both image and diagnosis details!', 'success', 2000);
-          } else if (result.action === Share.dismissedAction) {
-            return;
-          }
-          return;
-        } catch (iosShareError) {
-          console.warn('iOS Share API failed, falling back:', iosShareError);
-          // Fall through to expo-sharing
-        }
-      }
-
-      // Android or iOS fallback: Share image with expo-sharing (more reliable for images)
-      if (uri && (uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('http://') || uri.startsWith('https://'))) {
-        try {
-          // Share image first (this works reliably on both platforms)
-          await Sharing.shareAsync(uri, {
-            mimeType: 'image/jpeg',
-            dialogTitle: `${resultData.primaryName} - ${t('result.shareTitle')}` || 'Share Diagnosis',
-            UTI: 'public.jpeg',
-          });
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-          // On Android, immediately share text file to ensure both are available
-          if (Platform.OS === 'android') {
-            // Create text file for sharing
-            const textFileName = `tomatodx-diagnosis-${Date.now()}.txt`;
-            let textFileUri: string | null = null;
-
-            try {
-              // Use documentDirectory from legacy API
-              const docPath = FileSystem.documentDirectory;
-              if (docPath) {
-                const dir = `${docPath}shares/`;
-                await FileSystem.makeDirectoryAsync(dir, { intermediates: true }).catch(() => { });
-                textFileUri = `${dir}${textFileName}`;
-                await FileSystem.writeAsStringAsync(textFileUri, shareText);
-              }
-            } catch (fileErr) {
-              console.warn('Could not create text file:', fileErr);
-            }
-
-            // Share text file immediately after image (ensures both are shared)
-            if (textFileUri) {
-              setTimeout(async () => {
-                try {
-                  await Sharing.shareAsync(textFileUri!, {
-                    mimeType: 'text/plain',
-                    dialogTitle: 'Diagnosis Details',
-                  });
-
-                  // Clean up text file
-                  setTimeout(async () => {
-                    try {
-                      await FileSystem.deleteAsync(textFileUri!, { idempotent: true });
-                    } catch { }
-                  }, 2000);
-                } catch (textError) {
-                  console.warn('Text file sharing failed:', textError);
-                }
-              }, 400);
-            } else {
-              // If text file creation failed, share text as data URI
-              setTimeout(async () => {
-                try {
-                  await Share.share({
-                    message: shareText,
-                    title: 'Diagnosis Details',
-                  });
-                } catch { }
-              }, 400);
-            }
-          }
-          return;
-        } catch (imageShareError: any) {
-          // If image sharing fails, share text as fallback
-          console.warn('Image sharing failed, sharing text instead:', imageShareError);
-          await Share.share({
-            message: shareText,
-            title: t('result.shareTitle') || 'Share Diagnosis',
-          });
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-      } else {
-        // No image URI, share text only
-        await Share.share({
-          message: shareText,
-          title: t('result.shareTitle') || 'Share Diagnosis',
-        });
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-
-    } catch (error: any) {
-      console.error('Share error:', error);
-      showToast(`Failed to share: ${error?.message || 'Unknown error'}`, 'error', 4000);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    }
-
+    await handleShare({
+      resultData,
+      uri,
+      t,
+      showToast,
+    });
   };
 
 
 
   useEffect(() => {
-
     // Progress animation tracks current result confidence
-
     Animated.timing(progressAnim, {
-
       toValue: resultData ? resultData.confidence : 0,
-
       duration: 1500,
-
       easing: Easing.out(Easing.cubic),
-
       useNativeDriver: false,
-
     }).start();
 
-
-
     if (didAnimateRef.current) return;
-
     didAnimateRef.current = true;
 
-
-
     // Main entrance animations (run once)
+    createEntranceAnimation(fadeAnim, scaleAnim, slideUpCard).start();
 
-    Animated.sequence([
+    // Additional animations
+    Animated.timing(slideUpTitle, {
+      toValue: 0,
+      duration: 600,
+      easing: Easing.out(Easing.back(1.2)),
+      useNativeDriver: true
+    }).start();
 
-      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-
-      Animated.parallel([
-
-        Animated.timing(slideUpTitle, { toValue: 0, duration: 600, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }),
-
-        Animated.timing(scaleAnim, { toValue: 1, duration: 700, easing: Easing.elastic(1), useNativeDriver: true })
-
-      ]),
-
-      Animated.timing(slideUpCard, { toValue: 0, duration: 600, easing: Easing.out(Easing.quad), useNativeDriver: true }),
-
-      Animated.timing(slideUpButtons, { toValue: 0, duration: 500, easing: Easing.out(Easing.back(1)), useNativeDriver: true })
-
-    ]).start();
+    Animated.timing(slideUpButtons, {
+      toValue: 0,
+      duration: 500,
+      easing: Easing.out(Easing.back(1)),
+      useNativeDriver: true
+    }).start();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resultData]);
 
+  // Load saved diagnosis data when viewing from history
+  useEffect(() => {
+    if (!isFromHistory || !diagnosisIdParam) return;
 
+    try {
+      const savedDiagnosis = getDiagnosisById(diagnosisIdParam);
+      if (savedDiagnosis) {
+        const diseaseId = savedDiagnosis.diseaseId;
+        const severity = savedDiagnosis.confidence >= 0.9 ? 'High' : savedDiagnosis.confidence >= 0.7 ? 'Medium' : 'Low';
+
+        const symptoms = ensureStringArray(t(`diseases.${diseaseId}.symptoms`, { returnObjects: true }));
+        const treatmentImmediate = ensureStringArray(
+          t(`diseases.${diseaseId}.treatment.immediate`, { returnObjects: true })
+        );
+        const treatmentLongTerm = ensureStringArray(
+          t(`diseases.${diseaseId}.treatment.longTerm`, { returnObjects: true })
+        );
+        const prevention = ensureStringArray(
+          t(`diseases.${diseaseId}.prevention`, { returnObjects: true })
+        );
+
+        // Get names in both languages
+        const nameEn = t(`diseases.${diseaseId}.name`, { lng: 'en' }) || diseaseId;
+        const nameAm = t(`diseases.${diseaseId}.name`, { lng: 'am' }) || diseaseId;
+
+        // Set primary name (current language) and secondary name (other language)
+        const currentLang = i18n.language || 'en';
+        const primaryName = currentLang === 'am' ? nameAm : nameEn;
+        const secondaryName = currentLang === 'am' ? nameEn : nameAm;
+
+        setResultData({
+          diseaseId,
+          nameEn,
+          nameAm,
+          primaryName,
+          secondaryName,
+          confidence: savedDiagnosis.confidence,
+          description: t(`diseases.${diseaseId}.description`, { defaultValue: 'Disease detected' }),
+          symptoms,
+          treatment: {
+            immediate: treatmentImmediate,
+            longTerm: treatmentLongTerm,
+          },
+          preventionTips: prevention,
+          advice: treatmentImmediate[0] || t('common.noTreatment'),
+          severity: severity,
+          image: getDiseaseInfo(diseaseId)?.image || '🌿'
+        });
+
+        setIsSaved(true); // Mark as already saved since it's from history
+      }
+    } catch (error) {
+      console.error('Error loading diagnosis from history:', error);
+    }
+  }, [isFromHistory, diagnosisIdParam, t, i18n.language]);
 
   useEffect(() => {
 
@@ -455,6 +253,9 @@ export default function ResultScreen() {
     (async () => {
 
       if (!uri) return;
+
+      // Skip analysis if this is a result from history - use saved data instead
+      if (isFromHistory) return;
 
       if (predictedForUriRef.current === uri) return; // prevent duplicate predict for same uri
 
@@ -536,7 +337,7 @@ export default function ResultScreen() {
 
       } catch (e: any) {
 
-        showToast(`Prediction failed: ${e?.message || 'Unknown error'}`, 'error', 5000);
+        showToast(`${t('result.predictionFailed')}: ${e?.message || t('common.unknownError')}`, 'error', 5000);
         setLoadingStage('');
         setLoadingProgress(0);
       }
@@ -916,9 +717,9 @@ export default function ResultScreen() {
 
                 {
 
-                  backgroundColor: isFromHistory ? '#9ca3af' : tokens.primary,
+                  backgroundColor: (isFromHistory || isSaved) ? '#9ca3af' : tokens.primary,
 
-                  shadowColor: isFromHistory ? '#9ca3af' : tokens.primary,
+                  shadowColor: (isFromHistory || isSaved) ? '#9ca3af' : tokens.primary,
 
                   opacity: resultData ? 1 : 0.5
 
@@ -930,13 +731,13 @@ export default function ResultScreen() {
 
               activeOpacity={0.8}
 
-              disabled={!resultData || isFromHistory}
+              disabled={!resultData || isFromHistory || isSaved}
 
             >
 
-              <Ionicons name={isFromHistory ? 'checkmark-done' : 'save'} size={24} color={tokens.whiteMuted} />
+              <Ionicons name={(isFromHistory || isSaved) ? 'checkmark-done' : 'save'} size={24} color={tokens.whiteMuted} />
 
-              <Text style={[styles.saveButtonText, { color: tokens.whiteMuted }]}>{isFromHistory ? (t('result.saved') || 'Saved') : t('result.save')}</Text>
+              <Text style={[styles.saveButtonText, { color: tokens.whiteMuted }]}>{(isFromHistory || isSaved) ? (t('result.saved') || 'Saved') : t('result.save')}</Text>
 
             </TouchableOpacity>
 
@@ -946,7 +747,7 @@ export default function ResultScreen() {
 
               style={[styles.shareButton, { backgroundColor: tokens.surface, borderColor: tokens.border }]}
 
-              onPress={handleShare}
+              onPress={handleShareResult}
 
               activeOpacity={0.8}
 

@@ -74,6 +74,27 @@
     "analyzePhoto": "Analyze Photo",
     "tip": "Ensure the tomato is well-lit and clearly visible for accurate diagnosis."
   },
+  "onboarding": {
+    "getStarted": "Get Started",
+    "steps": {
+      "welcome": {
+        "title": "Welcome to TomatoDx",
+        "description": "AI-powered tomato disease detection at your fingertips"
+      },
+      "capture": {
+        "title": "Capture & Scan",
+        "description": "Take a photo or upload from gallery to analyze tomato health"
+      },
+      "analysis": {
+        "title": "AI Analysis",
+        "description": "Get instant, accurate diagnosis powered by machine learning"
+      },
+      "history": {
+        "title": "Track History",
+        "description": "Save and review your past diagnoses for better crop management"
+      }
+    }
+  },
   "admin": {
     "title": "Admin Panel",
     "subtitle": "System management and configuration",
@@ -134,7 +155,10 @@
     "longTermManagement": "Long-term Management",
     "symptoms": "Symptoms",
     "treatmentSteps": "Treatment Steps",
-    "noTreatment": "No specific treatment available"
+    "noTreatment": "No specific treatment available",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next"
   },
   "diseases": {
     "early_blight": {
@@ -375,7 +399,7 @@
       ]
     },
     "spider_mites_two_spotted_spider_mites": {
-      "name": "Spider Mites Two-spotted Spider Mite",
+      "name": "Two-spotted Spider Mites",
       "description": "Pest infestation causing stippling and webbing on leaves",
       "symptoms": [
         "Fine yellow stippling on leaves",

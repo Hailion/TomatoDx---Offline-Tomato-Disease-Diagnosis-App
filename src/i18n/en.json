@@ -66,7 +66,33 @@
     "accuracy": "Accuracy",
     "recentScans": "Recent Scans",
     "noScans": "No scans yet",
-    "noScansDesc": "Start by scanning your first tomato leaf to see results here"
+    "noScansDesc": "Start by scanning your first tomato leaf to see results here",
+    "filters": {
+      "title": "Filters",
+      "all": "All",
+      "healthy": "Healthy",
+      "diseased": "Diseased",
+      "highRisk": "High Risk",
+      "treated": "Treated",
+      "pending": "Pending"
+    },
+    "sort": {
+      "title": "Sort By",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "highConfidence": "High Confidence",
+      "lowConfidence": "Low Confidence"
+    },
+    "status": {
+      "healthy": "Healthy",
+      "treated": "Treated",
+      "pending": "Action Needed",
+      "unknown": "Unknown"
+    },
+    "avgConfidence": "Avg Confidence",
+    "noResults": "No scans found",
+    "noResultsDesc": "Try changing your filters to see more results",
+    "resetFilters": "Reset Filters"
   },
   "profile": {
     "title": "Profile",

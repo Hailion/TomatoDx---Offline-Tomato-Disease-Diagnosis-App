@@ -1,248 +1,138 @@
-// result.tsx
+// app/tomatodx/result.tsx - Result Screen
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
-import * as Sharing from 'expo-sharing';
-import React, { useEffect, useRef } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import {
-  Alert,
-  Animated,
-  Dimensions,
-  Easing,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import Colors from '../../constants/Colors';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
-const { width, height } = Dimensions.get('window');
-
-// Mock data store
-const mockDataStore = {
+const mockData = {
   '1': {
-    diseaseId: 'early_blight',
-    nameEn: 'Early Blight',
-    nameAm: 'ጥቂት ብርሃን',
-    confidence: 0.92,
-    advice: 'Remove affected leaves; apply fungicide. Ensure proper spacing between plants for air circulation.',
-    severity: 'High',
-    prevention: 'Rotate crops yearly, avoid overhead watering, remove plant debris.',
-    image: '🌱'
+    disease: 'Early Blight',
+    confidence: 92,
+    severity: 'medium',
+    image: '🌱',
+    description: 'Fungal disease affecting tomato leaves',
+    treatment: 'Apply copper-based fungicide, remove affected leaves',
+    prevention: 'Rotate crops, ensure proper spacing, avoid overhead watering'
   },
   '2': {
-    diseaseId: 'healthy',
-    nameEn: 'Healthy',
-    nameAm: 'ጤናማ',
-    confidence: 0.95,
-    advice: 'Your tomato plant is healthy! Continue regular care and monitoring.',
-    severity: 'None',
-    prevention: 'Maintain current practices, regular watering, and proper nutrition.',
-    image: '✅'
+    disease: 'Healthy',
+    confidence: 95,
+    severity: 'none',
+    image: '✅',
+    description: 'Your tomato plant is in good health',
+    treatment: 'Continue current care practices',
+    prevention: 'Maintain regular watering and monitoring'
   }
 };
 
 export default function ResultScreen() {
-  const { t } = useTranslation();
+  const router = useRouter();
   const { id } = useLocalSearchParams();
-  const mockResult = mockDataStore[id as keyof typeof mockDataStore] || mockDataStore['1'];
   const { theme } = useTheme();
-  const tokens = Colors[theme];
+  const { t } = useTranslation();
+  const [saved, setSaved] = useState(false);
 
-  // Animation values
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideUpTitle = useRef(new Animated.Value(40)).current;
-  const slideUpCard = useRef(new Animated.Value(50)).current;
-  const slideUpButtons = useRef(new Animated.Value(60)).current;
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
-  const progressAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-
-  const handleSave = () => {
-    // Button press animation
-    Animated.sequence([
-      Animated.timing(pulseAnim, {
-        toValue: 0.9,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(pulseAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      Alert.alert(
-        t('result.saveSuccess'),
-        t('result.saveMessage'),
-        [{ text: t('result.ok'), onPress: () => router.push('/tomatodx/history') }]
-      );
-    });
-  };
-
-  const handleShare = async () => {
-    // Button press animation
-    Animated.sequence([
-      Animated.timing(pulseAnim, {
-        toValue: 0.9,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(pulseAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    try {
-      if (await Sharing.isAvailableAsync()) {
-        const shareText = `${t('result.shareText')}\n${t('result.disease')}: ${mockResult.nameEn}\n${t('result.confidence')}: ${Math.round(mockResult.confidence * 100)}%\n${t('result.advice')}: ${mockResult.advice}`;
-
-        await Sharing.shareAsync('data:text/plain;charset=utf-8,' + encodeURIComponent(shareText), {
-          mimeType: 'text/plain',
-          dialogTitle: t('result.shareTitle')
-        });
-      } else {
-        Alert.alert(t('result.shareError'), t('result.shareNotAvailable'));
-      }
-    } catch (error) {
-      Alert.alert(t('result.shareError'), t('result.shareFailed'));
-    }
-  };
-
-  useEffect(() => {
-    // Progress animation for confidence
-    Animated.timing(progressAnim, {
-      toValue: mockResult.confidence,
-      duration: 1500,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-
-    // Main entrance animations
-    Animated.sequence([
-      // Fade in background
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      // Title animation
-      Animated.parallel([
-        Animated.timing(slideUpTitle, {
-          toValue: 0,
-          duration: 600,
-          easing: Easing.out(Easing.back(1.2)),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 700,
-          easing: Easing.elastic(1),
-          useNativeDriver: true,
-        })
-      ]),
-      // Card animation
-      Animated.timing(slideUpCard, {
-        toValue: 0,
-        duration: 600,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }),
-      // Buttons animation
-      Animated.timing(slideUpButtons, {
-        toValue: 0,
-        duration: 500,
-        easing: Easing.out(Easing.back(1)),
-        useNativeDriver: true,
-      })
-    ]).start();
-  }, []);
+  const result = mockData[id as keyof typeof mockData] || mockData['1'];
 
   const getSeverityColor = (severity: string) => {
-    switch (severity.toLowerCase()) {
-      case 'critical': return tokens.danger;
-      case 'high': return tokens.warning;
-      case 'medium': return tokens.warningDark;
-      case 'low': return tokens.primaryDarker;
-      default: return tokens.primaryDark;
+    switch (severity) {
+      case 'high': return '#ef4444';
+      case 'medium': return '#f59e0b';
+      case 'low': return '#10b981';
+      default: return '#10b981';
     }
   };
 
   const getSeverityIcon = (severity: string) => {
-    switch (severity.toLowerCase()) {
-      case 'critical': return 'warning';
-      case 'high': return 'alert-circle';
-      case 'medium': return 'information-circle';
+    switch (severity) {
+      case 'high': return 'warning';
+      case 'medium': return 'alert-circle';
       case 'low': return 'checkmark-circle';
       default: return 'leaf';
     }
   };
 
+  const handleSave = () => {
+    setSaved(true);
+    Alert.alert(
+      t('result.saved'),
+      t('result.savedMessage'),
+      [{ text: t('common.ok') }]
+    );
+  };
+
+  const handleShare = () => {
+    Alert.alert(
+      t('result.share'),
+      t('result.shareMessage'),
+      [{ text: t('common.ok') }]
+    );
+  };
+
+  const handleNewScan = () => {
+    router.push('/tomatodx/scan');
+  };
+
   return (
-    <View style={[styles.container, { backgroundColor: tokens.background }]}>
-      {/* Background Elements */}
-      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim, backgroundColor: tokens.primaryOverlay }]} />
-      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim, backgroundColor: tokens.successOverlay }]} />
-
+    <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
       {/* Header */}
-      <Animated.View
-        style={[
-          styles.header,
-          {
-            opacity: fadeAnim,
-            transform: [
-              { translateY: slideUpTitle },
-              { scale: scaleAnim }
-            ]
-          }
-        ]}
+      <LinearGradient
+        colors={theme === 'dark' ? ['#1a1a1a', '#2d2d2d'] : ['#f8fafc', '#e2e8f0']}
+        style={styles.header}
       >
-        <Text style={[styles.title, { color: tokens.primaryDark }]}>🔍 {t('result.title')}</Text>
-        <Text style={[styles.subtitle, { color: tokens.muted }]}>{t("result.subtitle")}</Text>
-      </Animated.View>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons
+            name="chevron-back"
+            size={24}
+            color={theme === 'dark' ? '#fff' : '#1a1a1a'}
+          />
+        </TouchableOpacity>
+        <Text style={[styles.title, theme === 'dark' && styles.darkText]}>
+          {t('result.title')}
+        </Text>
+        <View style={styles.placeholder} />
+      </LinearGradient>
 
-      {/* Result Card */}
-      <Animated.View
-        style={[
-          styles.cardContainer,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideUpCard }]
-          }
-        ]}
-      >
-        <View style={[styles.resultCard, { backgroundColor: tokens.surface, shadowColor: tokens.shadowLight }]}>
-          {/* Disease Header */}
-          <View style={styles.diseaseHeader}>
-            <View style={styles.diseaseIconContainer}>
-              <Text style={styles.diseaseIcon}>{mockResult.image}</Text>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Result Card */}
+        <View style={[styles.resultCard, theme === 'dark' && styles.darkCard]}>
+          {/* Diagnosis Header */}
+          <View style={styles.diagnosisHeader}>
+            <View style={styles.diseaseIcon}>
+              <Text style={styles.diseaseEmoji}>{result.image}</Text>
             </View>
             <View style={styles.diseaseInfo}>
-              <Text style={[styles.diseaseName, { color: tokens.text }]}>{mockResult.nameEn}</Text>
-              <Text style={[styles.diseaseNameAm, { color: tokens.muted }]}>{mockResult.nameAm}</Text>
+              <Text style={[styles.diseaseName, theme === 'dark' && styles.darkText]}>
+                {result.disease}
+              </Text>
+              <Text style={[styles.diseaseDesc, theme === 'dark' && styles.darkSubtext]}>
+                {result.description}
+              </Text>
             </View>
             <View
               style={[
                 styles.severityBadge,
-                { backgroundColor: getSeverityColor(mockResult.severity) + '20' }
+                { backgroundColor: getSeverityColor(result.severity) + '20' }
               ]}
             >
               <Ionicons
-                name={getSeverityIcon(mockResult.severity) as any}
+                name={getSeverityIcon(result.severity) as any}
                 size={16}
-                color={getSeverityColor(mockResult.severity)}
+                color={getSeverityColor(result.severity)}
               />
               <Text
                 style={[
                   styles.severityText,
-                  { color: getSeverityColor(mockResult.severity) }
+                  { color: getSeverityColor(result.severity) }
                 ]}
               >
-                {mockResult.severity}
+                {result.severity.charAt(0).toUpperCase() + result.severity.slice(1)}
               </Text>
             </View>
           </View>
@@ -250,75 +140,142 @@ export default function ResultScreen() {
           {/* Confidence Meter */}
           <View style={styles.confidenceSection}>
             <View style={styles.confidenceHeader}>
-              <Text style={[styles.confidenceLabel, { color: tokens.textSecondary }]}>{t("result.confidenceLevel")}</Text>
-              <Animated.Text style={[styles.confidenceValue, { color: tokens.primaryDark }]}>
-                {Math.round(mockResult.confidence * 100)}%
-              </Animated.Text>
+              <Text style={[styles.confidenceLabel, theme === 'dark' && styles.darkSubtext]}>
+                {t('result.confidence')}
+              </Text>
+              <Text style={[styles.confidenceValue, theme === 'dark' && styles.darkText]}>
+                {result.confidence}%
+              </Text>
             </View>
-            <View style={[styles.confidenceBar, { backgroundColor: tokens.backgroundAlt }]}>
-              <Animated.View
+            <View style={styles.confidenceBar}>
+              <View
                 style={[
                   styles.confidenceFill,
                   {
-                    width: progressAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ['0%', '100%']
-                    }),
-                    backgroundColor: getSeverityColor(mockResult.severity)
+                    width: `${result.confidence}%`,
+                    backgroundColor: getSeverityColor(result.severity)
                   }
                 ]}
               />
             </View>
           </View>
 
-          {/* Advice Section */}
-          <View style={styles.adviceSection}>
+          {/* Treatment Section */}
+          <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="bulb" size={20} color={tokens.warning} />
-              <Text style={styles.sectionTitle}>{t('result.recommendation')}</Text>
+              <Ionicons name="medical" size={20} color="#ef4444" />
+              <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                {t('result.treatment')}
+              </Text>
             </View>
-            <Text style={[styles.adviceText, { color: tokens.textSecondary }]}>{mockResult.advice}</Text>
+            <Text style={[styles.sectionContent, theme === 'dark' && styles.darkSubtext]}>
+              {result.treatment}
+            </Text>
           </View>
 
           {/* Prevention Section */}
-          <View style={styles.preventionSection}>
+          <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="shield-checkmark" size={20} color={tokens.success} />
-              <Text style={styles.sectionTitle}>{t('result.prevTips')} </Text>
+              <Ionicons name="shield-checkmark" size={20} color="#10b981" />
+              <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                {t('result.prevention')}
+              </Text>
             </View>
-            <Text style={[styles.preventionText, { color: tokens.muted }]}>{mockResult.prevention}</Text>
+            <Text style={[styles.sectionContent, theme === 'dark' && styles.darkSubtext]}>
+              {result.prevention}
+            </Text>
           </View>
         </View>
 
-        {/* Action Buttons */}
-        <Animated.View
-          style={[
-            styles.actionsContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideUpButtons }]
-            }
-          ]}
-        >
-          <TouchableOpacity
-            style={[styles.saveButton, { backgroundColor: tokens.primary, shadowColor: tokens.primary }]}
-            onPress={handleSave}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="save" size={24} color={tokens.whiteMuted} />
-            <Text style={[styles.saveButtonText, { color: tokens.whiteMuted }]}>{t('result.save')}</Text>
-          </TouchableOpacity>
+        {/* Quick Actions */}
+        <View style={styles.quickActions}>
+          <Text style={[styles.actionsTitle, theme === 'dark' && styles.darkText]}>
+            {t('result.quickActions')}
+          </Text>
+          <View style={styles.actionsRow}>
+            <TouchableOpacity
+              style={[styles.actionButton, theme === 'dark' && styles.darkActionButton]}
+              onPress={handleSave}
+            >
+              <Ionicons
+                name={saved ? "checkmark" : "bookmark"}
+                size={20}
+                color={saved ? "#10b981" : (theme === 'dark' ? '#fff' : '#666')}
+              />
+              <Text style={[
+                styles.actionText,
+                theme === 'dark' && styles.darkText,
+                saved && styles.savedText
+              ]}>
+                {saved ? t('result.saved') : t('result.save')}
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.shareButton, { backgroundColor: tokens.surface, borderColor: tokens.border }]}
-            onPress={handleShare}
-            activeOpacity={0.8}
+            <TouchableOpacity
+              style={[styles.actionButton, theme === 'dark' && styles.darkActionButton]}
+              onPress={handleShare}
+            >
+              <Ionicons
+                name="share"
+                size={20}
+                color={theme === 'dark' ? '#fff' : '#666'}
+              />
+              <Text style={[styles.actionText, theme === 'dark' && styles.darkText]}>
+                {t('result.share')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Next Steps */}
+        <View style={[styles.nextSteps, theme === 'dark' && styles.darkCard]}>
+          <Text style={[styles.nextStepsTitle, theme === 'dark' && styles.darkText]}>
+            {t('result.nextSteps')}
+          </Text>
+          <View style={styles.steps}>
+            <View style={styles.step}>
+              <View style={styles.stepIcon}>
+                <Ionicons name="calendar" size={16} color="#10b981" />
+              </View>
+              <Text style={[styles.stepText, theme === 'dark' && styles.darkSubtext]}>
+                {t('result.step1')}
+              </Text>
+            </View>
+            <View style={styles.step}>
+              <View style={styles.stepIcon}>
+                <Ionicons name="water" size={16} color="#10b981" />
+              </View>
+              <Text style={[styles.stepText, theme === 'dark' && styles.darkSubtext]}>
+                {t('result.step2')}
+              </Text>
+            </View>
+            <View style={styles.step}>
+              <View style={styles.stepIcon}>
+                <Ionicons name="eye" size={16} color="#10b981" />
+              </View>
+              <Text style={[styles.stepText, theme === 'dark' && styles.darkSubtext]}>
+                {t('result.step3')}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Fixed Action Button */}
+      <View style={styles.fixedActions}>
+        <TouchableOpacity
+          style={[styles.newScanButton, styles.shadow]}
+          onPress={handleNewScan}
+        >
+          <LinearGradient
+            colors={['#10b981', '#059669']}
+            style={styles.newScanGradient}
           >
-            <Ionicons name="share" size={24} color={tokens.text} />
-            <Text style={[styles.shareButtonText, { color: tokens.text }]}>{t('result.share')}</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      </Animated.View>
+            <Ionicons name="camera" size={20} color="#fff" />
+            <Text style={styles.newScanText}>{t('result.newScan')}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -326,81 +283,68 @@ export default function ResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fffc',
+    backgroundColor: '#f8fafc',
   },
-  // Background elements
-  backgroundCircle: {
-    position: 'absolute',
-    borderRadius: 500,
+  darkContainer: {
+    backgroundColor: '#000',
   },
-  circle1: {
-    width: 200,
-    height: 200,
-    top: -80,
-    right: -80,
-    backgroundColor: 'rgba(34, 197, 94, 0.08)',
-  },
-  circle2: {
-    width: 150,
-    height: 150,
-    bottom: -50,
-    left: -50,
-    backgroundColor: 'rgba(134, 239, 172, 0.05)',
-  },
-  // Header
   header: {
-    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingTop: 60,
     paddingBottom: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#166534',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  // Card container
-  cardContainer: {
-    flex: 1,
     paddingHorizontal: 20,
   },
+  backButton: {
+    padding: 8,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1a1a1a',
+  },
+  darkText: {
+    color: '#fff',
+  },
+  darkSubtext: {
+    color: '#999',
+  },
+  placeholder: {
+    width: 40,
+  },
+  scrollView: {
+    flex: 1,
+  },
   resultCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
+    margin: 20,
     borderRadius: 20,
     padding: 24,
-    // marginBottom:20,
-    elevation: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
+    elevation: 8,
   },
-  // Disease header
-  diseaseHeader: {
+  darkCard: {
+    backgroundColor: '#1a1a1a',
+  },
+  diagnosisHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 24,
   },
-  diseaseIconContainer: {
+  diseaseIcon: {
     width: 60,
     height: 60,
-    borderRadius: 16,
+    borderRadius: 12,
     backgroundColor: '#f0fdf4',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
-    borderWidth: 2,
-    borderColor: '#dcfce7',
   },
-  diseaseIcon: {
+  diseaseEmoji: {
     fontSize: 24,
   },
   diseaseInfo: {
@@ -409,13 +353,12 @@ const styles = StyleSheet.create({
   diseaseName: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#1f2937',
+    color: '#1a1a1a',
     marginBottom: 4,
   },
-  diseaseNameAm: {
-    fontSize: 16,
-    color: '#6b7280',
-    fontWeight: '600',
+  diseaseDesc: {
+    fontSize: 14,
+    color: '#666',
   },
   severityBadge: {
     flexDirection: 'row',
@@ -426,10 +369,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   severityText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700',
   },
-  // Confidence section
   confidenceSection: {
     marginBottom: 24,
   },
@@ -442,100 +384,148 @@ const styles = StyleSheet.create({
   confidenceLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: '#666',
   },
   confidenceValue: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#166534',
+    color: '#1a1a1a',
   },
   confidenceBar: {
-    height: 12,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 6,
+    height: 8,
+    backgroundColor: '#e5e5e5',
+    borderRadius: 4,
     overflow: 'hidden',
   },
   confidenceFill: {
     height: '100%',
-    borderRadius: 6,
+    borderRadius: 4,
   },
-  // Advice section
-  adviceSection: {
+  section: {
     marginBottom: 20,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#475569ff',
+    color: '#1a1a1a',
   },
-  adviceText: {
-    fontSize: 15,
-    color: '#4b5563',
-    lineHeight: 22,
-    fontWeight: '500',
-  },
-  // Prevention section
-  preventionSection: {
-    marginBottom: 8,
-  },
-  preventionText: {
+  sectionContent: {
     fontSize: 14,
-    color: '#6b7280',
+    color: '#666',
     lineHeight: 20,
-    fontWeight: '500',
   },
-  // Actions
-  actionsContainer: {
-    // paddingHorizontal: 20,
-    paddingTop: 13,
-    gap: 12,
+  quickActions: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
-  saveButton: {
-    flexDirection: 'row',
-    backgroundColor: '#16a34a',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    elevation: 6,
-    shadowColor: '#16a34a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  saveButtonText: {
-    color: '#ffffff',
+  actionsTitle: {
     fontSize: 18,
     fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 12,
   },
-  shareButton: {
+  actionsRow: {
     flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderWidth: 2,
-    borderColor: '#1e40af',
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 16,
+    gap: 12,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
-    elevation: 4,
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  darkActionButton: {
+    backgroundColor: '#1a1a1a',
+  },
+  actionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+  },
+  savedText: {
+    color: '#10b981',
+  },
+  nextSteps: {
+    backgroundColor: '#fff',
+    margin: 20,
+    borderRadius: 16,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  shareButtonText: {
-    color: '#1e40af',
+  nextStepsTitle: {
     fontSize: 18,
     fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 16,
+  },
+  steps: {
+    gap: 12,
+  },
+  step: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  stepIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f0fdf4',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stepText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  fixedActions: {
+    padding: 20,
+    paddingBottom: 30,
+  },
+  newScanButton: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  newScanGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+  newScanText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  shadow: {
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
 });

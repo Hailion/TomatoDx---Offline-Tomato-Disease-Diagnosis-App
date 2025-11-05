@@ -1,291 +1,167 @@
-// history.tsx
+// app/tomatodx/history.tsx - History Screen
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import {
-  Animated,
-  Easing,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import Colors from '../../constants/Colors';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
-const mock = [
+const mockScans = [
   {
     id: '1',
     disease: 'Early Blight',
-    date: '2025-10-01',
-    confidence: 0.92,
-    severity: 'High',
+    confidence: 92,
+    date: '2024-01-15',
+    severity: 'medium',
     image: '🌱'
   },
   {
     id: '2',
     disease: 'Healthy',
-    date: '2025-10-10',
-    confidence: 0.88,
-    severity: 'None',
+    confidence: 95,
+    date: '2024-01-14',
+    severity: 'none',
     image: '✅'
   },
   {
     id: '3',
     disease: 'Late Blight',
-    date: '2025-10-15',
-    confidence: 0.95,
-    severity: 'Critical',
+    confidence: 88,
+    date: '2024-01-13',
+    severity: 'high',
     image: '⚠️'
-  },
-  {
-    id: '4',
-    disease: 'Bacterial Spot',
-    date: '2025-10-20',
-    confidence: 0.78,
-    severity: 'Medium',
-    image: '🦠'
   }
 ];
 
 export default function HistoryScreen() {
-    const { t } = useTranslation();
+  const router = useRouter();
   const { theme } = useTheme();
-  const tokens = Colors[theme];
-
-  // Animation values
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideUpHeader = useRef(new Animated.Value(30)).current;
-  const slideUpList = useRef(new Animated.Value(50)).current;
-  const scaleAnim = useRef(new Animated.Value(0.98)).current;
-
-  useEffect(() => {
-    Animated.sequence([
-      // Fade in background
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      // Header animation
-      Animated.parallel([
-        Animated.timing(slideUpHeader, {
-          toValue: 0,
-          duration: 500,
-          easing: Easing.out(Easing.back(1)),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 600,
-          easing: Easing.elastic(1),
-          useNativeDriver: true,
-        })
-      ]),
-      // List animation
-      Animated.timing(slideUpList, {
-        toValue: 0,
-        duration: 600,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      })
-    ]).start();
-  }, [fadeAnim, scaleAnim, slideUpHeader, slideUpList]);
-
-  const handleItemPress = (itemId: string) => {
-    // Button press animation feedback
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.99,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      router.push(`/tomatodx/result?id=${itemId}`);
-    });
-  };
+  const { t } = useTranslation();
 
   const getSeverityColor = (severity: string) => {
-    switch (severity.toLowerCase()) {
-      case 'critical': return tokens.danger;
-      case 'high': return tokens.warning;
-      case 'medium': return tokens.warningDark;
-      case 'low': return tokens.primaryDarker;
-      default: return tokens.primaryDark;
+    switch (severity) {
+      case 'high': return '#ef4444';
+      case 'medium': return '#f59e0b';
+      case 'low': return '#10b981';
+      default: return '#10b981';
     }
   };
 
   const getSeverityIcon = (severity: string) => {
-    switch (severity.toLowerCase()) {
-      case 'critical': return 'warning';
-      case 'high': return 'alert-circle';
-      case 'medium': return 'information-circle';
+    switch (severity) {
+      case 'high': return 'warning';
+      case 'medium': return 'alert-circle';
       case 'low': return 'checkmark-circle';
       default: return 'leaf';
     }
   };
 
-  // Extracted list item into a proper component so hooks are used in a component
-  const HistoryListItem = ({ item, index }: { item: any; index: number }) => {
-    // keep ref object stable to avoid hook dependency issues
-    const itemAnimRef = useRef(new Animated.Value(0));
-
-    useEffect(() => {
-      Animated.timing(itemAnimRef.current, {
-        toValue: 1,
-        duration: 400,
-        delay: index * 100,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }).start();
-    }, [index]);
-
-    return (
-      <Animated.View
-        style={{
-          opacity: itemAnimRef.current,
-          transform: [
-            {
-              translateY: itemAnimRef.current.interpolate({
-                inputRange: [0, 1],
-                outputRange: [30, 0],
-              }),
-            },
-          ],
-        }}
-      >
-        <TouchableOpacity
-          style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
-          onPress={() => handleItemPress(item.id)}
-          activeOpacity={0.7}
-        >
-          <View style={styles.itemLeft}>
-            <View style={styles.imageContainer}>
-              <Text style={styles.itemImage}>{item.image}</Text>
-            </View>
-            <View style={styles.itemInfo}>
-              <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{item.disease}</Text>
-              <Text style={[styles.date, { color: tokens.muted }]}>{item.date}</Text>
-              <View style={styles.confidenceContainer}>
-                <View style={styles.confidenceBar}>
-                  <View
-                    style={[
-                      styles.confidenceFill,
-                      {
-                        width: `${item.confidence * 100}%`,
-                        backgroundColor: getSeverityColor(item.severity)
-                      }
-                    ]}
-                  />
-                </View>
-                <Text style={[styles.confidenceText, { color: tokens.muted }]}>
-                  {Math.round(item.confidence * 100)}%
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.itemRight}>
-            <View
-              style={[
-                styles.severityBadge,
-                { backgroundColor: getSeverityColor(item.severity) + '20' }
-              ]}
-            >
-              <Ionicons
-                name={getSeverityIcon(item.severity) as any}
-                size={16}
-                color={getSeverityColor(item.severity)}
-              />
-              <Text
-                style={[
-                  styles.severityText,
-                  { color: getSeverityColor(item.severity) }
-                ]}
-              >
-                {item.severity}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
-    );
-  };
-
   return (
-    <View style={[styles.container, { backgroundColor: tokens.background }]}>
-      {/* Background Elements */}
-      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim, backgroundColor: tokens.primaryOverlay }]} />
-      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim, backgroundColor: tokens.successOverlay }]} />
+    <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
+      <ScrollView style={styles.scrollView}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={[styles.title, theme === 'dark' && styles.darkText]}>
+            {t('history.title')}
+          </Text>
+          <Text style={[styles.subtitle, theme === 'dark' && styles.darkSubtext]}>
+            {t('history.subtitle', { count: mockScans.length })}
+          </Text>
+        </View>
 
-      {/* Header */}
-      <Animated.View
-        style={[
-          styles.header,
-          {
-            opacity: fadeAnim,
-            transform: [
-              { translateY: slideUpHeader },
-              { scale: scaleAnim }
-            ]
-          }
-        ]}
-      >
-        <View style={styles.headerContent}>
-          <View style={styles.titleContainer}>
-            <Text style={[styles.title, { color: tokens.primaryDark }]}>📋 {t("history.title")}</Text>
-            <Text style={[styles.subtitle, { color: tokens.muted }]}>
-              {mock.length} {t("history.subtitle")}
+        {/* Stats Overview */}
+        <View style={styles.statsRow}>
+          <View style={[styles.statCard, theme === 'dark' && styles.darkCard]}>
+            <Ionicons name="scan" size={24} color="#10b981" />
+            <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+              {mockScans.length}
+            </Text>
+            <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+              {t('history.totalScans')}
             </Text>
           </View>
-          <View style={styles.statsContainer}>
-            <View style={styles.stat}>
-              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{mock.length}</Text>
-              <Text style={[styles.statLabel, { color: tokens.muted } ]}>{t('history.total')}</Text>
-            </View>
+          <View style={[styles.statCard, theme === 'dark' && styles.darkCard]}>
+            <Ionicons name="trending-up" size={24} color="#10b981" />
+            <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+              92%
+            </Text>
+            <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+              {t('history.accuracy')}
+            </Text>
           </View>
         </View>
-      </Animated.View>
 
-      {/* History List */}
-      <Animated.View
-        style={[
-          styles.listContainer,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideUpList }]
-          }
-        ]}
-      >
-        {mock.length > 0 ? (
-          <FlatList
-            data={mock}
-            keyExtractor={i => i.id}
-            renderItem={({ item, index }) => (
-              <HistoryListItem item={item} index={index} />
-            )}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
-            ItemSeparatorComponent={() => <View style={[styles.separator, { backgroundColor: tokens.backgroundAlt }]} />}
-          />
-        ) : (
+        {/* Scan History */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+            {t('history.recentScans')}
+          </Text>
+          {mockScans.map((scan) => (
+            <TouchableOpacity
+              key={scan.id}
+              style={[styles.scanCard, theme === 'dark' && styles.darkCard]}
+              onPress={() => router.push(`/tomatodx/result?id=${scan.id}`)}
+            >
+              <View style={styles.scanHeader}>
+                <View style={styles.scanImage}>
+                  <Text style={styles.scanEmoji}>{scan.image}</Text>
+                </View>
+                <View style={styles.scanInfo}>
+                  <Text style={[styles.diseaseName, theme === 'dark' && styles.darkText]}>
+                    {scan.disease}
+                  </Text>
+                  <Text style={[styles.scanDate, theme === 'dark' && styles.darkSubtext]}>
+                    {scan.date}
+                  </Text>
+                </View>
+                <View style={styles.scanMeta}>
+                  <View style={styles.confidenceBadge}>
+                    <Text style={styles.confidenceText}>
+                      {scan.confidence}%
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.severityBadge,
+                      { backgroundColor: getSeverityColor(scan.severity) + '20' }
+                    ]}
+                  >
+                    <Ionicons
+                      name={getSeverityIcon(scan.severity) as any}
+                      size={16}
+                      color={getSeverityColor(scan.severity)}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.confidenceBar}>
+                <View
+                  style={[
+                    styles.confidenceFill,
+                    {
+                      width: `${scan.confidence}%`,
+                      backgroundColor: getSeverityColor(scan.severity)
+                    }
+                  ]}
+                />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Empty State */}
+        {mockScans.length === 0 && (
           <View style={styles.emptyState}>
-            <Ionicons name="time-outline" size={64} color="#9ca3af" />
-            <Text style={styles.emptyTitle}>No Scan History</Text>
-            <Text style={styles.emptyText}>
-              Your tomato disease detection history will appear here
+            <Ionicons name="time-outline" size={64} color="#999" />
+            <Text style={[styles.emptyTitle, theme === 'dark' && styles.darkText]}>
+              {t('history.noScans')}
+            </Text>
+            <Text style={[styles.emptyText, theme === 'dark' && styles.darkSubtext]}>
+              {t('history.noScansDesc')}
             </Text>
           </View>
         )}
-      </Animated.View>
+      </ScrollView>
     </View>
   );
 }
@@ -293,186 +169,162 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fffc',
+    backgroundColor: '#f8fafc',
   },
-  // Background elements
-  backgroundCircle: {
-    position: 'absolute',
-    borderRadius: 500,
+  darkContainer: {
+    backgroundColor: '#000',
   },
-  circle1: {
-    width: 200,
-    height: 200,
-    top: -80,
-    right: -80,
-    backgroundColor: 'rgba(34, 197, 94, 0.08)',
-  },
-  circle2: {
-    width: 150,
-    height: 150,
-    bottom: -50,
-    left: -50,
-    backgroundColor: 'rgba(134, 239, 172, 0.05)',
-  },
-  // Header
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 20,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  titleContainer: {
+  scrollView: {
     flex: 1,
+  },
+  header: {
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   title: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#166534',
+    color: '#1a1a1a',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6b7280',
-    fontWeight: '500',
+    color: '#666',
   },
-  statsContainer: {
-    alignItems: 'center',
+  darkText: {
+    color: '#fff',
   },
-  stat: {
+  darkSubtext: {
+    color: '#999',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    marginBottom: 24,
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  darkCard: {
+    backgroundColor: '#1a1a1a',
   },
   statNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#166534',
+    color: '#1a1a1a',
+    marginVertical: 8,
   },
   statLabel: {
     fontSize: 12,
-    color: '#6b7280',
-    fontWeight: '600',
+    color: '#666',
+    fontWeight: '500',
   },
-  // List
-  listContainer: {
-    flex: 1,
+  section: {
     paddingHorizontal: 20,
   },
-  listContent: {
-    paddingBottom: 20,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 16,
   },
-  separator: {
-    height: 1,
-    backgroundColor: '#f3f4f6',
-    marginVertical: 8,
-  },
-  // History Item
-  historyItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
+  scanCard: {
+    backgroundColor: '#fff',
     padding: 16,
-    borderRadius: 16,
-    marginVertical: 4,
-    elevation: 2,
+    borderRadius: 12,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  itemLeft: {
-    flex: 1,
+  scanHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 12,
   },
-  imageContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 12,
+  scanImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
     backgroundColor: '#f0fdf4',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
-    borderWidth: 2,
-    borderColor: '#dcfce7',
   },
-  itemImage: {
+  scanEmoji: {
     fontSize: 20,
   },
-  itemInfo: {
+  scanInfo: {
     flex: 1,
   },
   diseaseName: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 4,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    marginBottom: 2,
   },
-  date: {
+  scanDate: {
     fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 8,
+    color: '#666',
   },
-  confidenceContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  scanMeta: {
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  confidenceBadge: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  confidenceText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  severityBadge: {
+    padding: 4,
+    borderRadius: 4,
   },
   confidenceBar: {
-    flex: 1,
-    height: 6,
-    backgroundColor: '#e5e7eb',
-    borderRadius: 3,
+    height: 4,
+    backgroundColor: '#e5e5e5',
+    borderRadius: 2,
     overflow: 'hidden',
   },
   confidenceFill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: 2,
   },
-  confidenceText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#6b7280',
-    minWidth: 30,
-  },
-  itemRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  severityBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    gap: 4,
-  },
-  severityText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  // Empty State
   emptyState: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 80,
+    paddingHorizontal: 20,
   },
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#6b7280',
+    color: '#1a1a1a',
     marginTop: 16,
     marginBottom: 8,
   },
   emptyText: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: '#666',
     textAlign: 'center',
-    maxWidth: '80%',
     lineHeight: 20,
   },
 });

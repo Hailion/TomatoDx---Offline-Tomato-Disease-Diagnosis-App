@@ -1,419 +1,275 @@
-// index.tsx
+// app/tomatodx/index.tsx - Home Screen
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import {
-  Animated,
-  Dimensions,
-  Easing,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import Colors, { ThemeTokens } from '../../constants/Colors';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
-const { width, height } = Dimensions.get('window');
-
-export default function TomatoHome() {
-  const { t } = useTranslation();
+export default function HomeScreen() {
   const router = useRouter();
   const { theme } = useTheme();
-  const tokens = Colors[theme];
-  const styles = getStyles(tokens);
+  const { t } = useTranslation();
 
-  // Animation values
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideUpTitle = useRef(new Animated.Value(50)).current;
-  const slideUpSubtitle = useRef(new Animated.Value(40)).current;
-  const button1Anim = useRef(new Animated.Value(0)).current;
-  const button2Anim = useRef(new Animated.Value(0)).current;
-  const footerAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    // Sequence animations for better visual flow
-    Animated.sequence([
-      // Fade in background
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      // Title animation
-      Animated.parallel([
-        Animated.timing(slideUpTitle, {
-          toValue: 0,
-          duration: 600,
-          easing: Easing.out(Easing.back(1.5)),
-          useNativeDriver: true,
-        }),
-        Animated.timing(rotateAnim, {
-          toValue: 1,
-          duration: 1000,
-          easing: Easing.elastic(1.5),
-          useNativeDriver: true,
-        })
-      ]),
-      // Subtitle animation
-      Animated.timing(slideUpSubtitle, {
-        toValue: 0,
-        duration: 500,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }),
-      // Buttons animation with stagger
-      Animated.stagger(200, [
-        Animated.timing(button1Anim, {
-          toValue: 1,
-          duration: 600,
-          easing: Easing.out(Easing.back(1)),
-          useNativeDriver: true,
-        }),
-        Animated.timing(button2Anim, {
-          toValue: 1,
-          duration: 600,
-          easing: Easing.out(Easing.back(1)),
-          useNativeDriver: true,
-        }),
-      ]),
-      // Footer animation
-      Animated.timing(footerAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      })
-    ]).start();
-
-    // Continuous subtle animations
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.05,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
-
-  const handleNavigation = (route: string) => {
-    // Button press animation
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.95,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      router.push(route as any);
-    });
-  };
-
-  const rotateInterpolate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['-10deg', '0deg']
-  });
+  const features = [
+    {
+      icon: 'scan-outline',
+      title: t('home.quickScan'),
+      description: t('home.quickScanDesc'),
+      route: '/tomatodx/scan',
+      color: '#10b981'
+    },
+    {
+      icon: 'library-outline',
+      title: t('home.scanHistory'),
+      description: t('home.scanHistoryDesc'),
+      route: '/tomatodx/history',
+      color: '#8b5cf6'
+    },
+    {
+      icon: 'analytics-outline',
+      title: t('home.insights'),
+      description: t('home.insightsDesc'),
+      route: '/tomatodx/insights',
+      color: '#f59e0b'
+    }
+  ];
 
   return (
-    <View style={styles.container}>
-
-      {/* Background Animated Elements */}
-      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
-      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
-
-      <View style={styles.content}>
-        {/* Header Section */}
-        <View style={styles.header}>
-          <Animated.View
-            style={[
-              styles.logoContainer,
-              {
-                opacity: fadeAnim,
-                transform: [
-                  { translateY: slideUpTitle },
-                  { rotate: rotateInterpolate }
-                ]
-              }
-            ]}
-          >
-            <Animated.View
-              style={[
-                styles.tomatoIcon,
-                { transform: [{ scale: scaleAnim }] }
-              ]}
-            >
-              <Text style={styles.tomatoEmoji}>🍅</Text>
-            </Animated.View>
-            <Text style={styles.title}>TomatoDx</Text>
-          </Animated.View>
-
-          <Animated.Text
-            style={[
-              styles.subtitle,
-              {
-                opacity: fadeAnim,
-                transform: [{ translateY: slideUpSubtitle }]
-              }
-            ]}
-          >
-            {t('home.subtitle')}
-          </Animated.Text>
+    <ScrollView style={[styles.container, theme === 'dark' && styles.darkContainer]}>
+      {/* Header */}
+      <LinearGradient
+        colors={theme === 'dark' ? ['#1a1a1a', '#2d2d2d'] : ['#f8fafc', '#e2e8f0']}
+        style={styles.header}
+      >
+        <View style={styles.headerContent}>
+          <View style={styles.logo}>
+            <Ionicons name="leaf" size={32} color="#10b981" />
+          </View>
+          <Text style={[styles.title, theme === 'dark' && styles.darkText]}>
+            TomatoDx
+          </Text>
+          <Text style={[styles.subtitle, theme === 'dark' && styles.darkSubtext]}>
+            {t('home.tagline')}
+          </Text>
         </View>
+      </LinearGradient>
 
-        {/* Buttons Section */}
-        <View style={styles.buttonsContainer}>
-          <Animated.View
-            style={[
-              styles.buttonWrapper,
-              {
-                opacity: button1Anim,
-                transform: [
-                  {
-                    translateY: button1Anim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [50, 0]
-                    })
-                  },
-                  { scale: button1Anim }
-                ]
-              }
-            ]}
-          >
-            <TouchableOpacity
-              style={[styles.button, styles.primaryButton]}
-              onPress={() => handleNavigation('/tomatodx/capture')}
-              activeOpacity={0.9}
-            >
-              <Text style={styles.buttonIcon}>📸</Text>
-              <Text style={[styles.buttonText, styles.primaryButtonText]}>{t('home.capture')}</Text>
-            </TouchableOpacity>
-          </Animated.View>
-
-          <Animated.View
-            style={[
-              styles.buttonWrapper,
-              {
-                opacity: button2Anim,
-                transform: [
-                  {
-                    translateY: button2Anim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [50, 0]
-                    })
-                  },
-                  { scale: button2Anim }
-                ]
-              }
-            ]}
-          >
-            <TouchableOpacity
-              style={[styles.button, styles.secondaryButton]}
-              onPress={() => handleNavigation('/tomatodx/history')}
-              activeOpacity={0.9}
-            >
-              <Text style={styles.buttonIcon}>📊</Text>
-              <Text style={[styles.buttonText, styles.secondaryButtonText]}>{t('home.history')}</Text>
-            </TouchableOpacity>
-          </Animated.View>
+      {/* Stats Overview */}
+      <View style={[styles.statsCard, theme === 'dark' && styles.darkCard]}>
+        <View style={styles.statItem}>
+          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>24</Text>
+          <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+            {t('home.totalScans')}
+          </Text>
         </View>
-
-        {/* Footer Section */}
-        <Animated.View
-          style={[
-            styles.footer,
-            {
-              opacity: footerAnim,
-              transform: [
-                {
-                  translateY: footerAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [30, 0]
-                  })
-                }
-              ]
-            }
-          ]}
-        >
-          <TouchableOpacity
-            style={styles.footerLink}
-            onPress={() => handleNavigation('/tomatodx/settings')}
-          >
-            <Text style={styles.footerIcon}>⚙️</Text>
-            <Text style={styles.footerText}>{t('home.settings')}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.footerLink}
-            onPress={() => handleNavigation('/tomatodx/admin')}
-          >
-            <Text style={styles.footerIcon}>🔧</Text>
-            <Text style={styles.footerText}>{t('home.admin')}</Text>
-          </TouchableOpacity>
-        </Animated.View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>92%</Text>
+          <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+            {t('home.accuracy')}
+          </Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>5</Text>
+          <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+            {t('home.healthy')}
+          </Text>
+        </View>
       </View>
-    </View>
+
+      {/* Quick Actions */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+          {t('home.quickActions')}
+        </Text>
+        {features.map((feature, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[styles.featureCard, theme === 'dark' && styles.darkCard]}
+            onPress={() => router.push(feature.route as any)}
+          >
+            <View style={[styles.featureIcon, { backgroundColor: feature.color }]}>
+              <Ionicons name={feature.icon as any} size={24} color="#fff" />
+            </View>
+            <View style={styles.featureContent}>
+              <Text style={[styles.featureTitle, theme === 'dark' && styles.darkText]}>
+                {feature.title}
+              </Text>
+              <Text style={[styles.featureDesc, theme === 'dark' && styles.darkSubtext]}>
+                {feature.description}
+              </Text>
+            </View>
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color={theme === 'dark' ? '#666' : '#999'}
+            />
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Recent Activity */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+          {t('home.recentActivity')}
+        </Text>
+        <View style={[styles.activityCard, theme === 'dark' && styles.darkCard]}>
+          <Ionicons name="time-outline" size={24} color="#10b981" />
+          <View style={styles.activityContent}>
+            <Text style={[styles.activityText, theme === 'dark' && styles.darkText]}>
+              {t('home.lastScan')}
+            </Text>
+            <Text style={[styles.activityTime, theme === 'dark' && styles.darkSubtext]}>
+              2 hours ago
+            </Text>
+          </View>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
-const getStyles = (c: ThemeTokens) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: c.background,
-      overflow: 'hidden',
-    },
-    content: {
-      flex: 1,
-      padding: 24,
-      justifyContent: 'space-between',
-      zIndex: 1,
-    },
-    // Background elements
-    backgroundCircle: {
-      position: 'absolute',
-      borderRadius: 500,
-      backgroundColor: c.primaryOverlay2,
-    },
-    circle1: {
-      width: 300,
-      height: 300,
-      top: -100,
-      right: -100,
-    },
-    circle2: {
-      width: 200,
-      height: 200,
-      bottom: -50,
-      left: -50,
-      backgroundColor: c.successOverlay2,
-    },
-    // Header styles
-    header: {
-      alignItems: 'center',
-      marginTop: height * 0.1,
-    },
-    logoContainer: {
-      alignItems: 'center',
-      marginBottom: 24,
-    },
-    tomatoIcon: {
-      width: 100,
-      height: 100,
-      borderRadius: 50,
-      backgroundColor: c.primaryOverlay,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginBottom: 16,
-      borderWidth: 3,
-      borderColor: c.primaryOverlay2,
-    },
-    tomatoEmoji: {
-      fontSize: 48,
-    },
-    title: {
-      fontSize: 48,
-      fontWeight: '800',
-      textAlign: 'center',
-      color: c.primaryDark,
-      textShadowColor: c.shadowLight,
-      textShadowOffset: { width: 0, height: 2 },
-      textShadowRadius: 4,
-      letterSpacing: 1,
-    },
-    subtitle: {
-      textAlign: 'center',
-      color: c.textSecondary,
-      fontSize: 18,
-      lineHeight: 28,
-      fontWeight: '500',
-      maxWidth: '80%',
-    },
-    // Button styles
-    buttonsContainer: {
-      alignItems: 'center',
-      gap: 20,
-    },
-    buttonWrapper: {
-      width: '100%',
-      maxWidth: 280,
-    },
-    button: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingVertical: 20,
-      paddingHorizontal: 24,
-      borderRadius: 20,
-      elevation: 8,
-      shadowColor: c.shadowDark,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 12,
-      gap: 12,
-    },
-    primaryButton: {
-      backgroundColor: c.primary,
-    },
-    secondaryButton: {
-      backgroundColor: c.surface,
-      borderWidth: 2,
-      borderColor: c.primary,
-    },
-    buttonIcon: {
-      fontSize: 24,
-    },
-    buttonText: {
-      fontSize: 20,
-      fontWeight: '700',
-      flex: 1,
-      textAlign: 'center',
-    },
-    primaryButtonText: {
-      color: c.whiteMuted,
-    },
-    secondaryButtonText: {
-      color: c.primary,
-    },
-    // Footer styles
-    footer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingHorizontal: 8,
-      marginBottom: 20,
-    },
-    footerLink: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 12,
-      backgroundColor: c.whiteOverlay,
-      gap: 8,
-      borderWidth: 1,
-      borderColor: c.border,
-
-    },
-    footerIcon: {
-      fontSize: 16,
-    },
-    footerText: {
-      color: c.text,
-      fontSize: 14,
-      fontWeight: '600',
-    }
-  });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  darkContainer: {
+    backgroundColor: '#000',
+  },
+  header: {
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
+    alignItems: 'center',
+  },
+  logo: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#dcfce7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#1a1a1a',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
+  darkText: {
+    color: '#fff',
+  },
+  darkSubtext: {
+    color: '#999',
+  },
+  statsCard: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    margin: 20,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  darkCard: {
+    backgroundColor: '#1a1a1a',
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+  },
+  statDivider: {
+    width: 1,
+    backgroundColor: '#e5e5e5',
+  },
+  section: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 16,
+  },
+  featureCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  featureIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  featureContent: {
+    flex: 1,
+  },
+  featureTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  featureDesc: {
+    fontSize: 14,
+    color: '#666',
+  },
+  activityCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+  },
+  activityContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  activityText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    marginBottom: 2,
+  },
+  activityTime: {
+    fontSize: 14,
+    color: '#666',
+  },
+});

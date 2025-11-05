@@ -1,4 +1,4 @@
-package com.anonymous.TomatoDx
+package com.haileamlak.TomatoDx
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

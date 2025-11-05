@@ -1,107 +1,90 @@
 {
-  "home": { "subtitle": "የቲማቲም በሽታ የውስጥ ምርመራ", "capture": "ፎቶ ይውሰዱ", "history": "ታሪክ", "settings": "ቅንብሮች", "admin": "አስተዳደር" },
-  "settings": { 
-    "title": "ቅንብሮች", 
-    "language": "ቋንቋ", 
-    "theme": "ገጽታ",
-    "themeSubtitle":"የተመረጠ ቅርጸ ተንቀሳቃሽ ይምረጡ",
-    "light": "ብርሃን",
-    "dark": "ጨለማ", 
-    "system": "ስርዓት",
-    "profile":"መገለጫ",
-    "edit":"አርትዕ",
-    "appInfo":"የመተግበሪያ መረጃ",
-    "appInfo":{
-      "title":"የመተግበሪያ መረጃ",
-      "version":"ሥሪት",
-      "build":"የግንባታ ቀን",
-      "developer":"ገንቢ",
-      "contact":"እኛን ለማግኘት",
-      "website":"ድህረ ገጽ",
-      "lastUpdated":"ለመጨረሻ ጊዜ የተሻሻለው"
-    }
+  "home": {
+    "title": "መነሻ",
+    "tagline": "በ AI የተመነ የቲማቲም በሽታ መለያ",
+    "quickScan": "ፈጣን ስካን",
+    "quickScanDesc": "ወዲያውኑ ለመለያ የቲማቲም ቅጠሎችን ይቃኙ",
+    "scanHistory": "የስካን ታሪክ",
+    "scanHistoryDesc": "የቀድሞ የስካን ውጤቶችዎን ይመልከቱ",
+    "insights": "እይታዎች",
+    "insightsDesc": "የግብርና ምክሮች እና ምክሮችን ያግኙ",
+    "quickActions": "ፈጣን እርምጃዎች",
+    "recentActivity": "የቅርብ ማንኛት",
+    "lastScan": "የመጨረሻ ስካን ተጠናቅቋል",
+    "totalScans": "ጠቅላላ ስካኖች",
+    "accuracy": "ትክክለኛነት",
+    "healthy": "ጤናማ"
   },
-  "capture": { 
-    "title": "ቲማቲም ይውሰዱ", 
-    "subtitle": "ቲማቲሙን በፍሬሙ ውስጥ ያስቀምጡ", 
-    "preview": "ካሜራ ቅድሚያ", 
-    "align": "ቲማቲሙን እዚህ ያስቀምጡ", 
-    "takePhoto": "ፎቶ ይውሰዱ", 
-    "openGallery": "ጋለሪ ክፈት",
-    "permissionReq":"ፈቃድ ያስፈልጋል'፣ ፎቶዎችን ለመድረስ የሚዲያ ቤተ-መጽሐፍት ፈቃድ ያስፈልጋል።"
+  "scan": {
+    "title": "ስካን",
+    "subtitle": "በ AI የቲማቲም በሽታዎችን ይፈልጉ",
+    "cameraPermission": "የካሜራ መዳረሻ ያስፈልጋል",
+    "cameraPermissionDesc": "የቲማቲም ቅጠሎችን ለበሽታ መለያ ለማንካት የካሜራ መዳረሻ ያስፈልገናል",
+    "grantPermission": "ፍቃድ ስጥ",
+    "takePhoto": "ፎቶ አንስ",
+    "takePhotoDesc": "የቲማቲም ቅጠሎችን ለመቅረፅ ካሜራዎን ይጠቀሙ",
+    "chooseGallery": "ከጋሌሪ ይምረጡ",
+    "chooseGalleryDesc": "ከጋሌሪዎ ያለውን ፎቶ ይምረጡ",
+    "alignGuide": "ቅጠሉን በፍሬም ውስጥ ያስተካክሉ",
+    "tips": "የስካን ምክሮች",
+    "tip1": "ጥሩ መብራት እርግጠኛ ይሁኑ",
+    "tip2": "በተጎዱ ቅጠሎች ላይ ያተኩሩ",
+    "tip3": "ካሜራውን የተረጋጋ ያድርጉት",
+    "error": "ስህተት",
+    "captureError": "ፎቶ ማንሳት አልተሳካም"
   },
-  "history": { 
-    "title": "የምርመራ ታሪክ",
-    "subtitle":"የቅርብ ጊዜ የቲማቲም በሽታ ውጤት",
-    "total": "ጠቅላላ"
-   },
-  "result": { 
-    "title": "የምርመራ ውጤት", 
-    "subtitle": "በ AI የተጎላበተ የቲማቲም በሽታን መለየት",
-    "confidenceLevel":"የመተማመን ደረጃ",
-    "save":"ውጤት ያስቀምጡ",
+  "preview": {
+    "title": "ቅድመ እይታ",
+    "ready": "ለመተንተን ዝግጁ",
+    "highQuality": "High Quality",
+    "tipsTitle": "ለመተንተን ዝግጁ",
+    "tipsText": "ይህ ምስል ለመተንተን ፍጹም ነው። ቅጠሉ በግልጽ የሚታይ እና በደንብ እንደተበራ እርግጠኛ ይሁኑ።",
+    "analyze": "ምስል አተም",
+    "retake": "ፎቶ እንደገና ያንሱ"
+  },
+  "result": {
+    "title": "ውጤቶች",
+    "confidence": "የመተማመን ደረጃ",
+    "treatment": "የሚመከር ሕክምና",
+    "prevention": "የመከላከል ምክሮች",
+    "quickActions": "ፈጣን እርምጃዎች",
+    "save": "ውጤት አስቀምጥ",
+    "saved": "ተቀምጧል",
+    "savedMessage": "ውጤቱ በታሪክዎ ተቀምጧል",
     "share": "አጋራ",
-    "recommendation":"የሚመከር እርምጃ",
-    "prevTips":"የመከላከያ ምክሮች",
-    "saveSuccess": "በተሳካ ተቀምጧል",
-    "saveMessage": "የእርስዎ ምርመራ በታሪክ ውስጥ ተቀምጧል።",
+    "shareMessage": "ይህን ውጤት ሌሎች ያጋሩ",
+    "nextSteps": "ቀጣይ እርምጃዎች",
+    "step1": "እጽዋቱን ለ 3-5 ቀናት ይቆጣጠሩ",
+    "step2": "በተመከረው መሠረት ሕክምና ይተግብሩ",
+    "step3": "ምልክቶቹ ቢቀጥሉ እንደገና ይቃኙ",
+    "newScan": "አዲስ ስካን"
+  },
+  "history": {
+    "title": "ታሪክ",
+    "subtitle": "{{count}} ስካኖች ተጠናቀዋል",
+    "totalScans": "ጠቅላላ ስካኖች",
+    "accuracy": "ትክክለኛነት",
+    "recentScans": "የቅርብ ስካኖች",
+    "noScans": "እስካሁን ምንም ስካን የለም",
+    "noScansDesc": "ውጤቶችን ለማየት የመጀመሪያ የቲማቲም ቅጠልዎን በመቃኝ ይጀምሩ"
+  },
+  "profile": {
+    "title": "መገለጫ",
+    "theme": "ገጽታ",
+    "light": "ብርሃን",
+    "dark": "ጨለማ",
+    "system": "ስርዓት",
+    "settings": "ማስተካከያዎች",
+    "language": "ቋንቋ",
+    "notifications": "ማሳወቂያዎች",
+    "analytics": "ትንታኔ",
+    "help": "እገዛ እና ድጋፍ",
+    "about": "ስለ"
+  },
+  "common": {
     "ok": "እሺ",
-    "shareText": "የቲማቲም በሽታ ምርመራ ውጤት",
-    "disease": "በሽታ",
-    "advice": "ምክር",
-    "shareTitle": "ምርመራ አጋራ",
-    "shareError": "ማጋራት ስህተት",
-    "shareNotAvailable": "በዚህ መሳሪያ ላይ ማጋራት አይቻልም።",
-    "shareFailed": "ምርመራውን ማጋራት አልተሳካም።"
-  },
-  "preview": { 
-    "title": "የፎቶ እይታ",
-    "subtitle": "የተቀረጸውን የቲማቲም ምስል ይገምግሙ",
-    "readyForAnalysis":"ለምርመራ ዝግጁ ነው",
-    "retake": "ፎቶ ዳግም ይውሰዱ", 
-    "analyzePhoto":"ፎቶውን ይተንትኑ",
-    "tip":"ለትክክለኛ ምርመራ ቲማቲሙ በጥሩ ብርሃን ውስጥ እና ግልጽ ሆኖ እንዲታይ ያድርጉ።"
-  },
-  "admin": { 
-    "title": "የአስተዳደር ገጽ",
-    "subtitle":"የስርዓት አስተዳደር እና ውቅር",
-    "online":"መስመር ላይ",
-    "updateInstructions": "የሞዴል ዝመና መመሪያዎች", 
-    "systemInformation": "የስርዓት መረጃ" , 
-    "appVersion": "የመተግበሪያ ሥሪት" ,  
-    "modelVersion": "የሞዴል ሥሪት",
-    "lastUpdated": "የመጨረሻ ዝመና",
-    "totalScans": "ጠቅላላ ምርመራዎች",
-    "modelManagement":{
-      "title":"የሞዴል አስተዳደር",
-      "subtitle":"በሽታን ለመለየት የ AI ሞዴልን ያዘምኑ እና ያስተዳድሩ",
-      "updateInstructions": "የሞዴል ዝመና መመሪያዎች",
-      "runSystemCheck":"የስርዓት ፍተሻን ያሂዱ",
-      "currentModel":"የአሁኑ ሞዴል",
-      "checkUpdates":"ለዝመናዎች ፍቺ አድርግ",
-      "lastChecked":"የመጨረሻ ፍቺ",
-      "noUpdates":"ምንም ዝመናዎች አልተገኙም",
-      "updateAvailable":"ዝመና አለ",
-      "updating":"በመዘመን...",
-      "updateSuccess":"ሞዴሉ በተሳካ ተዘመነ",
-      "updateFailed":"የሞዴል ዝመና አልተሳካም"
-     },
-     "dataManagement":{
-      "title":"የውሂብ አስተዳደር",
-      "subtitle":"የተወሰኑ ምስሎችን እና የምርመራ ውሂብን ያስተዳድሩ",
-      "clearData":"ሁሉንም ውሂብ አጽዳ",
-      "exportData":"ውሂብ አስገባ",
-      "clearCache":"የምስል ካሽ አጽዳ",
-      "confirmClear":"ሁሉንም ውሂብ መጽዳት እንደ ፈለጉ እርግጠኛ ነዎት? ይህ እርምጃ አይመለስም።"
-     },
-     "analytics":{
-      "title":"ትንተና",
-      "subtitle":"የአገልግሎት ስታቲስቲኮችን እና የምርመራ እንቅስቃሴዎችን ይመልከቱ",
-      "accuracy":"ትክክለኛነት",
-      "averageProcessingTime":"አማካይ የማቀነባበሪያ ፍጥነት",
-      "uptime":"የመቆየት ጊዜ",
-     }
-
-
+    "cancel": "ተወ",
+    "save": "አስቀምጥ",
+    "share": "አጋራ"
   }
 }

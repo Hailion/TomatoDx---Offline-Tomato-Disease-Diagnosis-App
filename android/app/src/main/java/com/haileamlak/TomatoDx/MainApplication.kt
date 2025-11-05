@@ -1,4 +1,4 @@
-package com.anonymous.TomatoDx
+package com.haileamlak.TomatoDx
 
 import android.app.Application
 import android.content.res.Configuration

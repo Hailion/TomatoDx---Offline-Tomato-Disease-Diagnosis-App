@@ -1,110 +1,90 @@
 {
-  "home": { "subtitle": "Offline tomato disease diagnosis for smallholder farmers", "capture": "Capture", "history": "History", "settings": "Settings", "admin": "Admin" },
-  "settings": { 
-    "title": "Settings", 
-    "language": "Language", 
-    "theme": "Theme",
-    "themeSubtitle":"Choose your preferred appearance",
-    "light": "Light",
-    "dark": "Dark", 
-    "system": "System",
-    "profile":"Profile",
-    "edit":"Edit",
-    "appInfo":{
-      "title":"App Information",
-      "version":"Version",
-      "build":"Build",
-      "developer":"Developer",
-      "contact":"Contact",
-      "website":"Website",
-      "lastUpdated":"Last Updated"
-    }
-  },
-  "capture": { 
-    "title": "Capture Tomato", 
-    "subtitle": "Position the tomato within the frame", 
-    "preview": "Camera Preview", 
-    "align": "Align Tomato Here", 
-    "takePhoto": "Take Photo", 
-    "openGallery": "Open Gallery",
-    "permissionReq":"Permission Required', 'Media library permission is needed to access photos."
-  },
-  "history": { 
-    "title": "Scan History",
-    "subtitle":"recent tomato disease detections",
-    "total": "Total"
-   },
-  "result": { 
-    "title": "Diagnosis Result", 
-    "subtitle": "AI-powered tomato disease detection",
-    "confidenceLevel":"Confidence Level",
-    "recommendation":"Recommended Action",
-    "prevTips":"Prevention Tips",
-    "save": "Save Result", 
-    "share": "Share",
-    "saveSuccess": "Saved Successfully",
-    "saveMessage": "Your diagnosis has been saved to history.",
-    "ok": "OK",
-    "shareText": "Tomato Disease Diagnosis Result",
-    "disease": "Disease",
-    "confidence": "Confidence",
-    "advice": "Advice",
-    "shareTitle": "Share Diagnosis",
-    "shareError": "Share Error",
-    "shareNotAvailable": "Sharing is not available on this device.",
-    "shareFailed": "Failed to share the diagnosis."
-  },
-  "preview": { 
-    "title": "Photo Preview", 
-    "subtitle": "Review your captured tomato image",
-    "readyForAnalysis":"Ready for Analysis",
-    "retake": "Retake Photo", 
-    "analyzePhoto": "Analyze Photo" ,
-    "tip":"Ensure the tomato is well-lit and clearly visible for accurate diagnosis." },
-  "admin": { 
-    "title": "Admin Panel", 
-    "subtitle":"System management and configuration",
-    "online":"Online", 
-    "version": "Model version", 
-    "updateInstructions": "Model update instructions", 
-    "systemInformation": "System Information", 
-    "appVersion": "App Version", 
-    "modelVersion": "Model Version", 
-    "lastUpdated": "Last Updated", 
+  "home": {
+    "title": "Home",
+    "tagline": "AI-powered tomato disease detection",
+    "quickScan": "Quick Scan",
+    "quickScanDesc": "Scan tomato leaves for instant diagnosis",
+    "scanHistory": "Scan History",
+    "scanHistoryDesc": "View your previous scan results",
+    "insights": "Insights",
+    "insightsDesc": "Get farming tips and recommendations",
+    "quickActions": "Quick Actions",
+    "recentActivity": "Recent Activity",
+    "lastScan": "Last scan completed",
     "totalScans": "Total Scans",
-    "modelManagement":{
-      "title":"Model Management",
-      "subtitle":"Update and manage the AI model for disease detection",
-      "updateInstructions": "Update Model Instructions",
-      "runSystemCheck":"Run System Check",
-      "currentModel":"Current Model",
-      "checkUpdates":"Check for Updates",
-      "lastChecked":"Last Checked",
-      "noUpdates":"No updates available",
-      "updateAvailable":"Update available",
-      "updating":"Updating...",
-      "updateSuccess":"Model updated successfully",
-      "updateFailed":"Model update failed"
-    },
-    "dataManagement":{
-      "title":"Data Management",
-      "subtitle":"Manage captured images and diagnosis data",
-      "clearData":"Clear All Data",
-      "exportData":"Export Data",
-      "clearCache":"Clear Cache",
-      "confirmClear":"Are you sure you want to clear all data? This action cannot be undone.",
-      "clearSuccess":"All data cleared successfully",
-      "exportSuccess":"Data exported successfully",
-      "exportFailed":"Data export failed"    
-    },
-    "analytics":{
-      "title":"Analytics",
-      "subtitle":"View usage statistics and diagnosis trends",
-      "accuracy":"Accuracy",
-      "averageProcessingTime":"Avg. Processing",
-      "uptime":"Uptime"
-
-    }
+    "accuracy": "Accuracy",
+    "healthy": "Healthy"
+  },
+  "scan": {
+    "title": "Scan",
+    "subtitle": "Detect tomato diseases with AI",
+    "cameraPermission": "Camera Access Required",
+    "cameraPermissionDesc": "We need camera access to scan tomato leaves for disease detection",
+    "grantPermission": "Grant Permission",
+    "takePhoto": "Take Photo",
+    "takePhotoDesc": "Use your camera to capture tomato leaves",
+    "chooseGallery": "Choose from Gallery",
+    "chooseGalleryDesc": "Select an existing photo from your gallery",
+    "alignGuide": "Align leaf within frame",
+    "tips": "Scanning Tips",
+    "tip1": "Ensure good lighting",
+    "tip2": "Focus on affected leaves",
+    "tip3": "Keep camera steady",
+    "error": "Error",
+    "captureError": "Failed to capture photo"
+  },
+  "preview": {
+    "title": "Preview",
+    "ready": "Ready for Analysis",
+    "highQuality": "High Quality",
+    "tipsTitle": "Analysis Ready",
+    "tipsText": "This image is perfect for analysis. Make sure the leaf is clearly visible and well-lit.",
+    "analyze": "Analyze Image",
+    "retake": "Retake Photo"
+  },
+  "result": {
+    "title": "Results",
+    "confidence": "Confidence Level",
+    "treatment": "Recommended Treatment",
+    "prevention": "Prevention Tips",
+    "quickActions": "Quick Actions",
+    "save": "Save Result",
+    "saved": "Saved",
+    "savedMessage": "Result saved to your history",
+    "share": "Share",
+    "shareMessage": "Share this result with others",
+    "nextSteps": "Next Steps",
+    "step1": "Monitor plant for 3-5 days",
+    "step2": "Apply treatment as recommended",
+    "step3": "Scan again if symptoms persist",
+    "newScan": "New Scan"
+  },
+  "history": {
+    "title": "History",
+    "subtitle": "{{count}} scans completed",
+    "totalScans": "Total Scans",
+    "accuracy": "Accuracy",
+    "recentScans": "Recent Scans",
+    "noScans": "No scans yet",
+    "noScansDesc": "Start by scanning your first tomato leaf to see results here"
+  },
+  "profile": {
+    "title": "Profile",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "settings": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "analytics": "Analytics",
+    "help": "Help & Support",
+    "about": "About"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "share": "Share"
   }
 }
-  

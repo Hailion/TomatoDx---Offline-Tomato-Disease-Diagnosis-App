@@ -1,6 +1,7 @@
 // app/tomatodx/scan.tsx - Scan Screen
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,8 +59,36 @@ export default function ScanScreen() {
     };
 
     const handleGallery = async () => {
-        // Gallery implementation would go here
-        router.push('/tomatodx/preview');
+        try {
+            // Request media library permissions
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            if (status !== 'granted') {
+                Alert.alert(
+                    t('scan.permissionDenied'),
+                    t('scan.galleryPermissionDesc')
+                );
+                return;
+            }
+
+            // Launch image picker
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+            });
+
+            if (!result.canceled && result.assets[0]) {
+                router.push({
+                    pathname: '/tomatodx/preview',
+                    params: { uri: result.assets[0].uri }
+                });
+            }
+        } catch (error) {
+            console.error('Gallery error:', error);
+            Alert.alert(t('scan.error'), t('scan.galleryError'));
+        }
     };
 
     return (

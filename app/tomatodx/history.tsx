@@ -1,73 +1,22 @@
 // app/tomatodx/history.tsx - History Screen with Filters
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { getRecentDiagnoses } from '../../src/db/repository';
 
-const mockScans = [
-  {
-    id: '1',
-    disease: 'Early Blight',
-    confidence: 92,
-    date: '2024-01-15',
-    timestamp: new Date('2024-01-15').getTime(),
-    severity: 'medium',
-    status: 'treated',
-    image: '🌱'
-  },
-  {
-    id: '2',
-    disease: 'Healthy',
-    confidence: 95,
-    date: '2024-01-14',
-    timestamp: new Date('2024-01-14').getTime(),
-    severity: 'none',
-    status: 'healthy',
-    image: '✅'
-  },
-  {
-    id: '3',
-    disease: 'Late Blight',
-    confidence: 88,
-    date: '2024-01-13',
-    timestamp: new Date('2024-01-13').getTime(),
-    severity: 'high',
-    status: 'pending',
-    image: '⚠️'
-  },
-  {
-    id: '4',
-    disease: 'Bacterial Spot',
-    confidence: 78,
-    date: '2024-01-12',
-    timestamp: new Date('2024-01-12').getTime(),
-    severity: 'low',
-    status: 'treated',
-    image: '🦠'
-  },
-  {
-    id: '5',
-    disease: 'Healthy',
-    confidence: 96,
-    date: '2024-01-10',
-    timestamp: new Date('2024-01-10').getTime(),
-    severity: 'none',
-    status: 'healthy',
-    image: '✅'
-  },
-  {
-    id: '6',
-    disease: 'Powdery Mildew',
-    confidence: 85,
-    date: '2024-01-08',
-    timestamp: new Date('2024-01-08').getTime(),
-    severity: 'medium',
-    status: 'pending',
-    image: '🍂'
-  }
-];
+interface DiagnosisItem {
+  id: string;
+  disease: string;
+  confidence: number;
+  date: string;
+  timestamp: number;
+  severity: string;
+  status: string;
+  image: string;
+}
 
 type FilterType = 'all' | 'healthy' | 'diseased' | 'high-risk' | 'treated' | 'pending';
 type SortType = 'date-desc' | 'date-asc' | 'confidence-desc' | 'confidence-asc';
@@ -75,10 +24,67 @@ type SortType = 'date-desc' | 'date-asc' | 'confidence-desc' | 'confidence-asc';
 export default function HistoryScreen() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [activeSort, setActiveSort] = useState<SortType>('date-desc');
   const [showFilters, setShowFilters] = useState(false);
+  const [diagnoses, setDiagnoses] = useState<DiagnosisItem[]>([]);
+
+  // Load diagnoses from database
+  useFocusEffect(
+    useCallback(() => {
+      loadDiagnoses();
+    }, [])
+  );
+
+  const loadDiagnoses = () => {
+    try {
+      const dbDiagnoses = getRecentDiagnoses(100);
+      const formatted = dbDiagnoses.map((d: any) => {
+        const confidence = Math.round((d.confidence || 0) * 100);
+        const diseaseName = i18n.language === 'am' ? (d.nameAm || d.nameEn || 'Unknown') : (d.nameEn || 'Unknown');
+        const date = new Date(d.diagnosedAt);
+        const timestamp = date.getTime();
+
+        // Determine severity based on confidence
+        let severity = 'none';
+        if (diseaseName.toLowerCase().includes('healthy')) {
+          severity = 'none';
+        } else if (confidence >= 90) {
+          severity = 'high';
+        } else if (confidence >= 70) {
+          severity = 'medium';
+        } else {
+          severity = 'low';
+        }
+
+        // Determine status (you can add a status field to DB later)
+        const status = severity === 'none' ? 'healthy' : 'pending';
+
+        // Get emoji based on disease
+        let image = '🌱';
+        if (diseaseName.toLowerCase().includes('healthy')) image = '✅';
+        else if (diseaseName.toLowerCase().includes('blight')) image = '⚠️';
+        else if (diseaseName.toLowerCase().includes('spot')) image = '🦠';
+        else if (diseaseName.toLowerCase().includes('mildew')) image = '🍂';
+
+        return {
+          id: d.diagnosisId,
+          disease: diseaseName,
+          confidence,
+          date: date.toISOString().split('T')[0],
+          timestamp,
+          severity,
+          status,
+          image
+        };
+      });
+      setDiagnoses(formatted);
+    } catch (error) {
+      console.error('Error loading diagnoses:', error);
+      setDiagnoses([]);
+    }
+  };
 
   const filters: { key: FilterType; label: string; icon: string; color: string }[] = [
     { key: 'all', label: t('history.filters.all'), icon: 'apps', color: '#6b7280' },
@@ -97,7 +103,7 @@ export default function HistoryScreen() {
   ];
 
   const filteredAndSortedScans = useMemo(() => {
-    let filtered = mockScans;
+    let filtered = diagnoses;
 
     // Apply filters
     switch (activeFilter) {
@@ -117,7 +123,7 @@ export default function HistoryScreen() {
         filtered = filtered.filter(scan => scan.status === 'pending');
         break;
       default:
-        filtered = mockScans;
+        filtered = diagnoses;
     }
 
     // Apply sorting
@@ -177,7 +183,7 @@ export default function HistoryScreen() {
 
   // Group scans by date for section list
   const groupedScans = useMemo(() => {
-    const groups: { [key: string]: typeof mockScans } = {};
+    const groups: { [key: string]: DiagnosisItem[] } = {};
 
     filteredAndSortedScans.forEach(scan => {
       if (!groups[scan.date]) {
@@ -192,7 +198,7 @@ export default function HistoryScreen() {
     }));
   }, [filteredAndSortedScans]);
 
-  const ScanItem = ({ item }: { item: typeof mockScans[0] }) => (
+  const ScanItem = ({ item }: { item: DiagnosisItem }) => (
     <TouchableOpacity
       style={[styles.scanCard, theme === 'dark' && styles.darkCard]}
       onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}

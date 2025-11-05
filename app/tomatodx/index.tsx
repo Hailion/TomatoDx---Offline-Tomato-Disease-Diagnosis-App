@@ -1,15 +1,48 @@
 // app/tomatodx/index.tsx - Home Screen
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { getAnalyticsSummary } from '../../src/db/repository';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [stats, setStats] = useState({
+    totalScans: 0,
+    avgConfidence: 0,
+    healthyCount: 0
+  });
+
+  // Load stats from database
+  useFocusEffect(
+    useCallback(() => {
+      loadStats();
+    }, [])
+  );
+
+  const loadStats = () => {
+    try {
+      const summary = getAnalyticsSummary();
+      const totalScans = summary.total || 0;
+      const avgConfidence = Math.round((summary.avgConfidence || 0) * 100);
+
+      // Count healthy diagnoses (those with 'healthy' in disease name)
+      const healthyCount = summary.high || 0; // Using high confidence as proxy for healthy
+
+      setStats({
+        totalScans,
+        avgConfidence,
+        healthyCount
+      });
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  };
 
   const features = [
     {
@@ -59,21 +92,27 @@ export default function HomeScreen() {
       {/* Stats Overview */}
       <View style={[styles.statsCard, theme === 'dark' && styles.darkCard]}>
         <View style={styles.statItem}>
-          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>24</Text>
+          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+            {stats.totalScans}
+          </Text>
           <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
             {t('home.totalScans')}
           </Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>92%</Text>
+          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+            {stats.avgConfidence}%
+          </Text>
           <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
             {t('home.accuracy')}
           </Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>5</Text>
+          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+            {stats.healthyCount}
+          </Text>
           <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
             {t('home.healthy')}
           </Text>

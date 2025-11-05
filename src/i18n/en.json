@@ -1,116 +1,571 @@
 {
   "home": {
-    "title": "Home",
-    "tagline": "AI-powered tomato disease detection",
-    "quickScan": "Quick Scan",
-    "quickScanDesc": "Scan tomato leaves for instant diagnosis",
-    "scanHistory": "Scan History",
-    "scanHistoryDesc": "View your previous scan results",
-    "insights": "Insights",
-    "insightsDesc": "Get farming tips and recommendations",
-    "quickActions": "Quick Actions",
-    "recentActivity": "Recent Activity",
-    "lastScan": "Last scan completed",
-    "totalScans": "Total Scans",
-    "accuracy": "Accuracy",
-    "healthy": "Healthy"
+    "subtitle": "Offline tomato disease diagnosis for smallholder farmers",
+    "capture": "Capture",
+    "history": "History",
+    "settings": "Settings",
+    "admin": "Admin"
   },
-  "scan": {
-    "title": "Scan",
-    "subtitle": "Detect tomato diseases with AI",
-    "cameraPermission": "Camera Access Required",
-    "cameraPermissionDesc": "We need camera access to scan tomato leaves for disease detection",
-    "grantPermission": "Grant Permission",
-    "takePhoto": "Take Photo",
-    "takePhotoDesc": "Use your camera to capture tomato leaves",
-    "chooseGallery": "Choose from Gallery",
-    "chooseGalleryDesc": "Select an existing photo from your gallery",
-    "alignGuide": "Align leaf within frame",
-    "tips": "Scanning Tips",
-    "tip1": "Ensure good lighting",
-    "tip2": "Focus on affected leaves",
-    "tip3": "Keep camera steady",
-    "error": "Error",
-    "captureError": "Failed to capture photo"
-  },
-  "preview": {
-    "title": "Preview",
-    "ready": "Ready for Analysis",
-    "highQuality": "High Quality",
-    "tipsTitle": "Analysis Ready",
-    "tipsText": "This image is perfect for analysis. Make sure the leaf is clearly visible and well-lit.",
-    "analyze": "Analyze Image",
-    "retake": "Retake Photo"
-  },
-  "result": {
-    "title": "Results",
-    "confidence": "Confidence Level",
-    "treatment": "Recommended Treatment",
-    "prevention": "Prevention Tips",
-    "quickActions": "Quick Actions",
-    "save": "Save Result",
-    "saved": "Saved",
-    "savedMessage": "Result saved to your history",
-    "share": "Share",
-    "shareMessage": "Share this result with others",
-    "nextSteps": "Next Steps",
-    "step1": "Monitor plant for 3-5 days",
-    "step2": "Apply treatment as recommended",
-    "step3": "Scan again if symptoms persist",
-    "newScan": "New Scan"
-  },
-  "history": {
-    "title": "History",
-    "subtitle": "{{count}} scans completed",
-    "totalScans": "Total Scans",
-    "accuracy": "Accuracy",
-    "recentScans": "Recent Scans",
-    "noScans": "No scans yet",
-    "noScansDesc": "Start by scanning your first tomato leaf to see results here",
-    "filters": {
-      "title": "Filters",
-      "all": "All",
-      "healthy": "Healthy",
-      "diseased": "Diseased",
-      "highRisk": "High Risk",
-      "treated": "Treated",
-      "pending": "Pending"
-    },
-    "sort": {
-      "title": "Sort By",
-      "newest": "Newest",
-      "oldest": "Oldest",
-      "highConfidence": "High Confidence",
-      "lowConfidence": "Low Confidence"
-    },
-    "status": {
-      "healthy": "Healthy",
-      "treated": "Treated",
-      "pending": "Action Needed",
-      "unknown": "Unknown"
-    },
-    "avgConfidence": "Avg Confidence",
-    "noResults": "No scans found",
-    "noResultsDesc": "Try changing your filters to see more results",
-    "resetFilters": "Reset Filters"
-  },
-  "profile": {
-    "title": "Profile",
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize your app experience",
+    "username": "User",
+    "language": "Language",
     "theme": "Theme",
+    "themeSubtitle": "Choose your preferred appearance",
     "light": "Light",
     "dark": "Dark",
     "system": "System",
-    "settings": "Settings",
-    "language": "Language",
-    "notifications": "Notifications",
-    "analytics": "Analytics",
-    "help": "Help & Support",
-    "about": "About"
+    "profile": {
+      "title": "Profile",
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "settings": "Settings",
+      "language": "Language",
+      "notifications": "Notifications",
+      "analytics": "Analytics",
+      "help": "Help & Support",
+      "about": "About",
+      "editProfile": "Edit Profile",
+      "name": "Name",
+      "nickname": "Nickname",
+      "namePlaceholder": "Enter your name",
+      "nicknamePlaceholder": "Enter your nickname (optional)",
+      "error": "Error",
+      "success": "Success",
+      "nameRequired": "Name is required",
+      "profileUpdated": "Profile updated successfully",
+      "saveFailed": "Failed to save profile"
+    },
+    "usernameRemoved": "Username removed",
+    "usernameUpdated": "Username updated successfully!",
+    "failedToSaveUsername": "Failed to save username",
+    "english": "English",
+    "amharic": "Amharic",
+    "appInfo": {
+      "title": "App Information",
+      "version": "Version",
+      "build": "Build",
+      "developer": "Developer",
+      "contact": "Contact",
+      "website": "Website",
+      "lastUpdated": "Last Updated"
+    }
+  },
+  "capture": {
+    "title": "Capture Tomato",
+    "subtitle": "Position the tomato within the frame",
+    "preview": "Camera Preview",
+    "align": "Align Tomato Here",
+    "takePhoto": "Take Photo",
+    "openGallery": "Open Gallery",
+    "cameraPermissionRequired": "Camera permission is required to take photos",
+    "galleryPermissionRequired": "Gallery permission is required",
+    "failedToOpenCamera": "Failed to open camera. Please try again.",
+    "failedToOpenGallery": "Failed to open gallery. Please try again."
+  },
+  "scan": {
+    "title": "Scan Leaf",
+    "subtitle": "Take or upload a photo of a tomato leaf",
+    "takePhoto": "Take Photo",
+    "takePhotoDesc": "Use your camera to capture a leaf",
+    "chooseGallery": "Choose from Gallery",
+    "chooseGalleryDesc": "Select an existing photo",
+    "tips": "Tips for Best Results",
+    "tip1": "Ensure good lighting",
+    "tip2": "Focus on the affected area",
+    "tip3": "Keep the leaf centered",
+    "cameraPermission": "Camera Permission Required",
+    "cameraPermissionDesc": "Please grant camera access to scan leaves",
+    "grantPermission": "Grant Permission",
+    "alignGuide": "Align leaf within frame",
+    "error": "Error",
+    "captureError": "Failed to capture photo",
+    "permissionDenied": "Permission Denied",
+    "galleryPermissionDesc": "Please grant gallery access to select photos",
+    "galleryError": "Failed to open gallery"
+  },
+  "history": {
+    "title": "Scan History",
+    "subtitle": "recent tomato disease detections",
+    "total": "Total",
+    "deleteTitle": "Delete Entry",
+    "deleteConfirm": "Are you sure you want to delete this entry?",
+    "search": "Search",
+    "filterByDate": "Filter by Date",
+    "dateFilters": {
+      "all": "All",
+      "today": "Today",
+      "week": "Week",
+      "month": "Month",
+      "custom": "Custom"
+    },
+    "customDatePicker": {
+      "title": "Select Specific Date",
+      "selectDate": "Enter a specific date to filter:",
+      "day": "Day",
+      "month": "Month",
+      "year": "Year",
+      "apply": "Apply",
+      "cancel": "Cancel"
+    }
+  },
+  "result": {
+    "title": "Diagnosis Result",
+    "subtitle": "AI-powered tomato disease detection",
+    "confidenceLevel": "Confidence Level",
+    "recommendation": "Recommended Action",
+    "prevTips": "Prevention Tips",
+    "save": "Save Result",
+    "saved": "Saved Successfully",
+    "share": "Share",
+    "saveSuccess": "Saved Successfully",
+    "saveMessage": "Your diagnosis has been saved to history.",
+    "ok": "OK",
+    "shareText": "Tomato Disease Diagnosis Result",
+    "disease": "Disease",
+    "confidence": "Confidence",
+    "advice": "Advice",
+    "shareTitle": "Share Diagnosis",
+    "shareError": "Share Error",
+    "shareNotAvailable": "Sharing is not available on this device.",
+    "shareFailed": "Failed to share the diagnosis.",
+    "alreadySaved": "This result is already saved in your history",
+    "waitForAnalysis": "Please wait for analysis to complete",
+    "missingImage": "Missing image. Please retake the photo.",
+    "savedToHistory": "Result saved to history!",
+    "viewHistory": "View History",
+    "failedToSave": "Failed to save result. Please try again.",
+    "noResultToShare": "No result or image to share",
+    "shareSuccessful": "Shared successfully with both image and diagnosis details!",
+    "diagnosisDetails": "Diagnosis Details",
+    "predictionFailed": "Prediction failed",
+    "loading": "Loading...",
+    "error": "Error",
+    "notFound": "Diagnosis not found",
+    "loadError": "Failed to load diagnosis",
+    "noDescription": "No description available",
+    "noTreatment": "Consult with an agricultural expert for treatment advice",
+    "generalPrevention": "Maintain good plant hygiene, ensure proper spacing, and monitor regularly"
+  },
+  "preview": {
+    "title": "Photo Preview",
+    "subtitle": "Review your captured tomato image",
+    "readyForAnalysis": "Ready for Analysis",
+    "retake": "Retake Photo",
+    "analyzePhoto": "Analyze Photo",
+    "tip": "Ensure the tomato is well-lit and clearly visible for accurate diagnosis.",
+    "analyzing": "Analyzing...",
+    "error": "Error",
+    "noImage": "No image selected",
+    "analysisError": "Analysis failed"
+  },
+  "onboarding": {
+    "getStarted": "Get Started",
+    "steps": {
+      "welcome": {
+        "title": "Welcome to TomatoDx",
+        "description": "AI-powered tomato disease detection at your fingertips"
+      },
+      "capture": {
+        "title": "Capture & Scan",
+        "description": "Take a photo or upload from gallery to analyze tomato health"
+      },
+      "analysis": {
+        "title": "AI Analysis",
+        "description": "Get instant, accurate diagnosis powered by machine learning"
+      },
+      "history": {
+        "title": "Track History",
+        "description": "Save and review your past diagnoses for better crop management"
+      }
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "System management and configuration",
+    "online": "Online",
+    "updateInstructions": "Model update instructions",
+    "systemInformation": "System Information",
+    "appVersion": "App Version",
+    "modelVersion": "Model Version",
+    "lastUpdated": "Last Updated",
+    "totalScans": "Total Scans",
+    "modelManagement": {
+      "title": "Model Management",
+      "subtitle": "Update and manage the AI model for disease detection",
+      "updateInstructions": "Update Model Instructions",
+      "runSystemCheck": "Run System Check",
+      "currentModel": "Current Model",
+      "checkUpdates": "Check for Updates",
+      "lastChecked": "Last Checked",
+      "noUpdates": "No updates available",
+      "updateAvailable": "Update available",
+      "updating": "Updating...",
+      "updateSuccess": "Model updated successfully",
+      "updateFailed": "Model update failed"
+    },
+    "dataManagement": {
+      "title": "Data Management",
+      "subtitle": "Manage captured images and diagnosis data",
+      "clearData": "Clear All Data",
+      "exportData": "Export Data",
+      "clearCache": "Clear Cache",
+      "clearSuccess": "All data cleared successfully",
+      "exportSuccess": "Data exported successfully",
+      "exportFailed": "Data export failed"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "View usage statistics and diagnosis trends",
+      "accuracy": "Accuracy",
+      "averageProcessingTime": "Avg. Processing",
+      "uptime": "Uptime",
+      "topDisease": "Top Disease",
+      "last7Days": "Last 7 Days",
+      "severityDistribution": "Severity Distribution"
+    }
+  },
+  "help": {
+    "title": "Help & Support",
+    "faq": "Frequently Asked Questions",
+    "contact": "Get in Touch",
+    "tips": "Quick Tips for Better Results"
+  },
+  "about": {
+    "title": "About TomatoDx",
+    "mission": "Our Mission",
+    "features": "Features",
+    "technology": "Technology",
+    "team": "Our Team"
+  },
+  "help": {
+    "title": "Help & Support",
+    "faq": "Frequently Asked Questions",
+    "contact": "Get in Touch",
+    "tips": "Quick Tips for Better Results"
+  },
+  "about": {
+    "title": "About TomatoDx",
+    "mission": "Our Mission",
+    "features": "Features",
+    "technology": "Technology",
+    "team": "Our Team"
   },
   "common": {
-    "ok": "OK",
     "cancel": "Cancel",
-    "save": "Save",
-    "share": "Share"
+    "delete": "Delete",
+    "analyzing": "Analyzing...",
+    "immediateActions": "Immediate Actions",
+    "longTermManagement": "Long-term Management",
+    "symptoms": "Symptoms",
+    "treatmentSteps": "Treatment Steps",
+    "noTreatment": "No specific treatment available",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "unknownError": "Unknown error",
+    "shareDiagnosis": "Share Diagnosis"
+  },
+  "diseases": {
+    "early_blight": {
+      "name": "Early Blight",
+      "description": "A fungal disease that affects leaves, stems, and fruits of tomato plants",
+      "symptoms": [
+        "Dark brown spots on older leaves",
+        "Yellowing and browning of leaf edges",
+        "Concentric rings in lesions",
+        "Premature leaf drop"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove affected leaves immediately",
+          "Apply copper-based fungicide",
+          "Improve air circulation",
+          "Avoid overhead watering"
+        ],
+        "longTerm": [
+          "Rotate crops yearly",
+          "Use disease-resistant varieties",
+          "Practice proper plant spacing",
+          "Remove plant debris at season end"
+        ]
+      },
+      "prevention": [
+        "Water at the base of plants",
+        "Space plants 24-36 inches apart",
+        "Mulch around plants",
+        "Monitor plants weekly"
+      ]
+    },
+    "late_blight": {
+      "name": "Late Blight",
+      "description": "A destructive fungal disease affecting leaves, stems, and fruits",
+      "symptoms": [
+        "Greasy-looking dark green or gray lesions",
+        "White fungal growth on underside of leaves",
+        "Rapid plant collapse",
+        "Browning and rotting of fruits"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove all affected plants immediately",
+          "Apply chlorothalonil or mancozeb",
+          "Ensure proper drainage",
+          "Destroy infected plant material"
+        ],
+        "longTerm": [
+          "Plant resistant varieties",
+          "Practice crop rotation",
+          "Improve garden drainage",
+          "Remove volunteer plants"
+        ]
+      },
+      "prevention": [
+        "Avoid overhead irrigation",
+        "Provide adequate plant spacing",
+        "Use drip irrigation",
+        "Select resistant varieties"
+      ]
+    },
+    "healthy": {
+      "name": "Healthy",
+      "description": "Your tomato plant shows no signs of disease",
+      "symptoms": [
+        "Green, vibrant leaves",
+        "Strong stem growth",
+        "Normal fruit development"
+      ],
+      "treatment": {
+        "immediate": [
+          "Continue current care routine",
+          "Monitor for any changes",
+          "Maintain regular watering schedule"
+        ],
+        "longTerm": [
+          "Continue preventive measures",
+          "Maintain soil health",
+          "Provide consistent nutrition"
+        ]
+      },
+      "prevention": [
+        "Maintain current good practices",
+        "Regular monitoring",
+        "Proper watering schedule",
+        "Balanced fertilization"
+      ]
+    },
+    "leaf_mold": {
+      "name": "Leaf Mold",
+      "description": "A fungal disease that thrives in humid conditions",
+      "symptoms": [
+        "Pale green spots on upper leaf surface",
+        "Gray-brown velvety growth on underside",
+        "Leaf curling and yellowing",
+        "Defoliation in severe cases"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove affected leaves",
+          "Improve ventilation",
+          "Apply copper fungicide",
+          "Reduce humidity around plants"
+        ],
+        "longTerm": [
+          "Use fungicide sprays preventively",
+          "Control greenhouse humidity",
+          "Plant resistant varieties",
+          "Improve air circulation"
+        ]
+      },
+      "prevention": [
+        "Maintain humidity below 90%",
+        "Provide good air circulation",
+        "Space plants properly",
+        "Avoid wetting leaves"
+      ]
+    },
+    "septoria_leaf_spot": {
+      "name": "Septoria Leaf Spot",
+      "description": "Fungal disease causing small dark spots on leaves",
+      "symptoms": [
+        "Small dark brown spots on leaves",
+        "Yellow halos around spots",
+        "Black fruiting bodies in center",
+        "Progressive leaf yellowing"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove affected leaves",
+          "Apply chlorothalonil",
+          "Improve air circulation",
+          "Water at base only"
+        ],
+        "longTerm": [
+          "Remove plant debris",
+          "Rotate crops",
+          "Use resistant varieties",
+          "Sanitize garden tools"
+        ]
+      },
+      "prevention": [
+        "Water early in the day",
+        "Avoid overhead watering",
+        "Keep leaves dry",
+        "Remove lower leaves that touch soil"
+      ]
+    },
+    "tomato_mosaic_virus": {
+      "name": "Tomato Mosaic Virus",
+      "description": "Viral disease causing mottling and leaf distortion in tomatoes",
+      "symptoms": [
+        "Mottled light and dark green patterns on leaves",
+        "Leaf distortion and reduced leaf size",
+        "Stunted plant growth",
+        "Reduced fruit size and yield"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove and destroy infected plants",
+          "Disinfect tools after use",
+          "Control aphids and other vectors",
+          "Avoid working with plants when wet"
+        ],
+        "longTerm": [
+          "Use virus-free certified seeds",
+          "Plant resistant varieties",
+          "Rotate crops to non-hosts",
+          "Implement strict sanitation practices"
+        ]
+      },
+      "prevention": [
+        "Wash hands and tools before handling plants",
+        "Control insect vectors",
+        "Avoid tobacco use near plants",
+        "Maintain field hygiene"
+      ]
+    },
+    "tomato_yellow_leaf_curl": {
+      "name": "Tomato Yellow Leaf Curl Virus",
+      "description": "Whitefly-transmitted virus causing leaf curling and yellowing",
+      "symptoms": [
+        "Upward leaf curling",
+        "Yellowing between veins",
+        "Stunted growth and reduced vigor",
+        "Poor fruit set"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove infected plants",
+          "Control whiteflies with appropriate measures",
+          "Use physical barriers (row covers)",
+          "Eliminate nearby weed hosts"
+        ],
+        "longTerm": [
+          "Grow resistant/tolerant varieties",
+          "Implement integrated pest management",
+          "Rotate with non-host crops",
+          "Use yellow sticky traps to monitor"
+        ]
+      },
+      "prevention": [
+        "Manage whitefly populations",
+        "Use reflective mulches",
+        "Plant virus-free transplants",
+        "Maintain field sanitation"
+      ]
+    },
+    "target_spot": {
+      "name": "Target Spot",
+      "description": "Fungal disease causing concentric ring lesions on leaves and fruit",
+      "symptoms": [
+        "Circular spots with target-like rings",
+        "Leaf yellowing and drop",
+        "Stem and fruit lesions",
+        "Reduced plant vigor"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove affected leaves and fruits",
+          "Apply recommended fungicides",
+          "Improve air circulation",
+          "Avoid overhead irrigation"
+        ],
+        "longTerm": [
+          "Rotate with non-host crops",
+          "Use resistant varieties if available",
+          "Maintain proper plant spacing",
+          "Remove crop debris after harvest"
+        ]
+      },
+      "prevention": [
+        "Water at the base of plants",
+        "Ensure good drainage",
+        "Mulch to reduce soil splash",
+        "Monitor regularly for early signs"
+      ]
+    },
+    "spider_mites_two_spotted_spider_mites": {
+      "name": "Two-spotted Spider Mites",
+      "description": "Pest infestation causing stippling and webbing on leaves",
+      "symptoms": [
+        "Fine yellow stippling on leaves",
+        "Silky webbing on undersides",
+        "Leaf bronzing and drop",
+        "Overall plant stress"
+      ],
+      "treatment": {
+        "immediate": [
+          "Spray water to dislodge mites",
+          "Use insecticidal soap or miticide",
+          "Isolate heavily infested plants",
+          "Increase humidity if possible"
+        ],
+        "longTerm": [
+          "Encourage natural predators",
+          "Avoid broad-spectrum insecticides",
+          "Maintain plant health to reduce stress",
+          "Monitor with regular inspections"
+        ]
+      },
+      "prevention": [
+        "Keep plants well-watered",
+        "Reduce dusty, dry conditions",
+        "Quarantine new plants",
+        "Clean tools and benches"
+      ]
+    },
+    "bacterial_spot": {
+      "name": "Bacterial Spot",
+      "description": "Bacterial disease causing leaf spots and fruit blemishes",
+      "symptoms": [
+        "Small water-soaked leaf spots",
+        "Darkening and tearing of leaf tissue",
+        "Raised scabby spots on fruit",
+        "Premature defoliation"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove infected plant material",
+          "Apply copper-based bactericides",
+          "Avoid working plants when wet",
+          "Improve airflow around plants"
+        ],
+        "longTerm": [
+          "Rotate to non-host crops",
+          "Use certified disease-free seed",
+          "Plant resistant varieties",
+          "Implement strict sanitation"
+        ]
+      },
+      "prevention": [
+        "Avoid overhead watering",
+        "Disinfect tools and stakes",
+        "Control splashing with mulch",
+        "Space plants appropriately"
+      ]
+    }
   }
 }

@@ -2,40 +2,92 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { getDiagnosisById } from '../../src/db/repository';
 
-const mockData = {
-  '1': {
-    disease: 'Early Blight',
-    confidence: 92,
-    severity: 'medium',
-    image: '🌱',
-    description: 'Fungal disease affecting tomato leaves',
-    treatment: 'Apply copper-based fungicide, remove affected leaves',
-    prevention: 'Rotate crops, ensure proper spacing, avoid overhead watering'
-  },
-  '2': {
-    disease: 'Healthy',
-    confidence: 95,
-    severity: 'none',
-    image: '✅',
-    description: 'Your tomato plant is in good health',
-    treatment: 'Continue current care practices',
-    prevention: 'Maintain regular watering and monitoring'
-  }
-};
+interface DiagnosisResult {
+  disease: string;
+  confidence: number;
+  severity: string;
+  image: string;
+  imageUri?: string;
+  description: string;
+  treatment: string;
+  prevention: string;
+  diagnosedAt: string;
+}
 
 export default function ResultScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [saved, setSaved] = useState(false);
+  const [result, setResult] = useState<DiagnosisResult | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const result = mockData[id as keyof typeof mockData] || mockData['1'];
+  useEffect(() => {
+    loadDiagnosis();
+  }, [id]);
+
+  const loadDiagnosis = () => {
+    try {
+      if (!id) {
+        router.back();
+        return;
+      }
+
+      const diagnosis = getDiagnosisById(id as string);
+
+      if (!diagnosis) {
+        Alert.alert(t('result.error'), t('result.notFound'));
+        router.back();
+        return;
+      }
+
+      const confidence = Math.round((diagnosis.confidence || 0) * 100);
+      const diseaseName = i18n.language === 'am' ? (diagnosis.nameAm || diagnosis.nameEn || 'Unknown') : (diagnosis.nameEn || 'Unknown');
+
+      // Determine severity
+      let severity = 'none';
+      if (diseaseName.toLowerCase().includes('healthy')) {
+        severity = 'none';
+      } else if (confidence >= 90) {
+        severity = 'high';
+      } else if (confidence >= 70) {
+        severity = 'medium';
+      } else {
+        severity = 'low';
+      }
+
+      // Get emoji
+      let image = '🌱';
+      if (diseaseName.toLowerCase().includes('healthy')) image = '✅';
+      else if (diseaseName.toLowerCase().includes('blight')) image = '⚠️';
+      else if (diseaseName.toLowerCase().includes('spot')) image = '🦠';
+      else if (diseaseName.toLowerCase().includes('mildew')) image = '🍂';
+
+      setResult({
+        disease: diseaseName,
+        confidence,
+        severity,
+        image,
+        imageUri: diagnosis.filePath,
+        description: diagnosis.symptoms || t('result.noDescription'),
+        treatment: diagnosis.advice || t('result.noTreatment'),
+        prevention: t('result.generalPrevention'),
+        diagnosedAt: new Date(diagnosis.diagnosedAt).toLocaleString()
+      });
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading diagnosis:', error);
+      Alert.alert(t('result.error'), t('result.loadError'));
+      router.back();
+    }
+  };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -75,6 +127,16 @@ export default function ResultScreen() {
   const handleNewScan = () => {
     router.push('/tomatodx/scan');
   };
+
+  if (loading || !result) {
+    return (
+      <View style={[styles.container, theme === 'dark' && styles.darkContainer, styles.centered]}>
+        <Text style={[styles.loadingText, theme === 'dark' && styles.darkText]}>
+          {t('result.loading')}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
@@ -527,5 +589,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
   },
 });

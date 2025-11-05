@@ -2,9 +2,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { insertDiagnosis, insertImage, upsertDisease } from '../../src/db/repository';
+import { predictFromUri } from '../../src/ml/inference';
+import { initModel } from '../../src/ml/model';
 
 const { width } = Dimensions.get('window');
 
@@ -13,12 +17,61 @@ export default function PreviewScreen() {
   const { uri } = useLocalSearchParams();
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const [analyzing, setAnalyzing] = useState(false);
 
-  const handleAnalyze = () => {
-    // Simulate analysis process
-    setTimeout(() => {
-      router.push('/tomatodx/result?id=1');
-    }, 1500);
+  const handleAnalyze = async () => {
+    if (!uri) {
+      Alert.alert(t('preview.error'), t('preview.noImage'));
+      return;
+    }
+
+    setAnalyzing(true);
+
+    try {
+      // Initialize ML model
+      await initModel();
+
+      // Run prediction
+      const prediction = await predictFromUri(uri as string);
+
+      // Generate unique IDs
+      const imageId = `img_${Date.now()}`;
+      const diagnosisId = `diag_${Date.now()}`;
+      const diseaseId = prediction.label.toLowerCase().replace(/\s+/g, '_');
+
+      // Save image to database
+      insertImage(imageId, uri as string, new Date().toISOString(), 'device');
+
+      // Save or update disease info
+      upsertDisease(
+        diseaseId,
+        prediction.label,
+        prediction.label, // You can add Amharic translation here
+        '', // symptoms
+        '' // advice
+      );
+
+      // Save diagnosis
+      insertDiagnosis(
+        diagnosisId,
+        imageId,
+        diseaseId,
+        prediction.confidence,
+        new Date().toISOString()
+      );
+
+      setAnalyzing(false);
+
+      // Navigate to result screen
+      router.push(`/tomatodx/result?id=${diagnosisId}`);
+    } catch (error) {
+      console.error('Analysis error:', error);
+      setAnalyzing(false);
+      Alert.alert(
+        t('preview.error'),
+        t('preview.analysisError') + ': ' + (error as Error).message
+      );
+    }
   };
 
   const handleRetake = () => {
@@ -56,7 +109,7 @@ export default function PreviewScreen() {
       >
         <View style={[styles.imageWrapper, theme === 'dark' && styles.darkImageWrapper]}>
           <Image
-            source={require('../../assets/sample-tomato-leaf.png')}
+            source={uri ? { uri: uri as string } : require('../../assets/sample-tomato-leaf.png')}
             style={styles.image}
             resizeMode="cover"
           />
@@ -95,13 +148,23 @@ export default function PreviewScreen() {
         <TouchableOpacity
           style={[styles.analyzeButton, styles.shadow]}
           onPress={handleAnalyze}
+          disabled={analyzing}
         >
           <LinearGradient
             colors={['#10b981', '#059669']}
             style={styles.analyzeGradient}
           >
-            <Ionicons name="analytics" size={24} color="#fff" />
-            <Text style={styles.analyzeText}>{t('preview.analyze')}</Text>
+            {analyzing ? (
+              <>
+                <ActivityIndicator color="#fff" size="small" />
+                <Text style={styles.analyzeText}>{t('preview.analyzing')}</Text>
+              </>
+            ) : (
+              <>
+                <Ionicons name="analytics" size={24} color="#fff" />
+                <Text style={styles.analyzeText}>{t('preview.analyze')}</Text>
+              </>
+            )}
           </LinearGradient>
         </TouchableOpacity>
 

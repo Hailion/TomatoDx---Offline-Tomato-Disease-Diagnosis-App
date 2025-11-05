@@ -1,10 +1,10 @@
 // app/tomatodx/profile.tsx - Profile Screen
-import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useTheme } from '../../src/contexts/ThemeContext';
-import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function ProfileScreen() {
     const router = useRouter();
@@ -199,6 +199,12 @@ const styles = StyleSheet.create({
     userEmail: {
         fontSize: 16,
         color: '#666',
+    },
+    darkText: {
+        color: '#fff',
+    },
+    darkSubtext: {
+        color: '#999',
     },
     card: {
         backgroundColor: '#fff',

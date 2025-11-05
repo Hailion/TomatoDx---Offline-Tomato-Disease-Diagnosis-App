@@ -39,6 +39,7 @@ export default function HomeScreen() {
     <ScrollView style={[styles.container, theme === 'dark' && styles.darkContainer]}>
       {/* Header */}
       <LinearGradient
+        // make more red like 
         colors={theme === 'dark' ? ['#1a1a1a', '#2d2d2d'] : ['#f8fafc', '#e2e8f0']}
         style={styles.header}
       >

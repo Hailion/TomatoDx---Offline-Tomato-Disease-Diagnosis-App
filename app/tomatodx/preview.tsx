@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
@@ -49,7 +49,11 @@ export default function PreviewScreen() {
       </LinearGradient>
 
       {/* Image Preview */}
-      <View style={styles.imageContainer}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.imageContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={[styles.imageWrapper, theme === 'dark' && styles.darkImageWrapper]}>
           <Image
             source={require('../../assets/sample-tomato-leaf.png')}
@@ -84,7 +88,7 @@ export default function PreviewScreen() {
             </Text>
           </View>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Action Buttons */}
       <View style={styles.actions}>
@@ -152,8 +156,10 @@ const styles = StyleSheet.create({
   placeholder: {
     width: 40,
   },
-  imageContainer: {
+  scrollView: {
     flex: 1,
+  },
+  imageContainer: {
     padding: 20,
   },
   imageWrapper: {

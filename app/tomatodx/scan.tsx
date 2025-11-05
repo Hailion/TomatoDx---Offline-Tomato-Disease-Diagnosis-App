@@ -1,16 +1,16 @@
 // app/tomatodx/scan.tsx - Scan Screen
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { useState, useRef } from 'react';
-import { useTheme } from '../../src/contexts/ThemeContext';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function ScanScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [isCameraActive, setIsCameraActive] = useState(false);
-    const cameraRef = useRef(null);
+    const cameraRef = useRef<CameraView>(null);
     const router = useRouter();
     const { theme } = useTheme();
     const { t } = useTranslation();
@@ -65,11 +65,12 @@ export default function ScanScreen() {
     return (
         <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
             {isCameraActive ? (
-                <CameraView
-                    ref={cameraRef}
-                    style={styles.camera}
-                    facing="back"
-                >
+                <>
+                    <CameraView
+                        ref={cameraRef}
+                        style={styles.camera}
+                        facing="back"
+                    />
                     <View style={styles.cameraOverlay}>
                         <View style={styles.scanFrame} />
                         <Text style={styles.scanText}>{t('scan.alignGuide')}</Text>
@@ -97,9 +98,13 @@ export default function ScanScreen() {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </CameraView>
+                </>
             ) : (
-                <View style={styles.scanHome}>
+                <ScrollView
+                    style={styles.scanHome}
+                    contentContainerStyle={styles.scanHomeContent}
+                    showsVerticalScrollIndicator={false}
+                >
                     <View style={styles.scanHeader}>
                         <Text style={[styles.scanTitle, theme === 'dark' && styles.darkText]}>
                             {t('scan.title')}
@@ -155,7 +160,7 @@ export default function ScanScreen() {
                             • {t('scan.tip3')}
                         </Text>
                     </View>
-                </View>
+                </ScrollView>
             )}
         </View>
     );
@@ -199,11 +204,20 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+    darkText: {
+        color: '#fff',
+    },
+    darkSubtext: {
+        color: '#999',
+    },
+    darkCard: {
+        backgroundColor: '#1a1a1a',
+    },
     camera: {
         flex: 1,
     },
     cameraOverlay: {
-        flex: 1,
+        ...StyleSheet.absoluteFillObject,
         backgroundColor: 'transparent',
         justifyContent: 'space-between',
         padding: 20,
@@ -262,8 +276,11 @@ const styles = StyleSheet.create({
     },
     scanHome: {
         flex: 1,
+    },
+    scanHomeContent: {
         paddingTop: 60,
         paddingHorizontal: 20,
+        paddingBottom: 20,
     },
     scanHeader: {
         alignItems: 'center',
@@ -294,9 +311,7 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 3,
     },
-    darkCard: {
-        backgroundColor: '#1a1a1a',
-    },
+
     optionIcon: {
         width: 60,
         height: 60,

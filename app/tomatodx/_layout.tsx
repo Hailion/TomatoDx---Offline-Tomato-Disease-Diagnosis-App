@@ -1,8 +1,8 @@
 // app/tomatodx/_layout.tsx
-import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../src/contexts/ThemeContext';
+import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function TabLayout() {
   const { theme } = useTheme();
@@ -53,6 +53,18 @@ export default function TabLayout() {
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="result"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="preview"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

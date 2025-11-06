@@ -1,4 +1,5 @@
 // app/tomatodx/_layout.tsx
+import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -8,14 +9,16 @@ export default function TabLayout() {
   const { theme } = useTheme();
   const { t } = useTranslation();
 
+  const colors = Colors[theme];
+
   return (
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: theme === 'dark' ? '#1a1a1a' : '#ffffff',
-          borderTopColor: theme === 'dark' ? '#333' : '#e5e5e5',
+          backgroundColor: colors.card,
+          borderTopColor: colors.border,
         },
-        tabBarActiveTintColor: '#10b981',
+        tabBarActiveTintColor: colors.primary,
         headerShown: false,
       }}
     >

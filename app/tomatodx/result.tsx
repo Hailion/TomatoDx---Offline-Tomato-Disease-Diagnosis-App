@@ -1,4 +1,5 @@
 // app/tomatodx/result.tsx - Result Screen
+import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,279 +27,19 @@ interface DiagnosisResult {
   diagnosedAt: string;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8fafc',
-  },
-  darkContainer: {
-    backgroundColor: '#000',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-  },
-  backButton: {
-    padding: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  darkText: {
-    color: '#fff',
-  },
-  darkSubtext: {
-    color: '#999',
-  },
-  placeholder: {
-    width: 40,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  resultCard: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  darkCard: {
-    backgroundColor: '#1a1a1a',
-  },
-  diagnosisHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  diseaseIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 12,
-    backgroundColor: '#f0fdf4',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-    overflow: 'hidden',
-  },
-  diseaseImage: {
-    width: 60,
-    height: 60,
-  },
-  diseaseEmoji: {
-    fontSize: 24,
-  },
-  diseaseInfo: {
-    flex: 1,
-  },
-  diseaseName: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#1a1a1a',
-    marginBottom: 2,
-  },
-  diseaseNameAlt: {
-    fontSize: 14,
-    color: '#999',
-    fontStyle: 'italic',
-    marginBottom: 6,
-  },
-  diseaseDesc: {
-    fontSize: 14,
-    color: '#666',
-  },
-  severityBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    gap: 6,
-  },
-  severityText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  confidenceSection: {
-    marginBottom: 24,
-  },
-  confidenceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  confidenceLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#666',
-  },
-  confidenceValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  confidenceBar: {
-    height: 8,
-    backgroundColor: '#e5e5e5',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  confidenceFill: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  sectionContent: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  subsection: {
-    marginTop: 12,
-  },
-  subsectionTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: 8,
-  },
-  listContainer: {
-    gap: 8,
-  },
-  listItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
-  },
-  bulletPoint: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#f59e0b',
-    marginTop: 6,
-  },
-  listText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  quickActions: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  actionsTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 12,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  darkActionButton: {
-    backgroundColor: '#1a1a1a',
-  },
-  actionText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-  },
-  savedText: {
-    color: '#10b981',
-  },
-
-  fixedActions: {
-    padding: 20,
-    paddingBottom: 30,
-  },
-  newScanButton: {
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  newScanGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    gap: 12,
-  },
-  newScanText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  shadow: {
-    shadowColor: '#10b981',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  centered: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: '#666',
-  },
-});
-
 export default function ResultScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
+  const colors = Colors[theme];
   const [saved, setSaved] = useState(false);
   const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadDiagnosis();
-  }, [id]);
+  }, [id, i18n.language]);
 
   const loadDiagnosis = () => {
     try {
@@ -397,10 +138,10 @@ export default function ResultScreen() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'high': return '#ef4444';
-      case 'medium': return '#f59e0b';
-      case 'low': return '#10b981';
-      default: return '#10b981';
+      case 'high': return colors.danger;
+      case 'medium': return colors.warning;
+      case 'low': return colors.success;
+      default: return colors.success;
     }
   };
 
@@ -436,8 +177,8 @@ export default function ResultScreen() {
 
   if (loading || !result) {
     return (
-      <View style={[styles.container, theme === 'dark' && styles.darkContainer, styles.centered]}>
-        <Text style={[styles.loadingText, theme === 'dark' && styles.darkText]}>
+      <View style={[styles.container, { backgroundColor: colors.background }, styles.centered]}>
+        <Text style={[styles.loadingText, { color: colors.text }]}>
           {t('result.loading')}
         </Text>
       </View>
@@ -445,10 +186,10 @@ export default function ResultScreen() {
   }
 
   return (
-    <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <LinearGradient
-        colors={theme === 'dark' ? ['#1a1a1a', '#2d2d2d'] : ['#f8fafc', '#e2e8f0']}
+        colors={[colors.background, colors.backgroundAlt]}
         style={styles.header}
       >
         <TouchableOpacity
@@ -458,10 +199,10 @@ export default function ResultScreen() {
           <Ionicons
             name="chevron-back"
             size={24}
-            color={theme === 'dark' ? '#fff' : '#1a1a1a'}
+            color={colors.text}
           />
         </TouchableOpacity>
-        <Text style={[styles.title, theme === 'dark' && styles.darkText]}>
+        <Text style={[styles.title, { color: colors.text }]}>
           {t('result.title')}
         </Text>
         <View style={styles.placeholder} />
@@ -469,51 +210,53 @@ export default function ResultScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Result Card */}
-        <View style={[styles.resultCard, theme === 'dark' && styles.darkCard]}>
+        <View style={[styles.resultCard, { backgroundColor: colors.card }]}>
           {/* Diagnosis Header */}
           <View style={styles.diagnosisHeader}>
-            <View style={styles.diseaseIcon}>
-              {result.imageUri ? (
-                <Image
-                  source={{ uri: result.imageUri }}
-                  style={styles.diseaseImage}
-                  contentFit="cover"
+            <View style={styles.diseaseIconContainer}>
+              <View style={[styles.diseaseIcon, { backgroundColor: colors.primaryOverlay }]}>
+                {result.imageUri ? (
+                  <Image
+                    source={{ uri: result.imageUri }}
+                    style={styles.diseaseImage}
+                    contentFit="cover"
+                  />
+                ) : (
+                  <Text style={styles.diseaseEmoji}>{result.image}</Text>
+                )}
+              </View>
+              <View
+                style={[
+                  styles.severityBadge,
+                  { backgroundColor: getSeverityColor(result.severity) }
+                ]}
+              >
+                <Ionicons
+                  name={getSeverityIcon(result.severity) as any}
+                  size={12}
+                  color="#fff"
                 />
-              ) : (
-                <Text style={styles.diseaseEmoji}>{result.image}</Text>
-              )}
+                <Text
+                  style={[
+                    styles.severityText,
+                    { color: '#fff' }
+                  ]}
+                >
+                  {result.severity.charAt(0).toUpperCase() + result.severity.slice(1)}
+                </Text>
+              </View>
             </View>
             <View style={styles.diseaseInfo}>
-              <Text style={[styles.diseaseName, theme === 'dark' && styles.darkText]}>
+              <Text style={[styles.diseaseName, { color: colors.text }]}>
                 {result.disease}
               </Text>
               {result.diseaseAlt && (
-                <Text style={[styles.diseaseNameAlt, theme === 'dark' && styles.darkSubtext]}>
+                <Text style={[styles.diseaseNameAlt, { color: colors.textTertiary }]}>
                   {result.diseaseAlt}
                 </Text>
               )}
-              <Text style={[styles.diseaseDesc, theme === 'dark' && styles.darkSubtext]}>
+              <Text style={[styles.diseaseDesc, { color: colors.textSecondary }]}>
                 {result.description}
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.severityBadge,
-                { backgroundColor: getSeverityColor(result.severity) + '20' }
-              ]}
-            >
-              <Ionicons
-                name={getSeverityIcon(result.severity) as any}
-                size={16}
-                color={getSeverityColor(result.severity)}
-              />
-              <Text
-                style={[
-                  styles.severityText,
-                  { color: getSeverityColor(result.severity) }
-                ]}
-              >
-                {result.severity.charAt(0).toUpperCase() + result.severity.slice(1)}
               </Text>
             </View>
           </View>
@@ -521,14 +264,14 @@ export default function ResultScreen() {
           {/* Confidence Meter */}
           <View style={styles.confidenceSection}>
             <View style={styles.confidenceHeader}>
-              <Text style={[styles.confidenceLabel, theme === 'dark' && styles.darkSubtext]}>
+              <Text style={[styles.confidenceLabel, { color: colors.textSecondary }]}>
                 {t('result.confidence')}
               </Text>
-              <Text style={[styles.confidenceValue, theme === 'dark' && styles.darkText]}>
+              <Text style={[styles.confidenceValue, { color: colors.text }]}>
                 {result.confidence}%
               </Text>
             </View>
-            <View style={styles.confidenceBar}>
+            <View style={[styles.confidenceBar, { backgroundColor: colors.border }]}>
               <View
                 style={[
                   styles.confidenceFill,
@@ -545,16 +288,16 @@ export default function ResultScreen() {
           {result.symptoms && result.symptoms.length > 0 && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Ionicons name="alert-circle" size={20} color="#f59e0b" />
-                <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                <Ionicons name="alert-circle" size={20} color={colors.warning} />
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
                   {t('result.symptoms', { defaultValue: 'Symptoms' })}
                 </Text>
               </View>
               <View style={styles.listContainer}>
                 {result.symptoms.map((symptom, index) => (
                   <View key={index} style={styles.listItem}>
-                    <View style={styles.bulletPoint} />
-                    <Text style={[styles.listText, theme === 'dark' && styles.darkSubtext]}>
+                    <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} />
+                    <Text style={[styles.listText, { color: colors.textSecondary }]}>
                       {symptom}
                     </Text>
                   </View>
@@ -566,21 +309,21 @@ export default function ResultScreen() {
           {/* Treatment Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="medical" size={20} color="#ef4444" />
-              <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+              <Ionicons name="medical" size={20} color={colors.danger} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>
                 {t('result.treatment')}
               </Text>
             </View>
             {result.treatmentImmediate && result.treatmentImmediate.length > 0 && (
               <View style={styles.subsection}>
-                <Text style={[styles.subsectionTitle, theme === 'dark' && styles.darkText]}>
+                <Text style={[styles.subsectionTitle, { color: colors.text }]}>
                   {t('result.immediateActions', { defaultValue: 'Immediate Actions' })}
                 </Text>
                 <View style={styles.listContainer}>
                   {result.treatmentImmediate.map((action, index) => (
                     <View key={index} style={styles.listItem}>
-                      <View style={[styles.bulletPoint, { backgroundColor: '#ef4444' }]} />
-                      <Text style={[styles.listText, theme === 'dark' && styles.darkSubtext]}>
+                      <View style={[styles.bulletPoint, { backgroundColor: colors.danger }]} />
+                      <Text style={[styles.listText, { color: colors.textSecondary }]}>
                         {action}
                       </Text>
                     </View>
@@ -590,14 +333,14 @@ export default function ResultScreen() {
             )}
             {result.treatmentLongTerm && result.treatmentLongTerm.length > 0 && (
               <View style={styles.subsection}>
-                <Text style={[styles.subsectionTitle, theme === 'dark' && styles.darkText]}>
+                <Text style={[styles.subsectionTitle, { color: colors.text }]}>
                   {t('result.longTermActions', { defaultValue: 'Long-term Actions' })}
                 </Text>
                 <View style={styles.listContainer}>
                   {result.treatmentLongTerm.map((action, index) => (
                     <View key={index} style={styles.listItem}>
-                      <View style={[styles.bulletPoint, { backgroundColor: '#f59e0b' }]} />
-                      <Text style={[styles.listText, theme === 'dark' && styles.darkSubtext]}>
+                      <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} />
+                      <Text style={[styles.listText, { color: colors.textSecondary }]}>
                         {action}
                       </Text>
                     </View>
@@ -611,16 +354,16 @@ export default function ResultScreen() {
           {result.prevention && result.prevention.length > 0 && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Ionicons name="shield-checkmark" size={20} color="#10b981" />
-                <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                <Ionicons name="shield-checkmark" size={20} color={colors.success} />
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
                   {t('result.prevention')}
                 </Text>
               </View>
               <View style={styles.listContainer}>
                 {result.prevention.map((tip, index) => (
                   <View key={index} style={styles.listItem}>
-                    <View style={[styles.bulletPoint, { backgroundColor: '#10b981' }]} />
-                    <Text style={[styles.listText, theme === 'dark' && styles.darkSubtext]}>
+                    <View style={[styles.bulletPoint, { backgroundColor: colors.success }]} />
+                    <Text style={[styles.listText, { color: colors.textSecondary }]}>
                       {tip}
                     </Text>
                   </View>
@@ -632,38 +375,38 @@ export default function ResultScreen() {
 
         {/* Quick Actions */}
         <View style={styles.quickActions}>
-          <Text style={[styles.actionsTitle, theme === 'dark' && styles.darkText]}>
+          <Text style={[styles.actionsTitle, { color: colors.text }]}>
             {t('result.quickActions')}
           </Text>
           <View style={styles.actionsRow}>
             <TouchableOpacity
-              style={[styles.actionButton, theme === 'dark' && styles.darkActionButton]}
+              style={[styles.actionButton, { backgroundColor: colors.card }]}
               onPress={handleSave}
             >
               <Ionicons
                 name={saved ? "checkmark" : "bookmark"}
                 size={20}
-                color={saved ? "#10b981" : (theme === 'dark' ? '#fff' : '#666')}
+                color={saved ? colors.success : colors.textSecondary}
               />
               <Text style={[
                 styles.actionText,
-                theme === 'dark' && styles.darkText,
-                saved && styles.savedText
+                { color: colors.textSecondary },
+                saved && [styles.savedText, { color: colors.success }]
               ]}>
                 {saved ? t('result.saved') : t('result.save')}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionButton, theme === 'dark' && styles.darkActionButton]}
+              style={[styles.actionButton, { backgroundColor: colors.card }]}
               onPress={handleShare}
             >
               <Ionicons
                 name="share"
                 size={20}
-                color={theme === 'dark' ? '#fff' : '#666'}
+                color={colors.textSecondary}
               />
-              <Text style={[styles.actionText, theme === 'dark' && styles.darkText]}>
+              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
                 {t('result.share')}
               </Text>
             </TouchableOpacity>
@@ -679,7 +422,7 @@ export default function ResultScreen() {
           onPress={handleNewScan}
         >
           <LinearGradient
-            colors={['#10b981', '#059669']}
+            colors={[colors.primary, colors.primaryDark]}
             style={styles.newScanGradient}
           >
             <Ionicons name="camera" size={20} color="#fff" />
@@ -690,3 +433,266 @@ export default function ResultScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  darkContainer: {
+    backgroundColor: '#000',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  backButton: {
+    padding: 8,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  darkText: {
+    color: '#fff',
+  },
+  darkSubtext: {
+    color: '#999',
+  },
+  placeholder: {
+    width: 40,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  resultCard: {
+    margin: 20,
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  darkCard: {
+    backgroundColor: '#1a1a1a',
+  },
+  diagnosisHeader: {
+    alignItems: 'center',
+    marginBottom: 28,
+  },
+  diseaseIconContainer: {
+    position: 'relative',
+    marginBottom: 20,
+  },
+  diseaseIcon: {
+    width: 300,
+    height: 300,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  diseaseImage: {
+    width: 300,
+    height: 300,
+  },
+  diseaseEmoji: {
+    fontSize: 48,
+  },
+  severityBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    gap: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  severityText: {
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  diseaseInfo: {
+    alignItems: 'center',
+  },
+  diseaseName: {
+    fontSize: 26,
+    fontWeight: '800',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  diseaseNameAlt: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  diseaseDesc: {
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 8,
+  },
+  confidenceSection: {
+    marginBottom: 24,
+  },
+  confidenceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  confidenceLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  confidenceValue: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  confidenceBar: {
+    height: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  confidenceFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  sectionContent: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  subsection: {
+    marginTop: 12,
+  },
+  subsectionTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  listContainer: {
+    gap: 8,
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  bulletPoint: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginTop: 6,
+  },
+  listText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  quickActions: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  actionsTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  darkActionButton: {
+    backgroundColor: '#1a1a1a',
+  },
+  actionText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  savedText: {
+    color: '#10b981',
+  },
+
+  fixedActions: {
+    padding: 20,
+    paddingBottom: 30,
+  },
+  newScanButton: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  newScanGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+  newScanText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  shadow: {
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+  },
+});

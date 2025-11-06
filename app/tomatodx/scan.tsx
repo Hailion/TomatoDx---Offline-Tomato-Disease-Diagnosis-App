@@ -1,4 +1,5 @@
-// app/tomatodx/scan.tsx - Enhanced Scan Screen
+// app/tomatodx/scan.tsx - Compact Scan Screen
+import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { setAudioModeAsync } from 'expo-audio';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -6,18 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    Alert,
-    Animated,
-    Dimensions,
-    Platform,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import { Alert, Dimensions, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -25,49 +15,11 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 export default function ScanScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [isCameraActive, setIsCameraActive] = useState(false);
-    const [isCapturing, setIsCapturing] = useState(false);
     const cameraRef = useRef<CameraView>(null);
     const router = useRouter();
     const { theme } = useTheme();
     const { t } = useTranslation();
-
-    // Animation values
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const scaleAnim = useRef(new Animated.Value(0.9)).current;
-    const pulseAnim = useRef(new Animated.Value(1)).current;
-
-    const startAnimations = () => {
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 500,
-                useNativeDriver: true,
-            }),
-            Animated.spring(scaleAnim, {
-                toValue: 1,
-                tension: 50,
-                friction: 7,
-                useNativeDriver: true,
-            })
-        ]).start();
-    };
-
-    const startPulseAnimation = () => {
-        Animated.loop(
-            Animated.sequence([
-                Animated.timing(pulseAnim, {
-                    toValue: 1.1,
-                    duration: 1000,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(pulseAnim, {
-                    toValue: 1,
-                    duration: 1000,
-                    useNativeDriver: true,
-                }),
-            ])
-        ).start();
-    };
+    const colors = Colors[theme];
 
     if (!permission) {
         return <View />;
@@ -75,20 +27,17 @@ export default function ScanScreen() {
 
     if (!permission.granted) {
         return (
-            <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
-                <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
                 <View style={styles.permissionContainer}>
-                    <Animated.View style={[styles.iconContainer, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
-                        <Ionicons name="camera-outline" size={80} color={theme === 'dark' ? '#4ade80' : '#10b981'} />
-                    </Animated.View>
-                    <Text style={[styles.permissionTitle, theme === 'dark' && styles.darkText]}>
+                    <Ionicons name="camera-outline" size={64} color={colors.muted} />
+                    <Text style={[styles.permissionTitle, { color: colors.text }]}>
                         {t('scan.cameraPermission')}
                     </Text>
-                    <Text style={[styles.permissionText, theme === 'dark' && styles.darkSubtext]}>
+                    <Text style={[styles.permissionText, { color: colors.textSecondary }]}>
                         {t('scan.cameraPermissionDesc')}
                     </Text>
                     <TouchableOpacity
-                        style={[styles.permissionButton, theme === 'dark' && styles.darkPermissionButton]}
+                        style={[styles.permissionButton, { backgroundColor: colors.primary }]}
                         onPress={requestPermission}
                     >
                         <Text style={styles.permissionButtonText}>
@@ -101,8 +50,7 @@ export default function ScanScreen() {
     }
 
     const handleCapture = async () => {
-        if (cameraRef.current && !isCapturing) {
-            setIsCapturing(true);
+        if (cameraRef.current) {
             try {
                 // Mute shutter sound on Android by setting audio mode
                 if (Platform.OS === 'android') {
@@ -113,13 +61,11 @@ export default function ScanScreen() {
                 }
 
                 const photo = await cameraRef.current.takePictureAsync();
-                setIsCapturing(false);
                 router.push({
                     pathname: '/tomatodx/preview',
                     params: { uri: photo.uri }
                 });
             } catch (error) {
-                setIsCapturing(false);
                 Alert.alert(t('scan.error'), t('scan.captureError'));
             }
         }
@@ -159,12 +105,7 @@ export default function ScanScreen() {
     };
 
     return (
-        <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
-            <StatusBar
-                barStyle={isCameraActive ? 'light-content' : theme === 'dark' ? 'light-content' : 'dark-content'}
-                backgroundColor={isCameraActive ? '#000' : 'transparent'}
-            />
-
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             {isCameraActive ? (
                 <>
                     <CameraView
@@ -173,43 +114,37 @@ export default function ScanScreen() {
                         facing="back"
                     />
                     <View style={styles.cameraOverlay}>
-                        {/* Scan Frame with Animation */}
+                        {/* Scan Frame with Corners */}
                         <View style={styles.scanFrameContainer}>
-                            <Animated.View
-                                style={[
-                                    styles.scanFrame,
-                                    { transform: [{ scale: pulseAnim }] }
-                                ]}
-                            />
-                            <View style={styles.cornerTL} />
-                            <View style={styles.cornerTR} />
-                            <View style={styles.cornerBL} />
-                            <View style={styles.cornerBR} />
+                            <View style={[styles.scanFrame, { borderColor: colors.primary }]} />
+                            <View style={[styles.corner, styles.cornerTL, { borderColor: colors.primary }]} />
+                            <View style={[styles.corner, styles.cornerTR, { borderColor: colors.primary }]} />
+                            <View style={[styles.corner, styles.cornerBL, { borderColor: colors.primary }]} />
+                            <View style={[styles.corner, styles.cornerBR, { borderColor: colors.primary }]} />
                         </View>
 
                         <Text style={styles.scanText}>{t('scan.alignGuide')}</Text>
 
                         <View style={styles.cameraControls}>
                             <TouchableOpacity
-                                style={styles.controlButton}
+                                style={[styles.controlButton, { backgroundColor: 'rgba(255,255,255,0.2)' }]}
                                 onPress={handleGallery}
                             >
-                                <Ionicons name="images" size={24} color="#fff" />
+                                <Ionicons name="images" size={20} color="#fff" />
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={[styles.captureButton, isCapturing && styles.captureButtonDisabled]}
+                                style={styles.captureButton}
                                 onPress={handleCapture}
-                                disabled={isCapturing}
                             >
-                                <View style={styles.captureInner} />
+                                <View style={[styles.captureInner, { backgroundColor: colors.primary }]} />
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={styles.controlButton}
+                                style={[styles.controlButton, { backgroundColor: 'rgba(255,255,255,0.2)' }]}
                                 onPress={() => setIsCameraActive(false)}
                             >
-                                <Ionicons name="close" size={24} color="#fff" />
+                                <Ionicons name="close" size={20} color="#fff" />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -219,123 +154,92 @@ export default function ScanScreen() {
                     style={styles.scanHome}
                     contentContainerStyle={styles.scanHomeContent}
                     showsVerticalScrollIndicator={false}
-                    onLayout={startAnimations}
                 >
-                    <Animated.View
-                        style={[
-                            styles.scanHeader,
-                            { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }
-                        ]}
-                    >
-                        <View style={styles.titleContainer}>
-                            <Text style={[styles.scanTitle, theme === 'dark' && styles.darkText]}>
-                                {t('scan.title')}
-                            </Text>
-                            <View style={[styles.titleUnderline, theme === 'dark' && styles.darkTitleUnderline]} />
+                    {/* Compact Header */}
+                    <View style={styles.scanHeader}>
+                        <View style={[styles.logoContainer, { backgroundColor: colors.primaryOverlay }]}>
+                            <Ionicons name="camera" size={28} color={colors.primary} />
                         </View>
-                        <Text style={[styles.scanSubtitle, theme === 'dark' && styles.darkSubtext]}>
+                        <Text style={[styles.scanTitle, { color: colors.text }]}>
+                            {t('scan.title')}
+                        </Text>
+                        <Text style={[styles.scanSubtitle, { color: colors.textSecondary }]}>
                             {t('scan.subtitle')}
                         </Text>
-                    </Animated.View>
-
-                    <View style={styles.scanOptions}>
-                        <Animated.View
-                            style={[
-                                styles.optionContainer,
-                                {
-                                    opacity: fadeAnim, transform: [{
-                                        translateY: fadeAnim.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [50, 0]
-                                        })
-                                    }]
-                                }
-                            ]}
-                        >
-                            <TouchableOpacity
-                                style={[styles.scanOption, theme === 'dark' && styles.darkCard]}
-                                onPress={() => {
-                                    setIsCameraActive(true);
-                                    startPulseAnimation();
-                                }}
-                                activeOpacity={0.8}
-                            >
-                                <View style={[styles.optionIcon, styles.cameraIcon]}>
-                                    <Ionicons name="camera" size={32} color="#fff" />
-                                </View>
-                                <Text style={[styles.optionTitle, theme === 'dark' && styles.darkText]}>
-                                    {t('scan.takePhoto')}
-                                </Text>
-                                <Text style={[styles.optionDesc, theme === 'dark' && styles.darkSubtext]}>
-                                    {t('scan.takePhotoDesc')}
-                                </Text>
-                            </TouchableOpacity>
-                        </Animated.View>
-
-                        <Animated.View
-                            style={[
-                                styles.optionContainer,
-                                {
-                                    opacity: fadeAnim, transform: [{
-                                        translateY: fadeAnim.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [70, 0]
-                                        })
-                                    }]
-                                }
-                            ]}
-                        >
-                            <TouchableOpacity
-                                style={[styles.scanOption, theme === 'dark' && styles.darkCard]}
-                                onPress={handleGallery}
-                                activeOpacity={0.8}
-                            >
-                                <View style={[styles.optionIcon, styles.galleryIcon]}>
-                                    <Ionicons name="images" size={32} color="#fff" />
-                                </View>
-                                <Text style={[styles.optionTitle, theme === 'dark' && styles.darkText]}>
-                                    {t('scan.chooseGallery')}
-                                </Text>
-                                <Text style={[styles.optionDesc, theme === 'dark' && styles.darkSubtext]}>
-                                    {t('scan.chooseGalleryDesc')}
-                                </Text>
-                            </TouchableOpacity>
-                        </Animated.View>
                     </View>
 
-                    <Animated.View
-                        style={[
-                            styles.tips,
-                            theme === 'dark' && styles.darkTips,
-                            {
-                                opacity: fadeAnim,
-                                transform: [{
-                                    translateY: fadeAnim.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [30, 0]
-                                    })
-                                }]
-                            }
-                        ]}
-                    >
+                    {/* Compact Action Buttons - Side by Side */}
+                    <View style={styles.actionButtons}>
+                        <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: colors.card }]}
+                            onPress={() => setIsCameraActive(true)}
+                        >
+                            <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
+                                <Ionicons name="camera" size={24} color="#fff" />
+                            </View>
+                            <Text style={[styles.actionButtonTitle, { color: colors.text }]}>
+                                {t('scan.takePhoto')}
+                            </Text>
+                            <Text style={[styles.actionButtonDesc, { color: colors.textSecondary }]}>
+                                {t('scan.takePhotoDesc')}
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: colors.card }]}
+                            onPress={handleGallery}
+                        >
+                            <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
+                                <Ionicons name="images" size={24} color="#fff" />
+                            </View>
+                            <Text style={[styles.actionButtonTitle, { color: colors.text }]}>
+                                {t('scan.chooseGallery')}
+                            </Text>
+                            <Text style={[styles.actionButtonDesc, { color: colors.textSecondary }]}>
+                                {t('scan.chooseGalleryDesc')}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Quick Tips - More Compact */}
+                    <View style={[styles.tips, { backgroundColor: colors.primaryOverlay }]}>
                         <View style={styles.tipsHeader}>
-                            <Ionicons name="bulb-outline" size={20} color={theme === 'dark' ? '#4ade80' : '#10b981'} />
-                            <Text style={[styles.tipsTitle, theme === 'dark' && styles.darkText]}>
+                            <Ionicons name="bulb-outline" size={18} color={colors.primary} />
+                            <Text style={[styles.tipsTitle, { color: colors.text }]}>
                                 {t('scan.tips')}
                             </Text>
                         </View>
                         <View style={styles.tipsList}>
-                            <Text style={[styles.tipsText, theme === 'dark' && styles.darkSubtext]}>
-                                • {t('scan.tip1')}
-                            </Text>
-                            <Text style={[styles.tipsText, theme === 'dark' && styles.darkSubtext]}>
-                                • {t('scan.tip2')}
-                            </Text>
-                            <Text style={[styles.tipsText, theme === 'dark' && styles.darkSubtext]}>
-                                • {t('scan.tip3')}
-                            </Text>
+                            <View style={styles.tipItem}>
+                                <Ionicons name="checkmark-circle" size={14} color={colors.primary} />
+                                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                                    {t('scan.tip1')}
+                                </Text>
+                            </View>
+                            <View style={styles.tipItem}>
+                                <Ionicons name="checkmark-circle" size={14} color={colors.primary} />
+                                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                                    {t('scan.tip2')}
+                                </Text>
+                            </View>
+                            <View style={styles.tipItem}>
+                                <Ionicons name="checkmark-circle" size={14} color={colors.primary} />
+                                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                                    {t('scan.tip3')}
+                                </Text>
+                            </View>
                         </View>
-                    </Animated.View>
+                    </View>
+
+                    {/* Recent Activity Preview (Optional) */}
+                    <View style={styles.recentSection}>
+                        <Text style={[styles.recentTitle, { color: colors.text }]}>
+                            {t('scan.quickStart')}
+                        </Text>
+                        <Text style={[styles.recentText, { color: colors.textSecondary }]}>
+                            {t('scan.quickStartDesc')}
+                        </Text>
+                    </View>
                 </ScrollView>
             )}
         </View>
@@ -345,63 +249,35 @@ export default function ScanScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8fafc',
-    },
-    darkContainer: {
-        backgroundColor: '#000',
     },
     permissionContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 30,
-    },
-    iconContainer: {
-        marginBottom: 20,
+        padding: 20,
     },
     permissionTitle: {
-        fontSize: 28,
-        fontWeight: '800',
-        color: '#1a1a1a',
-        marginBottom: 12,
+        fontSize: 22,
+        fontWeight: '700',
+        marginTop: 20,
+        marginBottom: 8,
         textAlign: 'center',
     },
     permissionText: {
-        fontSize: 16,
-        color: '#666',
+        fontSize: 14,
         textAlign: 'center',
-        marginBottom: 40,
-        lineHeight: 22,
+        marginBottom: 30,
+        lineHeight: 20,
     },
     permissionButton: {
-        backgroundColor: '#10b981',
-        paddingHorizontal: 32,
-        paddingVertical: 16,
-        borderRadius: 16,
-        shadowColor: '#10b981',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 6,
-    },
-    darkPermissionButton: {
-        backgroundColor: '#4ade80',
-        shadowColor: '#4ade80',
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 12,
     },
     permissionButtonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: '700',
-    },
-    darkText: {
-        color: '#fff',
-    },
-    darkSubtext: {
-        color: '#ccc',
-    },
-    darkCard: {
-        backgroundColor: '#1a1a1a',
-        shadowColor: '#000',
+        fontWeight: '600',
     },
     camera: {
         flex: 1,
@@ -410,70 +286,59 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.4)',
         justifyContent: 'space-between',
-        paddingVertical: 60,
+        paddingVertical: 50,
         paddingHorizontal: 20,
     },
     scanFrameContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 40,
+        marginTop: 80,
     },
     scanFrame: {
-        width: 250,
-        height: 250,
-        borderWidth: 2,
-        borderColor: '#10b981',
-        borderRadius: 16,
+        width: SCREEN_WIDTH * 0.8,
+        height: SCREEN_WIDTH * 0.85,
+        borderWidth: .5,
+        borderRadius: 12,
+        marginVertical: 20,
+    },
+    corner: {
         position: 'absolute',
+        width: 20,
+        height: 20,
+        borderWidth: 3.5,
     },
     cornerTL: {
-        position: 'absolute',
-        top: -2,
-        left: -2,
-        width: 30,
-        height: 30,
-        borderTopWidth: 4,
-        borderLeftWidth: 4,
-        borderColor: '#10b981',
-        borderTopLeftRadius: 12,
+        top: -1,
+        left: -1,
+        borderRightWidth: 0,
+        borderBottomWidth: 0,
+        borderTopLeftRadius: 8,
     },
     cornerTR: {
-        position: 'absolute',
-        top: -2,
-        right: -2,
-        width: 30,
-        height: 30,
-        borderTopWidth: 4,
-        borderRightWidth: 4,
-        borderColor: '#10b981',
-        borderTopRightRadius: 12,
+        top: -1,
+        right: -1,
+        borderLeftWidth: 0,
+        borderBottomWidth: 0,
+        borderTopRightRadius: 8,
     },
     cornerBL: {
-        position: 'absolute',
-        bottom: -2,
-        left: -2,
-        width: 30,
-        height: 30,
-        borderBottomWidth: 4,
-        borderLeftWidth: 4,
-        borderColor: '#10b981',
-        borderBottomLeftRadius: 12,
+        bottom: -1,
+        left: -1,
+        borderRightWidth: 0,
+        borderTopWidth: 0,
+        borderBottomLeftRadius: 8,
     },
     cornerBR: {
-        position: 'absolute',
-        bottom: -2,
-        right: -2,
-        width: 30,
-        height: 30,
-        borderBottomWidth: 4,
-        borderRightWidth: 4,
-        borderColor: '#10b981',
-        borderBottomRightRadius: 12,
+        bottom: -1,
+        right: -1,
+        borderLeftWidth: 0,
+        borderTopWidth: 0,
+        borderBottomRightRadius: 8,
     },
     scanText: {
         color: '#fff',
         textAlign: 'center',
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '600',
         marginTop: 20,
         textShadowColor: 'rgba(0,0,0,0.5)',
@@ -484,147 +349,139 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 40,
+        paddingHorizontal: 30,
     },
     controlButton: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    captureButton: {
+        width: 74,
+        height: 74,
+        borderRadius: 100,
         backgroundColor: 'rgba(255,255,255,0.2)',
         justifyContent: 'center',
         alignItems: 'center',
-        backdropFilter: 'blur(10px)',
-    },
-    captureButton: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        backgroundColor: 'rgba(255,255,255,0.3)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 4,
-        borderColor: 'rgba(255,255,255,0.5)',
-    },
-    captureButtonDisabled: {
-        opacity: 0.6,
+        borderWidth: 3,
+        borderColor: 'rgba(255,255,255,0.3)',
     },
     captureInner: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
-        backgroundColor: '#10b981',
+        width: 62,
+        height: 62,
+        borderRadius: 31,
+        opacity: 0.8
     },
     scanHome: {
         flex: 1,
     },
     scanHomeContent: {
-        paddingTop: 80,
-        paddingHorizontal: 24,
-        paddingBottom: 40,
+        paddingTop: 50,
+        paddingHorizontal: 16,
+        paddingBottom: 20,
     },
     scanHeader: {
         alignItems: 'center',
-        marginBottom: 50,
+        marginBottom: 30,
     },
-    titleContainer: {
+    logoContainer: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    scanTitle: {
+        fontSize: 28,
+        fontWeight: '800',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    scanSubtitle: {
+        fontSize: 14,
+        textAlign: 'center',
+        lineHeight: 20,
+        paddingHorizontal: 20,
+    },
+    actionButtons: {
+        flexDirection: 'row',
+        gap: 12,
+        marginBottom: 30,
+    },
+    actionButton: {
+        flex: 1,
+        padding: 16,
+        borderRadius: 16,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    actionIcon: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 12,
     },
-    scanTitle: {
-        fontSize: 36,
-        fontWeight: '900',
-        color: '#1a1a1a',
-        marginBottom: 8,
-        textAlign: 'center',
-    },
-    titleUnderline: {
-        width: 60,
-        height: 4,
-        backgroundColor: '#10b981',
-        borderRadius: 2,
-    },
-    darkTitleUnderline: {
-        backgroundColor: '#4ade80',
-    },
-    scanSubtitle: {
+    actionButtonTitle: {
         fontSize: 16,
-        color: '#666',
+        fontWeight: '700',
+        marginBottom: 4,
         textAlign: 'center',
-        lineHeight: 22,
-        maxWidth: 300,
     },
-    scanOptions: {
-        gap: 20,
-        marginBottom: 50,
-    },
-    optionContainer: {
-        // Container for animation
-    },
-    scanOption: {
-        backgroundColor: '#fff',
-        padding: 28,
-        borderRadius: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 5,
-        borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0.05)',
-    },
-    optionIcon: {
-        width: 64,
-        height: 64,
-        borderRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    cameraIcon: {
-        backgroundColor: '#10b981',
-    },
-    galleryIcon: {
-        backgroundColor: '#8b5cf6',
-    },
-    optionTitle: {
-        fontSize: 22,
-        fontWeight: '800',
-        color: '#1a1a1a',
-        marginBottom: 8,
-    },
-    optionDesc: {
-        fontSize: 15,
-        color: '#666',
-        lineHeight: 22,
+    actionButtonDesc: {
+        fontSize: 12,
+        textAlign: 'center',
+        lineHeight: 16,
     },
     tips: {
-        backgroundColor: 'rgba(16, 185, 129, 0.08)',
-        padding: 24,
-        borderRadius: 16,
-        borderLeftWidth: 4,
-        borderLeftColor: '#10b981',
-    },
-    darkTips: {
-        backgroundColor: 'rgba(74, 222, 128, 0.1)',
-        borderLeftColor: '#4ade80',
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 24,
     },
     tipsHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 12,
+        gap: 8,
     },
     tipsTitle: {
-        fontSize: 18,
-        fontWeight: '800',
-        color: '#1a1a1a',
-        marginLeft: 8,
+        fontSize: 16,
+        fontWeight: '700',
     },
     tipsList: {
-        gap: 6,
+        gap: 8,
     },
-    tipsText: {
+    tipItem: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: 8,
+    },
+    tipText: {
+        fontSize: 13,
+        lineHeight: 18,
+        flex: 1,
+    },
+    recentSection: {
+        alignItems: 'center',
+        paddingVertical: 20,
+    },
+    recentTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        marginBottom: 8,
+    },
+    recentText: {
         fontSize: 14,
-        color: '#666',
+        textAlign: 'center',
         lineHeight: 20,
+        paddingHorizontal: 20,
     },
 });

@@ -151,13 +151,15 @@ export function upsertModelMeta(modelVersion: string, exportedAtISO?: string, cl
 }
 
 export function getAnalyticsSummary() {
-    const rows = getAll<{ avgConfidence: number; total: number; low: number; medium: number; high: number }>(
+    const rows = getAll<{ avgConfidence: number; total: number; low: number; medium: number; high: number; healthyCount: number }>(
         `SELECT AVG(confidence) as avgConfidence,
                 COUNT(*) as total,
                 SUM(CASE WHEN confidence < 0.7 THEN 1 ELSE 0 END) as low,
                 SUM(CASE WHEN confidence >= 0.7 AND confidence < 0.9 THEN 1 ELSE 0 END) as medium,
-                SUM(CASE WHEN confidence >= 0.9 THEN 1 ELSE 0 END) as high
-         FROM Diagnosis`
+                SUM(CASE WHEN confidence >= 0.9 THEN 1 ELSE 0 END) as high,
+                SUM(CASE WHEN d.diseaseId LIKE '%healthy%' THEN 1 ELSE 0 END) as healthyCount
+         FROM Diagnosis d
+         LEFT JOIN Disease ds ON ds.diseaseId = d.diseaseId`
     );
     const top = getAll<{ diseaseId: string; nameEn?: string; nameAm?: string; c: number }>(
         `SELECT d.diseaseId, ds.nameEn, ds.nameAm, COUNT(*) as c
@@ -168,7 +170,7 @@ export function getAnalyticsSummary() {
          LIMIT 1`
     );
     return {
-        ...(rows[0] ?? { avgConfidence: 0, total: 0, low: 0, medium: 0, high: 0 }),
+        ...(rows[0] ?? { avgConfidence: 0, total: 0, low: 0, medium: 0, high: 0, healthyCount: 0 }),
         topDisease: top[0] ?? null,
     };
 }

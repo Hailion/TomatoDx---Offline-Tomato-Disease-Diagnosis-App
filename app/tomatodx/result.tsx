@@ -1,24 +1,291 @@
 // app/tomatodx/result.tsx - Result Screen
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { getDiseaseInfo } from '../../src/data/diseaseInfo';
 import { getDiagnosisById } from '../../src/db/repository';
 
 interface DiagnosisResult {
   disease: string;
+  diseaseAlt?: string;
+  diseaseId: string;
   confidence: number;
   severity: string;
   image: string;
   imageUri?: string;
   description: string;
-  treatment: string;
-  prevention: string;
+  symptoms: string[];
+  treatmentImmediate: string[];
+  treatmentLongTerm: string[];
+  prevention: string[];
   diagnosedAt: string;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  darkContainer: {
+    backgroundColor: '#000',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  backButton: {
+    padding: 8,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1a1a1a',
+  },
+  darkText: {
+    color: '#fff',
+  },
+  darkSubtext: {
+    color: '#999',
+  },
+  placeholder: {
+    width: 40,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  resultCard: {
+    backgroundColor: '#fff',
+    margin: 20,
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  darkCard: {
+    backgroundColor: '#1a1a1a',
+  },
+  diagnosisHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  diseaseIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 12,
+    backgroundColor: '#f0fdf4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+    overflow: 'hidden',
+  },
+  diseaseImage: {
+    width: 60,
+    height: 60,
+  },
+  diseaseEmoji: {
+    fontSize: 24,
+  },
+  diseaseInfo: {
+    flex: 1,
+  },
+  diseaseName: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1a1a1a',
+    marginBottom: 2,
+  },
+  diseaseNameAlt: {
+    fontSize: 14,
+    color: '#999',
+    fontStyle: 'italic',
+    marginBottom: 6,
+  },
+  diseaseDesc: {
+    fontSize: 14,
+    color: '#666',
+  },
+  severityBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    gap: 6,
+  },
+  severityText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  confidenceSection: {
+    marginBottom: 24,
+  },
+  confidenceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  confidenceLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666',
+  },
+  confidenceValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1a1a1a',
+  },
+  confidenceBar: {
+    height: 8,
+    backgroundColor: '#e5e5e5',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  confidenceFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1a1a1a',
+  },
+  sectionContent: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  subsection: {
+    marginTop: 12,
+  },
+  subsectionTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    marginBottom: 8,
+  },
+  listContainer: {
+    gap: 8,
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  bulletPoint: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#f59e0b',
+    marginTop: 6,
+  },
+  listText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  quickActions: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  actionsTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 12,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  darkActionButton: {
+    backgroundColor: '#1a1a1a',
+  },
+  actionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+  },
+  savedText: {
+    color: '#10b981',
+  },
+
+  fixedActions: {
+    padding: 20,
+    paddingBottom: 30,
+  },
+  newScanButton: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  newScanGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+  newScanText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  shadow: {
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+  },
+});
 
 export default function ResultScreen() {
   const router = useRouter();
@@ -49,11 +316,28 @@ export default function ResultScreen() {
       }
 
       const confidence = Math.round((diagnosis.confidence || 0) * 100);
-      const diseaseName = i18n.language === 'am' ? (diagnosis.nameAm || diagnosis.nameEn || 'Unknown') : (diagnosis.nameEn || 'Unknown');
 
-      // Determine severity
+      // Map disease name to disease ID
+      const diseaseId = mapDiseaseNameToId(diagnosis.nameEn || 'Unknown');
+      const diseaseInfo = getDiseaseInfo(diseaseId);
+
+      // Get disease name from translations
+      const diseaseNameEn = t(`diseases.${diseaseId}.name`, { lng: 'en', defaultValue: diagnosis.nameEn || 'Unknown' });
+      const diseaseNameAm = t(`diseases.${diseaseId}.name`, { lng: 'am', defaultValue: diagnosis.nameAm || diseaseNameEn });
+      const diseaseName = i18n.language === 'am' ? diseaseNameAm : diseaseNameEn;
+      const diseaseNameAlt = i18n.language === 'am' ? diseaseNameEn : diseaseNameAm;
+
+      // Determine severity from disease info or confidence
       let severity = 'none';
-      if (diseaseName.toLowerCase().includes('healthy')) {
+      if (diseaseInfo) {
+        const severityMap: Record<string, string> = {
+          'Low': 'low',
+          'Medium': 'medium',
+          'High': 'high',
+          'Critical': 'high'
+        };
+        severity = severityMap[diseaseInfo.severity] || 'medium';
+      } else if (diseaseName.toLowerCase().includes('healthy')) {
         severity = 'none';
       } else if (confidence >= 90) {
         severity = 'high';
@@ -63,22 +347,29 @@ export default function ResultScreen() {
         severity = 'low';
       }
 
-      // Get emoji
-      let image = '🌱';
-      if (diseaseName.toLowerCase().includes('healthy')) image = '✅';
-      else if (diseaseName.toLowerCase().includes('blight')) image = '⚠️';
-      else if (diseaseName.toLowerCase().includes('spot')) image = '🦠';
-      else if (diseaseName.toLowerCase().includes('mildew')) image = '🍂';
+      // Get emoji from disease info
+      const image = diseaseInfo?.image || '🌱';
+
+      // Get disease information from translations
+      const description = t(`diseases.${diseaseId}.description`, { defaultValue: t('result.noDescription') });
+      const symptoms = t(`diseases.${diseaseId}.symptoms`, { returnObjects: true, defaultValue: [] }) as string[];
+      const treatmentImmediate = t(`diseases.${diseaseId}.treatment.immediate`, { returnObjects: true, defaultValue: [] }) as string[];
+      const treatmentLongTerm = t(`diseases.${diseaseId}.treatment.longTerm`, { returnObjects: true, defaultValue: [] }) as string[];
+      const prevention = t(`diseases.${diseaseId}.prevention`, { returnObjects: true, defaultValue: [] }) as string[];
 
       setResult({
         disease: diseaseName,
+        diseaseAlt: diseaseNameAlt,
+        diseaseId,
         confidence,
         severity,
         image,
         imageUri: diagnosis.filePath,
-        description: diagnosis.symptoms || t('result.noDescription'),
-        treatment: diagnosis.advice || t('result.noTreatment'),
-        prevention: t('result.generalPrevention'),
+        description,
+        symptoms: Array.isArray(symptoms) ? symptoms : [],
+        treatmentImmediate: Array.isArray(treatmentImmediate) ? treatmentImmediate : [],
+        treatmentLongTerm: Array.isArray(treatmentLongTerm) ? treatmentLongTerm : [],
+        prevention: Array.isArray(prevention) ? prevention : [],
         diagnosedAt: new Date(diagnosis.diagnosedAt).toLocaleString()
       });
       setLoading(false);
@@ -87,6 +378,21 @@ export default function ResultScreen() {
       Alert.alert(t('result.error'), t('result.loadError'));
       router.back();
     }
+  };
+
+  const mapDiseaseNameToId = (name: string): string => {
+    const nameLower = name.toLowerCase();
+    if (nameLower.includes('early') && nameLower.includes('blight')) return 'early_blight';
+    if (nameLower.includes('late') && nameLower.includes('blight')) return 'late_blight';
+    if (nameLower.includes('healthy')) return 'healthy';
+    if (nameLower.includes('leaf') && nameLower.includes('mold')) return 'leaf_mold';
+    if (nameLower.includes('septoria')) return 'septoria_leaf_spot';
+    if (nameLower.includes('yellow') && nameLower.includes('curl')) return 'tomato_yellow_leaf_curl';
+    if (nameLower.includes('target') && nameLower.includes('spot')) return 'target_spot';
+    if (nameLower.includes('spider') && nameLower.includes('mite')) return 'spider_mites_two_spotted_spider_mites';
+    if (nameLower.includes('mosaic')) return 'tomato_mosaic_virus';
+    if (nameLower.includes('bacterial') && nameLower.includes('spot')) return 'bacterial_spot';
+    return 'healthy';
   };
 
   const getSeverityColor = (severity: string) => {
@@ -167,12 +473,25 @@ export default function ResultScreen() {
           {/* Diagnosis Header */}
           <View style={styles.diagnosisHeader}>
             <View style={styles.diseaseIcon}>
-              <Text style={styles.diseaseEmoji}>{result.image}</Text>
+              {result.imageUri ? (
+                <Image
+                  source={{ uri: result.imageUri }}
+                  style={styles.diseaseImage}
+                  contentFit="cover"
+                />
+              ) : (
+                <Text style={styles.diseaseEmoji}>{result.image}</Text>
+              )}
             </View>
             <View style={styles.diseaseInfo}>
               <Text style={[styles.diseaseName, theme === 'dark' && styles.darkText]}>
                 {result.disease}
               </Text>
+              {result.diseaseAlt && (
+                <Text style={[styles.diseaseNameAlt, theme === 'dark' && styles.darkSubtext]}>
+                  {result.diseaseAlt}
+                </Text>
+              )}
               <Text style={[styles.diseaseDesc, theme === 'dark' && styles.darkSubtext]}>
                 {result.description}
               </Text>
@@ -222,6 +541,28 @@ export default function ResultScreen() {
             </View>
           </View>
 
+          {/* Symptoms Section */}
+          {result.symptoms && result.symptoms.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="alert-circle" size={20} color="#f59e0b" />
+                <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                  {t('result.symptoms', { defaultValue: 'Symptoms' })}
+                </Text>
+              </View>
+              <View style={styles.listContainer}>
+                {result.symptoms.map((symptom, index) => (
+                  <View key={index} style={styles.listItem}>
+                    <View style={styles.bulletPoint} />
+                    <Text style={[styles.listText, theme === 'dark' && styles.darkSubtext]}>
+                      {symptom}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
           {/* Treatment Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
@@ -230,23 +571,63 @@ export default function ResultScreen() {
                 {t('result.treatment')}
               </Text>
             </View>
-            <Text style={[styles.sectionContent, theme === 'dark' && styles.darkSubtext]}>
-              {result.treatment}
-            </Text>
+            {result.treatmentImmediate && result.treatmentImmediate.length > 0 && (
+              <View style={styles.subsection}>
+                <Text style={[styles.subsectionTitle, theme === 'dark' && styles.darkText]}>
+                  {t('result.immediateActions', { defaultValue: 'Immediate Actions' })}
+                </Text>
+                <View style={styles.listContainer}>
+                  {result.treatmentImmediate.map((action, index) => (
+                    <View key={index} style={styles.listItem}>
+                      <View style={[styles.bulletPoint, { backgroundColor: '#ef4444' }]} />
+                      <Text style={[styles.listText, theme === 'dark' && styles.darkSubtext]}>
+                        {action}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+            {result.treatmentLongTerm && result.treatmentLongTerm.length > 0 && (
+              <View style={styles.subsection}>
+                <Text style={[styles.subsectionTitle, theme === 'dark' && styles.darkText]}>
+                  {t('result.longTermActions', { defaultValue: 'Long-term Actions' })}
+                </Text>
+                <View style={styles.listContainer}>
+                  {result.treatmentLongTerm.map((action, index) => (
+                    <View key={index} style={styles.listItem}>
+                      <View style={[styles.bulletPoint, { backgroundColor: '#f59e0b' }]} />
+                      <Text style={[styles.listText, theme === 'dark' && styles.darkSubtext]}>
+                        {action}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
           </View>
 
           {/* Prevention Section */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="shield-checkmark" size={20} color="#10b981" />
-              <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
-                {t('result.prevention')}
-              </Text>
+          {result.prevention && result.prevention.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="shield-checkmark" size={20} color="#10b981" />
+                <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                  {t('result.prevention')}
+                </Text>
+              </View>
+              <View style={styles.listContainer}>
+                {result.prevention.map((tip, index) => (
+                  <View key={index} style={styles.listItem}>
+                    <View style={[styles.bulletPoint, { backgroundColor: '#10b981' }]} />
+                    <Text style={[styles.listText, theme === 'dark' && styles.darkSubtext]}>
+                      {tip}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </View>
-            <Text style={[styles.sectionContent, theme === 'dark' && styles.darkSubtext]}>
-              {result.prevention}
-            </Text>
-          </View>
+          )}
         </View>
 
         {/* Quick Actions */}
@@ -289,38 +670,6 @@ export default function ResultScreen() {
           </View>
         </View>
 
-        {/* Next Steps */}
-        <View style={[styles.nextSteps, theme === 'dark' && styles.darkCard]}>
-          <Text style={[styles.nextStepsTitle, theme === 'dark' && styles.darkText]}>
-            {t('result.nextSteps')}
-          </Text>
-          <View style={styles.steps}>
-            <View style={styles.step}>
-              <View style={styles.stepIcon}>
-                <Ionicons name="calendar" size={16} color="#10b981" />
-              </View>
-              <Text style={[styles.stepText, theme === 'dark' && styles.darkSubtext]}>
-                {t('result.step1')}
-              </Text>
-            </View>
-            <View style={styles.step}>
-              <View style={styles.stepIcon}>
-                <Ionicons name="water" size={16} color="#10b981" />
-              </View>
-              <Text style={[styles.stepText, theme === 'dark' && styles.darkSubtext]}>
-                {t('result.step2')}
-              </Text>
-            </View>
-            <View style={styles.step}>
-              <View style={styles.stepIcon}>
-                <Ionicons name="eye" size={16} color="#10b981" />
-              </View>
-              <Text style={[styles.stepText, theme === 'dark' && styles.darkSubtext]}>
-                {t('result.step3')}
-              </Text>
-            </View>
-          </View>
-        </View>
       </ScrollView>
 
       {/* Fixed Action Button */}
@@ -341,261 +690,3 @@ export default function ResultScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8fafc',
-  },
-  darkContainer: {
-    backgroundColor: '#000',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-  },
-  backButton: {
-    padding: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  darkText: {
-    color: '#fff',
-  },
-  darkSubtext: {
-    color: '#999',
-  },
-  placeholder: {
-    width: 40,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  resultCard: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  darkCard: {
-    backgroundColor: '#1a1a1a',
-  },
-  diagnosisHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  diseaseIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 12,
-    backgroundColor: '#f0fdf4',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  diseaseEmoji: {
-    fontSize: 24,
-  },
-  diseaseInfo: {
-    flex: 1,
-  },
-  diseaseName: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#1a1a1a',
-    marginBottom: 4,
-  },
-  diseaseDesc: {
-    fontSize: 14,
-    color: '#666',
-  },
-  severityBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    gap: 6,
-  },
-  severityText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  confidenceSection: {
-    marginBottom: 24,
-  },
-  confidenceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  confidenceLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#666',
-  },
-  confidenceValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  confidenceBar: {
-    height: 8,
-    backgroundColor: '#e5e5e5',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  confidenceFill: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  sectionContent: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  quickActions: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  actionsTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 12,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  darkActionButton: {
-    backgroundColor: '#1a1a1a',
-  },
-  actionText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-  },
-  savedText: {
-    color: '#10b981',
-  },
-  nextSteps: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  nextStepsTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 16,
-  },
-  steps: {
-    gap: 12,
-  },
-  step: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  stepIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#f0fdf4',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  fixedActions: {
-    padding: 20,
-    paddingBottom: 30,
-  },
-  newScanButton: {
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  newScanGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    gap: 12,
-  },
-  newScanText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  shadow: {
-    shadowColor: '#10b981',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  centered: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: '#666',
-  },
-});

@@ -99,7 +99,7 @@ const dark: ThemeTokens = {
   success: '#16a34a',
   successBg: '#052e0f',        // subtle dark friendly success background
   successBgLight: '#063816',
-  successOverlay: 'rgba(134, 239, 172, 0.05)',
+  successOverlay: 'hsla(142, 77%, 73%, 0.05)',
   successOverlay2: 'rgba(134, 239, 172, 0.15)',
   // negative / warning
   danger: '#dc2626',

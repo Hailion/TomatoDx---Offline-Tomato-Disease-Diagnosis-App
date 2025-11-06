@@ -30,6 +30,8 @@
     "tip1": "Ensure good lighting",
     "tip2": "Focus on the affected area",
     "tip3": "Keep the leaf centered",
+    "quickStart": "Quick Start",
+    "quickStartDesc": "Take a clear photo of tomato leaves for instant disease detection",
     "cameraPermission": "Camera Permission Required",
     "cameraPermissionDesc": "Please grant camera access to scan leaves",
     "grantPermission": "Grant Permission",
@@ -124,20 +126,29 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "loading": "Loading...",
+    "save": "Save"
   },
   "profile": {
     "title": "Profile",
     "theme": "Theme",
     "light": "Light",
     "dark": "Dark",
+    "editProfile": "Edit Profile",
+    "name": "Name",
+    "nickname": "Nickname",
+    "nicknamePlaceholder": "Enter nickname",
     "system": "System",
     "settings": "Settings",
     "language": "Language",
     "notifications": "Notifications",
     "analytics": "Analytics",
     "help": "Help & Support",
-    "about": "About"
+    "about": "About",
+    "success": "Success",
+    "profileUpdated": "Profile updated successfully",
+    "error": "Error"
   },
   "onboarding": {
     "getStarted": "Get Started",
@@ -158,51 +169,6 @@
         "title": "Track History",
         "description": "Save and review your past diagnoses for better crop management"
       }
-    }
-  },
-  "admin": {
-    "title": "Admin Panel",
-    "subtitle": "System management and configuration",
-    "online": "Online",
-    "updateInstructions": "Model update instructions",
-    "systemInformation": "System Information",
-    "appVersion": "App Version",
-    "modelVersion": "Model Version",
-    "lastUpdated": "Last Updated",
-    "totalScans": "Total Scans",
-    "modelManagement": {
-      "title": "Model Management",
-      "subtitle": "Update and manage the AI model for disease detection",
-      "updateInstructions": "Update Model Instructions",
-      "runSystemCheck": "Run System Check",
-      "currentModel": "Current Model",
-      "checkUpdates": "Check for Updates",
-      "lastChecked": "Last Checked",
-      "noUpdates": "No updates available",
-      "updateAvailable": "Update available",
-      "updating": "Updating...",
-      "updateSuccess": "Model updated successfully",
-      "updateFailed": "Model update failed"
-    },
-    "dataManagement": {
-      "title": "Data Management",
-      "subtitle": "Manage captured images and diagnosis data",
-      "clearData": "Clear All Data",
-      "exportData": "Export Data",
-      "clearCache": "Clear Cache",
-      "clearSuccess": "All data cleared successfully",
-      "exportSuccess": "Data exported successfully",
-      "exportFailed": "Data export failed"
-    },
-    "analytics": {
-      "title": "Analytics",
-      "subtitle": "View usage statistics and diagnosis trends",
-      "accuracy": "Accuracy",
-      "averageProcessingTime": "Avg. Processing",
-      "uptime": "Uptime",
-      "topDisease": "Top Disease",
-      "last7Days": "Last 7 Days",
-      "severityDistribution": "Severity Distribution"
     }
   },
   "help": {

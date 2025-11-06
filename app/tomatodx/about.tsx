@@ -1,14 +1,16 @@
 // app/tomatodx/about.tsx - About Screen
+import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function AboutScreen() {
     const router = useRouter();
     const { theme } = useTheme();
     const { t } = useTranslation();
+    const colors = Colors[theme];
 
     const features = [
         {
@@ -52,7 +54,7 @@ export default function AboutScreen() {
     ];
 
     return (
-        <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity
@@ -62,10 +64,10 @@ export default function AboutScreen() {
                     <Ionicons
                         name="chevron-back"
                         size={24}
-                        color={theme === 'dark' ? '#fff' : '#1a1a1a'}
+                        color={colors.text}
                     />
                 </TouchableOpacity>
-                <Text style={[styles.title, theme === 'dark' && styles.darkText]}>
+                <Text style={[styles.title, { color: colors.text }]}>
                     About TomatoDx
                 </Text>
                 <View style={styles.placeholder} />
@@ -73,28 +75,28 @@ export default function AboutScreen() {
 
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 {/* Hero Section */}
-                <View style={[styles.heroCard, theme === 'dark' && styles.darkCard]}>
-                    <View style={styles.logo}>
-                        <Ionicons name="leaf" size={48} color="#10b981" />
+                <View style={[styles.heroCard, { backgroundColor: colors.card }]}>
+                    <View style={[styles.logo, { backgroundColor: colors.primaryOverlay }]}>
+                        <Ionicons name="leaf" size={48} color={colors.primary} />
                     </View>
-                    <Text style={[styles.appName, theme === 'dark' && styles.darkText]}>
+                    <Text style={[styles.appName, { color: colors.text }]}>
                         TomatoDx
                     </Text>
-                    <Text style={[styles.tagline, theme === 'dark' && styles.darkSubtext]}>
+                    <Text style={[styles.tagline, { color: colors.textSecondary }]}>
                         AI-Powered Tomato Disease Detection
                     </Text>
-                    <Text style={[styles.version, theme === 'dark' && styles.darkSubtext]}>
+                    <Text style={[styles.version, { color: colors.textTertiary }]}>
                         Version 1.0.0
                     </Text>
                 </View>
 
                 {/* Mission Section */}
                 <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
                         Our Mission
                     </Text>
-                    <View style={[styles.missionCard, theme === 'dark' && styles.darkCard]}>
-                        <Text style={[styles.missionText, theme === 'dark' && styles.darkSubtext]}>
+                    <View style={[styles.missionCard, { backgroundColor: colors.card }]}>
+                        <Text style={[styles.missionText, { color: colors.textSecondary }]}>
                             TomatoDx empowers farmers and gardeners with instant, accurate tomato disease detection using artificial intelligence. Our goal is to make plant healthcare accessible to everyone, helping to increase crop yields and reduce pesticide misuse.
                         </Text>
                     </View>
@@ -102,22 +104,22 @@ export default function AboutScreen() {
 
                 {/* Features */}
                 <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
                         Features
                     </Text>
                     {features.map((feature, index) => (
                         <View
                             key={index}
-                            style={[styles.featureCard, theme === 'dark' && styles.darkCard]}
+                            style={[styles.featureCard, { backgroundColor: colors.card }]}
                         >
-                            <View style={[styles.featureIcon, { backgroundColor: '#10b98120' }]}>
-                                <Ionicons name={feature.icon as any} size={24} color="#10b981" />
+                            <View style={[styles.featureIcon, { backgroundColor: colors.primaryOverlay }]}>
+                                <Ionicons name={feature.icon as any} size={24} color={colors.primary} />
                             </View>
                             <View style={styles.featureContent}>
-                                <Text style={[styles.featureTitle, theme === 'dark' && styles.darkText]}>
+                                <Text style={[styles.featureTitle, { color: colors.text }]}>
                                     {feature.title}
                                 </Text>
-                                <Text style={[styles.featureDesc, theme === 'dark' && styles.darkSubtext]}>
+                                <Text style={[styles.featureDesc, { color: colors.textSecondary }]}>
                                     {feature.description}
                                 </Text>
                             </View>
@@ -127,31 +129,31 @@ export default function AboutScreen() {
 
                 {/* Technology */}
                 <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
                         Technology
                     </Text>
-                    <View style={[styles.techCard, theme === 'dark' && styles.darkCard]}>
+                    <View style={[styles.techCard, { backgroundColor: colors.card }]}>
                         <View style={styles.techItem}>
-                            <Ionicons name="hardware-chip" size={20} color="#10b981" />
-                            <Text style={[styles.techText, theme === 'dark' && styles.darkText]}>
+                            <Ionicons name="hardware-chip" size={20} color={colors.primary} />
+                            <Text style={[styles.techText, { color: colors.text }]}>
                                 TensorFlow Lite
                             </Text>
                         </View>
                         <View style={styles.techItem}>
-                            <Ionicons name="cellular" size={20} color="#10b981" />
-                            <Text style={[styles.techText, theme === 'dark' && styles.darkText]}>
+                            <Ionicons name="cellular" size={20} color={colors.primary} />
+                            <Text style={[styles.techText, { color: colors.text }]}>
                                 React Native
                             </Text>
                         </View>
                         <View style={styles.techItem}>
-                            <Ionicons name="cloud" size={20} color="#10b981" />
-                            <Text style={[styles.techText, theme === 'dark' && styles.darkText]}>
+                            <Ionicons name="cloud" size={20} color={colors.primary} />
+                            <Text style={[styles.techText, { color: colors.text }]}>
                                 Computer Vision
                             </Text>
                         </View>
                         <View style={styles.techItem}>
-                            <Ionicons name="shield-checkmark" size={20} color="#10b981" />
-                            <Text style={[styles.techText, theme === 'dark' && styles.darkText]}>
+                            <Ionicons name="shield-checkmark" size={20} color={colors.primary} />
+                            <Text style={[styles.techText, { color: colors.text }]}>
                                 Privacy-First
                             </Text>
                         </View>
@@ -160,21 +162,21 @@ export default function AboutScreen() {
 
                 {/* Team */}
                 <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
                         Our Team
                     </Text>
                     {team.map((member, index) => (
                         <View
                             key={index}
-                            style={[styles.teamCard, theme === 'dark' && styles.darkCard]}
+                            style={[styles.teamCard, { backgroundColor: colors.card }]}
                         >
-                            <Text style={[styles.teamName, theme === 'dark' && styles.darkText]}>
+                            <Text style={[styles.teamName, { color: colors.text }]}>
                                 {member.name}
                             </Text>
-                            <Text style={[styles.teamRole, theme === 'dark' && styles.darkSubtext]}>
+                            <Text style={[styles.teamRole, { color: colors.primary }]}>
                                 {member.role}
                             </Text>
-                            <Text style={[styles.teamDesc, theme === 'dark' && styles.darkSubtext]}>
+                            <Text style={[styles.teamDesc, { color: colors.textSecondary }]}>
                                 {member.description}
                             </Text>
                         </View>
@@ -182,11 +184,11 @@ export default function AboutScreen() {
                 </View>
 
                 {/* Footer */}
-                <View style={[styles.footer, theme === 'dark' && styles.darkCard]}>
-                    <Text style={[styles.footerText, theme === 'dark' && styles.darkSubtext]}>
+                <View style={[styles.footer, { backgroundColor: colors.card }]}>
+                    <Text style={[styles.footerText, { color: colors.textSecondary }]}>
                         Made with ❤️ for farmers and gardeners worldwide
                     </Text>
-                    <Text style={[styles.copyright, theme === 'dark' && styles.darkSubtext]}>
+                    <Text style={[styles.copyright, { color: colors.textTertiary }]}>
                         © 2024 TomatoDx. All rights reserved.
                     </Text>
 
@@ -195,18 +197,18 @@ export default function AboutScreen() {
                             style={styles.link}
                             onPress={() => Linking.openURL('https://tomatodx.com/privacy')}
                         >
-                            <Text style={[styles.linkText, theme === 'dark' && styles.darkSubtext]}>
+                            <Text style={[styles.linkText, { color: colors.textSecondary }]}>
                                 Privacy Policy
                             </Text>
                         </TouchableOpacity>
-                        <Text style={[styles.linkSeparator, theme === 'dark' && styles.darkSubtext]}>
+                        <Text style={[styles.linkSeparator, { color: colors.textTertiary }]}>
                             •
                         </Text>
                         <TouchableOpacity
                             style={styles.link}
                             onPress={() => Linking.openURL('https://tomatodx.com/terms')}
                         >
-                            <Text style={[styles.linkText, theme === 'dark' && styles.darkSubtext]}>
+                            <Text style={[styles.linkText, { color: colors.textSecondary }]}>
                                 Terms of Service
                             </Text>
                         </TouchableOpacity>
@@ -217,14 +219,10 @@ export default function AboutScreen() {
     );
 }
 
-// Add these missing styles to the StyleSheet
+// ... (styles remain the same, just remove theme conditionals)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8fafc',
-    },
-    darkContainer: {
-        backgroundColor: '#000',
     },
     header: {
         flexDirection: 'row',
@@ -240,13 +238,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1a1a1a',
-    },
-    darkText: {
-        color: '#fff',
-    },
-    darkSubtext: {
-        color: '#999',
     },
     placeholder: {
         width: 40,
@@ -255,7 +246,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     heroCard: {
-        backgroundColor: '#fff',
         margin: 20,
         borderRadius: 20,
         padding: 32,
@@ -266,14 +256,10 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 8,
     },
-    darkCard: {
-        backgroundColor: '#1a1a1a',
-    },
     logo: {
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: '#f0fdf4',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 16,
@@ -281,18 +267,15 @@ const styles = StyleSheet.create({
     appName: {
         fontSize: 32,
         fontWeight: '800',
-        color: '#1a1a1a',
         marginBottom: 8,
     },
     tagline: {
         fontSize: 16,
-        color: '#666',
         textAlign: 'center',
         marginBottom: 8,
     },
     version: {
         fontSize: 14,
-        color: '#999',
     },
     section: {
         paddingHorizontal: 20,
@@ -301,11 +284,9 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1a1a1a',
         marginBottom: 16,
     },
     missionCard: {
-        backgroundColor: '#fff',
         padding: 20,
         borderRadius: 16,
         shadowColor: '#000',
@@ -316,14 +297,12 @@ const styles = StyleSheet.create({
     },
     missionText: {
         fontSize: 16,
-        color: '#666',
         lineHeight: 24,
         textAlign: 'center',
     },
     featureCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
         padding: 16,
         borderRadius: 12,
         marginBottom: 12,
@@ -347,16 +326,13 @@ const styles = StyleSheet.create({
     featureTitle: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#1a1a1a',
         marginBottom: 4,
     },
     featureDesc: {
         fontSize: 14,
-        color: '#666',
         lineHeight: 20,
     },
     techCard: {
-        backgroundColor: '#fff',
         padding: 20,
         borderRadius: 16,
         shadowColor: '#000',
@@ -374,10 +350,8 @@ const styles = StyleSheet.create({
     techText: {
         fontSize: 16,
         fontWeight: '500',
-        color: '#1a1a1a',
     },
     teamCard: {
-        backgroundColor: '#fff',
         padding: 20,
         borderRadius: 16,
         marginBottom: 12,
@@ -390,22 +364,18 @@ const styles = StyleSheet.create({
     teamName: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#1a1a1a',
         marginBottom: 4,
     },
     teamRole: {
         fontSize: 14,
-        color: '#10b981',
         fontWeight: '600',
         marginBottom: 8,
     },
     teamDesc: {
         fontSize: 14,
-        color: '#666',
         lineHeight: 20,
     },
     footer: {
-        backgroundColor: '#fff',
         margin: 20,
         padding: 24,
         borderRadius: 16,
@@ -418,13 +388,11 @@ const styles = StyleSheet.create({
     },
     footerText: {
         fontSize: 16,
-        color: '#666',
         textAlign: 'center',
         marginBottom: 8,
     },
     copyright: {
         fontSize: 14,
-        color: '#999',
         textAlign: 'center',
         marginBottom: 16,
     },
@@ -438,14 +406,9 @@ const styles = StyleSheet.create({
     },
     linkText: {
         fontSize: 14,
-        color: '#666',
         fontWeight: '500',
     },
     linkSeparator: {
         fontSize: 14,
-        color: '#999',
     },
 });
-
-// Add missing import
-import { TouchableOpacity } from 'react-native';

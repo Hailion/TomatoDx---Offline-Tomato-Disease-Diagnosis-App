@@ -1,4 +1,5 @@
 // app/tomatodx/history.tsx - History Screen with Filters
+import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -30,6 +31,7 @@ export default function HistoryScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
+  const colors = Colors[theme];
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [activeSort, setActiveSort] = useState<SortType>('date-desc');
   const [showFilters, setShowFilters] = useState(false);
@@ -121,12 +123,12 @@ export default function HistoryScreen() {
   };
 
   const filters: { key: FilterType; label: string; icon: string; color: string }[] = [
-    { key: 'all', label: t('history.filters.all'), icon: 'apps', color: '#6b7280' },
-    { key: 'healthy', label: t('history.filters.healthy'), icon: 'checkmark-circle', color: '#10b981' },
-    { key: 'diseased', label: t('history.filters.diseased'), icon: 'warning', color: '#ef4444' },
-    { key: 'high-risk', label: t('history.filters.highRisk'), icon: 'alert-circle', color: '#f59e0b' },
-    { key: 'treated', label: t('history.filters.treated'), icon: 'medical', color: '#8b5cf6' },
-    { key: 'pending', label: t('history.filters.pending'), icon: 'time', color: '#6b7280' },
+    { key: 'all', label: t('history.filters.all'), icon: 'apps', color: colors.muted },
+    { key: 'healthy', label: t('history.filters.healthy'), icon: 'checkmark-circle', color: colors.success },
+    { key: 'diseased', label: t('history.filters.diseased'), icon: 'warning', color: colors.danger },
+    { key: 'high-risk', label: t('history.filters.highRisk'), icon: 'alert-circle', color: colors.warning },
+    { key: 'treated', label: t('history.filters.treated'), icon: 'medical', color: colors.primary },
+    { key: 'pending', label: t('history.filters.pending'), icon: 'time', color: colors.muted },
   ];
 
   const sortOptions: { key: SortType; label: string; icon: string }[] = [
@@ -181,10 +183,10 @@ export default function HistoryScreen() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'high': return '#ef4444';
-      case 'medium': return '#f59e0b';
-      case 'low': return '#10b981';
-      default: return '#10b981';
+      case 'high': return colors.danger;
+      case 'medium': return colors.warning;
+      case 'low': return colors.success;
+      default: return colors.success;
     }
   };
 
@@ -199,10 +201,10 @@ export default function HistoryScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy': return '#10b981';
-      case 'treated': return '#8b5cf6';
-      case 'pending': return '#f59e0b';
-      default: return '#6b7280';
+      case 'healthy': return colors.success;
+      case 'treated': return colors.primary;
+      case 'pending': return colors.warning;
+      default: return colors.muted;
     }
   };
 
@@ -256,7 +258,8 @@ export default function HistoryScreen() {
     setItemToDelete(null);
   };
 
-  const renderRightActions = (item: DiagnosisItem) => (
+  const renderRightActions = (
+    item: DiagnosisItem,
     progress: Animated.AnimatedInterpolation<number>,
     dragX: Animated.AnimatedInterpolation<number>
   ) => {
@@ -268,7 +271,7 @@ export default function HistoryScreen() {
 
     return (
       <TouchableOpacity
-        style={styles.deleteButton}
+        style={[styles.deleteButton, { backgroundColor: colors.danger }]}
         onPress={() => handleDeletePress(item)}
       >
         <Animated.View style={{ transform: [{ scale }] }}>
@@ -280,15 +283,15 @@ export default function HistoryScreen() {
 
   const ScanItem = ({ item }: { item: DiagnosisItem }) => (
     <Swipeable
-      renderRightActions={renderRightActions(item)}
+      renderRightActions={(progress, dragX) => renderRightActions(item, progress, dragX)}
       overshootRight={false}
     >
       <TouchableOpacity
-        style={[styles.scanCard, theme === 'dark' && styles.darkCard]}
+        style={[styles.scanCard, { backgroundColor: colors.card }]}
         onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
       >
         <View style={styles.scanHeader}>
-          <View style={styles.scanImage}>
+          <View style={[styles.scanImage, { backgroundColor: colors.primaryOverlay }]}>
             {item.imageUri ? (
               <Image
                 source={{ uri: item.imageUri }}
@@ -300,11 +303,11 @@ export default function HistoryScreen() {
             )}
           </View>
           <View style={styles.scanInfo}>
-            <Text style={[styles.diseaseName, theme === 'dark' && styles.darkText]}>
+            <Text style={[styles.diseaseName, { color: colors.text }]}>
               {item.disease}
             </Text>
             {item.diseaseAlt && (
-              <Text style={[styles.diseaseNameAlt, theme === 'dark' && styles.darkSubtext]}>
+              <Text style={[styles.diseaseNameAlt, { color: colors.textTertiary }]}>
                 {item.diseaseAlt}
               </Text>
             )}
@@ -315,13 +318,13 @@ export default function HistoryScreen() {
                   {getStatusText(item.status)}
                 </Text>
               </View>
-              <Text style={[styles.scanDate, theme === 'dark' && styles.darkSubtext]}>
+              <Text style={[styles.scanDate, { color: colors.textSecondary }]}>
                 {item.date}
               </Text>
             </View>
           </View>
           <View style={styles.scanMeta}>
-            <View style={styles.confidenceBadge}>
+            <View style={[styles.confidenceBadge, { backgroundColor: colors.primary }]}>
               <Text style={styles.confidenceText}>
                 {item.confidence}%
               </Text>
@@ -341,7 +344,7 @@ export default function HistoryScreen() {
           </View>
         </View>
 
-        <View style={styles.confidenceBar}>
+        <View style={[styles.confidenceBar, { backgroundColor: colors.border }]}>
           <View
             style={[
               styles.confidenceFill,
@@ -358,29 +361,29 @@ export default function HistoryScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerTop}>
               <View style={styles.titleContainer}>
-                <Text style={[styles.title, theme === 'dark' && styles.darkText]}>
+                <Text style={[styles.title, { color: colors.text }]}>
                   {t('history.title')}
                 </Text>
-                <Text style={[styles.subtitle, theme === 'dark' && styles.darkSubtext]}>
+                <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
                   {t('history.subtitle', { count: filteredAndSortedScans.length })}
                 </Text>
               </View>
               <TouchableOpacity
-                style={[styles.filterButton, theme === 'dark' && styles.darkFilterButton]}
+                style={[styles.filterButton, { backgroundColor: colors.card }]}
                 onPress={() => setShowFilters(!showFilters)}
               >
                 <Ionicons
                   name="filter"
                   size={20}
-                  color={theme === 'dark' ? '#fff' : '#666'}
+                  color={colors.textSecondary}
                 />
-                <Text style={[styles.filterButtonText, theme === 'dark' && styles.darkText]}>
+                <Text style={[styles.filterButtonText, { color: colors.textSecondary }]}>
                   {t('history.filters.title')}
                 </Text>
               </TouchableOpacity>
@@ -388,30 +391,30 @@ export default function HistoryScreen() {
 
             {/* Quick Stats */}
             <View style={styles.statsRow}>
-              <View style={[styles.statCard, theme === 'dark' && styles.darkCard]}>
-                <Ionicons name="scan" size={20} color="#10b981" />
-                <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Ionicons name="scan" size={20} color={colors.primary} />
+                <Text style={[styles.statNumber, { color: colors.text }]}>
                   {filteredAndSortedScans.length}
                 </Text>
-                <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
                   {t('history.totalScans')}
                 </Text>
               </View>
-              <View style={[styles.statCard, theme === 'dark' && styles.darkCard]}>
-                <Ionicons name="trending-up" size={20} color="#10b981" />
-                <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Ionicons name="trending-up" size={20} color={colors.primary} />
+                <Text style={[styles.statNumber, { color: colors.text }]}>
                   {Math.round(filteredAndSortedScans.reduce((acc, scan) => acc + scan.confidence, 0) / filteredAndSortedScans.length) || 0}%
                 </Text>
-                <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
                   {t('history.avgConfidence')}
                 </Text>
               </View>
-              <View style={[styles.statCard, theme === 'dark' && styles.darkCard]}>
-                <Ionicons name="heart" size={20} color="#10b981" />
-                <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Ionicons name="heart" size={20} color={colors.primary} />
+                <Text style={[styles.statNumber, { color: colors.text }]}>
                   {filteredAndSortedScans.filter(scan => scan.severity === 'none').length}
                 </Text>
-                <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
                   {t('history.healthy')}
                 </Text>
               </View>
@@ -420,9 +423,9 @@ export default function HistoryScreen() {
 
           {/* Filters Panel */}
           {showFilters && (
-            <View style={[styles.filtersPanel, theme === 'dark' && styles.darkCard]}>
+            <View style={[styles.filtersPanel, { backgroundColor: colors.card }]}>
               {/* Filter Types */}
-              <Text style={[styles.filtersTitle, theme === 'dark' && styles.darkText]}>
+              <Text style={[styles.filtersTitle, { color: colors.text }]}>
                 {t('history.filters.title')}
               </Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersScroll}>
@@ -432,7 +435,7 @@ export default function HistoryScreen() {
                       key={filter.key}
                       style={[
                         styles.filterChip,
-                        activeFilter === filter.key && styles.filterChipActive,
+                        activeFilter === filter.key && [styles.filterChipActive, { backgroundColor: colors.primary }],
                         { borderColor: filter.color }
                       ]}
                       onPress={() => setActiveFilter(filter.key)}
@@ -444,7 +447,7 @@ export default function HistoryScreen() {
                       />
                       <Text style={[
                         styles.filterChipText,
-                        activeFilter === filter.key && styles.filterChipTextActive
+                        { color: activeFilter === filter.key ? '#fff' : filter.color }
                       ]}>
                         {filter.label}
                       </Text>
@@ -454,7 +457,7 @@ export default function HistoryScreen() {
               </ScrollView>
 
               {/* Sort Options */}
-              <Text style={[styles.filtersTitle, theme === 'dark' && styles.darkText]}>
+              <Text style={[styles.filtersTitle, { color: colors.text }]}>
                 {t('history.sort.title')}
               </Text>
               <View style={styles.sortOptions}>
@@ -463,20 +466,20 @@ export default function HistoryScreen() {
                     key={sort.key}
                     style={[
                       styles.sortOption,
-                      activeSort === sort.key && styles.sortOptionActive,
-                      theme === 'dark' && styles.darkSortOption
+                      { backgroundColor: colors.backgroundAlt },
+                      activeSort === sort.key && [styles.sortOptionActive, { backgroundColor: colors.successBg }],
                     ]}
                     onPress={() => setActiveSort(sort.key)}
                   >
                     <Ionicons
                       name={sort.icon as any}
                       size={16}
-                      color={activeSort === sort.key ? '#10b981' : (theme === 'dark' ? '#999' : '#666')}
+                      color={activeSort === sort.key ? colors.primary : colors.textSecondary}
                     />
                     <Text style={[
                       styles.sortOptionText,
-                      theme === 'dark' && styles.darkText,
-                      activeSort === sort.key && styles.sortOptionTextActive
+                      { color: colors.textSecondary },
+                      activeSort === sort.key && { color: colors.primary }
                     ]}>
                       {sort.label}
                     </Text>
@@ -494,7 +497,7 @@ export default function HistoryScreen() {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <ScanItem item={item} />}
                 renderSectionHeader={({ section: { title } }) => (
-                  <Text style={[styles.sectionHeader, theme === 'dark' && styles.darkText]}>
+                  <Text style={[styles.sectionHeader, { color: colors.text }]}>
                     {title}
                   </Text>
                 )}
@@ -503,15 +506,15 @@ export default function HistoryScreen() {
               />
             ) : (
               <View style={styles.emptyState}>
-                <Ionicons name="search" size={64} color="#999" />
-                <Text style={[styles.emptyTitle, theme === 'dark' && styles.darkText]}>
+                <Ionicons name="search" size={64} color={colors.muted} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>
                   {t('history.noResults')}
                 </Text>
-                <Text style={[styles.emptyText, theme === 'dark' && styles.darkSubtext]}>
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                   {t('history.noResultsDesc')}
                 </Text>
                 <TouchableOpacity
-                  style={styles.resetFiltersButton}
+                  style={[styles.resetFiltersButton, { backgroundColor: colors.primary }]}
                   onPress={() => setActiveFilter('all')}
                 >
                   <Text style={styles.resetFiltersText}>
@@ -531,32 +534,32 @@ export default function HistoryScreen() {
           onRequestClose={handleDeleteCancel}
         >
           <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, theme === 'dark' && styles.darkCard]}>
-              <View style={styles.modalIcon}>
+            <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+              <View style={[styles.modalIcon, { backgroundColor: colors.danger + '20' }]}>
                 <Text style={styles.modalEmoji}>{itemToDelete?.emoji || '⚠️'}</Text>
               </View>
-              <Text style={[styles.modalTitle, theme === 'dark' && styles.darkText]}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {t('history.deleteConfirmTitle')}
               </Text>
-              <Text style={[styles.modalMessage, theme === 'dark' && styles.darkSubtext]}>
+              <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
                 {t('history.deleteConfirmMessage')}
               </Text>
               {itemToDelete && (
-                <Text style={[styles.modalDiseaseName, theme === 'dark' && styles.darkText]}>
+                <Text style={[styles.modalDiseaseName, { color: colors.text }]}>
                   {itemToDelete.disease}
                 </Text>
               )}
               <View style={styles.modalButtons}>
                 <TouchableOpacity
-                  style={[styles.modalButton, styles.modalButtonCancel, theme === 'dark' && styles.darkModalButton]}
+                  style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: colors.backgroundAlt }]}
                   onPress={handleDeleteCancel}
                 >
-                  <Text style={[styles.modalButtonText, theme === 'dark' && styles.darkText]}>
+                  <Text style={[styles.modalButtonText, { color: colors.text }]}>
                     {t('common.cancel')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.modalButton, styles.modalButtonDelete]}
+                  style={[styles.modalButton, styles.modalButtonDelete, { backgroundColor: colors.danger }]}
                   onPress={handleDeleteConfirm}
                 >
                   <Text style={styles.modalButtonTextDelete}>
@@ -575,10 +578,6 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
-  },
-  darkContainer: {
-    backgroundColor: '#000',
   },
   scrollView: {
     flex: 1,
@@ -600,23 +599,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#1a1a1a',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
-  },
-  darkText: {
-    color: '#fff',
-  },
-  darkSubtext: {
-    color: '#999',
   },
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 12,
@@ -627,13 +617,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  darkFilterButton: {
-    backgroundColor: '#1a1a1a',
-  },
   filterButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#666',
   },
   statsRow: {
     flexDirection: 'row',
@@ -641,7 +627,6 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -651,22 +636,16 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  darkCard: {
-    backgroundColor: '#1a1a1a',
-  },
   statNumber: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
     marginVertical: 8,
   },
   statLabel: {
     fontSize: 12,
-    color: '#666',
     fontWeight: '500',
   },
   filtersPanel: {
-    backgroundColor: '#fff',
     marginHorizontal: 20,
     marginBottom: 20,
     borderRadius: 16,
@@ -680,7 +659,6 @@ const styles = StyleSheet.create({
   filtersTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
     marginBottom: 12,
   },
   filtersScroll: {
@@ -700,16 +678,11 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   filterChipActive: {
-    backgroundColor: '#10b981',
-    borderColor: '#10b981',
+    borderColor: 'transparent',
   },
   filterChipText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#666',
-  },
-  filterChipTextActive: {
-    color: '#fff',
   },
   sortOptions: {
     flexDirection: 'row',
@@ -719,27 +692,18 @@ const styles = StyleSheet.create({
   sortOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
     gap: 6,
   },
-  darkSortOption: {
-    backgroundColor: '#2d2d2d',
-  },
   sortOptionActive: {
-    backgroundColor: '#f0fdf4',
     borderColor: '#10b981',
     borderWidth: 1,
   },
   sortOptionText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#666',
-  },
-  sortOptionTextActive: {
-    color: '#10b981',
   },
   section: {
     flex: 1,
@@ -748,7 +712,6 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1a1a1a',
     marginTop: 20,
     marginBottom: 12,
   },
@@ -756,7 +719,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   scanCard: {
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
@@ -775,7 +737,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 8,
-    backgroundColor: '#f0fdf4',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -794,12 +755,10 @@ const styles = StyleSheet.create({
   diseaseName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1a1a1a',
     marginBottom: 2,
   },
   diseaseNameAlt: {
     fontSize: 11,
-    color: '#999',
     fontStyle: 'italic',
     marginBottom: 4,
   },
@@ -822,14 +781,12 @@ const styles = StyleSheet.create({
   },
   scanDate: {
     fontSize: 12,
-    color: '#666',
   },
   scanMeta: {
     alignItems: 'flex-end',
     gap: 4,
   },
   confidenceBadge: {
-    backgroundColor: '#10b981',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 6,
@@ -845,7 +802,6 @@ const styles = StyleSheet.create({
   },
   confidenceBar: {
     height: 4,
-    backgroundColor: '#e5e5e5',
     borderRadius: 2,
     overflow: 'hidden',
   },
@@ -861,19 +817,16 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
     marginTop: 16,
     marginBottom: 8,
   },
   emptyText: {
     fontSize: 14,
-    color: '#666',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 20,
   },
   resetFiltersButton: {
-    backgroundColor: '#10b981',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 12,
@@ -884,7 +837,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   deleteButton: {
-    backgroundColor: '#ef4444',
     justifyContent: 'center',
     alignItems: 'center',
     width: 80,
@@ -899,7 +851,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: '#fff',
     borderRadius: 20,
     padding: 24,
     width: '100%',
@@ -911,7 +862,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#fee2e2',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -921,13 +871,11 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
     marginBottom: 8,
     textAlign: 'center',
   },
   modalMessage: {
     fontSize: 14,
-    color: '#666',
     textAlign: 'center',
     marginBottom: 8,
     lineHeight: 20,
@@ -935,7 +883,6 @@ const styles = StyleSheet.create({
   modalDiseaseName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1a1a1a',
     marginBottom: 24,
     textAlign: 'center',
   },
@@ -954,16 +901,12 @@ const styles = StyleSheet.create({
   modalButtonCancel: {
     backgroundColor: '#f3f4f6',
   },
-  darkModalButton: {
-    backgroundColor: '#2d2d2d',
-  },
   modalButtonDelete: {
     backgroundColor: '#ef4444',
   },
   modalButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1a1a1a',
   },
   modalButtonTextDelete: {
     fontSize: 16,

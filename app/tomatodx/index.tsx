@@ -5,6 +5,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getAnalyticsSummary } from '../../src/db/repository';
 
@@ -12,6 +13,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
+  const colors = Colors[theme];
   const [stats, setStats] = useState({
     totalScans: 0,
     avgConfidence: 0,
@@ -32,7 +34,7 @@ export default function HomeScreen() {
       const avgConfidence = Math.round((summary.avgConfidence || 0) * 100);
 
       // Count healthy diagnoses (those with 'healthy' in disease name)
-      const healthyCount = summary.high || 0; // Using high confidence as proxy for healthy
+      const healthyCount = summary.healthyCount || 0;
 
       setStats({
         totalScans,
@@ -50,70 +52,72 @@ export default function HomeScreen() {
       title: t('home.quickScan'),
       description: t('home.quickScanDesc'),
       route: '/tomatodx/scan',
-      color: '#10b981'
+      color: colors.primary // Tomato red
     },
     {
       icon: 'library-outline',
       title: t('home.scanHistory'),
       description: t('home.scanHistoryDesc'),
       route: '/tomatodx/history',
-      color: '#8b5cf6'
+      color: colors.success // Healthy plant green
     },
     {
       icon: 'analytics-outline',
       title: t('home.insights'),
       description: t('home.insightsDesc'),
       route: '/tomatodx/insights',
-      color: '#f59e0b'
+      color: colors.warning // Earthy orange
     }
   ];
 
   return (
-    <ScrollView style={[styles.container, theme === 'dark' && styles.darkContainer]}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <LinearGradient
-        // make more red like 
-        colors={theme === 'dark' ? ['#1a1a1a', '#2d2d2d'] : ['#f8fafc', '#e2e8f0']}
+        colors={theme === 'dark'
+          ? [colors.background, colors.backgroundAlt]
+          : [colors.background, colors.backgroundAlt]
+        }
         style={styles.header}
       >
         <View style={styles.headerContent}>
-          <View style={styles.logo}>
-            <Ionicons name="leaf" size={32} color="#10b981" />
+          <View style={[styles.logo, { backgroundColor: colors.successBg }]}>
+            <Ionicons name="leaf" size={32} color={colors.success} />
           </View>
-          <Text style={[styles.title, theme === 'dark' && styles.darkText]}>
+          <Text style={[styles.title, { color: colors.text }]}>
             TomatoDx
           </Text>
-          <Text style={[styles.subtitle, theme === 'dark' && styles.darkSubtext]}>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             {t('home.tagline')}
           </Text>
         </View>
       </LinearGradient>
 
       {/* Stats Overview */}
-      <View style={[styles.statsCard, theme === 'dark' && styles.darkCard]}>
+      <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
         <View style={styles.statItem}>
-          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+          <Text style={[styles.statNumber, { color: colors.text }]}>
             {stats.totalScans}
           </Text>
-          <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
             {t('home.totalScans')}
           </Text>
         </View>
-        <View style={styles.statDivider} />
+        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
         <View style={styles.statItem}>
-          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+          <Text style={[styles.statNumber, { color: colors.text }]}>
             {stats.avgConfidence}%
           </Text>
-          <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
             {t('home.accuracy')}
           </Text>
         </View>
-        <View style={styles.statDivider} />
+        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
         <View style={styles.statItem}>
-          <Text style={[styles.statNumber, theme === 'dark' && styles.darkText]}>
+          <Text style={[styles.statNumber, { color: colors.text }]}>
             {stats.healthyCount}
           </Text>
-          <Text style={[styles.statLabel, theme === 'dark' && styles.darkSubtext]}>
+          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
             {t('home.healthy')}
           </Text>
         </View>
@@ -121,30 +125,30 @@ export default function HomeScreen() {
 
       {/* Quick Actions */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {t('home.quickActions')}
         </Text>
         {features.map((feature, index) => (
           <TouchableOpacity
             key={index}
-            style={[styles.featureCard, theme === 'dark' && styles.darkCard]}
+            style={[styles.featureCard, { backgroundColor: colors.card }]}
             onPress={() => router.push(feature.route as any)}
           >
             <View style={[styles.featureIcon, { backgroundColor: feature.color }]}>
               <Ionicons name={feature.icon as any} size={24} color="#fff" />
             </View>
             <View style={styles.featureContent}>
-              <Text style={[styles.featureTitle, theme === 'dark' && styles.darkText]}>
+              <Text style={[styles.featureTitle, { color: colors.text }]}>
                 {feature.title}
               </Text>
-              <Text style={[styles.featureDesc, theme === 'dark' && styles.darkSubtext]}>
+              <Text style={[styles.featureDesc, { color: colors.textTertiary }]}>
                 {feature.description}
               </Text>
             </View>
             <Ionicons
               name="chevron-forward"
               size={20}
-              color={theme === 'dark' ? '#666' : '#999'}
+              color={colors.textTertiary}
             />
           </TouchableOpacity>
         ))}
@@ -152,16 +156,16 @@ export default function HomeScreen() {
 
       {/* Recent Activity */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {t('home.recentActivity')}
         </Text>
-        <View style={[styles.activityCard, theme === 'dark' && styles.darkCard]}>
-          <Ionicons name="time-outline" size={24} color="#10b981" />
+        <View style={[styles.activityCard, { backgroundColor: colors.card }]}>
+          <Ionicons name="time-outline" size={24} color={colors.success} />
           <View style={styles.activityContent}>
-            <Text style={[styles.activityText, theme === 'dark' && styles.darkText]}>
+            <Text style={[styles.activityText, { color: colors.text }]}>
               {t('home.lastScan')}
             </Text>
-            <Text style={[styles.activityTime, theme === 'dark' && styles.darkSubtext]}>
+            <Text style={[styles.activityTime, { color: colors.textTertiary }]}>
               2 hours ago
             </Text>
           </View>
@@ -174,10 +178,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
-  },
-  darkContainer: {
-    backgroundColor: '#000',
   },
   header: {
     paddingTop: 60,
@@ -191,7 +191,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#dcfce7',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
@@ -199,23 +198,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#1a1a1a',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
     textAlign: 'center',
-  },
-  darkText: {
-    color: '#fff',
-  },
-  darkSubtext: {
-    color: '#999',
   },
   statsCard: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
     margin: 20,
     borderRadius: 16,
     padding: 20,
@@ -225,9 +215,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-  darkCard: {
-    backgroundColor: '#1a1a1a',
-  },
   statItem: {
     flex: 1,
     alignItems: 'center',
@@ -235,17 +222,14 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1a1a1a',
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: '#666',
     fontWeight: '500',
   },
   statDivider: {
     width: 1,
-    backgroundColor: '#e5e5e5',
   },
   section: {
     paddingHorizontal: 20,
@@ -254,13 +238,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
     marginBottom: 16,
   },
   featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
@@ -284,19 +266,21 @@ const styles = StyleSheet.create({
   featureTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1a1a1a',
     marginBottom: 4,
   },
   featureDesc: {
     fontSize: 14,
-    color: '#666',
   },
   activityCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   activityContent: {
     flex: 1,
@@ -305,11 +289,9 @@ const styles = StyleSheet.create({
   activityText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1a1a1a',
     marginBottom: 2,
   },
   activityTime: {
     fontSize: 14,
-    color: '#666',
   },
 });

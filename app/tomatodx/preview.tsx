@@ -215,10 +215,10 @@ const getStyles = (c: ThemeTokens) => StyleSheet.create({
   },
   // Image container
   imageContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
+    marginVertical: 20,
   },
   imageWrapper: {
     position: 'relative',
@@ -226,8 +226,8 @@ const getStyles = (c: ThemeTokens) => StyleSheet.create({
     overflow: 'hidden',
   },
   image: {
-    width: width - 30,
-    height: (width - 56) * 1.2,
+    width: width - 45,
+    height: (width - 80) * 1.1,
     borderRadius: 16,
   },
   imageFrame: {
@@ -256,7 +256,7 @@ const getStyles = (c: ThemeTokens) => StyleSheet.create({
   // Actions container
   actionsContainer: {
     paddingHorizontal: 24,
-    marginTop: 30,
+    marginTop: 10,
     paddingBottom: 20,
     gap: 8,
   },

@@ -1,26 +1,30 @@
 // index.tsx
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Easing,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
 import { ThemeTokens } from '../../constants/Colors';
-import { getCurrentUser } from '../../src/db/repository';
+import { useTheme } from '../../src/contexts/ThemeContext';
+import { getCurrentUser, getRecentDiagnoses } from '../../src/db/repository';
 import { initDb } from '../../src/db/schema';
 import { createButtonPressAnimation } from '../../src/utils/animations';
 import { NavigationUtils } from '../../src/utils/navigation';
 import { useScreenSetup } from '../../src/utils/screenSetup';
 
-
 export default function TomatoHome() {
-  const { t, tokens, insets } = useScreenSetup();
+  const { t, i18n, tokens, insets } = useScreenSetup();
+  const { theme, toggleTheme } = useTheme();
   const styles = getStyles(tokens);
   const [userName, setUserName] = useState<string | null>(null);
+  const [recentScans, setRecentScans] = useState<any[]>([]);
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -116,6 +120,9 @@ export default function TomatoHome() {
         } else {
           setUserName(null);
         }
+        // Load recent diagnoses
+        const recent = getRecentDiagnoses(3);
+        setRecentScans(recent || []);
       } catch { }
     }, [])
   );
@@ -124,6 +131,11 @@ export default function TomatoHome() {
     createButtonPressAnimation(scaleAnim, () => {
       NavigationUtils.push(route);
     });
+  };
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'en' ? 'am' : 'en';
+    i18n.changeLanguage(newLang);
   };
 
   const rotateInterpolate = rotateAnim.interpolate({
@@ -136,6 +148,31 @@ export default function TomatoHome() {
       {/* Background Animated Elements */}
       <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim }]} />
       <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim }]} />
+
+      {/* Theme Toggle Icon */}
+      <TouchableOpacity
+        style={[styles.themeToggle, { top: Math.max(16, insets.top) }]}
+        onPress={toggleTheme}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name={theme === 'light' ? 'moon' : 'sunny'}
+          size={28}
+          color={tokens.primary}
+        />
+      </TouchableOpacity>
+
+      {/* Language Toggle Icon */}
+      <TouchableOpacity
+        style={[styles.languageToggle, { top: Math.max(16, insets.top) }]}
+        onPress={toggleLanguage}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="language" size={28} color={tokens.primary} />
+        <Text style={[styles.languageText, { color: tokens.primary }]}>
+          {i18n.language === 'en' ? 'EN' : 'አማ'}
+        </Text>
+      </TouchableOpacity>
 
       <View style={[styles.content, { paddingBottom: Math.max(16, insets.bottom) }]}>
         {/* Header Section */}
@@ -162,7 +199,7 @@ export default function TomatoHome() {
             </Animated.View>
             <Text style={styles.title}>TomatoDx</Text>
             {userName ? (
-              <Text style={styles.greeting}>Hi, {userName} 👋</Text>
+              <Text style={styles.greeting}>{t('home.hi')}, {userName} 👋</Text>
             ) : null}
           </Animated.View>
 
@@ -179,7 +216,7 @@ export default function TomatoHome() {
           </Animated.Text>
         </View>
 
-        {/* Buttons Section */}
+        {/* Main Action Section */}
         <View style={styles.buttonsContainer}>
           <Animated.View
             style={[
@@ -207,10 +244,13 @@ export default function TomatoHome() {
               <Text style={[styles.buttonText, styles.primaryButtonText]}>{t('home.capture')}</Text>
             </TouchableOpacity>
           </Animated.View>
+        </View>
 
+        {/* Recent Scans Section */}
+        {recentScans.length > 0 && (
           <Animated.View
             style={[
-              styles.buttonWrapper,
+              styles.recentSection,
               {
                 opacity: button2Anim,
                 transform: [
@@ -219,56 +259,59 @@ export default function TomatoHome() {
                       inputRange: [0, 1],
                       outputRange: [50, 0]
                     })
-                  },
-                  { scale: button2Anim }
+                  }
                 ]
               }
             ]}
           >
-            <TouchableOpacity
-              style={[styles.button, styles.secondaryButton]}
-              onPress={() => handleNavigation('/tomatodx/history')}
-              activeOpacity={0.9}
+            <View style={styles.recentHeader}>
+              <Text style={[styles.recentTitle, { color: tokens.text }]}>{t('home.recentScans') || 'Recent Scans'}</Text>
+              <TouchableOpacity onPress={() => handleNavigation('/tomatodx/history')}>
+                <Text style={[styles.viewAllText, { color: tokens.primary }]}>{t('home.viewAll') || 'View All'}</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={{ paddingBottom: 24 }}
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled={true}
             >
-              <Text style={styles.buttonIcon}>📊</Text>
-              <Text style={[styles.buttonText, styles.secondaryButtonText]}>{t('home.history')}</Text>
-            </TouchableOpacity>
+              {recentScans.map((scan, index) => {
+                const confidence = scan.confidence || 0;
+                return (
+                  <TouchableOpacity
+                    key={scan.diagnosisId}
+                    style={[styles.scanCard, { backgroundColor: tokens.surface, borderColor: tokens.border }]}
+                    onPress={() => NavigationUtils.push('/tomatodx/result', {
+                      uri: scan.filePath || '',
+                      imageId: scan.imageId,
+                      diagnosisId: scan.diagnosisId
+                    })}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.scanInfo}>
+                      <Text style={[styles.scanDisease, { color: tokens.text }]} numberOfLines={1}>
+                        {i18n.language === 'am' ? (scan.nameAm || scan.nameEn || scan.diseaseId || 'Unknown') : (scan.nameEn || scan.diseaseId || 'Unknown')}
+                      </Text>
+                      <Text style={[styles.scanDate, { color: tokens.muted }]}>{new Date(scan.diagnosedAt).toLocaleDateString()}</Text>
+                    </View>
+                    <View style={[styles.confidenceBadge, {
+                      backgroundColor: confidence >= 0.8 ? tokens.successBgLight :
+                        confidence >= 0.5 ? tokens.warningBgLight : tokens.dangerBgLight
+                    }]}>
+                      <Text style={[styles.confidenceText, {
+                        color: confidence >= 0.8 ? tokens.success :
+                          confidence >= 0.5 ? tokens.warning : tokens.danger
+                      }]}>
+                        {Math.round(confidence * 100)}%
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </Animated.View>
-        </View>
-
-        {/* Footer Section */}
-        <Animated.View
-          style={[
-            styles.footer,
-            {
-              opacity: footerAnim,
-              transform: [
-                {
-                  translateY: footerAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [30, 0]
-                  })
-                }
-              ]
-            }
-          ]}
-        >
-          <TouchableOpacity
-            style={styles.footerLink}
-            onPress={() => handleNavigation('/tomatodx/settings')}
-          >
-            <Text style={styles.footerIcon}>⚙️</Text>
-            <Text style={styles.footerText}>{t('home.settings')}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.footerLink}
-            onPress={() => handleNavigation('/tomatodx/admin')}
-          >
-            <Text style={styles.footerIcon}>🔧</Text>
-            <Text style={styles.footerText}>{t('home.admin')}</Text>
-          </TouchableOpacity>
-        </Animated.View>
+        )}
       </View>
     </View>
   );
@@ -309,7 +352,7 @@ const getStyles = (c: ThemeTokens) =>
     // Header styles
     header: {
       alignItems: 'center',
-      marginTop: 60,
+      marginTop: 20,
     },
     logoContainer: {
       alignItems: 'center',
@@ -342,7 +385,7 @@ const getStyles = (c: ThemeTokens) =>
     subtitle: {
       textAlign: 'center',
       color: c.textSecondary,
-      fontSize: 18,
+      fontSize: 17,
       lineHeight: 28,
       fontWeight: '500',
       maxWidth: '80%',
@@ -358,6 +401,7 @@ const getStyles = (c: ThemeTokens) =>
     buttonsContainer: {
       alignItems: 'center',
       gap: 20,
+      paddingVertical: 16,
     },
     buttonWrapper: {
       width: '100%',
@@ -367,7 +411,7 @@ const getStyles = (c: ThemeTokens) =>
       flexDirection: 'row',
       alignItems: 'center',
       paddingVertical: 20,
-      paddingHorizontal: 24,
+      paddingHorizontal: 28,
       borderRadius: 20,
       elevation: 8,
       shadowColor: c.shadowDark,
@@ -378,11 +422,6 @@ const getStyles = (c: ThemeTokens) =>
     },
     primaryButton: {
       backgroundColor: c.primary,
-    },
-    secondaryButton: {
-      backgroundColor: c.surface,
-      borderWidth: 2,
-      borderColor: c.primary,
     },
     buttonIcon: {
       fontSize: 24,
@@ -396,33 +435,115 @@ const getStyles = (c: ThemeTokens) =>
     primaryButtonText: {
       color: c.whiteMuted,
     },
-    secondaryButtonText: {
-      color: c.primary,
+    // Recent Scans Section
+    recentSection: {
+      width: '100%',
+      maxWidth: 400,
+      alignSelf: 'center',
+      paddingBottom: 4,
+      flex: 1,
     },
-    // Footer styles
-    footer: {
+    scrollView: {
+      maxHeight: 300,
+    },
+    recentHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingHorizontal: 8,
-      marginBottom: 20,
-    },
-    footerLink: {
-      flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 12,
-      backgroundColor: c.whiteOverlay,
-      gap: 8,
-      borderWidth: 1,
-      borderColor: c.border
+      marginBottom: 12,
+      paddingHorizontal: 4,
     },
-    footerIcon: {
+    recentTitle: {
       fontSize: 16,
-    },
-    footerText: {
+      fontWeight: '700',
       color: c.text,
+    },
+    viewAllText: {
       fontSize: 14,
       fontWeight: '600',
-    }
+      color: c.primary,
+    },
+    scanCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: c.surface,
+      borderRadius: 12,
+      padding: 12,
+      marginBottom: 8,
+      borderWidth: 1,
+      borderColor: c.border,
+      elevation: 2,
+      shadowColor: c.shadowLight,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
+    scanInfo: {
+      flex: 1,
+      marginRight: 12,
+    },
+    scanDisease: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: c.text,
+      marginBottom: 2,
+    },
+    scanDate: {
+      fontSize: 12,
+      color: c.muted,
+    },
+    confidenceBadge: {
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 8,
+      backgroundColor: c.successBgLight,
+    },
+    confidenceText: {
+      fontSize: 12,
+      fontWeight: '700',
+      color: c.success,
+    },
+    themeToggle: {
+      position: 'absolute',
+      top: 16,
+      left: 16,
+      zIndex: 10,
+      backgroundColor: c.surface,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 20,
+      elevation: 4,
+      shadowColor: c.shadowDark,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      borderWidth: 1,
+      borderColor: c.primaryOverlay,
+    },
+    languageToggle: {
+      position: 'absolute',
+      top: 16,
+      right: 16,
+      zIndex: 10,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      backgroundColor: c.surface,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 20,
+      elevation: 4,
+      shadowColor: c.shadowDark,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      borderWidth: 1,
+      borderColor: c.primaryOverlay,
+    },
+    languageText: {
+      fontSize: 12,
+      fontWeight: '700',
+      color: c.primary,
+    },
   });

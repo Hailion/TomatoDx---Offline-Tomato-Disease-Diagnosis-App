@@ -1,12 +1,18 @@
 {
   "home": {
+    "navTitle": "Home",
+    "title": "Home",
     "subtitle": "Offline tomato disease diagnosis for smallholder farmers",
     "capture": "Capture",
     "history": "History",
     "settings": "Settings",
-    "admin": "Admin"
+    "admin": "Admin",
+    "recentScans": "Recent Scans",
+    "viewAll": "View All",
+    "hi": "Hi"
   },
   "settings": {
+    "navTitle": "Settings",
     "title": "Settings",
     "subtitle": "Customize your app experience",
     "username": "User",
@@ -35,6 +41,7 @@
     }
   },
   "capture": {
+    "navTitle": "Capture",
     "title": "Capture Tomato",
     "subtitle": "Position the tomato within the frame",
     "preview": "Camera Preview",
@@ -47,6 +54,7 @@
     "failedToOpenGallery": "Failed to open gallery. Please try again."
   },
   "history": {
+    "navTitle": "History",
     "title": "Scan History",
     "subtitle": "recent tomato disease detections",
     "total": "Total",
@@ -78,7 +86,7 @@
     "recommendation": "Recommended Action",
     "prevTips": "Prevention Tips",
     "save": "Save Result",
-    "saved": "Saved Successfully",
+    "saved": "Saved",
     "share": "Share",
     "saveSuccess": "Saved Successfully",
     "saveMessage": "Your diagnosis has been saved to history.",
@@ -132,6 +140,7 @@
     }
   },
   "admin": {
+    "navTitle": "Admin",
     "title": "Admin Panel",
     "subtitle": "System management and configuration",
     "online": "Online",

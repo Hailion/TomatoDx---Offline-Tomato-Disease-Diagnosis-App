@@ -1,12 +1,17 @@
 {
   "home": {
+    "navTitle": "መነሻ",
     "subtitle": "ለገበሬዎች የተሰራ ያለ ኢንተርኔት የሚሰራ የቲማቲም በሽታ ምርመራ መተግበሪያ",
     "capture": "ፎቶ አንሳ",
     "history": "ታሪክ",
     "settings": "ቅንብሮች",
-    "admin": "አስተዳዳሪ"
+    "admin": "አስተዳዳሪ",
+    "recentScans": "የቅርብ ጊዜ ምርመራዎች",
+    "viewAll": "ሁሉንም ይመልከቱ",
+    "hi": "ሰላም"
   },
   "settings": {
+    "navTitle": "ቅንብሮች",
     "title": "ቅንብሮች",
     "subtitle": "የእርስዎን መተግበሪያ ተሞክሮ ያብጁ",
     "username": "ተጠቃሚ",
@@ -36,6 +41,7 @@
     }
   },
   "capture": {
+    "navTitle": "ፎቶ ያንሱ",
     "title": "የቅጠል ፎቶ ያንሱ",
     "subtitle": "ቅጠሉን በፍሬሙ ውስጥ ሙሉ ለሙሉ ያስቀምጡ",
     "preview": "የካሜራ ቅድመ እይታ",
@@ -49,6 +55,7 @@
     "failedToOpenGallery": "ጋለሪ መክፈት አልተሳካም። እባክዎ እንደገና ይሞክሩ።"
   },
   "history": {
+    "navTitle": "ታሪክ",
     "title": "የምርመራ ታሪክ",
     "subtitle": "የቅርብ ጊዜ የምርምራ ውጤት",
     "total": "ጠቅላላ",
@@ -135,6 +142,7 @@
     }
   },
   "admin": {
+    "navTitle": "አስተዳዳሪ",
     "title": "የአስተዳደር ገጽ",
     "subtitle": "የስርዓት አስተዳደር እና ውቅር",
     "online": "መስመር ላይ",

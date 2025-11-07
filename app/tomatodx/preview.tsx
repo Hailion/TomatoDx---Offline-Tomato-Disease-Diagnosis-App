@@ -227,7 +227,7 @@ const getStyles = (c: ThemeTokens) => StyleSheet.create({
   },
   image: {
     width: width - 30,
-    height: (width - 50) * 1.2,
+    height: (width - 56) * 1.2,
     borderRadius: 16,
   },
   imageFrame: {
@@ -300,7 +300,7 @@ const getStyles = (c: ThemeTokens) => StyleSheet.create({
   // Help container
   helpContainer: {
     paddingHorizontal: 24,
-    paddingBottom: 40,
+    paddingBottom: 30,
     alignItems: 'center',
   },
   helpText: {

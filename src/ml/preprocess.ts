@@ -7,49 +7,103 @@ import * as ImageManipulator from 'expo-image-manipulator';
 export async function uriToInputTensor(uri: string, size = 224) {
     if (!uri) throw new Error('No image URI');
 
-    await tf.ready();
-
-    // 1) Aspect-preserving resize so the shorter side >= size
-    const first = await ImageManipulator.manipulateAsync(
-        uri,
-        [{ resize: { width: size } }],
-        { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: false }
-    );
-
-    let resizedStep = first;
-    if ((first.height ?? 0) < size) {
-        // If height ended up smaller than target, resize by height instead
-        resizedStep = await ImageManipulator.manipulateAsync(
-            uri,
-            [{ resize: { height: size } }],
-            { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: false }
-        );
-    }
-
-    // 2) Center-crop to exactly size x size
-    const w = resizedStep.width ?? size;
-    const h = resizedStep.height ?? size;
-    const cropX = Math.max(0, Math.floor((w - size) / 2));
-    const cropY = Math.max(0, Math.floor((h - size) / 2));
-
-    const cropped = await ImageManipulator.manipulateAsync(
-        resizedStep.uri,
-        [{ crop: { originX: cropX, originY: cropY, width: size, height: size } }],
-        { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: false }
-    );
-
     try {
-        const file = await FileSystem.readAsStringAsync(cropped.uri, { encoding: 'base64' });
-        const raw = new Uint8Array(toByteArray(file));
+        await tf.ready();
+        console.log('[preprocess.ts] Starting image preprocessing for:', uri);
+
+        // 1) Aspect-preserving resize so the shorter side >= size
+        let first;
+        try {
+            first = await ImageManipulator.manipulateAsync(
+                uri,
+                [{ resize: { width: size } }],
+                { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: false }
+            );
+            console.log('[preprocess.ts] First resize complete:', first.width, 'x', first.height);
+        } catch (resizeError) {
+            console.error('[preprocess.ts] First resize failed:', resizeError);
+            throw new Error(`Image resize failed. Your device may have insufficient memory or the image format is not supported.`);
+        }
+
+        let resizedStep = first;
+        if ((first.height ?? 0) < size) {
+            // If height ended up smaller than target, resize by height instead
+            try {
+                resizedStep = await ImageManipulator.manipulateAsync(
+                    uri,
+                    [{ resize: { height: size } }],
+                    { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: false }
+                );
+                console.log('[preprocess.ts] Second resize complete:', resizedStep.width, 'x', resizedStep.height);
+            } catch (resizeError) {
+                console.error('[preprocess.ts] Second resize failed:', resizeError);
+                throw new Error(`Image resize failed. Your device may have insufficient memory.`);
+            }
+        }
+
+        // 2) Center-crop to exactly size x size
+        const w = resizedStep.width ?? size;
+        const h = resizedStep.height ?? size;
+        const cropX = Math.max(0, Math.floor((w - size) / 2));
+        const cropY = Math.max(0, Math.floor((h - size) / 2));
+
+        let cropped;
+        try {
+            cropped = await ImageManipulator.manipulateAsync(
+                resizedStep.uri,
+                [{ crop: { originX: cropX, originY: cropY, width: size, height: size } }],
+                { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: false }
+            );
+            console.log('[preprocess.ts] Crop complete:', cropped.width, 'x', cropped.height);
+        } catch (cropError) {
+            console.error('[preprocess.ts] Crop failed:', cropError);
+            throw new Error(`Image crop failed. Your device may have insufficient memory.`);
+        }
+
+        // 3) Read file and decode
+        let file;
+        try {
+            file = await FileSystem.readAsStringAsync(cropped.uri, { encoding: 'base64' });
+            console.log('[preprocess.ts] File read complete, size:', file.length, 'chars');
+        } catch (fileError) {
+            console.error('[preprocess.ts] File read failed:', fileError);
+            throw new Error(`Failed to read image file. Check storage permissions and available space.`);
+        }
+
+        let raw;
+        try {
+            raw = new Uint8Array(toByteArray(file));
+            console.log('[preprocess.ts] Base64 decode complete, bytes:', raw.length);
+        } catch (decodeError) {
+            console.error('[preprocess.ts] Base64 decode failed:', decodeError);
+            throw new Error(`Failed to decode image data.`);
+        }
         
-        // Dynamic import for decodeJpeg (required for @tensorflow/tfjs-react-native)
-        const { decodeJpeg } = await import('@tensorflow/tfjs-react-native');
-        const image = decodeJpeg(raw, 3); // [H,W,3] - RGB channels
+        // 4) Decode JPEG to tensor
+        let image;
+        try {
+            // Dynamic import for decodeJpeg (required for @tensorflow/tfjs-react-native)
+            const { decodeJpeg } = await import('@tensorflow/tfjs-react-native');
+            image = decodeJpeg(raw, 3); // [H,W,3] - RGB channels
+            console.log('[preprocess.ts] JPEG decode complete, shape:', image.shape);
+        } catch (jpegError) {
+            console.error('[preprocess.ts] JPEG decode failed:', jpegError);
+            throw new Error(`Failed to decode JPEG. Your Android version may not support this operation.`);
+        }
         
-        // CRITICAL FIX: Teachable Machine normalizes to [-1, 1], not [0, 1]
-        // Previous: .div(255) → [0, 1] range
-        // Correct: .div(127.5).sub(1) → [-1, 1] range (matches Teachable Machine web demo)
-        const input = image.toFloat().div(127.5).sub(1).expandDims(0); // [1,size,size,3]
+        // 5) Normalize and prepare input tensor
+        let input;
+        try {
+            // CRITICAL FIX: Teachable Machine normalizes to [-1, 1], not [0, 1]
+            // Previous: .div(255) → [0, 1] range
+            // Correct: .div(127.5).sub(1) → [-1, 1] range (matches Teachable Machine web demo)
+            input = image.toFloat().div(127.5).sub(1).expandDims(0); // [1,size,size,3]
+            console.log('[preprocess.ts] Normalization complete, input shape:', input.shape);
+        } catch (normalizeError) {
+            image.dispose();
+            console.error('[preprocess.ts] Normalization failed:', normalizeError);
+            throw new Error(`Failed to normalize image tensor.`);
+        }
         
         // DEBUG: Log preprocessing details (can be removed after verification)
         // Note: Reading full tensor data can be slow for large tensors, so we do a small sample
@@ -78,8 +132,15 @@ export async function uriToInputTensor(uri: string, size = 224) {
         console.error('[preprocess.ts] Preprocessing error details:', {
             message: e?.message,
             stack: e?.stack,
-            error: String(e)
+            error: String(e),
+            uri: uri
         });
-        throw new Error(`Failed to preprocess image: ${e?.message || String(e)}`);
+        
+        // Re-throw with more context if it's already our custom error
+        if (e?.message?.includes('device') || e?.message?.includes('memory') || e?.message?.includes('Android')) {
+            throw e;
+        }
+        
+        throw new Error(`Failed to preprocess image: ${e?.message || String(e)}. This may be due to device limitations or Android version compatibility.`);
     }
 }

@@ -59,6 +59,17 @@ export default function ResultScreen() {
   const didAnimateRef = useRef(false);
   const predictedForUriRef = useRef<string | null>(null);
 
+  // Reset isSaved when navigating to a new analysis (new uri or diagnosisId)
+  useEffect(() => {
+    // If it's from history, it's already saved
+    if (isFromHistory) {
+      setIsSaved(true);
+    } else {
+      // New analysis from preview - reset to unsaved
+      setIsSaved(false);
+    }
+  }, [uri, diagnosisIdParam, isFromHistory]);
+
   // Safely coerce i18n values to arrays when keys are missing or mis-typed
   const ensureStringArray = (value: unknown): string[] => {
     if (Array.isArray(value)) return value as string[];
@@ -96,7 +107,7 @@ export default function ResultScreen() {
     }
 
     if (isSaved) {
-      showToast(t('result.saveSuccess'), 'info', 3000);
+      showToast(t('result.alreadySaved'), 'info', 3000);
       return;
     }
 

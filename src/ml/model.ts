@@ -9,18 +9,39 @@ let initialized = false;
 export async function initModel() {
     if (initialized && model) return; // already loaded
 
-    await tf.ready();
-    // Try to ensure the best backend is selected
     try {
-        // Prefer rn-webgl for performance; fall back to cpu if unavailable
-        await tf.setBackend('rn-webgl');
         await tf.ready();
-    } catch { }
-    if (tf.getBackend() !== 'rn-webgl') {
+        console.log('[model.ts] TensorFlow.js ready, current backend:', tf.getBackend());
+
+        // Try to select the best backend for the device
+        let backendSelected = false;
+
+        // First try rn-webgl (requires OpenGL ES 3.0+, Android 6.0+)
         try {
-            await tf.setBackend('cpu');
+            await tf.setBackend('rn-webgl');
             await tf.ready();
-        } catch { }
+            backendSelected = true;
+            console.log('[model.ts] Successfully initialized rn-webgl backend');
+        } catch (webglError) {
+            console.warn('[model.ts] rn-webgl backend not available:', webglError);
+        }
+
+        // Fall back to CPU backend (works on all Android versions)
+        if (!backendSelected || tf.getBackend() !== 'rn-webgl') {
+            try {
+                await tf.setBackend('cpu');
+                await tf.ready();
+                console.log('[model.ts] Using CPU backend (compatible with all Android versions)');
+            } catch (cpuError) {
+                console.error('[model.ts] Failed to initialize CPU backend:', cpuError);
+                throw new Error('Failed to initialize TensorFlow backend. Your device may not be supported.');
+            }
+        }
+
+        console.log('[model.ts] Final backend:', tf.getBackend());
+    } catch (error) {
+        console.error('[model.ts] TensorFlow initialization failed:', error);
+        throw new Error('Failed to initialize TensorFlow. Please ensure your device meets minimum requirements.');
     }
 
     const modelJson = require('../../assets/models/tfjs/model.json');

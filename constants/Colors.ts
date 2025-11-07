@@ -24,6 +24,8 @@ export type ThemeTokens = {
   danger: string;
   warning: string;
   warningDark: string;
+  warningBgLight: string;
+  dangerBgLight: string;
   black: string;
   transparent: string;
   shadowLight: string;
@@ -64,6 +66,8 @@ const light: ThemeTokens = {
   danger: '#dc2626',
   warning: '#ea580c',
   warningDark: '#d97706',
+  warningBgLight: '#f5e7e7',
+  dangerBgLight: '#f5e7e7',
   // misc
   black: '#000',
   transparent: 'transparent',
@@ -105,6 +109,8 @@ const dark: ThemeTokens = {
   danger: '#dc2626',
   warning: '#ea580c',
   warningDark: '#d97706',
+  warningBgLight: '#f5e7e7',
+  dangerBgLight: '#f5e7e7',
   // misc
   black: '#000',
   transparent: 'transparent',

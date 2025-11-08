@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
-import { getAnalyticsSummary } from '../../src/db/repository';
+import { getAnalyticsSummary, getRecentDiagnoses } from '../../src/db/repository';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -19,11 +19,13 @@ export default function HomeScreen() {
     avgConfidence: 0,
     healthyCount: 0
   });
+  const [lastScan, setLastScan] = useState<{ id: string; time: string } | null>(null);
 
   // Load stats from database
   useFocusEffect(
     useCallback(() => {
       loadStats();
+      loadLast();
     }, [])
   );
 
@@ -32,10 +34,7 @@ export default function HomeScreen() {
       const summary = getAnalyticsSummary();
       const totalScans = summary.total || 0;
       const avgConfidence = Math.round((summary.avgConfidence || 0) * 100);
-
-      // Count healthy diagnoses (those with 'healthy' in disease name)
       const healthyCount = summary.healthyCount || 0;
-
       setStats({
         totalScans,
         avgConfidence,
@@ -44,6 +43,34 @@ export default function HomeScreen() {
     } catch (error) {
       console.error('Error loading stats:', error);
     }
+  };
+
+  const loadLast = () => {
+    try {
+      const rows = getRecentDiagnoses(1) as any[];
+      const row = rows && rows[0];
+      if (!row) {
+        setLastScan(null);
+        return;
+      }
+      const when = formatRelativeTime(new Date(row.diagnosedAt));
+      setLastScan({ id: row.diagnosisId, time: when });
+    } catch (e) {
+      setLastScan(null);
+    }
+  };
+
+  const formatRelativeTime = (date: Date) => {
+    const now = new Date().getTime();
+    const diff = Math.max(0, now - date.getTime());
+    const s = Math.floor(diff / 1000);
+    if (s < 60) return `${s}s ago`;
+    const m = Math.floor(s / 60);
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const d = Math.floor(h / 24);
+    return `${d}d ago`;
   };
 
   const features = [
@@ -159,17 +186,21 @@ export default function HomeScreen() {
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {t('home.recentActivity')}
         </Text>
-        <View style={[styles.activityCard, { backgroundColor: colors.card }]}>
+        <TouchableOpacity
+          disabled={!lastScan}
+          onPress={() => lastScan && router.push({ pathname: '/tomatodx/result', params: { id: lastScan.id } } as any)}
+          style={[styles.activityCard, { backgroundColor: colors.card }]}
+        >
           <Ionicons name="time-outline" size={24} color={colors.success} />
           <View style={styles.activityContent}>
             <Text style={[styles.activityText, { color: colors.text }]}>
               {t('home.lastScan')}
             </Text>
             <Text style={[styles.activityTime, { color: colors.textTertiary }]}>
-              2 hours ago
+              {lastScan ? lastScan.time : t('history.noScans')}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

@@ -4,12 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getDiseaseInfo } from '../../src/data/diseaseInfo';
-import { getDiagnosisById } from '../../src/db/repository';
+import { getDiagnosisById, updateDiagnosisNotes } from '../../src/db/repository';
 
 interface DiagnosisResult {
   disease: string;
@@ -36,6 +36,15 @@ export default function ResultScreen() {
   const [saved, setSaved] = useState(false);
   const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showNotesModal, setShowNotesModal] = useState(false);
+  const [noteText, setNoteText] = useState('');
+  const [existingNotes, setExistingNotes] = useState<string | null>(null);
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const scaleAnim = useRef(new Animated.Value(0.95)).current;
+  const modalAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     loadDiagnosis();
@@ -113,7 +122,29 @@ export default function ResultScreen() {
         prevention: Array.isArray(prevention) ? prevention : [],
         diagnosedAt: new Date(diagnosis.diagnosedAt).toLocaleString()
       });
+      setExistingNotes(diagnosis.notes || null);
       setLoading(false);
+
+      // Start animations
+      Animated.stagger(100, [
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
     } catch (error) {
       console.error('Error loading diagnosis:', error);
       Alert.alert(t('result.error'), t('result.loadError'));
@@ -154,13 +185,46 @@ export default function ResultScreen() {
     }
   };
 
-  const handleSave = () => {
-    setSaved(true);
-    Alert.alert(
-      t('result.saved'),
-      t('result.savedMessage'),
-      [{ text: t('common.ok') }]
-    );
+  const handleAddNotes = () => {
+    setNoteText(existingNotes || '');
+    setShowNotesModal(true);
+    // Animate modal
+    modalAnim.setValue(0);
+    Animated.spring(modalAnim, {
+      toValue: 1,
+      tension: 100,
+      friction: 10,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleSaveNotes = () => {
+    if (noteText.trim()) {
+      try {
+        updateDiagnosisNotes(id as string, noteText.trim());
+        setExistingNotes(noteText.trim());
+        setShowNotesModal(false);
+        Alert.alert(
+          t('common.success'),
+          t('result.notesSaved', { defaultValue: 'Notes saved successfully' })
+        );
+      } catch (error) {
+        console.error('Error saving notes:', error);
+        Alert.alert(
+          t('common.error'),
+          t('result.notesError', { defaultValue: 'Failed to save notes' })
+        );
+      }
+    } else {
+      // Allow saving empty notes to clear them
+      try {
+        updateDiagnosisNotes(id as string, '');
+        setExistingNotes(null);
+        setShowNotesModal(false);
+      } catch (error) {
+        console.error('Error clearing notes:', error);
+      }
+    }
   };
 
   const handleShare = () => {
@@ -210,7 +274,17 @@ export default function ResultScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Result Card */}
-        <View style={[styles.resultCard, { backgroundColor: colors.card }]}>
+        <Animated.View style={[
+          styles.resultCard,
+          {
+            backgroundColor: colors.card,
+            opacity: fadeAnim,
+            transform: [
+              { translateY: slideAnim },
+              { scale: scaleAnim }
+            ]
+          }
+        ]}>
           {/* Diagnosis Header */}
           <View style={styles.diagnosisHeader}>
             <View style={styles.diseaseIconContainer}>
@@ -371,29 +445,58 @@ export default function ResultScreen() {
               </View>
             </View>
           )}
-        </View>
+        </Animated.View>
+
+        {/* Notes Section */}
+        {existingNotes && (
+          <Animated.View style={[
+            styles.notesSection,
+            {
+              backgroundColor: colors.card,
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }]
+            }
+          ]}>
+            <View style={styles.notesSectionHeader}>
+              <View style={styles.notesHeaderLeft}>
+                <Ionicons name="document-text" size={20} color={colors.primary} />
+                <Text style={[styles.notesSectionTitle, { color: colors.text }]}>
+                  {t('result.notes', { defaultValue: 'Notes' })}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={handleAddNotes}>
+                <Ionicons name="create-outline" size={20} color={colors.primary} />
+              </TouchableOpacity>
+            </View>
+            <Text style={[styles.notesText, { color: colors.textSecondary }]}>
+              {existingNotes}
+            </Text>
+          </Animated.View>
+        )}
 
         {/* Quick Actions */}
-        <View style={styles.quickActions}>
+        <Animated.View style={[
+          styles.quickActions,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }
+        ]}>
           <Text style={[styles.actionsTitle, { color: colors.text }]}>
             {t('result.quickActions')}
           </Text>
           <View style={styles.actionsRow}>
             <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: colors.card }]}
-              onPress={handleSave}
+              onPress={handleAddNotes}
             >
               <Ionicons
-                name={saved ? "checkmark" : "bookmark"}
+                name="create-outline"
                 size={20}
-                color={saved ? colors.success : colors.textSecondary}
+                color={colors.textSecondary}
               />
-              <Text style={[
-                styles.actionText,
-                { color: colors.textSecondary },
-                saved && [styles.savedText, { color: colors.success }]
-              ]}>
-                {saved ? t('result.saved') : t('result.save')}
+              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
+                {t('result.addNotes', { defaultValue: 'Add Notes' })}
               </Text>
             </TouchableOpacity>
 
@@ -411,7 +514,7 @@ export default function ResultScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
 
       </ScrollView>
 
@@ -430,6 +533,67 @@ export default function ResultScreen() {
           </LinearGradient>
         </TouchableOpacity>
       </View>
+
+      {/* Notes Modal */}
+      <Modal
+        visible={showNotesModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowNotesModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <Animated.View style={[
+            styles.modalContent,
+            {
+              backgroundColor: colors.card,
+              opacity: modalAnim,
+              transform: [
+                {
+                  scale: modalAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1]
+                  })
+                }
+              ]
+            }
+          ]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>
+              {t('result.addNotes', { defaultValue: 'Add Notes' })}
+            </Text>
+            <Text style={[styles.modalDesc, { color: colors.textSecondary }]}>
+              {t('result.addNotesDesc', { defaultValue: 'Add notes about this diagnosis' })}
+            </Text>
+            <TextInput
+              style={[styles.notesInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+              placeholder={t('result.notesPlaceholder', { defaultValue: 'Enter your notes here...' })}
+              placeholderTextColor={colors.textTertiary}
+              value={noteText}
+              onChangeText={setNoteText}
+              multiline
+              numberOfLines={4}
+              autoFocus
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: colors.background }]}
+                onPress={() => setShowNotesModal(false)}
+              >
+                <Text style={[styles.modalButtonText, { color: colors.textSecondary }]}>
+                  {t('common.cancel')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonPrimary, { backgroundColor: colors.primary }]}
+                onPress={handleSaveNotes}
+              >
+                <Text style={[styles.modalButtonText, styles.modalButtonPrimaryText]}>
+                  {t('common.save')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -694,5 +858,91 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: 16,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  modalDesc: {
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  notesInput: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 14,
+    minHeight: 100,
+    textAlignVertical: 'top',
+    marginBottom: 16,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  modalButtonPrimary: {
+    // Primary button styles applied via backgroundColor prop
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalButtonPrimaryText: {
+    color: '#fff',
+  },
+  notesSection: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  notesSectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  notesHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  notesSectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  notesText: {
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

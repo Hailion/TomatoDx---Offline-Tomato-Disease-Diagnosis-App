@@ -2,9 +2,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getAnalyticsSummary, getRecentDiagnoses } from '../../src/db/repository';
@@ -21,13 +21,61 @@ export default function HomeScreen() {
   });
   const [lastScan, setLastScan] = useState<{ id: string; time: string } | null>(null);
 
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const statsAnim = useRef(new Animated.Value(0)).current;
+  const actionsAnim = useRef(new Animated.Value(0)).current;
+  const recentAnim = useRef(new Animated.Value(0)).current;
+
   // Load stats from database
   useFocusEffect(
     useCallback(() => {
       loadStats();
       loadLast();
+      startAnimations();
     }, [])
   );
+
+  const startAnimations = () => {
+    // Reset animations
+    fadeAnim.setValue(0);
+    slideAnim.setValue(50);
+    statsAnim.setValue(0);
+    actionsAnim.setValue(0);
+    recentAnim.setValue(0);
+
+    // Stagger animations
+    Animated.stagger(100, [
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.timing(statsAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(actionsAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(recentAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   const loadStats = () => {
     try {
@@ -100,28 +148,30 @@ export default function HomeScreen() {
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <LinearGradient
-        colors={theme === 'dark'
-          ? [colors.background, colors.backgroundAlt]
-          : [colors.background, colors.backgroundAlt]
-        }
-        style={styles.header}
-      >
-        <View style={styles.headerContent}>
-          <View style={[styles.logo, { backgroundColor: colors.successBg }]}>
-            <Ionicons name="leaf" size={32} color={colors.success} />
+      <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+        <LinearGradient
+          colors={theme === 'dark'
+            ? [colors.background, colors.backgroundAlt]
+            : [colors.background, colors.backgroundAlt]
+          }
+          style={styles.header}
+        >
+          <View style={styles.headerContent}>
+            <View style={[styles.logo, { backgroundColor: colors.successBg }]}>
+              <Ionicons name="leaf" size={32} color={colors.success} />
+            </View>
+            <Text style={[styles.title, { color: colors.text }]}>
+              TomatoDx
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              {t('home.tagline')}
+            </Text>
           </View>
-          <Text style={[styles.title, { color: colors.text }]}>
-            TomatoDx
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            {t('home.tagline')}
-          </Text>
-        </View>
-      </LinearGradient>
+        </LinearGradient>
+      </Animated.View>
 
       {/* Stats Overview */}
-      <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
+      <Animated.View style={[styles.statsCard, { backgroundColor: colors.card, opacity: statsAnim }]}>
         <View style={styles.statItem}>
           <Text style={[styles.statNumber, { color: colors.text }]}>
             {stats.totalScans}
@@ -148,10 +198,10 @@ export default function HomeScreen() {
             {t('home.healthy')}
           </Text>
         </View>
-      </View>
+      </Animated.View>
 
       {/* Quick Actions */}
-      <View style={styles.section}>
+      <Animated.View style={[styles.section, { opacity: actionsAnim, transform: [{ translateY: Animated.multiply(actionsAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }]}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {t('home.quickActions')}
         </Text>
@@ -179,10 +229,10 @@ export default function HomeScreen() {
             />
           </TouchableOpacity>
         ))}
-      </View>
+      </Animated.View>
 
       {/* Recent Activity */}
-      <View style={styles.section}>
+      <Animated.View style={[styles.section, { opacity: recentAnim, transform: [{ translateY: Animated.multiply(recentAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }]}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {t('home.recentActivity')}
         </Text>
@@ -201,7 +251,7 @@ export default function HomeScreen() {
             </Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </ScrollView>
   );
 }

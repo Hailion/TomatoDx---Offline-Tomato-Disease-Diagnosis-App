@@ -22,16 +22,16 @@
     "cameraPermissionDesc": "ፈቃድ ያስፈልጋል፣ የሚዲያ ላይብራሪ ፈቃድ ያስፈልጋል።",
     "grantPermission": "ፍቃድ ይስጡ",
     "takePhoto": "ፎቶ ያንሱ",
-    "takePhotoDesc": "የቲማቲም ቅጠሎችን ለመቅረፅ ካሜራዎን ይጠቀሙ",
+    "takePhotoDesc": "ቅጠሉን ፎቶ ለመቅረፅ ካሜራዎን ይጠቀሙ።",
     "chooseGallery": "ከጋለሪ ይምረጡ",
-    "chooseGalleryDesc": "ጋሌሪዎ ዉስጥ ያለውን ፎቶ ይምረጡ",
-    "alignGuide": "ቅጠሉን በፍሬም ውስጥ ያስተካክሉ",
+    "chooseGalleryDesc": "ጋሌሪዎ ዉስጥ ያለ ፎቶ ይምረጡ።",
+    "alignGuide": "ቅጠሉን በፍሬም ውስጥ ያስተካክሉ።",
     "tips": "የፎቶ አነሳስ ምክሮች",
     "tip1": "ለትክክለኛ ምርመራ ቅጠሉ በቂ ብርሃን ውስጥ መሆኑን እና ግልጽ ሆኖ እንዲታይ ያድርጉ።",
-    "tip2": "ትኩረትዎን የተጊዱ ቅጠሎች ላይ ያድርጉ።",
-    "tip3": "ፎቶው በእንቅስቃሴ እንዳይደበዝዝ ካሜራውን አረጋግተው በመያዝ ያንሱ",
-    "quickStart": "ፈጣን ልየታ",
-    "quickStartDesc": "የቲማቲሙን ጤናን ለመለየት ፎቶ ያንሱ ወይም ከጋለሪ ያስገቡ",
+    "tip2": "ትኩረትዎን የተጎዱ ቅጠሎች ላይ ያድርጉ።",
+    "tip3": "የፎቶው ጥራት በእንቅስቃሴ እንዳይደበዝዝ ካሜራውን አረጋግተው በመያዝ ያንሱ።",
+    "quickStart": "ፈጣን ምርመራ",
+    "quickStartDesc": "የቲማቲሙን ጤናን ለመርመር ፎቶ ያንሱ ወይም ፎቶ ከጋለሪ ያስገቡ።",
     "error": "ስህተት",
     "captureError": "ፎቶ ማንሳት አልተሳካም"
   },
@@ -105,6 +105,7 @@
     "dark": "ጨለማ",
     "editProfile": "ማስተካከያ",
     "name": "ስም",
+    "namePlaceholder": "ስም ይጨምሩ",
     "nickname": "ቅጽል ስም",
     "nicknamePlaceholder": "ቅጽል ስም ይጨምሩ",
     "system": "ስርዓት",
@@ -186,16 +187,105 @@
   },
   "help": {
     "title": "እገዛ እና ድጋፍ",
+    "welcomeTitle": "እንዴት ልንረዳዎ እንችላለን?",
+    "welcomeText": "ለተለመዱ ጥያቄዎች መልስ ያግኙ ወይም የድጋፍ ቡድናችንን ያግኙ።",
     "faq": "በተደጋጋሚ የሚጠየቁ ጥያቄዎች",
     "contact": "ያግኙን",
-    "tips": "ለተሻለ ውጤት ፈጣን ምክሮች"
+    "tips": "ለተሻለ ውጤት ፈጣን ምክሮች",
+    "faqs": {
+      "accuracy": {
+        "question": "የበሽታ ምርመራው ምን ያህል ትክክል ነው?",
+        "answer": "የእኛ AI ሞዴል በተወሰኑ ሁኔታዎች ውስጥ የተለመዱ የቲማቲም በሽታዎችን በመለየት ረገድ 92% ትክክለኛነት ያለው ነው።"
+      },
+      "diseases": {
+        "question": "ምን አይነት በሽታዎችን መለየት ይችላል?",
+        "answer": "የቅጠል ዋግ፣ የዘገየ ዋግ፣ የባክቴሪያ ነጥብ፣ የቅጠል ሻጋታ እና ጤናማ የእፅዋት ሁኔታን እንለያለን።"
+      },
+      "photo": {
+        "question": "ለምርመራ ጥሩ ፎቶ እንዴት እንወስዳለን?",
+        "answer": "በቂ ብርሃን መኖሩን ያረጋግጡ፣ ትኩረትዎን የተጎዱ ቅጠሎች ላይ ያድርጉ እና ካሜራዎን በጥብቅ በመያዝ ግልፅ ምስል ያግኙ።"
+      },
+      "unclear": {
+        "question": "ውጤቶቹ ግልፅ ካልሆኑ ምን ማድረግ አለብኝ?",
+        "answer": "ፎቶውን በተሻለ ብርሃን እንደገና ያንሱ ወይም ለማረጋገጫ የግብርና ባለሙያዎችን ያማክሩ።"
+      }
+    },
+    "contactMethods": {
+      "email": {
+        "title": "የኢሜል ድጋፍ",
+        "description": "በኢሜል እገዛ ያግኙ"
+      },
+      "website": {
+        "title": "ድረ-ገፅ",
+        "description": "የእውቀት ቤተ-መጻሕፍታችንን ይጎብኙ"
+      },
+      "chat": {
+        "title": "ቀጥታ ውይይት",
+        "description": "ከባለሙያዎቻችን ጋር ይወያዩ"
+      }
+    },
+    "quickTips": {
+      "tip1": "ለፎቶ ተፈጥሯዊ የቀን ብርሃንን ይጠቀሙ",
+      "tip2": "የተጎዱ ቅጠሎችን ከበርካታ አቅጣጫዎች ያንሱ",
+      "tip3": "ጤናማ እና የተጎዱ አካባቢዎችን በማካተት ያንሱ"
+    }
   },
   "about": {
     "title": "ስለ TomatoDx",
+    "subtitle": "በ ኤይ የበለጸገ የቲማቲም በሽታ መለያ",
+    "version": "ስሪት",
     "mission": "ተልእኳችን",
+    "missiondesc": "TomatoDx አርቴፊሻል ኢንተለጀንስ በመጠቀም ፈጣን ትክክለኛ የቲማቲም በሽታን በመለየት ገበሬዎችን እና አትክልተኞችን ያግዛል። ግባችን የእጽዋት ጤና አጠባበቅ ለሁሉም ሰው ተደራሽ ማድረግ፣ የሰብል ምርትን ለመጨመር እና ፀረ ተባይ መድኃኒቶችን አላግባብ መጠቀምን ለመቀነስ ነው።",
     "features": "ባህሪያት",
+    "featuresList": {
+      "aiDetection": {
+        "title": "በኤይ የታገዘ ልየታ",
+        "description": "ለትክክለኛ በሽታ መለያየት የላቀ የማሽን ትምህርት"
+      },
+      "instantResults": {
+        "title": "ፈጣን ውጤቶች",
+        "description": "ከዝርዝር የሕክምና ምክሮች ጋር በሰከንዶች ውስጥ ምርመራ ያግኙ"
+      },
+      "scanHistory": {
+        "title": "ታሪክን ቃኝ",
+        "description": "የዕፅዋትን ጤና በጊዜ ሂደት በተሟላ ታሪክ ይከታተሉ"
+      },
+      "multiLanguage": {
+        "title": "ብዙ ቋንቋ",
+        "description": "ለሰፊ ተደራሽነት በእንግሊዝኛ እና በአማርኛ ይገኛል"
+      }
+    },
     "technology": "ቴክኖሎጂ",
-    "team": "ቡድናችን"
+    "techStack": {
+      "tensorFlow": "TensorFlow Lite",
+      "reactNative": "React Native",
+      "computerVision": "Computer Vision",
+      "privacyFirst": "Privacy-First"
+    },
+    "team": "ቡድናችን",
+    "teamMembers": {
+      "agricultureExperts": {
+        "name": "የግብርና ባለሙያዎች",
+        "role": "የእፅዋት በሽታ ጥናት",
+        "description": "ትክክለኛ የበሽታ መለያ እና የሕክምና ምክሮችን ማረጋገጥ"
+      },
+      "aiEngineers": {
+        "name": "የ ኤይ መሐንዲሶች",
+        "role": "የማሽን መማሪያ",
+        "description": "የላቁ የኮምፒውተር እይታ ሞዴሎችን ማዳበር እና ማሠልጠን"
+      },
+      "mobileDevelopers": {
+        "name": "የሞባይል ገንቢዎች",
+        "role": "የመተግበሪያ ብልጽጋ",
+        "description": "አጠቃቀማቸው ቀላል እና ለተጠቃሚ ምቹ የሆኑ የሞባይል ልመምዶችን መፍጠር"
+      }
+    },
+    "footer": {
+      "madeWith": "በኢትዮጰያ ላሉ ገበሬዎች እና አትክልተኞች ታስቦ የተዘጋጀ ",
+      "copyright": "2025 TomatoDx። መብቱ በሕግ የተጠበቀ።",
+      "privacyPolicy": "የግላዊነት ፖሊሲ",
+      "termsOfService": "የአገልግሎት ውሎች"
+    }
   },
   "diseases": {
     "early_blight": {

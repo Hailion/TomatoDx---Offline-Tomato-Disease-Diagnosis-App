@@ -1,13 +1,12 @@
 // app/tomatodx/scan.tsx - Compact Scan Screen
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { setAudioModeAsync } from 'expo-audio';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Dimensions, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -20,6 +19,25 @@ export default function ScanScreen() {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const colors = Colors[theme];
+
+    // Animation values
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(30)).current;
+
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 600,
+                useNativeDriver: true,
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 600,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    }, []);
 
     if (!permission) {
         return <View />;
@@ -52,14 +70,6 @@ export default function ScanScreen() {
     const handleCapture = async () => {
         if (cameraRef.current) {
             try {
-                // Mute shutter sound on Android by setting audio mode
-                if (Platform.OS === 'android') {
-                    await setAudioModeAsync({
-                        playsInSilentMode: true,
-                        shouldPlayInBackground: false,
-                    });
-                }
-
                 const photo = await cameraRef.current.takePictureAsync();
                 router.push({
                     pathname: '/tomatodx/preview',
@@ -156,7 +166,7 @@ export default function ScanScreen() {
                     showsVerticalScrollIndicator={false}
                 >
                     {/* Compact Header */}
-                    <View style={styles.scanHeader}>
+                    <Animated.View style={[styles.scanHeader, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <View style={[styles.logoContainer, { backgroundColor: colors.primaryOverlay }]}>
                             <Ionicons name="camera" size={28} color={colors.primary} />
                         </View>
@@ -166,10 +176,10 @@ export default function ScanScreen() {
                         <Text style={[styles.scanSubtitle, { color: colors.textSecondary }]}>
                             {t('scan.subtitle')}
                         </Text>
-                    </View>
+                    </Animated.View>
 
                     {/* Compact Action Buttons - Side by Side */}
-                    <View style={styles.actionButtons}>
+                    <Animated.View style={[styles.actionButtons, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <TouchableOpacity
                             style={[styles.actionButton, { backgroundColor: colors.card }]}
                             onPress={() => setIsCameraActive(true)}
@@ -199,10 +209,10 @@ export default function ScanScreen() {
                                 {t('scan.chooseGalleryDesc')}
                             </Text>
                         </TouchableOpacity>
-                    </View>
+                    </Animated.View>
 
                     {/* Quick Tips - More Compact */}
-                    <View style={[styles.tips, { backgroundColor: colors.primaryOverlay }]}>
+                    <Animated.View style={[styles.tips, { backgroundColor: colors.primaryOverlay, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <View style={styles.tipsHeader}>
                             <Ionicons name="bulb-outline" size={18} color={colors.primary} />
                             <Text style={[styles.tipsTitle, { color: colors.text }]}>
@@ -229,17 +239,17 @@ export default function ScanScreen() {
                                 </Text>
                             </View>
                         </View>
-                    </View>
+                    </Animated.View>
 
                     {/* Recent Activity Preview (Optional) */}
-                    <View style={styles.recentSection}>
+                    <Animated.View style={[styles.recentSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <Text style={[styles.recentTitle, { color: colors.text }]}>
                             {t('scan.quickStart')}
                         </Text>
                         <Text style={[styles.recentText, { color: colors.textSecondary }]}>
                             {t('scan.quickStartDesc')}
                         </Text>
-                    </View>
+                    </Animated.View>
                 </ScrollView>
             )}
         </View>

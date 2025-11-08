@@ -131,6 +131,13 @@ export function deleteDiagnosis(diagnosisId: string) {
     run(`DELETE FROM Diagnosis WHERE diagnosisId = ?`, [diagnosisId]);
 }
 
+export function updateDiagnosisNotes(diagnosisId: string, notes: string) {
+    run(
+        `UPDATE Diagnosis SET notes = ? WHERE diagnosisId = ?`,
+        [notes, diagnosisId]
+    );
+}
+
 export function getAllDiagnosesExport() {
     const sql = `SELECT d.diagnosisId, d.confidence, d.diagnosedAt, d.notes,
             i.imageId, i.filePath, i.capturedAt,

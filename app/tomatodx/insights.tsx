@@ -3,9 +3,9 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getAnalyticsSummary, getLast7DaysCounts, getRecentDiagnoses } from '../../src/db/repository';
 
@@ -19,11 +19,48 @@ export default function InsightsScreen() {
     const [trend, setTrend] = useState<Array<{ day: string; count: number }>>([]);
     const [recent, setRecent] = useState<any[]>([]);
 
+    // Animation values
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const cardsAnim = useRef(new Animated.Value(0)).current;
+    const chartAnim = useRef(new Animated.Value(0)).current;
+    const sectionsAnim = useRef(new Animated.Value(0)).current;
+
     useFocusEffect(
         useCallback(() => {
             load();
+            startAnimations();
         }, [])
     );
+
+    const startAnimations = () => {
+        fadeAnim.setValue(0);
+        cardsAnim.setValue(0);
+        chartAnim.setValue(0);
+        sectionsAnim.setValue(0);
+
+        Animated.stagger(150, [
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+            Animated.timing(cardsAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+            Animated.timing(chartAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+            Animated.timing(sectionsAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
 
     const load = () => {
         try {
@@ -63,7 +100,7 @@ export default function InsightsScreen() {
             </LinearGradient>
 
             {/* Summary Cards */}
-            <View style={styles.cardsRow}>
+            <Animated.View style={[styles.cardsRow, { opacity: cardsAnim, transform: [{ scale: cardsAnim }] }]}>
                 <View style={[styles.card, { backgroundColor: colors.card }]}>
                     <Text style={[styles.cardValue, { color: colors.text }]}>{summary.total}</Text>
                     <Text style={[styles.cardLabel, { color: colors.textTertiary }]}>{t('home.totalScans')}</Text>
@@ -76,11 +113,11 @@ export default function InsightsScreen() {
                     <Text style={[styles.cardValue, { color: colors.text }]}>{summary.healthyCount}</Text>
                     <Text style={[styles.cardLabel, { color: colors.textTertiary }]}>{t('home.healthy')}</Text>
                 </View>
-            </View>
+            </Animated.View>
 
             {/* Top disease */}
             {summary.topDisease && (
-                <View style={[styles.topDiseaseCard, { backgroundColor: colors.card }]}>
+                <Animated.View style={[styles.topDiseaseCard, { backgroundColor: colors.card, opacity: chartAnim, transform: [{ translateY: Animated.multiply(chartAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }), 1) }] }]}>
                     <Ionicons name="analytics-outline" size={20} color={colors.warning} />
                     <Text style={[styles.topDiseaseText, { color: colors.text }]}>
                         {summary.topDisease.nameEn || summary.topDisease.diseaseId}
@@ -88,11 +125,11 @@ export default function InsightsScreen() {
                     <Text style={[styles.topDiseaseCount, { color: colors.textTertiary }]}>
                         × {summary.topDisease.c}
                     </Text>
-                </View>
+                </Animated.View>
             )}
 
             {/* 7-day trend */}
-            <View style={styles.section}>
+            <Animated.View style={[styles.section, { opacity: chartAnim, transform: [{ translateY: Animated.multiply(chartAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }), 1) }] }]}>
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>Last 7 days</Text>
                 <View style={[styles.trendCard, { backgroundColor: colors.card }]}>
                     <View style={styles.trendBars}>
@@ -109,10 +146,10 @@ export default function InsightsScreen() {
                         )}
                     </View>
                 </View>
-            </View>
+            </Animated.View>
 
             {/* Recent diagnoses */}
-            <View style={styles.section}>
+            <Animated.View style={[styles.section, { opacity: sectionsAnim, transform: [{ translateY: Animated.multiply(sectionsAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }), 1) }] }]}>
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('history.recentScans')}</Text>
                 {recent.length === 0 && (
                     <Text style={{ color: colors.textTertiary }}>{t('history.noScans')}</Text>
@@ -135,7 +172,7 @@ export default function InsightsScreen() {
                         <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
                     </TouchableOpacity>
                 ))}
-            </View>
+            </Animated.View>
         </ScrollView>
     );
 }

@@ -2,6 +2,7 @@
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
@@ -11,43 +12,48 @@ export default function HelpScreen() {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const colors = Colors[theme];
+    const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+    const toggleFaq = (index: number) => {
+        setExpandedFaq(expandedFaq === index ? null : index);
+    };
 
     const faqs = [
         {
-            question: 'How accurate is the disease detection?',
-            answer: 'Our AI model achieves 92% accuracy in detecting common tomato diseases under optimal conditions.'
+            question: t('help.faqs.accuracy.question'),
+            answer: t('help.faqs.accuracy.answer')
         },
         {
-            question: 'What types of diseases can be detected?',
-            answer: 'We detect Early Blight, Late Blight, Bacterial Spot, Leaf Mold, and healthy plant status.'
+            question: t('help.faqs.diseases.question'),
+            answer: t('help.faqs.diseases.answer')
         },
         {
-            question: 'How do I take the best photo for scanning?',
-            answer: 'Ensure good lighting, focus on affected leaves, and keep the camera steady for clear images.'
+            question: t('help.faqs.photo.question'),
+            answer: t('help.faqs.photo.answer')
         },
         {
-            question: 'What should I do if the results are unclear?',
-            answer: 'Retake the photo with better lighting or consult with agricultural experts for confirmation.'
+            question: t('help.faqs.unclear.question'),
+            answer: t('help.faqs.unclear.answer')
         }
     ];
 
     const contactMethods = [
         {
             icon: 'mail',
-            title: 'Email Support',
-            description: 'Get help via email',
+            title: t('help.contactMethods.email.title'),
+            description: t('help.contactMethods.email.description'),
             action: () => Linking.openURL('mailto:support@tomatodx.com')
         },
         {
             icon: 'globe',
-            title: 'Website',
-            description: 'Visit our knowledge base',
+            title: t('help.contactMethods.website.title'),
+            description: t('help.contactMethods.website.description'),
             action: () => Linking.openURL('https://tomatodx.com/help')
         },
         {
             icon: 'chatbubbles',
-            title: 'Live Chat',
-            description: 'Chat with our experts',
+            title: t('help.contactMethods.chat.title'),
+            description: t('help.contactMethods.chat.description'),
             action: () => console.log('Open live chat')
         }
     ];
@@ -67,7 +73,7 @@ export default function HelpScreen() {
                     />
                 </TouchableOpacity>
                 <Text style={[styles.title, { color: colors.text }]}>
-                    Help & Support
+                    {t('help.title')}
                 </Text>
                 <View style={styles.placeholder} />
             </View>
@@ -77,37 +83,47 @@ export default function HelpScreen() {
                 <View style={[styles.welcomeCard, { backgroundColor: colors.card }]}>
                     <Ionicons name="help-circle" size={48} color={colors.primary} />
                     <Text style={[styles.welcomeTitle, { color: colors.text }]}>
-                        How can we help you?
+                        {t('help.welcomeTitle')}
                     </Text>
                     <Text style={[styles.welcomeText, { color: colors.textSecondary }]}>
-                        Find answers to common questions or get in touch with our support team.
+                        {t('help.welcomeText')}
                     </Text>
                 </View>
 
                 {/* FAQ Section */}
                 <View style={styles.section}>
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        Frequently Asked Questions
+                        {t('help.faq')}
                     </Text>
                     {faqs.map((faq, index) => (
-                        <View
+                        <TouchableOpacity
                             key={index}
                             style={[styles.faqCard, { backgroundColor: colors.card }]}
+                            onPress={() => toggleFaq(index)}
                         >
-                            <Text style={[styles.faqQuestion, { color: colors.text }]}>
-                                {faq.question}
-                            </Text>
-                            <Text style={[styles.faqAnswer, { color: colors.textSecondary }]}>
-                                {faq.answer}
-                            </Text>
-                        </View>
+                            <View style={styles.faqHeader}>
+                                <Text style={[styles.faqQuestion, { color: colors.text }]}>
+                                    {faq.question}
+                                </Text>
+                                <Ionicons
+                                    name={expandedFaq === index ? 'chevron-up' : 'chevron-down'}
+                                    size={20}
+                                    color={colors.textSecondary}
+                                />
+                            </View>
+                            {expandedFaq === index && (
+                                <Text style={[styles.faqAnswer, { color: colors.textSecondary }]}>
+                                    {faq.answer}
+                                </Text>
+                            )}
+                        </TouchableOpacity>
                     ))}
                 </View>
 
                 {/* Contact Methods */}
                 <View style={styles.section}>
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        Get in Touch
+                        {t('help.contact')}
                     </Text>
                     {contactMethods.map((method, index) => (
                         <TouchableOpacity
@@ -142,24 +158,24 @@ export default function HelpScreen() {
                     <Ionicons name="bulb" size={24} color={colors.warning} />
                     <View style={styles.tipsContent}>
                         <Text style={[styles.tipsTitle, { color: colors.text }]}>
-                            Quick Tips for Better Results
+                            {t('help.tips')}
                         </Text>
                         <View style={styles.tipItem}>
                             <Ionicons name="checkmark-circle" size={16} color={colors.success} />
                             <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                                Use natural daylight for photos
+                                {t('help.quickTips.tip1')}
                             </Text>
                         </View>
                         <View style={styles.tipItem}>
                             <Ionicons name="checkmark-circle" size={16} color={colors.success} />
                             <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                                Capture multiple angles of affected leaves
+                                {t('help.quickTips.tip2')}
                             </Text>
                         </View>
                         <View style={styles.tipItem}>
                             <Ionicons name="checkmark-circle" size={16} color={colors.success} />
                             <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                                Include both healthy and affected areas
+                                {t('help.quickTips.tip3')}
                             </Text>
                         </View>
                     </View>
@@ -236,14 +252,21 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 4,
     },
+    faqHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     faqQuestion: {
         fontSize: 16,
         fontWeight: '600',
-        marginBottom: 8,
+        flex: 1,
+        marginRight: 12,
     },
     faqAnswer: {
         fontSize: 14,
         lineHeight: 20,
+        marginTop: 12,
     },
     contactCard: {
         flexDirection: 'row',

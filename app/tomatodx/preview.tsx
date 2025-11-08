@@ -3,9 +3,9 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Animated, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { insertDiagnosis, insertImage, upsertDisease } from '../../src/db/repository';
 import { predictFromUri } from '../../src/ml/inference';
@@ -20,6 +20,33 @@ export default function PreviewScreen() {
   const { t } = useTranslation();
   const colors = Colors[theme];
   const [analyzing, setAnalyzing] = useState(false);
+
+  // Animation values
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 500,
+        delay: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   const handleAnalyze = async () => {
     if (!uri) {
@@ -109,7 +136,14 @@ export default function PreviewScreen() {
         contentContainerStyle={styles.imageContainer}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.imageWrapper, { backgroundColor: colors.card }]}>
+        <Animated.View style={[
+          styles.imageWrapper,
+          {
+            backgroundColor: colors.card,
+            opacity: fadeAnim,
+            transform: [{ scale: scaleAnim }]
+          }
+        ]}>
           <Image
             source={uri ? { uri: uri as string } : require('../../assets/sample-tomato-leaf.png')}
             style={styles.image}
@@ -129,10 +163,17 @@ export default function PreviewScreen() {
               {t('preview.highQuality')}
             </Text>
           </View>
-        </View>
+        </Animated.View>
 
         {/* Analysis Tips */}
-        <View style={[styles.tipsCard, { backgroundColor: colors.card }]}>
+        <Animated.View style={[
+          styles.tipsCard,
+          {
+            backgroundColor: colors.card,
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }
+        ]}>
           <Ionicons name="bulb" size={24} color={colors.warning} />
           <View style={styles.tipsContent}>
             <Text style={[styles.tipsTitle, { color: colors.text }]}>
@@ -142,7 +183,7 @@ export default function PreviewScreen() {
               {t('preview.tipsText')}
             </Text>
           </View>
-        </View>
+        </Animated.View>
       </ScrollView>
 
       {/* Action Buttons */}

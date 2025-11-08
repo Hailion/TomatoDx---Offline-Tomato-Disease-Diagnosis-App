@@ -3,7 +3,7 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Animated, Modal, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
@@ -39,6 +39,10 @@ export default function HistoryScreen() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<DiagnosisItem | null>(null);
 
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
   const mapDiseaseNameToId = (name: string): string => {
     const nameLower = name.toLowerCase();
     if (nameLower.includes('early') && nameLower.includes('blight')) return 'early_blight';
@@ -58,8 +62,26 @@ export default function HistoryScreen() {
   useFocusEffect(
     useCallback(() => {
       loadDiagnoses();
+      startAnimations();
     }, [])
   );
+
+  const startAnimations = () => {
+    fadeAnim.setValue(0);
+    slideAnim.setValue(30);
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   const loadDiagnoses = () => {
     try {
@@ -364,7 +386,7 @@ export default function HistoryScreen() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           {/* Header */}
-          <View style={styles.header}>
+          <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <View style={styles.headerTop}>
               <View style={styles.titleContainer}>
                 <Text style={[styles.title, { color: colors.text }]}>
@@ -419,7 +441,7 @@ export default function HistoryScreen() {
                 </Text>
               </View>
             </View>
-          </View>
+          </Animated.View>
 
           {/* Filters Panel */}
           {showFilters && (

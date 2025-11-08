@@ -138,6 +138,7 @@
     "dark": "Dark",
     "editProfile": "Edit Profile",
     "name": "Name",
+    "namePlaceholder": "Enter name",
     "nickname": "Nickname",
     "nicknamePlaceholder": "Enter nickname",
     "system": "System",
@@ -174,16 +175,105 @@
   },
   "help": {
     "title": "Help & Support",
+    "welcomeTitle": "How can we help you?",
+    "welcomeText": "Find answers to common questions or get in touch with our support team.",
     "faq": "Frequently Asked Questions",
     "contact": "Get in Touch",
-    "tips": "Quick Tips for Better Results"
+    "tips": "Quick Tips for Better Results",
+    "faqs": {
+      "accuracy": {
+        "question": "How accurate is the disease detection?",
+        "answer": "Our AI model achieves 92% accuracy in detecting common tomato diseases under optimal conditions."
+      },
+      "diseases": {
+        "question": "What types of diseases can be detected?",
+        "answer": "We detect Early Blight, Late Blight, Bacterial Spot, Leaf Mold, and healthy plant status."
+      },
+      "photo": {
+        "question": "How do I take the best photo for scanning?",
+        "answer": "Ensure good lighting, focus on affected leaves, and keep the camera steady for clear images."
+      },
+      "unclear": {
+        "question": "What should I do if the results are unclear?",
+        "answer": "Retake the photo with better lighting or consult with agricultural experts for confirmation."
+      }
+    },
+    "contactMethods": {
+      "email": {
+        "title": "Email Support",
+        "description": "Get help via email"
+      },
+      "website": {
+        "title": "Website",
+        "description": "Visit our knowledge base"
+      },
+      "chat": {
+        "title": "Live Chat",
+        "description": "Chat with our experts"
+      }
+    },
+    "quickTips": {
+      "tip1": "Use natural daylight for photos",
+      "tip2": "Capture multiple angles of affected leaves",
+      "tip3": "Include both healthy and affected areas"
+    }
   },
   "about": {
     "title": "About TomatoDx",
+    "subtitle": "AI-Powered Tomato Disease Detection",
+    "version": "Version",
     "mission": "Our Mission",
+    "missiondesc": "TomatoDx empowers farmers and gardeners with instant, accurate tomato disease detection using artificial intelligence. Our goal is to make plant healthcare accessible to everyone, helping to increase crop yields and reduce pesticide misuse.",
     "features": "Features",
+    "featuresList": {
+      "aiDetection": {
+        "title": "AI-Powered Detection",
+        "description": "Advanced machine learning for accurate disease identification"
+      },
+      "instantResults": {
+        "title": "Instant Results",
+        "description": "Get diagnosis in seconds with detailed treatment recommendations"
+      },
+      "scanHistory": {
+        "title": "Scan History",
+        "description": "Track your plant health over time with comprehensive history"
+      },
+      "multiLanguage": {
+        "title": "Multi-Language",
+        "description": "Available in English and Amharic for wider accessibility"
+      }
+    },
     "technology": "Technology",
-    "team": "Our Team"
+    "techStack": {
+      "tensorFlow": "TensorFlow Lite",
+      "reactNative": "React Native",
+      "computerVision": "Computer Vision",
+      "privacyFirst": "Privacy-First"
+    },
+    "team": "Our Team",
+    "teamMembers": {
+      "agricultureExperts": {
+        "name": "Agriculture Experts",
+        "role": "Plant Pathology",
+        "description": "Ensuring accurate disease identification and treatment recommendations"
+      },
+      "aiEngineers": {
+        "name": "AI Engineers",
+        "role": "Machine Learning",
+        "description": "Developing and training advanced computer vision models"
+      },
+      "mobileDevelopers": {
+        "name": "Mobile Developers",
+        "role": "App Development",
+        "description": "Creating intuitive and user-friendly mobile experiences"
+      }
+    },
+    "footer": {
+      "madeWith": "Specifically made for farmers and gardeners of Ethiopia",
+      "copyright": "2025 TomatoDx. All rights reserved.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
+    }
   },
   "diseases": {
     "early_blight": {

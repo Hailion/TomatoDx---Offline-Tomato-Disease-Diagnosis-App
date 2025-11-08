@@ -1,6 +1,7 @@
 // app/tomatodx/about.tsx - About Screen
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -15,41 +16,41 @@ export default function AboutScreen() {
     const features = [
         {
             icon: 'camera',
-            title: 'AI-Powered Detection',
-            description: 'Advanced machine learning for accurate disease identification'
+            title: t('about.featuresList.aiDetection.title'),
+            description: t('about.featuresList.aiDetection.description')
         },
         {
             icon: 'speedometer',
-            title: 'Instant Results',
-            description: 'Get diagnosis in seconds with detailed treatment recommendations'
+            title: t('about.featuresList.instantResults.title'),
+            description: t('about.featuresList.instantResults.description')
         },
         {
             icon: 'library',
-            title: 'Scan History',
-            description: 'Track your plant health over time with comprehensive history'
+            title: t('about.featuresList.scanHistory.title'),
+            description: t('about.featuresList.scanHistory.description')
         },
         {
             icon: 'globe',
-            title: 'Multi-Language',
-            description: 'Available in English and Amharic for wider accessibility'
+            title: t('about.featuresList.multiLanguage.title'),
+            description: t('about.featuresList.multiLanguage.description')
         }
     ];
 
     const team = [
         {
-            name: 'Agriculture Experts',
-            role: 'Plant Pathology',
-            description: 'Ensuring accurate disease identification and treatment recommendations'
+            name: t('about.teamMembers.agricultureExperts.name'),
+            role: t('about.teamMembers.agricultureExperts.role'),
+            description: t('about.teamMembers.agricultureExperts.description')
         },
         {
-            name: 'AI Engineers',
-            role: 'Machine Learning',
-            description: 'Developing and training advanced computer vision models'
+            name: t('about.teamMembers.aiEngineers.name'),
+            role: t('about.teamMembers.aiEngineers.role'),
+            description: t('about.teamMembers.aiEngineers.description')
         },
         {
-            name: 'Mobile Developers',
-            role: 'App Development',
-            description: 'Creating intuitive and user-friendly mobile experiences'
+            name: t('about.teamMembers.mobileDevelopers.name'),
+            role: t('about.teamMembers.mobileDevelopers.role'),
+            description: t('about.teamMembers.mobileDevelopers.description')
         }
     ];
 
@@ -68,7 +69,7 @@ export default function AboutScreen() {
                     />
                 </TouchableOpacity>
                 <Text style={[styles.title, { color: colors.text }]}>
-                    About TomatoDx
+                    {t('about.title')}
                 </Text>
                 <View style={styles.placeholder} />
             </View>
@@ -83,21 +84,21 @@ export default function AboutScreen() {
                         TomatoDx
                     </Text>
                     <Text style={[styles.tagline, { color: colors.textSecondary }]}>
-                        AI-Powered Tomato Disease Detection
+                        {t('about.subtitle')}
                     </Text>
                     <Text style={[styles.version, { color: colors.textTertiary }]}>
-                        Version 1.0.0
+                        {t('about.version')} {Constants.expoConfig?.version || '1.0.0'}
                     </Text>
                 </View>
 
                 {/* Mission Section */}
                 <View style={styles.section}>
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        Our Mission
+                        {t('about.mission')}
                     </Text>
                     <View style={[styles.missionCard, { backgroundColor: colors.card }]}>
                         <Text style={[styles.missionText, { color: colors.textSecondary }]}>
-                            TomatoDx empowers farmers and gardeners with instant, accurate tomato disease detection using artificial intelligence. Our goal is to make plant healthcare accessible to everyone, helping to increase crop yields and reduce pesticide misuse.
+                            {t('about.missiondesc')}
                         </Text>
                     </View>
                 </View>
@@ -105,8 +106,9 @@ export default function AboutScreen() {
                 {/* Features */}
                 <View style={styles.section}>
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        Features
+                        {t('about.features')}
                     </Text>
+
                     {features.map((feature, index) => (
                         <View
                             key={index}
@@ -130,31 +132,31 @@ export default function AboutScreen() {
                 {/* Technology */}
                 <View style={styles.section}>
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        Technology
+                        {t('about.technology')}
                     </Text>
                     <View style={[styles.techCard, { backgroundColor: colors.card }]}>
                         <View style={styles.techItem}>
                             <Ionicons name="hardware-chip" size={20} color={colors.primary} />
                             <Text style={[styles.techText, { color: colors.text }]}>
-                                TensorFlow Lite
+                                {t('about.techStack.tensorFlow')}
                             </Text>
                         </View>
                         <View style={styles.techItem}>
                             <Ionicons name="cellular" size={20} color={colors.primary} />
                             <Text style={[styles.techText, { color: colors.text }]}>
-                                React Native
+                                {t('about.techStack.reactNative')}
                             </Text>
                         </View>
                         <View style={styles.techItem}>
                             <Ionicons name="cloud" size={20} color={colors.primary} />
                             <Text style={[styles.techText, { color: colors.text }]}>
-                                Computer Vision
+                                {t('about.techStack.computerVision')}
                             </Text>
                         </View>
                         <View style={styles.techItem}>
                             <Ionicons name="shield-checkmark" size={20} color={colors.primary} />
                             <Text style={[styles.techText, { color: colors.text }]}>
-                                Privacy-First
+                                {t('about.techStack.privacyFirst')}
                             </Text>
                         </View>
                     </View>
@@ -163,7 +165,7 @@ export default function AboutScreen() {
                 {/* Team */}
                 <View style={styles.section}>
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        Our Team
+                        {t('about.team')}
                     </Text>
                     {team.map((member, index) => (
                         <View
@@ -186,11 +188,10 @@ export default function AboutScreen() {
                 {/* Footer */}
                 <View style={[styles.footer, { backgroundColor: colors.card }]}>
                     <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-                        Made with ❤️ for farmers and gardeners worldwide
+                        {t('about.footer.madeWith')}
                     </Text>
                     <Text style={[styles.copyright, { color: colors.textTertiary }]}>
-                        © 2024 TomatoDx. All rights reserved.
-                    </Text>
+                        {t('about.footer.copyright')}</Text>
 
                     <View style={styles.links}>
                         <TouchableOpacity
@@ -198,7 +199,7 @@ export default function AboutScreen() {
                             onPress={() => Linking.openURL('https://tomatodx.com/privacy')}
                         >
                             <Text style={[styles.linkText, { color: colors.textSecondary }]}>
-                                Privacy Policy
+                                {t('about.footer.privacyPolicy')}
                             </Text>
                         </TouchableOpacity>
                         <Text style={[styles.linkSeparator, { color: colors.textTertiary }]}>
@@ -209,8 +210,30 @@ export default function AboutScreen() {
                             onPress={() => Linking.openURL('https://tomatodx.com/terms')}
                         >
                             <Text style={[styles.linkText, { color: colors.textSecondary }]}>
-                                Terms of Service
+                                {t('about.footer.termsOfService')}
                             </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Social Media Links */}
+                    <View style={styles.socialLinks}>
+                        <TouchableOpacity
+                            style={styles.socialLink}
+                            onPress={() => Linking.openURL('https://t.me/hailion')}
+                        >
+                            <Ionicons name="paper-plane" size={20} color={colors.textSecondary} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.socialLink}
+                            onPress={() => Linking.openURL('https://github.com/haileamlak12')}
+                        >
+                            <Ionicons name="logo-github" size={20} color={colors.textSecondary} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.socialLink}
+                            onPress={() => Linking.openURL('https://x.com/tomatodx')}
+                        >
+                            <Ionicons name="logo-twitter" size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -410,5 +433,19 @@ const styles = StyleSheet.create({
     },
     linkSeparator: {
         fontSize: 14,
+    },
+    socialLinks: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 20,
+        gap: 16,
+    },
+    socialLink: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

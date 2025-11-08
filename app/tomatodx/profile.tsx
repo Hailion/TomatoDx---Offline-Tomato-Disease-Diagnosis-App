@@ -2,9 +2,9 @@
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getCurrentUser, upsertUser } from '../../src/db/repository';
 
@@ -21,10 +21,30 @@ export default function ProfileScreen() {
     const [editName, setEditName] = useState('');
     const [editNickname, setEditNickname] = useState('');
 
+    // Animation values
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(30)).current;
+
     // Load user data from database
     useEffect(() => {
         loadUserData();
+        startAnimations();
     }, []);
+
+    const startAnimations = () => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 600,
+                useNativeDriver: true,
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 600,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
 
     const loadUserData = () => {
         try {
@@ -110,7 +130,7 @@ export default function ProfileScreen() {
         <>
             <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
                 {/* Header */}
-                <View style={styles.header}>
+                <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <TouchableOpacity
                         style={[styles.avatar, { backgroundColor: colors.primary }]}
                         onPress={handleEditProfile}
@@ -137,10 +157,10 @@ export default function ProfileScreen() {
                         <Ionicons name="create-outline" size={16} color={colors.primary} />
                         <Text style={[styles.editButtonText, { color: colors.primary }]}>{t('profile.editProfile')}</Text>
                     </TouchableOpacity>
-                </View>
+                </Animated.View>
 
                 {/* Theme Selector */}
-                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <Text style={[styles.cardTitle, { color: colors.text }]}>
                         {t('profile.theme')}
                     </Text>
@@ -173,10 +193,10 @@ export default function ProfileScreen() {
                             </TouchableOpacity>
                         ))}
                     </View>
-                </View>
+                </Animated.View>
 
                 {/* Settings */}
-                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <Text style={[styles.cardTitle, { color: colors.text }]}>
                         {t('profile.settings')}
                     </Text>
@@ -215,10 +235,10 @@ export default function ProfileScreen() {
                             </View>
                         </TouchableOpacity>
                     ))}
-                </View>
+                </Animated.View>
 
                 {/* App Info */}
-                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <View style={styles.appInfo}>
                         <Ionicons name="leaf" size={32} color={colors.primary} />
                         <Text style={[styles.appName, { color: colors.text }]}>
@@ -228,7 +248,7 @@ export default function ProfileScreen() {
                             Version 1.0.0
                         </Text>
                     </View>
-                </View>
+                </Animated.View>
             </ScrollView>
 
             {/* Edit Profile Modal */}

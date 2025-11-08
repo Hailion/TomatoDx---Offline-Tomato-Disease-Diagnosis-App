@@ -18,7 +18,10 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.haileamlak.TomatoDx"
+      "package": "com.haileamlak.TomatoDx",
+      "jsEngine": "hermes",
+      "enableProguardInReleaseBuilds": true,
+      "enableShrinkResourcesInReleaseBuilds": true
     },
     "web": {
       "output": "static",
@@ -43,6 +46,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "updates": {
+      "enabled": false
+    },
+    "runtimeVersion": {
+      "policy": "nativeVersion"
     }
   }
 }

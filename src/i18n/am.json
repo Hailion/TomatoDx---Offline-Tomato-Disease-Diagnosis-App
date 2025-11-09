@@ -17,6 +17,7 @@
   },
   "scan": {
     "title": "የቅጠል ፎቶ ያንሱ",
+    "navtitle": "ፎቶ ያንሱ",
     "subtitle": "ቅጠሉን ፎቶ በማንሳት የቲማቲሙን በሽታዎች ይለዩ",
     "cameraPermission": "ፎቶ ለማንሳት የካሜራ ፈቃድ ያስፈልጋል",
     "cameraPermissionDesc": "ፈቃድ ያስፈልጋል፣ የሚዲያ ላይብራሪ ፈቃድ ያስፈልጋል።",
@@ -124,24 +125,43 @@
     "cancel": "ይቅር",
     "save": "አስቀምጥ",
     "share": "አጋራ",
-    "delete": "አጥፋ"
+    "delete": "አጥፋ",
+    "skip": "ዝለል",
+    "back": "ወደ ኋላ",
+    "continue": "ቀጥል",
+    "getStarted": "ጀምር"
+  },
+  "privacy": {
+    "title": "ግላዊነት እና ውሂብ",
+    "description": "TomatoDx ሁሉንም ምስሎች AIን በመጠቀም በመሣሪያዎ ላይ ያስኬዳል። እራስዎ ፈልገው ለምርምር ለማጋራት ካለፈለጉ በስተቀር ፎቶዎችዎ ከስልክዎ አይወጡም።",
+    "localProcessing": "ሁሉም የምስል ትንተና/ምርመራ የሚከናወነው በመሳሪያዎ ላይ ነው",
+    "noDataCollection": "ምንም የግል መረጃ አይሰበሰብም ወይም ሌላ ቦታ አይከማችም",
+    "secureStorage": "የእርስዎ የምርመራ ታሪክ ደህንነቱ በተጠበቀ ሁኔታ በመሳሪያዎ ላይ ተቀምጧል",
+    "researchTitle": "TomatoDxን ለማሻሻል ያግዙ",
+    "researchDescription": "ለሁሉም ገበሬዎች በሽታን የመለየት ትክክለኛነት ለማሻሻል ይረዳን ዘንድ ስም-አልባ ምስሎችን በማጋራት ይተባበሩን ",
+    "researchOptIn": "ስም-አልባ ምስሎችን ለምርምር ያጋሩ (አማራጭ)",
+    "acceptAndContinue": "እስማማለሁ",
+    "decline": "አልስማማም"
   },
   "onboarding": {
-    "getStarted": "ጀምር",
     "steps": {
       "welcome": {
+        "icon": "🍅",
         "title": "ወደ TomatoDx እንኳን በደህና መጡ",
         "description": "በማሽን መማሪያ የተጎላበተ የቲማቲም በሽታ መለያ መተግበሪያ በእጅዎ"
       },
       "capture": {
+        "icon": "📸",
         "title": "ያንሱና እና ይመርምሩ",
         "description": "የቲማቲሙን ጤናን ለመለየት ፎቶ ያንሱ ወይም ከጋለሪ ያስገቡ"
       },
       "analysis": {
+        "icon": "🤖",
         "title": "በAI ትንተና",
         "description": "በማሽን መማሪያ የተጎላበተ ፈጣን እና ትክክለኛ ውጤት"
       },
       "history": {
+        "icon": "📊",
         "title": "የምርመራ ታሪክ",
         "description": "የጨረሷችውን ምርመራዎች ለምርመራ ያስቀምጡ እና በፈሉጉት ጊዜ ይመልከቱ"
       }

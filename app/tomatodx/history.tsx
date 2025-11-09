@@ -9,6 +9,7 @@ import { Alert, Animated, Modal, ScrollView, SectionList, StyleSheet, Text, Touc
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { deleteDiagnosis, getRecentDiagnoses } from '../../src/db/repository';
+import { formatEthiopianDate } from '@/src/utils/ethiopianCalendar';
 
 interface DiagnosisItem {
   id: string;
@@ -123,12 +124,17 @@ export default function HistoryScreen() {
         else if (diseaseName.toLowerCase().includes('spot')) emoji = '🦠';
         else if (diseaseName.toLowerCase().includes('mildew')) emoji = '🍂';
 
+        // Format date based on language preference
+        const formattedDate = i18n.language === 'am'
+          ? formatEthiopianDate(date)
+          : date.toLocaleDateString();
+
         return {
           id: d.diagnosisId,
           disease: diseaseName,
           diseaseAlt: diseaseNameAlt,
           confidence,
-          date: date.toISOString().split('T')[0],
+          date: formattedDate,
           timestamp,
           severity,
           status,

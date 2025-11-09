@@ -1,8 +1,10 @@
 // app/tomatodx/profile.tsx - Profile Screen
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import Constants from 'expo-constants';
+import { useFocusEffect, useRouter } from 'expo-router';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Animated, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
@@ -21,30 +23,60 @@ export default function ProfileScreen() {
     const [editName, setEditName] = useState('');
     const [editNickname, setEditNickname] = useState('');
 
-    // Animation values
+    // Enhanced animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(new Animated.Value(30)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.95)).current;
+    const staggerAnim = useRef(new Animated.Value(0)).current;
 
     // Load user data from database
     useEffect(() => {
         loadUserData();
-        startAnimations();
     }, []);
 
-    const startAnimations = () => {
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
+    // Enhanced animation function
+    const startAnimations = useCallback(() => {
+        // Reset animation values
+        fadeAnim.setValue(0);
+        slideAnim.setValue(50);
+        scaleAnim.setValue(0.95);
+        staggerAnim.setValue(0);
+
+        // Staggered entrance animations
+        Animated.stagger(100, [
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 800,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(slideAnim, {
+                    toValue: 0,
+                    tension: 60,
+                    friction: 8,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(scaleAnim, {
+                    toValue: 1,
+                    tension: 80,
+                    friction: 7,
+                    useNativeDriver: true,
+                }),
+            ]),
+            Animated.timing(staggerAnim, {
                 toValue: 1,
                 duration: 600,
                 useNativeDriver: true,
             }),
-            Animated.timing(slideAnim, {
-                toValue: 0,
-                duration: 600,
-                useNativeDriver: true,
-            }),
         ]).start();
-    };
+    }, [fadeAnim, slideAnim, scaleAnim, staggerAnim]);
+
+    // Trigger animations on screen focus
+    useFocusEffect(
+        useCallback(() => {
+            startAnimations();
+        }, [startAnimations])
+    );
 
     const loadUserData = () => {
         try {
@@ -245,7 +277,7 @@ export default function ProfileScreen() {
                             TomatoDx
                         </Text>
                         <Text style={[styles.appVersion, { color: colors.textSecondary }]}>
-                            Version 1.0.0
+                            Version {Constants.expoConfig?.version || '1.0.0'}
                         </Text>
                     </View>
                 </Animated.View>

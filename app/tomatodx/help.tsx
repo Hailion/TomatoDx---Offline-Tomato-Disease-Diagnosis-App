@@ -1,10 +1,11 @@
 // app/tomatodx/help.tsx - Help & Support Screen
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function HelpScreen() {
@@ -13,6 +14,49 @@ export default function HelpScreen() {
     const { t } = useTranslation();
     const colors = Colors[theme];
     const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+    // Animation values
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.95)).current;
+
+    // Animation function
+    const startAnimations = useCallback(() => {
+        // Reset animation values
+        fadeAnim.setValue(0);
+        slideAnim.setValue(50);
+        scaleAnim.setValue(0.95);
+
+        // Staggered entrance animations
+        Animated.stagger(100, [
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 800,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(slideAnim, {
+                    toValue: 0,
+                    tension: 60,
+                    friction: 8,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(scaleAnim, {
+                    toValue: 1,
+                    tension: 80,
+                    friction: 7,
+                    useNativeDriver: true,
+                }),
+            ]),
+        ]).start();
+    }, [fadeAnim, slideAnim, scaleAnim]);
+
+    // Trigger animations on screen focus
+    useFocusEffect(
+        useCallback(() => {
+            startAnimations();
+        }, [startAnimations])
+    );
 
     const toggleFaq = (index: number) => {
         setExpandedFaq(expandedFaq === index ? null : index);

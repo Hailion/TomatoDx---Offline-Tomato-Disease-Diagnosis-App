@@ -1,15 +1,147 @@
 // app/tomatodx/preview.tsx - Preview Screen
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Animated, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { insertDiagnosis, insertImage, upsertDisease } from '../../src/db/repository';
 import { predictFromUri } from '../../src/ml/inference';
 import { initModel } from '../../src/ml/model';
+
+// Research service constants
+const RESEARCH_OPT_IN_KEY = '@tomatodx_research_opt_in';
+const RESEARCH_UPLOAD_COUNT_KEY = '@tomatodx_research_upload_count';
+const RESEARCH_LAST_UPLOAD_KEY = '@tomatodx_research_last_upload';
+const MAX_UPLOADS_PER_DAY = 10;
+const MIN_UPLOAD_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+interface DiagnosisData {
+  diseaseId: string;
+  diseaseName: string;
+  confidence: number;
+  diagnosedAt: string;
+}
+
+// Research service functions
+const isResearchOptedIn = async (): Promise<boolean> => {
+  try {
+    const optIn = await AsyncStorage.getItem(RESEARCH_OPT_IN_KEY);
+    return optIn === 'true';
+  } catch (error) {
+    console.error('Error checking research opt-in:', error);
+    return false;
+  }
+};
+
+const canUploadForResearch = async (): Promise<boolean> => {
+  try {
+    const [totalUploads, lastUploadDate] = await Promise.all([
+      AsyncStorage.getItem(RESEARCH_UPLOAD_COUNT_KEY),
+      AsyncStorage.getItem(RESEARCH_LAST_UPLOAD_KEY)
+    ]);
+
+    // Check daily limit (simplified)
+    const total = parseInt(totalUploads || '0', 10);
+    if (total >= MAX_UPLOADS_PER_DAY) {
+      return false;
+    }
+
+    // Check minimum interval
+    if (lastUploadDate) {
+      const lastUpload = new Date(lastUploadDate).getTime();
+      const now = Date.now();
+      if (now - lastUpload < MIN_UPLOAD_INTERVAL) {
+        return false;
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error checking upload limits:', error);
+    return false;
+  }
+};
+
+const shareForResearch = async (imageUri: string, diagnosis: DiagnosisData): Promise<void> => {
+  try {
+    // Check if user opted in
+    const isOptedIn = await isResearchOptedIn();
+    if (!isOptedIn) {
+      console.log('User not opted in for research sharing');
+      return;
+    }
+
+    // Check rate limits
+    const canUpload = await canUploadForResearch();
+    if (!canUpload) {
+      console.log('Upload rate limit exceeded');
+      return;
+    }
+
+    // Anonymize image
+    const anonymizedImage = await manipulateAsync(
+      imageUri,
+      [{ resize: { width: 224, height: 224 } }],
+      {
+        compress: 0.8,
+        format: SaveFormat.JPEG,
+        base64: false
+      }
+    );
+
+    // Generate anonymous data
+    const researchData = {
+      imageHash: `hash_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      diagnosis: {
+        diseaseName: diagnosis.diseaseName,
+        confidence: diagnosis.confidence,
+        diagnosedAt: new Date(diagnosis.diagnosedAt).toISOString()
+      },
+      deviceInfo: {
+        platform: 'mobile',
+        appVersion: '1.0.0',
+        modelVersion: '1.0.0'
+      },
+      timestamp: Date.now(),
+      sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
+
+    // Log research data (in production, this would upload to server)
+    console.log('📊 Research Data Shared:', {
+      imageHash: researchData.imageHash,
+      diagnosis: researchData.diagnosis.diseaseName,
+      confidence: researchData.diagnosis.confidence,
+      timestamp: new Date(researchData.timestamp).toISOString()
+    });
+
+    // Update upload stats
+    const currentCount = parseInt(await AsyncStorage.getItem(RESEARCH_UPLOAD_COUNT_KEY) || '0', 10);
+    await Promise.all([
+      AsyncStorage.setItem(RESEARCH_UPLOAD_COUNT_KEY, (currentCount + 1).toString()),
+      AsyncStorage.setItem(RESEARCH_LAST_UPLOAD_KEY, new Date().toISOString())
+    ]);
+
+    console.log('✅ Research data shared successfully');
+  } catch (error) {
+    console.error('❌ Error sharing research data:', error);
+  }
+};
 
 const { width } = Dimensions.get('window');
 
@@ -88,6 +220,28 @@ export default function PreviewScreen() {
         prediction.confidence,
         new Date().toISOString()
       );
+
+      // Debug: Log prediction details
+      console.log('🔍 Preview Debug - Prediction object:', {
+        label: prediction.label,
+        confidence: prediction.confidence,
+        type: typeof prediction.confidence
+      });
+
+      // Share for research if user opted in (async, non-blocking)
+      const diagnosisData: DiagnosisData = {
+        diseaseId,
+        diseaseName: prediction.label,
+        confidence: prediction.confidence,
+        diagnosedAt: new Date().toISOString()
+      };
+
+      console.log('🔍 Preview Debug - DiagnosisData:', diagnosisData);
+
+      // Share research data in background (don't await to avoid blocking UI)
+      shareForResearch(uri as string, diagnosisData).catch(error => {
+        console.log('Research sharing failed (non-critical):', error);
+      });
 
       setAnalyzing(false);
 

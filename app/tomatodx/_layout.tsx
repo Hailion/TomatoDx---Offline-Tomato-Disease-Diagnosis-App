@@ -34,7 +34,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="scan"
         options={{
-          title: t('scan.title'),
+          title: t('scan.navtitle'),
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="camera" size={size} color={color} />
           ),

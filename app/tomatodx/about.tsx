@@ -2,9 +2,10 @@
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function AboutScreen() {
@@ -12,6 +13,49 @@ export default function AboutScreen() {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const colors = Colors[theme];
+
+    // Animation values
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.95)).current;
+
+    // Animation function
+    const startAnimations = useCallback(() => {
+        // Reset animation values
+        fadeAnim.setValue(0);
+        slideAnim.setValue(50);
+        scaleAnim.setValue(0.95);
+
+        // Staggered entrance animations
+        Animated.stagger(100, [
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 800,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(slideAnim, {
+                    toValue: 0,
+                    tension: 60,
+                    friction: 8,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(scaleAnim, {
+                    toValue: 1,
+                    tension: 80,
+                    friction: 7,
+                    useNativeDriver: true,
+                }),
+            ]),
+        ]).start();
+    }, [fadeAnim, slideAnim, scaleAnim]);
+
+    // Trigger animations on screen focus
+    useFocusEffect(
+        useCallback(() => {
+            startAnimations();
+        }, [startAnimations])
+    );
 
     const features = [
         {

@@ -22,23 +22,23 @@ const { width, height } = Dimensions.get('window');
 const ONBOARDING_STEPS = [
     {
         icon: '🍅',
-        title: 'Welcome to TomatoDx',
-        description: 'AI-powered tomato disease detection at your fingertips'
+        titleKey: 'onboarding.steps.welcome.title',
+        descriptionKey: 'onboarding.steps.welcome.description'
     },
     {
         icon: '📸',
-        title: 'Scan with Ease',
-        description: 'Capture tomato leaf photos for instant disease analysis'
+        titleKey: 'onboarding.steps.capture.title',
+        descriptionKey: 'onboarding.steps.capture.description'
     },
     {
         icon: '🤖',
-        title: 'AI Analysis',
-        description: 'Get accurate diagnoses and treatment recommendations'
+        titleKey: 'onboarding.steps.analysis.title',
+        descriptionKey: 'onboarding.steps.analysis.description'
     },
     {
         icon: '📊',
-        title: 'Track Progress',
-        description: 'Monitor your plant health with detailed history'
+        titleKey: 'onboarding.steps.history.title',
+        descriptionKey: 'onboarding.steps.history.description'
     }
 ];
 
@@ -140,7 +140,8 @@ export default function OnboardingScreen() {
         }
 
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        router.replace('/tomatodx');
+        // Go back to index to check privacy consent
+        router.replace('/');
     };
 
     const step = ONBOARDING_STEPS[currentStep];
@@ -169,7 +170,7 @@ export default function OnboardingScreen() {
                         styles.skipText,
                         theme === 'dark' && styles.darkText
                     ]}>
-                        Skip
+                        {t('common.skip')}
                     </Text>
                 </TouchableOpacity>
             )}
@@ -196,13 +197,13 @@ export default function OnboardingScreen() {
                             styles.title,
                             theme === 'dark' && styles.darkText
                         ]}>
-                            {step.title}
+                            {t(step.titleKey)}
                         </Text>
                         <Text style={[
                             styles.description,
                             theme === 'dark' && styles.darkSubtext
                         ]}>
-                            {step.description}
+                            {t(step.descriptionKey)}
                         </Text>
                     </View>
                 </Animated.View>
@@ -242,7 +243,7 @@ export default function OnboardingScreen() {
                                 styles.secondaryButtonText,
                                 theme === 'dark' && styles.darkText
                             ]}>
-                                Back
+                                {t('common.back')}
                             </Text>
                         </TouchableOpacity>
                     )}
@@ -256,7 +257,7 @@ export default function OnboardingScreen() {
                         onPress={handleNext}
                     >
                         <Text style={styles.primaryButtonText}>
-                            {isLastStep ? 'Get Started' : 'Continue'}
+                            {isLastStep ? t('common.getStarted') : t('common.continue')}
                         </Text>
                         <Ionicons name="arrow-forward" size={20} color="#fff" />
                     </TouchableOpacity>

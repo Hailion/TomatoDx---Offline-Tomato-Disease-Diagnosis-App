@@ -22,6 +22,7 @@
   },
   "scan": {
     "title": "Scan Leaf",
+    "navtitle": "Scan Leaf",
     "subtitle": "Take or upload a photo of a tomato leaf",
     "takePhoto": "Take Photo",
     "takePhotoDesc": "Use your camera to capture a leaf",
@@ -53,7 +54,9 @@
     "retake": "Retake Photo",
     "analyzing": "Analyzing...",
     "analyzeSuccess": "Analysis completed",
-    "analyzeFailed": "Analysis failed"
+    "analyzeFailed": "Analysis failed",
+    "error": "Error",
+    "analysisError": "Analysis failed"
   },
   "result": {
     "title": "Results",
@@ -126,10 +129,28 @@
     "ok": "OK",
     "cancel": "Cancel",
     "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
     "error": "Error",
     "success": "Success",
-    "loading": "Loading...",
-    "save": "Save"
+    "skip": "Skip",
+    "continue": "Continue",
+    "back": "Back",
+    "getStarted": "Get Started",
+    "retry": "Retry",
+    "close": "Close"
+  },
+  "privacy": {
+    "title": "Privacy & Data",
+    "description": "TomatoDx processes all images locally on your device using AI. Your photos never leave your phone unless you explicitly choose to share them for research.",
+    "localProcessing": "All image analysis happens on your device",
+    "noDataCollection": "No personal data is collected or stored remotely",
+    "secureStorage": "Your scan history is stored securely on your device",
+    "researchTitle": "Help Improve TomatoDx",
+    "researchDescription": "Optionally share anonymized images to help us improve disease detection accuracy for all farmers.",
+    "researchOptIn": "Share anonymized images for research (optional)",
+    "acceptAndContinue": "Agree & Continue",
+    "decline": "Decline"
   },
   "profile": {
     "title": "Profile",
@@ -156,18 +177,22 @@
     "getStarted": "Get Started",
     "steps": {
       "welcome": {
+        "icon": "🍅",
         "title": "Welcome to TomatoDx",
         "description": "AI-powered tomato disease detection at your fingertips"
       },
       "capture": {
+        "icon": "📸",
         "title": "Capture & Scan",
         "description": "Take a photo or upload from gallery to analyze tomato health"
       },
       "analysis": {
+        "icon": "🤖",
         "title": "AI Analysis",
         "description": "Get instant, accurate diagnosis powered by machine learning"
       },
       "history": {
+        "icon": "📊",
         "title": "Track History",
         "description": "Save and review your past diagnoses for better crop management"
       }

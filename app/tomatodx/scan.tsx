@@ -20,24 +20,52 @@ export default function ScanScreen() {
     const { t } = useTranslation();
     const colors = Colors[theme];
 
-    // Animation values
+    // Enhanced animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(new Animated.Value(30)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.8)).current;
+    const buttonScaleAnim = useRef(new Animated.Value(0.9)).current;
+    const cameraTransitionAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
+        // Staggered entrance animations with spring physics
+        Animated.stagger(150, [
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 800,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(slideAnim, {
+                    toValue: 0,
+                    tension: 50,
+                    friction: 8,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(scaleAnim, {
+                    toValue: 1,
+                    tension: 60,
+                    friction: 8,
+                    useNativeDriver: true,
+                }),
+            ]),
+            Animated.spring(buttonScaleAnim, {
                 toValue: 1,
-                duration: 600,
-                useNativeDriver: true,
-            }),
-            Animated.timing(slideAnim, {
-                toValue: 0,
-                duration: 600,
+                tension: 80,
+                friction: 6,
                 useNativeDriver: true,
             }),
         ]).start();
     }, []);
+
+    // Camera transition animation
+    const animateCameraTransition = (toCamera: boolean) => {
+        Animated.timing(cameraTransitionAnim, {
+            toValue: toCamera ? 1 : 0,
+            duration: 400,
+            useNativeDriver: true,
+        }).start();
+    };
 
     if (!permission) {
         return <View />;

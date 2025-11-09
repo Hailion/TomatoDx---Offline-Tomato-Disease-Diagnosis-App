@@ -18,11 +18,9 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.haileamlak.TomatoDx",
-      "jsEngine": "hermes",
-      "enableProguardInReleaseBuilds": true,
-      "enableShrinkResourcesInReleaseBuilds": true
+      "package": "com.haileamlak.TomatoDx"
     },
+    "runtimeVersion": "1.0.0",
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
@@ -46,12 +44,6 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    },
-    "updates": {
-      "enabled": false
-    },
-    "runtimeVersion": {
-      "policy": "nativeVersion"
     }
   }
 }

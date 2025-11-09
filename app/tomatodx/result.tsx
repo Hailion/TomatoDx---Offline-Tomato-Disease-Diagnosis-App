@@ -1,5 +1,6 @@
 // app/tomatodx/result.tsx - Result Screen
 import Colors from '@/constants/Colors';
+import { formatEthiopianDate } from '@/src/utils/ethiopianCalendar';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -107,6 +108,12 @@ export default function ResultScreen() {
       const treatmentLongTerm = t(`diseases.${diseaseId}.treatment.longTerm`, { returnObjects: true, defaultValue: [] }) as string[];
       const prevention = t(`diseases.${diseaseId}.prevention`, { returnObjects: true, defaultValue: [] }) as string[];
 
+      // Format diagnosis date based on language preference
+      const diagnosisDate = new Date(diagnosis.diagnosedAt);
+      const formattedDiagnosisDate = i18n.language === 'am'
+        ? formatEthiopianDate(diagnosisDate)
+        : diagnosisDate.toLocaleString();
+
       setResult({
         disease: diseaseName,
         diseaseAlt: diseaseNameAlt,
@@ -120,7 +127,7 @@ export default function ResultScreen() {
         treatmentImmediate: Array.isArray(treatmentImmediate) ? treatmentImmediate : [],
         treatmentLongTerm: Array.isArray(treatmentLongTerm) ? treatmentLongTerm : [],
         prevention: Array.isArray(prevention) ? prevention : [],
-        diagnosedAt: new Date(diagnosis.diagnosedAt).toLocaleString()
+        diagnosedAt: formattedDiagnosisDate
       });
       setExistingNotes(diagnosis.notes || null);
       setLoading(false);

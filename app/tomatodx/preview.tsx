@@ -13,6 +13,7 @@ import {
   Animated,
   Dimensions,
   Image,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -152,6 +153,13 @@ export default function PreviewScreen() {
   const { t } = useTranslation();
   const colors = Colors[theme];
   const [analyzing, setAnalyzing] = useState(false);
+  const [showLowConfidenceModal, setShowLowConfidenceModal] = useState(false);
+  const [pendingResult, setPendingResult] = useState<{
+    prediction: any;
+    imageId: string;
+    diagnosisId: string;
+    diseaseId: string;
+  } | null>(null);
 
   // Animation values
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -245,8 +253,20 @@ export default function PreviewScreen() {
 
       setAnalyzing(false);
 
-      // Navigate to result screen
-      router.push(`/tomatodx/result?id=${diagnosisId}`);
+      // Check confidence threshold
+      if (prediction.confidence < 0.6) {
+        // Show low confidence modal
+        setPendingResult({
+          prediction,
+          imageId,
+          diagnosisId,
+          diseaseId,
+        });
+        setShowLowConfidenceModal(true);
+      } else {
+        // Navigate to result screen directly
+        router.push(`/tomatodx/result?id=${diagnosisId}`);
+      }
     } catch (error) {
       console.error('Analysis error:', error);
       setAnalyzing(false);
@@ -259,6 +279,20 @@ export default function PreviewScreen() {
 
   const handleRetake = () => {
     router.back();
+  };
+
+  const handleLowConfidenceRetake = () => {
+    setShowLowConfidenceModal(false);
+    setPendingResult(null);
+    router.back();
+  };
+
+  const handleLowConfidenceProceed = () => {
+    setShowLowConfidenceModal(false);
+    if (pendingResult) {
+      router.push(`/tomatodx/result?id=${pendingResult.diagnosisId}`);
+      setPendingResult(null);
+    }
   };
 
   return (
@@ -379,6 +413,79 @@ export default function PreviewScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Low Confidence Modal */}
+      <Modal
+        visible={showLowConfidenceModal}
+        transparent
+        animationType="fade"
+        onRequestClose={handleLowConfidenceRetake}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContainer, { backgroundColor: colors.card }]}>
+            {/* Warning Icon */}
+            <View style={[styles.iconContainer, { backgroundColor: colors.primaryOverlay2 }]}>
+              <Ionicons name="warning" size={48} color={colors.warning} />
+            </View>
+
+            {/* Title */}
+            <Text style={[styles.modalTitle, { color: colors.text }]}>
+              {t('preview.lowConfidence')}
+            </Text>
+
+            {/* Confidence Badge */}
+            {pendingResult && (
+              <View style={[styles.confidenceBadge, { backgroundColor: colors.successOverlay2 }]}>
+                <Ionicons name="analytics" size={20} color={colors.danger} />
+                <Text style={[styles.confidenceText, { color: colors.danger }]}>
+                  {Math.round(pendingResult.prediction.confidence * 100)}% {t('result.confidence')}
+                </Text>
+              </View>
+            )}
+
+            {/* Message */}
+            <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+              {t('preview.lowConfidenceMessage')}
+            </Text>
+
+            {/* Tips */}
+            <View style={[styles.tipsContainer, { backgroundColor: colors.backgroundAlt }]}>
+              <View style={styles.tipRow}>
+                <Ionicons name="sunny" size={18} color={colors.primary} />
+                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                  {t('scan.tip1')}
+                </Text>
+              </View>
+              <View style={styles.tipRow}>
+                <Ionicons name="camera" size={18} color={colors.primary} />
+                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                  {t('scan.tip3')}
+                </Text>
+              </View>
+            </View>
+
+            {/* Action Buttons */}
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalRetakeButton, { backgroundColor: colors.primary }]}
+                onPress={handleLowConfidenceRetake}
+              >
+                <Ionicons name="camera-reverse" size={20} color="#fff" />
+                <Text style={styles.modalButtonText}>{t('preview.retakeRecommended')}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalProceedButton, { borderColor: colors.border }]}
+                onPress={handleLowConfidenceProceed}
+              >
+                <Text style={[styles.modalProceedText, { color: colors.textSecondary }]}>
+                  {t('preview.proceedAnyway')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -521,5 +628,107 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContainer: {
+    width: width - 40,
+    maxWidth: 400,
+    borderRadius: 24,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  iconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  confidenceBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 8,
+    marginBottom: 16,
+  },
+  confidenceText: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  modalMessage: {
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  tipsContainer: {
+    width: '100%',
+    padding: 16,
+    borderRadius: 12,
+    gap: 12,
+    marginBottom: 24,
+  },
+  tipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  tipText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  modalButtonContainer: {
+    width: '100%',
+    gap: 12,
+  },
+  modalButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    gap: 8,
+  },
+  modalRetakeButton: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  modalProceedButton: {
+    borderWidth: 2,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  modalProceedText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

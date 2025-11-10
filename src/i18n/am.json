@@ -45,8 +45,12 @@
     "analyze": "ምስሉን ይተንትኑ",
     "retake": "ፎቶ እንደገና ያንሱ",
     "analyzing": "በመተንተን ላይ...",
-    "analyzeSuccess": "መተንተን ዝግጁ በተሳካ ተጠቀሙ",
-    "analyzeFailed": "መተንተን ዝግጁ አልተሳካም"
+    "analyzeSuccess": "ትንተናው ተሳክቷል",
+    "analyzeFailed": "ትንተናው አልተሳካም",
+    "lowConfidence": "ዝቅተኛ የመተማመን ደረጃ",
+    "lowConfidenceMessage": "የምርመራው የመተማመን ደረጃ ከ60% በታች ነው። ይህ በደካማ ብርሃን፣ ግልጽ ያልሆነ ምስል ወይም ያልተለመዱ ምልክቶች ምክንያት ሊሆን ይችላል። ለተሻለ ትክክለኛነት ፎቶውን እንደገና እንዲያነሱ እንመክራለን።",
+    "retakeRecommended": "ፎቶ እንደገና ያንሱ",
+    "proceedAnyway": "ለማንኛውም ይቀጥሉ"
   },
   "result": {
     "title": "ውጤቶች",
@@ -119,17 +123,6 @@
     "success": "ተቀምጧል",
     "profileUpdated": "መገለጫዎ በተሳካ ሁኔታ ታድሷል",
     "error": "ስህተት"
-  },
-  "common": {
-    "ok": "እሺ",
-    "cancel": "ይቅር",
-    "save": "አስቀምጥ",
-    "share": "አጋራ",
-    "delete": "አጥፋ",
-    "skip": "ዝለል",
-    "back": "ወደ ኋላ",
-    "continue": "ቀጥል",
-    "getStarted": "ጀምር"
   },
   "privacy": {
     "title": "ግላዊነት እና ውሂብ",
@@ -306,6 +299,17 @@
       "privacyPolicy": "የግላዊነት ፖሊሲ",
       "termsOfService": "የአገልግሎት ውሎች"
     }
+  },
+  "common": {
+    "ok": "እሺ",
+    "cancel": "ይቅር",
+    "save": "አስቀምጥ",
+    "share": "አጋራ",
+    "delete": "አጥፋ",
+    "skip": "ዝለል",
+    "back": "ወደ ኋላ",
+    "continue": "ቀጥል",
+    "getStarted": "ጀምር"
   },
   "diseases": {
     "early_blight": {

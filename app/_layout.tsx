@@ -30,6 +30,7 @@ function AppContent() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="tomatodx" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="admin" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>

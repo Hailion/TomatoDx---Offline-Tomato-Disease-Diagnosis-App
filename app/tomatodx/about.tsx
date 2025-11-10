@@ -1,11 +1,12 @@
 // app/tomatodx/about.tsx - About Screen
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function AboutScreen() {
@@ -13,6 +14,37 @@ export default function AboutScreen() {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const colors = Colors[theme];
+
+    // Admin unlock state
+    const [tapCount, setTapCount] = useState(0);
+
+    // Handle version tap for admin unlock
+    const handleVersionTap = async () => {
+        const newCount = tapCount + 1;
+        setTapCount(newCount);
+
+        if (newCount === 6) {
+            // Unlock admin mode
+            await AsyncStorage.setItem('adminUnlocked', 'true');
+            Alert.alert(
+                'Admin Mode Unlocked',
+                'You now have access to the admin panel.',
+                [
+                    {
+                        text: 'Go to Admin',
+                        onPress: () => router.push('/admin' as any)
+                    },
+                    { text: 'Later', style: 'cancel' }
+                ]
+            );
+            setTapCount(0);
+        } else if (newCount > 6) {
+            setTapCount(0);
+        }
+
+        // Reset counter after 2 seconds of inactivity
+        setTimeout(() => setTapCount(0), 2000);
+    };
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -130,9 +162,14 @@ export default function AboutScreen() {
                     <Text style={[styles.tagline, { color: colors.textSecondary }]}>
                         {t('about.subtitle')}
                     </Text>
-                    <Text style={[styles.version, { color: colors.textTertiary }]}>
-                        {t('about.version')} {Constants.expoConfig?.version || '1.0.0'}
-                    </Text>
+                    <TouchableOpacity
+                        style={styles.versionTap}
+                        onPress={handleVersionTap}
+                    >
+                        <Text style={[styles.version, { color: colors.textTertiary }]}>
+                            {t('about.version')} {Constants.expoConfig?.version || '1.0.0'}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Mission Section */}
@@ -491,5 +528,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.05)',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    versionTap: {
+        marginTop: 10,
+
     },
 });

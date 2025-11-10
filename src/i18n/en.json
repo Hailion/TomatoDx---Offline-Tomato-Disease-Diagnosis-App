@@ -56,7 +56,11 @@
     "analyzeSuccess": "Analysis completed",
     "analyzeFailed": "Analysis failed",
     "error": "Error",
-    "analysisError": "Analysis failed"
+    "analysisError": "Analysis failed",
+    "lowConfidence": "Low Confidence Result",
+    "lowConfidenceMessage": "The analysis confidence is below 60%. This may be due to poor lighting, unclear image, or unusual symptoms. We recommend retaking the photo for better accuracy.",
+    "retakeRecommended": "Retake Photo",
+    "proceedAnyway": "Proceed Anyway"
   },
   "result": {
     "title": "Results",
@@ -124,21 +128,6 @@
     "deleteConfirmTitle": "Delete Diagnosis?",
     "deleteConfirmMessage": "This will permanently delete this diagnosis from your history.",
     "deleteError": "Failed to delete diagnosis"
-  },
-  "common": {
-    "ok": "OK",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "skip": "Skip",
-    "continue": "Continue",
-    "back": "Back",
-    "getStarted": "Get Started",
-    "retry": "Retry",
-    "close": "Close"
   },
   "privacy": {
     "title": "Privacy & Data",
@@ -299,6 +288,21 @@
       "privacyPolicy": "Privacy Policy",
       "termsOfService": "Terms of Service"
     }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "skip": "Skip",
+    "continue": "Continue",
+    "back": "Back",
+    "getStarted": "Get Started",
+    "retry": "Retry",
+    "close": "Close"
   },
   "diseases": {
     "early_blight": {

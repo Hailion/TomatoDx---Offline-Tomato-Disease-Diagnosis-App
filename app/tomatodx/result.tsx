@@ -4,8 +4,8 @@ import { formatEthiopianDate } from '@/src/utils/ethiopianCalendar';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Animated, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
@@ -34,7 +34,6 @@ export default function ResultScreen() {
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const colors = Colors[theme];
-  const [saved, setSaved] = useState(false);
   const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [showNotesModal, setShowNotesModal] = useState(false);
@@ -47,9 +46,14 @@ export default function ResultScreen() {
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
   const modalAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
+  useFocusEffect(
+  useCallback(() => {
     loadDiagnosis();
-  }, [id, i18n.language]);
+
+    // no cleanup needed
+    return () => {};
+  }, [id, i18n.language])
+);
 
   const loadDiagnosis = () => {
     try {
@@ -72,23 +76,16 @@ export default function ResultScreen() {
       const diseaseId = mapDiseaseNameToId(diagnosis.nameEn || 'Unknown');
       const diseaseInfo = getDiseaseInfo(diseaseId);
 
-      // Get disease name from translations
-      const diseaseNameEn = t(`diseases.${diseaseId}.name`, { lng: 'en', defaultValue: diagnosis.nameEn || 'Unknown' });
-      const diseaseNameAm = t(`diseases.${diseaseId}.name`, { lng: 'am', defaultValue: diagnosis.nameAm || diseaseNameEn });
+      // Get disease name from database, fallback to translations
+      const diseaseNameEn = diagnosis.nameEn || t(`diseases.${diseaseId}.name`, { lng: 'en', defaultValue: 'Unknown' });
+      const diseaseNameAm = diagnosis.nameAm || t(`diseases.${diseaseId}.name`, { lng: 'am', defaultValue: diseaseNameEn });
       const diseaseName = i18n.language === 'am' ? diseaseNameAm : diseaseNameEn;
       const diseaseNameAlt = i18n.language === 'am' ? diseaseNameEn : diseaseNameAm;
 
       // Determine severity from disease info or confidence
+      // Determine severity based on disease and confidence (same as history)
       let severity = 'none';
-      if (diseaseInfo) {
-        const severityMap: Record<string, string> = {
-          'Low': 'low',
-          'Medium': 'medium',
-          'High': 'high',
-          'Critical': 'high'
-        };
-        severity = severityMap[diseaseInfo.severity] || 'medium';
-      } else if (diseaseName.toLowerCase().includes('healthy')) {
+      if (diseaseId.toLowerCase().includes('healthy')) {
         severity = 'none';
       } else if (confidence >= 90) {
         severity = 'high';
@@ -101,12 +98,134 @@ export default function ResultScreen() {
       // Get emoji from disease info
       const image = diseaseInfo?.image || '🌱';
 
-      // Get disease information from translations
+      // Helper function to parse string to array (handles JSON, newline-separated, or comma-separated)
+      const parseToArray = (str: string | null | undefined, fallback: string[]): string[] => {
+        if (!str || !str.trim()) return fallback;
+        try {
+          // Try parsing as JSON first
+          const parsed = JSON.parse(str);
+          if (Array.isArray(parsed)) return parsed;
+        } catch {
+          // If not JSON, try splitting by newlines or commas
+          const lines = str.split(/\n|,|\r\n/).map(line => line.trim()).filter(line => line.length > 0);
+          if (lines.length > 0) return lines;
+        }
+        return fallback;
+      };
+
+      // Helper function to extract language-specific content from JSON or plain text
+      const getLocalizedContent = (content: string | null | undefined, currentLang: string): string => {
+        if (!content || !content.trim()) return '';
+        try {
+          // Try parsing as JSON with language keys
+          const parsed = JSON.parse(content);
+          if (typeof parsed === 'object' && !Array.isArray(parsed)) {
+            // Check for language-specific keys (en, am, etc.)
+            if (parsed[currentLang]) return parsed[currentLang];
+            // Fallback to English if current language not found
+            if (parsed.en) return parsed.en;
+            // Fallback to Amharic if English not found
+            if (parsed.am) return parsed.am;
+            // If it's an array, return as is (backward compatibility)
+            if (Array.isArray(parsed)) return content;
+          }
+        } catch {
+          // Not JSON, return as plain text (backward compatibility)
+        }
+        return content;
+      };
+
+      // Get disease information from database, fallback to translations
       const description = t(`diseases.${diseaseId}.description`, { defaultValue: t('result.noDescription') });
-      const symptoms = t(`diseases.${diseaseId}.symptoms`, { returnObjects: true, defaultValue: [] }) as string[];
-      const treatmentImmediate = t(`diseases.${diseaseId}.treatment.immediate`, { returnObjects: true, defaultValue: [] }) as string[];
-      const treatmentLongTerm = t(`diseases.${diseaseId}.treatment.longTerm`, { returnObjects: true, defaultValue: [] }) as string[];
-      const prevention = t(`diseases.${diseaseId}.prevention`, { returnObjects: true, defaultValue: [] }) as string[];
+      
+      // Parse symptoms from database with language support
+      const currentLang = i18n.language;
+      const localizedSymptoms = getLocalizedContent(diagnosis.symptoms, currentLang);
+      const dbSymptoms = parseToArray(localizedSymptoms, []);
+      const symptoms = dbSymptoms.length > 0 
+        ? dbSymptoms 
+        : (t(`diseases.${diseaseId}.symptoms`, { returnObjects: true, defaultValue: [] }) as string[]);
+
+      // Parse advice from database with language support - structured format
+      // Format: {"en": {"treatmentImmediate": "...", "treatmentLongTerm": "...", "prevention": "..."}, "am": {...}}
+      let treatmentImmediate: string[] = [];
+      let treatmentLongTerm: string[] = [];
+      let prevention: string[] = [];
+
+      if (diagnosis.advice && diagnosis.advice.trim()) {
+        try {
+          const adviceData = JSON.parse(diagnosis.advice);
+          if (typeof adviceData === 'object' && !Array.isArray(adviceData)) {
+            // Check if it's the new structured format with language keys
+            if (adviceData[currentLang] && typeof adviceData[currentLang] === 'object') {
+              // New format: {"en": {...}, "am": {...}}
+              const langData = adviceData[currentLang];
+              treatmentImmediate = parseToArray(langData.treatmentImmediate || langData.immediate, []);
+              treatmentLongTerm = parseToArray(langData.treatmentLongTerm || langData.longTerm, []);
+              prevention = parseToArray(langData.prevention, []);
+            } else if (adviceData.treatmentImmediate || adviceData.immediate || adviceData.prevention) {
+              // Direct structured data (backward compatibility)
+              treatmentImmediate = parseToArray(adviceData.treatmentImmediate || adviceData.immediate, []);
+              treatmentLongTerm = parseToArray(adviceData.treatmentLongTerm || adviceData.longTerm, []);
+              prevention = parseToArray(adviceData.prevention, []);
+            } else if (adviceData[currentLang] && typeof adviceData[currentLang] === 'string') {
+              // Old format: {"en": "...", "am": "..."} - plain text
+              const localizedAdvice = adviceData[currentLang] || adviceData.en || adviceData.am || '';
+              // Try to parse as structured within the string
+              try {
+                const nestedData = JSON.parse(localizedAdvice);
+                if (typeof nestedData === 'object' && !Array.isArray(nestedData)) {
+                  treatmentImmediate = parseToArray(nestedData.treatmentImmediate || nestedData.immediate, []);
+                  treatmentLongTerm = parseToArray(nestedData.treatmentLongTerm || nestedData.longTerm, []);
+                  prevention = parseToArray(nestedData.prevention, []);
+                }
+              } catch {
+                // Not nested JSON, treat as plain text
+                const allAdvice = parseToArray(localizedAdvice, []);
+                const midPoint = Math.ceil(allAdvice.length / 2);
+                treatmentImmediate = allAdvice.slice(0, midPoint);
+                prevention = allAdvice.slice(midPoint);
+              }
+            }
+          } else if (Array.isArray(adviceData)) {
+            // If it's an array, treat as treatment items
+            treatmentImmediate = adviceData;
+          }
+        } catch {
+          // If not JSON, treat as plain text and split intelligently
+          const localizedAdvice = getLocalizedContent(diagnosis.advice, currentLang);
+          if (localizedAdvice.trim()) {
+            // Look for common patterns like "Treatment:" or "Prevention:" sections
+            const treatmentMatch = localizedAdvice.match(/(?:treatment|immediate)[\s:]*([^]*?)(?=prevention|long.?term|$)/i);
+            const preventionMatch = localizedAdvice.match(/prevention[\s:]*([^]*?)$/i);
+            
+            if (treatmentMatch) {
+              treatmentImmediate = parseToArray(treatmentMatch[1], []);
+            }
+            if (preventionMatch) {
+              prevention = parseToArray(preventionMatch[1], []);
+            }
+            
+            // If no structured sections found, split by paragraphs or newlines
+            if (treatmentImmediate.length === 0 && prevention.length === 0) {
+              const allAdvice = parseToArray(localizedAdvice, []);
+              // Split advice: first half as treatment, second half as prevention
+              const midPoint = Math.ceil(allAdvice.length / 2);
+              treatmentImmediate = allAdvice.slice(0, midPoint);
+              prevention = allAdvice.slice(midPoint);
+            }
+          }
+        }
+      }
+
+      // Fallback to translations if database data is empty
+      if (treatmentImmediate.length === 0 && treatmentLongTerm.length === 0) {
+        treatmentImmediate = t(`diseases.${diseaseId}.treatment.immediate`, { returnObjects: true, defaultValue: [] }) as string[];
+        treatmentLongTerm = t(`diseases.${diseaseId}.treatment.longTerm`, { returnObjects: true, defaultValue: [] }) as string[];
+      }
+      if (prevention.length === 0) {
+        prevention = t(`diseases.${diseaseId}.prevention`, { returnObjects: true, defaultValue: [] }) as string[];
+      }
 
       // Format diagnosis date based on language preference
       const diagnosisDate = new Date(diagnosis.diagnosedAt);

@@ -1,5 +1,6 @@
 // app/tomatodx/history.tsx - History Screen with Filters
 import Colors from '@/constants/Colors';
+import { formatEthiopianDate } from '@/src/utils/ethiopianCalendar';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -9,20 +10,20 @@ import { Alert, Animated, Modal, ScrollView, SectionList, StyleSheet, Text, Touc
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { deleteDiagnosis, getRecentDiagnoses } from '../../src/db/repository';
-import { formatEthiopianDate } from '@/src/utils/ethiopianCalendar';
 
 interface DiagnosisItem {
   id: string;
   disease: string;
   diseaseAlt?: string;
   confidence: number;
-  date: string;
+  date: string;        // date + time (for the row)
   timestamp: number;
   severity: string;
   status: string;
   image: string;
   emoji: string;
   imageUri?: string;
+  groupDate: string;   // NEW: date-only (for section header)
 }
 
 type FilterType = 'all' | 'healthy' | 'diseased' | 'high-risk' | 'treated' | 'pending';
@@ -104,7 +105,7 @@ export default function HistoryScreen() {
 
         // Determine severity based on confidence
         let severity = 'none';
-        if (diseaseName.toLowerCase().includes('healthy')) {
+        if (diseaseId.toLowerCase().includes('healthy')) {
           severity = 'none';
         } else if (confidence >= 90) {
           severity = 'high';
@@ -115,35 +116,42 @@ export default function HistoryScreen() {
         }
 
         // Determine status (you can add a status field to DB later)
-        const status = severity === 'none' ? 'healthy' : 'pending';
+        const status = diseaseId === 'healthy' ? 'healthy' : 'pending';
 
         // Get emoji based on disease
         let emoji = '🌱';
-        if (diseaseName.toLowerCase().includes('healthy')) emoji = '✅';
+        if (diseaseId.toLowerCase().includes('healthy')) emoji = '✅';
         else if (diseaseName.toLowerCase().includes('blight')) emoji = '⚠️';
         else if (diseaseName.toLowerCase().includes('spot')) emoji = '🦠';
         else if (diseaseName.toLowerCase().includes('mildew')) emoji = '🍂';
+        
+        
+        // Date + time for the row
+        const displayDate = i18n.language === 'am'
+          ? formatEthiopianDate(date)           // your Ethiopian formatter WITH time
+          : date.toLocaleString();              // includes time in English
 
-        // Format date based on language preference
-        const formattedDate = i18n.language === 'am'
-          ? formatEthiopianDate(date)
-          : date.toLocaleDateString();
+        // Date-only for grouping / section headers
+        const groupDate = i18n.language === 'am'
+          ? formatEthiopianDate(date).split('፣')[0]  // take only "day month year"
+          : date.toLocaleDateString();               // date only in English
 
-        return {
-          id: d.diagnosisId,
-          disease: diseaseName,
-          diseaseAlt: diseaseNameAlt,
-          confidence,
-          date: formattedDate,
-          timestamp,
-          severity,
-          status,
-          image: d.filePath,
-          emoji,
-          imageUri: d.filePath
-        };
-      });
-      setDiagnoses(formatted);
+      return {
+      id: d.diagnosisId,
+      disease: diseaseName,
+      diseaseAlt: diseaseNameAlt,
+      confidence,
+      date: displayDate,     // used in <Text>{item.date}</Text> (with time)
+      timestamp,
+      severity,
+      status,
+      image: d.filePath,
+      emoji,
+      imageUri: d.filePath,
+      groupDate,             // used only for grouping / section titles
+    };
+    });
+    setDiagnoses(formatted);
     } catch (error) {
       console.error('Error loading diagnoses:', error);
       setDiagnoses([]);
@@ -250,10 +258,10 @@ export default function HistoryScreen() {
     const groups: { [key: string]: DiagnosisItem[] } = {};
 
     filteredAndSortedScans.forEach(scan => {
-      if (!groups[scan.date]) {
-        groups[scan.date] = [];
+      if (!groups[scan.groupDate]) {
+        groups[scan.groupDate] = [];
       }
-      groups[scan.date].push(scan);
+      groups[scan.groupDate].push(scan);
     });
 
     return Object.entries(groups).map(([date, scans]) => ({

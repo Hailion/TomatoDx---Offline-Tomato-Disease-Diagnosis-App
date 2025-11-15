@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     declineButton: {
-        flex: 1,
+        flex: 2,
         paddingVertical: 14,
         paddingHorizontal: 20,
         borderRadius: 12,

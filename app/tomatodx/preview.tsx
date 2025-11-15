@@ -22,8 +22,6 @@ import {
 } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { insertDiagnosis, insertImage, upsertDisease } from '../../src/db/repository';
-import { predictFromUri } from '../../src/ml/inference';
-import { initModel } from '../../src/ml/model';
 
 // Research service constants
 const RESEARCH_OPT_IN_KEY = '@tomatodx_research_opt_in';
@@ -197,6 +195,13 @@ export default function PreviewScreen() {
     setAnalyzing(true);
 
     try {
+      // Dynamically import TensorFlow.js ML modules only when needed
+      // This reduces initial bundle size significantly
+      const [{ initModel }, { predictFromUri }] = await Promise.all([
+        import('../../src/ml/model'),
+        import('../../src/ml/inference'),
+      ]);
+
       // Initialize ML model
       await initModel();
 
@@ -214,10 +219,10 @@ export default function PreviewScreen() {
       // Save or update disease info
       upsertDisease(
         diseaseId,
-        prediction.label,
-        prediction.label, // You can add Amharic translation here
-        '', // symptoms
-        '' // advice
+        prediction.label, // English name
+        undefined,             // no Amharic here – use translations instead
+        '',               // symptoms
+        ''                // advice
       );
 
       // Save diagnosis
@@ -459,6 +464,12 @@ export default function PreviewScreen() {
               <View style={styles.tipRow}>
                 <Ionicons name="camera" size={18} color={colors.primary} />
                 <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                  {t('scan.tip2')}
+                </Text>
+              </View>
+               <View style={styles.tipRow}>
+                <Ionicons name="camera" size={18} color={colors.primary} />
+                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
                   {t('scan.tip3')}
                 </Text>
               </View>
@@ -479,7 +490,7 @@ export default function PreviewScreen() {
                 onPress={handleLowConfidenceProceed}
               >
                 <Text style={[styles.modalProceedText, { color: colors.textSecondary }]}>
-                  {t('preview.proceedAnyway')}
+                  {t('preview.proceedAnyway')}<Ionicons name="chevron-back" size={16} color={colors.background}></Ionicons>
                 </Text>
               </TouchableOpacity>
             </View>

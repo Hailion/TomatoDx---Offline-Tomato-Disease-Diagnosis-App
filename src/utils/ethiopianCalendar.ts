@@ -92,10 +92,11 @@ export const formatEthiopianDate = (gregorianDate: Date) => {
 
     // Convert to 12-hour format for display
     const displayHours = (ethiopianHour % 12) || 12;
-    const timeIndicator = isDay ? 'ቀን' : 'ሌሊት'; // 'day' : 'night'
+    const timeIndicator = isDay ? 'ቀን' : 'ማታ'; // 'day' : 'night'
     const timeString = `${displayHours}:${minutes.toString().padStart(2, '0')} ${timeIndicator}`;
 
     return `${ethDate.day} ${monthName} ${ethDate.year}፣ ${timeString}`;
 };
 
 export { ETHIOPIAN_MONTHS };
+

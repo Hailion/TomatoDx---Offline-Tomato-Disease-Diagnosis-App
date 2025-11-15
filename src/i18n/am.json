@@ -7,7 +7,7 @@
     "scanHistory": "የምርመራ ታሪክ",
     "scanHistoryDesc": "የቀደሙ የምርመራ ውጤቶችዎን ይመልከቱ",
     "insights": "እይታዎች",
-    "insightsDesc": "የግብርና ምክሮች እና ምክሮችን ያግኙ",
+    "insightsDesc": "የግብርና ምክሮች እና የሚወሰዱ እርምጃዎች ያግኙ",
     "quickActions": "ፈጣን እርምጃዎች",
     "recentActivity": "የቅርብ ምርመራዎች",
     "lastScan": "የመጨረሻ ምርመራ የተደረገው",
@@ -31,8 +31,8 @@
     "tip1": "ለትክክለኛ ምርመራ ቅጠሉ በቂ ብርሃን ውስጥ መሆኑን እና ግልጽ ሆኖ እንዲታይ ያድርጉ።",
     "tip2": "ትኩረትዎን የተጎዱ ቅጠሎች ላይ ያድርጉ።",
     "tip3": "የፎቶው ጥራት በእንቅስቃሴ እንዳይደበዝዝ ካሜራውን አረጋግተው በመያዝ ያንሱ።",
-    "quickStart": "ፈጣን ምርመራ",
-    "quickStartDesc": "የቲማቲሙን ጤናን ለመርመር ፎቶ ያንሱ ወይም ፎቶ ከጋለሪ ያስገቡ።",
+    "recentScan": "የቅርብ ምርመራዎች",
+    "recentScanDesc": "በቅርብ ጊዜ ያደረጉትን የቲማቲም ምርመራ ውጤቶች በፍጥነት ይክፈቱና ይመልከቱ።",
     "error": "ስህተት",
     "captureError": "ፎቶ ማንሳት አልተሳካም"
   },
@@ -55,6 +55,13 @@
   "result": {
     "title": "ውጤቶች",
     "confidence": "የመተማመን ደረጃ",
+    "symptoms": "ምልክቶች",
+    "immediateActions": "ወዲያውኑ የሚወሰዱ እርምጃዎች",
+    "longTermActions": "የረጅም ጊዜ እርምጃዎች",
+    "loading": "በመጫን ላይ...",
+    "error": "ስህተት",
+    "notFound": "ምርመራው አልተገኘም",
+"loadError": "ውጤቱን መጫን አልተሳካም",
     "treatment": "የሚመከር ሕክምና",
     "prevention": "የመከላከል ምክሮች",
     "quickActions": "ፈጣን እርምጃዎች",
@@ -81,6 +88,15 @@
     "noResults": "ምንም ታሪክ የለም",
     "noResultsDesc": "ለዚህ የቀን ገድብ ምንም የምርመራ ታሪክ የለም",
     "resetFilters": "ማጣሪያ አድስ",
+    "status": {
+  "title": "ሁኔታ",
+  "healthy": "ጤናማ",
+  "diseased": "የታመሙ",
+  "all": "ሁሉም",
+  "highRisk": "ከባድ ሁኔታ",
+  "treated": "የታከሙ",
+  "pending": "በሂደት ላይ"
+},
     "filters": {
       "title": "ማጣሪያ",
       "healthy": "ጤናማ",
@@ -126,9 +142,9 @@
   },
   "privacy": {
     "title": "ግላዊነት እና ውሂብ",
-    "description": "TomatoDx ሁሉንም ምስሎች AIን በመጠቀም በመሣሪያዎ ላይ ያስኬዳል። እራስዎ ፈልገው ለምርምር ለማጋራት ካለፈለጉ በስተቀር ፎቶዎችዎ ከስልክዎ አይወጡም።",
+    "description": "TomatoDx ሁሉንም ምስሎች AIን በመጠቀም በመሣሪያዎ ውስጥ ያስኬዳል። እራስዎ ፈልገው ለምርምር ለማጋራት ካለፈቀዱ በስተቀር ያነሷቸው ፎቶዎችዎ ከስልክዎ አይወጡም።",
     "localProcessing": "ሁሉም የምስል ትንተና/ምርመራ የሚከናወነው በመሳሪያዎ ላይ ነው",
-    "noDataCollection": "ምንም የግል መረጃ አይሰበሰብም ወይም ሌላ ቦታ አይከማችም",
+    "noDataCollection": "ምንም አይነት የግል መረጃ አይሰበሰብም ወይም ሌላ ቦታ አይከማችም",
     "secureStorage": "የእርስዎ የምርመራ ታሪክ ደህንነቱ በተጠበቀ ሁኔታ በመሳሪያዎ ላይ ተቀምጧል",
     "researchTitle": "TomatoDxን ለማሻሻል ያግዙ",
     "researchDescription": "ለሁሉም ገበሬዎች በሽታን የመለየት ትክክለኛነት ለማሻሻል ይረዳን ዘንድ ስም-አልባ ምስሎችን በማጋራት ይተባበሩን ",
@@ -162,7 +178,7 @@
   },
   "admin": {
     "title": "የአስተዳደር ገጽ",
-    "subtitle": "የስርዓት አስተዳደር እና ውቅር",
+    "caution": "የአስተዳድሪ ቦታ - በጥንቃቄ ይጠቀሙ",
     "online": "መስመር ላይ",
     "updateInstructions": "የሞዴል ዝመና መመሪያዎች",
     "systemInformation": "የስርዓት መረጃ",
@@ -172,32 +188,63 @@
     "totalScans": "ጠቅላላ ምርመራዎች",
     "modelManagement": {
       "title": "የሞዴል አስተዳደር",
-      "subtitle": "በሽታን ለመለየት የ AI ሞዴልን ያዘምኑ እና ያስተዳድሩ",
-      "updateInstructions": "የሞዴል ዝመና መመሪያዎች",
+      "updateModel": {
+        "title": "የሞዴል ዝመና",
+        "uploadModel": "u l",
+        "uploadModelDesc": "upload description"
+      },
+      "updateInstructions": "አዲስ የ TensorFlow.js ሞዴል ይጫኑ።",
       "runSystemCheck": "የስርዓት ፍተሻን ያሂዱ",
       "currentModel": "የአሁኑ ሞዴል",
-      "checkUpdates": "ለዝመናዎች ፍቺ አድርግ",
+      "checkUpdates": "ዝመናዎች ካሉ ፈልግ",
       "lastChecked": "የመጨረሻ ፍቺ",
-      "noUpdates": "ምንም ዝመናዎች አልተገኙም",
+      "noUpdates": "ምንም ዝመናዎች አልተገኘም",
       "updateAvailable": "ዝመና አለ",
-      "updating": "በመዘመን...",
+      "updating": "በማዘመን ላይ...",
       "updateSuccess": "ሞዴሉ በተሳካ ተዘመነ",
       "updateFailed": "የሞዴል ዝመና አልተሳካም"
     },
-    "dataManagement": {
+    "databaseManagement": {
       "title": "የውሂብ አስተዳደር",
-      "subtitle": "የተወሰኑ ምስሎችን እና የምርመራ ውሂብን ያስተዳድሩ",
-      "clearData": "ሁሉንም ውሂብ አጽዳ",
-      "exportData": "ውሂብ አስገባ",
-      "clearCache": "የምስል ካሽ አጽዳ",
-      "confirmClear": "ሁሉንም ውሂብ መጽዳት እንደ ፈለጉ እርግጠኛ ነዎት? ይህ እርምጃ አይመለስም።"
+      "edit": {
+        "title": "ውሂብ አስተካክል",
+        "titleDesc": "Database editor functionality. Edit disease information here.",
+        "editDisease": "የበሽታዎችን ወሂብ አስተካክል",
+        "editDiseaseDesc": "የበሽታዎችን መረጃ አሻሽል"
+      }
     },
     "analytics": {
       "title": "ትንተና",
-      "subtitle": "የአገልግሎት ስታቲስቲኮችን እና የምርመራ እንቅስቃሴዎችን ይመልከቱ",
-      "accuracy": "ትክክለኛነት"
-    }
-  },
+      "overviewTitle": "የትንተና ታሪክ",
+      "loading": "በመጠቀም ላይ...",
+      "summaryTitle": "የምርመራ ታሪክ",
+      "avgConfidence": "አማካይ የመተማመን ደረጃ",
+      "healthyCount": "ጠነኛ ምርመራዎች",
+      "topDisease": "ተደጋጋሚ በሽታ",
+      "last7Days": "ሳምንታዊ የምርመራ ታሪክ",
+      "levels": "የመተማመን ደረጃ - ዝቅተኛ: {{low}}, መካከለኛ: {{medium}}, ከፍተኛ: {{high}}",
+      "lowRisk": "ዝቅተኛ ስጋት",
+      "mediumRisk": "መካከለኛ ስጋት",
+      "highRisk": "ከፍተኛ ስጋት",
+      "verifyingAccess": "በመጠቀም ላይ...",
+      "authError": "የአድሚን ፈቃድ የሎትም",
+      "loadError": "የመጫን ስህተት",
+      "exportData": "መረጃ ወደ መሳሪያ አስቅምጥ",
+      "exportSuccess": "በተሳካ ሁኔታ ተቀምጧል",
+      "exportError": "አልተሳካም"
+    },
+    "system": {
+      "title": "ስርዓት",
+      "lockAdmin": {
+        "title":"የአስተዳደር ገጽ ዝጋ",
+        "resetAdminAccess": "የአስተዳደር ገጽ ፈቃድ አንሳ",
+        "resetQuestion": "እርግጠኛ ነዎት የአስተዳደር ገጹን መዝጋት ይፈልጋሉ?"
+      },
+        "removeAdminAccess": "የአስተዳደር ገጽ ፈቃድ አስወግድ"
+
+    },
+    "info": "የግንባታ አስተዳደር ቦታ። ግንባታ ትክክለኛ የሆነ የማስተዳደር ፈቃድ ይጠይቃል። "
+    },
   "help": {
     "title": "እገዛ እና ድጋፍ",
     "welcomeTitle": "እንዴት ልንረዳዎ እንችላለን?",
@@ -246,25 +293,24 @@
   "about": {
     "title": "ስለ TomatoDx",
     "subtitle": "በ ኤይ የበለጸገ የቲማቲም በሽታ መለያ",
-    "version": "ስሪት",
     "mission": "ተልእኳችን",
     "missiondesc": "TomatoDx አርቴፊሻል ኢንተለጀንስ በመጠቀም ፈጣን ትክክለኛ የቲማቲም በሽታን በመለየት ገበሬዎችን እና አትክልተኞችን ያግዛል። ግባችን የእጽዋት ጤና አጠባበቅ ለሁሉም ሰው ተደራሽ ማድረግ፣ የሰብል ምርትን ለመጨመር እና ፀረ ተባይ መድኃኒቶችን አላግባብ መጠቀምን ለመቀነስ ነው።",
     "features": "ባህሪያት",
     "featuresList": {
       "aiDetection": {
         "title": "በኤይ የታገዘ ልየታ",
-        "description": "ለትክክለኛ በሽታ መለያየት የላቀ የማሽን ትምህርት"
+        "description": "ለትክክለኛ በሽታ ልየታ የላቀ የማሽን ትምህርት"
       },
       "instantResults": {
         "title": "ፈጣን ውጤቶች",
-        "description": "ከዝርዝር የሕክምና ምክሮች ጋር በሰከንዶች ውስጥ ምርመራ ያግኙ"
+        "description": "ከዝርዝር የሕክምና ምክሮች ጋር በሰከንዶች ውስጥ የምርመራ ውጤት ያግኙ"
       },
       "scanHistory": {
-        "title": "ታሪክን ቃኝ",
-        "description": "የዕፅዋትን ጤና በጊዜ ሂደት በተሟላ ታሪክ ይከታተሉ"
+        "title": "ታሪክ",
+        "description": "የዕፅዋትን ጤና በጊዜ ሂደት ፤ በተሟላ ታሪክ ይከታተሉ"
       },
       "multiLanguage": {
-        "title": "ብዙ ቋንቋ",
+        "title": "ቋንቋዎች",
         "description": "ለሰፊ ተደራሽነት በእንግሊዝኛ እና በአማርኛ ይገኛል"
       }
     },
@@ -298,6 +344,11 @@
       "copyright": "2025 TomatoDx። መብቱ በሕግ የተጠበቀ።",
       "privacyPolicy": "የግላዊነት ፖሊሲ",
       "termsOfService": "የአገልግሎት ውሎች"
+    },
+    "modal": {
+      "title": "አድሚን ሞድ ተከፍቷል",
+      "subtitle": "አሁን ወደ አድሚን ገጽ መሄድ ይችላሉ።",
+      "goToAdmin": "ወደ አድሚን ገጽ"
     }
   },
   "common": {
@@ -309,7 +360,15 @@
     "skip": "ዝለል",
     "back": "ወደ ኋላ",
     "continue": "ቀጥል",
-    "getStarted": "ጀምር"
+    "getStarted": "ጀምር",
+    "later": "ተመለስ",
+    "version": "ስሪት",
+    "edit": "አስተካክል",
+"loading": "በመጫን ላይ...",
+"error": "ስህተት",
+"success": "ተሳክቷል",
+"retry": "እንደገና ሞክር",
+"close": "ዝጋ"
   },
   "diseases": {
     "early_blight": {

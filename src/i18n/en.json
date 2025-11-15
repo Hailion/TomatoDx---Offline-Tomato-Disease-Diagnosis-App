@@ -5,7 +5,6 @@
     "capture": "Capture",
     "history": "History",
     "settings": "Settings",
-    "admin": "Admin",
     "tagline": "AI-powered tomato disease detection",
     "quickScan": "Quick Scan",
     "quickScanDesc": "Scan tomato leaves for instant diagnosis",
@@ -32,8 +31,8 @@
     "tip1": "Ensure good lighting",
     "tip2": "Focus on the affected area",
     "tip3": "Keep the leaf centered",
-    "quickStart": "Quick Start",
-    "quickStartDesc": "Take a clear photo of tomato leaves for instant disease detection",
+    "recentScan": "Recent scans",
+    "recentScanDesc": "Review your last tomato leaf scans and quickly reopen their results",
     "cameraPermission": "Camera Permission Required",
     "cameraPermissionDesc": "Please grant camera access to scan leaves",
     "grantPermission": "Grant Permission",
@@ -287,7 +286,68 @@
       "copyright": "2025 TomatoDx. All rights reserved.",
       "privacyPolicy": "Privacy Policy",
       "termsOfService": "Terms of Service"
+    },
+    "modal": {
+      "title": "Admin Mode Unlocked",
+      "subtitle": "You now have access to the Admin panel.",
+      "goToAdmin": "Go  to Admin"
     }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "caution": "Admin Mode - Use with caution",
+    "modelManagement": {
+      "title": "Admin Panel",
+      "updateModel": {
+        "title": "Update Model",
+        "uploadModel": "Upload Model",
+        "uploadModelDesc": "Model upload functionality. Select a TensorFlow.js model file to upload."
+      },
+        "updateInstructions": "Upload new TensorFlow.js Model",
+        "updateAvailable": "Updates Avalable",
+        "updating": "Updating...",
+        "updateSuccess": "Updated Successfully",
+        "updateFailed": "Update Failed"
+      },
+    "databaseManagement": {
+      "title": "Database Management",
+      "edit": {
+        "title": "Edit Database",
+        "titleDesc": "Database editor functionality. Edit disease information here.",
+        "editDisease": "Edit disease DB",
+        "editDiseaseDesc": "Modify diseases information"
+      }
+    },
+    "analytics": {
+        "title": "Analytics",
+        "overviewTitle": "Overview",
+        "loading": "Loading analytics…",
+        "summaryTitle": "Total diagnoses: {{count}}",
+        "avgConfidence": "Average confidence: {{value}}",
+        "healthyCount": "Healthy leaves: {{count}}",
+        "topDisease": "Most common: {{name}} ({{count}} cases)",
+        "last7Days": "Scans in the last 7 days",
+        "levels": "Confidence levels - Low: {{low}}, Medium: {{medium}}, High: {{high}}",
+        "lowRisk": "Low risk",
+        "mediumRisk": "Medium risk",
+        "highRisk": "High risk",
+        "verifyingAccess": "Verifying admin access…",
+        "authError": "Unable to verify admin access.",
+        "loadError": "Failed to load analytics data.",
+        "exportData": "Export analytics data",
+        "exportSuccess": "Analytics data exported successfully.",
+        "exportError": "Failed to export analytics data."
+    },
+    "system": {
+      "title": "System",
+      "lockAdmin": {
+        "title": "Lock Admin Mode",
+        "resetAdminAccess": "Reset Admin Access",
+        "resetQuestion": "Are you sure you want to lock admin mode?"
+      },
+      "removeAdminAccess": "Remove Admin access"
+    },
+    "info": "Development admin panel. Production needs proper authentication."
   },
   "common": {
     "ok": "OK",
@@ -302,7 +362,9 @@
     "back": "Back",
     "getStarted": "Get Started",
     "retry": "Retry",
-    "close": "Close"
+    "close": "Close",
+    "later": "Later",
+    "version": "Version"
   },
   "diseases": {
     "early_blight": {

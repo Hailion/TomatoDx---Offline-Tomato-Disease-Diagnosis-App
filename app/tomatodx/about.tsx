@@ -6,7 +6,7 @@ import Constants from 'expo-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function AboutScreen() {
@@ -14,6 +14,7 @@ export default function AboutScreen() {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const colors = Colors[theme];
+    const [visible, setVisible] = useState(false);
 
     // Admin unlock state
     const [tapCount, setTapCount] = useState(0);
@@ -26,17 +27,7 @@ export default function AboutScreen() {
         if (newCount === 6) {
             // Unlock admin mode
             await AsyncStorage.setItem('adminUnlocked', 'true');
-            Alert.alert(
-                'Admin Mode Unlocked',
-                'You now have access to the admin panel.',
-                [
-                    {
-                        text: 'Go to Admin',
-                        onPress: () => router.push('/admin' as any)
-                    },
-                    { text: 'Later', style: 'cancel' }
-                ]
-            );
+            setVisible(true);
             setTapCount(0);
         } else if (newCount > 6) {
             setTapCount(0);
@@ -45,6 +36,14 @@ export default function AboutScreen() {
         // Reset counter after 2 seconds of inactivity
         setTimeout(() => setTapCount(0), 2000);
     };
+
+    const handleCancel = () => {
+        setVisible(false);
+        setTapCount(0);
+    };
+
+    const handleGoToAdmin = () => { setVisible(false); router.push('/admin' as any) }
+
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -167,7 +166,7 @@ export default function AboutScreen() {
                         onPress={handleVersionTap}
                     >
                         <Text style={[styles.version, { color: colors.textTertiary }]}>
-                            {t('about.version')} {Constants.expoConfig?.version || '1.0.0'}
+                            {t('common.version')} {Constants.expoConfig?.version || '1.0.0'}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -277,7 +276,7 @@ export default function AboutScreen() {
                     <View style={styles.links}>
                         <TouchableOpacity
                             style={styles.link}
-                            onPress={() => Linking.openURL('https://tomatodx.com/privacy')}
+                        // onPress={() => Linking.openURL('https://tomatodx.com/privacy')}
                         >
                             <Text style={[styles.linkText, { color: colors.textSecondary }]}>
                                 {t('about.footer.privacyPolicy')}
@@ -288,7 +287,7 @@ export default function AboutScreen() {
                         </Text>
                         <TouchableOpacity
                             style={styles.link}
-                            onPress={() => Linking.openURL('https://tomatodx.com/terms')}
+                        // onPress={() => Linking.openURL('https://tomatodx.com/terms')}
                         >
                             <Text style={[styles.linkText, { color: colors.textSecondary }]}>
                                 {t('about.footer.termsOfService')}
@@ -300,25 +299,67 @@ export default function AboutScreen() {
                     <View style={styles.socialLinks}>
                         <TouchableOpacity
                             style={styles.socialLink}
-                            onPress={() => Linking.openURL('https://t.me/hailion')}
+                        // onPress={() => Linking.openURL('https://t.me/hailion')}
                         >
                             <Ionicons name="paper-plane" size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.socialLink}
-                            onPress={() => Linking.openURL('https://github.com/haileamlak12')}
+                        // onPress={() => Linking.openURL('https://github.com/haileamlak12')}
                         >
                             <Ionicons name="logo-github" size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.socialLink}
-                            onPress={() => Linking.openURL('https://x.com/tomatodx')}
+                        // onPress={() => Linking.openURL('https://x.com/tomatodx')}
                         >
                             <Ionicons name="logo-twitter" size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>
+
+            <Modal
+                visible={visible}
+                transparent
+                animationType="fade"
+                onRequestClose={handleCancel}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                        <View style={[styles.modalIcon, { backgroundColor: colors.background + '80' }]}>
+                            <Text style={styles.modalEmoji}>
+                                <Ionicons name="key" size={40} color={colors.primary} />
+                            </Text>
+                        </View>
+                        <Text style={[styles.modalTitle, { color: colors.text }]}>
+                            {t('about.modal.title')}
+                        </Text>
+                        <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+                            {t('about.modal.subtitle')}
+                        </Text>
+                        <View style={styles.modalButtons}>
+
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: colors.backgroundAlt }]}
+                                onPress={handleCancel}
+                            >
+                                <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                                    {t('common.later')}
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.modalButtonAdmin, { backgroundColor: colors.primary }]}
+                                onPress={handleGoToAdmin}
+                            >
+                                <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                                    {t('about.modal.goToAdmin')} <Ionicons name="chevron-forward" size={16} color={colors.text}></Ionicons>
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -515,6 +556,77 @@ const styles = StyleSheet.create({
     linkSeparator: {
         fontSize: 14,
     },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    modalContent: {
+        borderRadius: 20,
+        padding: 24,
+        width: '100%',
+        maxWidth: 400,
+        alignItems: 'center',
+    },
+    modalIcon: {
+        marginBottom: 16,
+        width: 80,
+        height: 80,
+        borderRadius: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalEmoji: {
+        fontSize: 48,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    modalMessage: {
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 8,
+        lineHeight: 20,
+    },
+    modalDiseaseName: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 24,
+        textAlign: 'center',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        gap: 12,
+        width: '100%',
+    },
+    modalButton: {
+        flex: 1,
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    modalButtonCancel: {
+        flex: 1.3,
+        backgroundColor: '#f3f4f6',
+    },
+    modalButtonAdmin: {
+        flex: 2,
+        backgroundColor: '#f3f4f6',
+    },
+    modalButtonDelete: {
+        backgroundColor: '#ef4444',
+    },
+    modalButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+    },
+
     socialLinks: {
         flexDirection: 'row',
         alignItems: 'center',

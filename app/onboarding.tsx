@@ -1,4 +1,5 @@
 // app/onboarding.tsx
+import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
@@ -45,6 +46,7 @@ const ONBOARDING_STEPS = [
 export default function OnboardingScreen() {
     const router = useRouter();
     const { theme } = useTheme();
+    const colors = Colors[theme];
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
 
@@ -150,8 +152,7 @@ export default function OnboardingScreen() {
 
     return (
         <View style={[
-            styles.container,
-            theme === 'dark' ? styles.darkContainer : styles.lightContainer
+            styles.container, { backgroundColor: colors.background }
         ]}>
             {/* Background Pattern */}
             <View style={styles.backgroundPattern}>

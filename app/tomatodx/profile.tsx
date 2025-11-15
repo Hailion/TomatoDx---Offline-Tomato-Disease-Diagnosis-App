@@ -6,7 +6,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getCurrentUser, upsertUser } from '../../src/db/repository';
 
@@ -124,28 +124,28 @@ export default function ProfileScreen() {
             value: i18n.language === 'en' ? 'English' : 'Amharic',
             onPress: () => i18n.changeLanguage(i18n.language === 'en' ? 'am' : 'en'),
         },
-        {
-            icon: 'notifications',
-            title: t('profile.notifications'),
-            component: (
-                <Switch
-                    value={notifications}
-                    onValueChange={setNotifications}
-                    trackColor={{ false: colors.muted, true: colors.primary }}
-                />
-            ),
-        },
-        {
-            icon: 'analytics',
-            title: t('profile.analytics'),
-            component: (
-                <Switch
-                    value={analytics}
-                    onValueChange={setAnalytics}
-                    trackColor={{ false: colors.muted, true: colors.primary }}
-                />
-            ),
-        },
+        // {
+        //     icon: 'notifications',
+        //     title: t('profile.notifications'),
+        //     component: (
+        //         <Switch
+        //             value={notifications}
+        //             onValueChange={setNotifications}
+        //             trackColor={{ false: colors.muted, true: colors.primary }}
+        //         />
+        //     ),
+        // },
+        // {
+        //     icon: 'analytics',
+        //     title: t('profile.analytics'),
+        //     component: (
+        //         <Switch
+        //             value={analytics}
+        //             onValueChange={setAnalytics}
+        //             trackColor={{ false: colors.muted, true: colors.primary }}
+        //         />
+        //     ),
+        // },
         {
             icon: 'help-circle',
             title: t('profile.help'),
@@ -258,7 +258,7 @@ export default function ProfileScreen() {
                                         {item.value}
                                     </Text>
                                 )}
-                                {item.component}
+                                {/* {item.component} */}
                                 <Ionicons
                                     name="chevron-forward"
                                     size={20}
@@ -277,7 +277,7 @@ export default function ProfileScreen() {
                             TomatoDx
                         </Text>
                         <Text style={[styles.appVersion, { color: colors.textSecondary }]}>
-                            Version {Constants.expoConfig?.version || '1.0.0'}
+                            {t("common.version")} {Constants.expoConfig?.version || '1.0.0'}
                         </Text>
                     </View>
                 </Animated.View>

@@ -48,6 +48,20 @@ export function upsertDisease(diseaseId: string, nameEn?: string, nameAm?: strin
     );
 }
 
+export function getAllDiseases() {
+    return getAll<{ diseaseId: string; nameEn?: string; nameAm?: string; symptoms?: string; advice?: string }>(
+        `SELECT diseaseId, nameEn, nameAm, symptoms, advice FROM Disease ORDER BY diseaseId`
+    );
+}
+
+export function getDiseaseById(diseaseId: string) {
+    const rows = getAll<{ diseaseId: string; nameEn?: string; nameAm?: string; symptoms?: string; advice?: string }>(
+        `SELECT diseaseId, nameEn, nameAm, symptoms, advice FROM Disease WHERE diseaseId = ? LIMIT 1`,
+        [diseaseId]
+    );
+    return rows[0] ?? null;
+}
+
 export function insertDiagnosis(diagnosisId: string, imageId: string, diseaseId: string, confidence: number, diagnosedAtISO: string, notes?: string) {
     run(
         `INSERT OR REPLACE INTO Diagnosis (diagnosisId, imageId, diseaseId, confidence, diagnosedAt, notes)
@@ -147,6 +161,18 @@ export function getAllDiagnosesExport() {
      LEFT JOIN Disease ds ON ds.diseaseId = d.diseaseId
      ORDER BY d.diagnosedAt DESC`;
     return getAll(sql, []);
+}
+
+// Lightweight helper for admin-info export button. It returns all diagnoses
+// so the UI can decide how to persist/share them (e.g. write to a file).
+export async function exportAnalyticsData() {
+    try {
+        const diagnoses = getAllDiagnosesExport();
+        return { success: true, data: diagnoses as any[] };
+    } catch (error: any) {
+        console.error('exportAnalyticsData error:', error);
+        return { success: false, error: error?.message ?? 'Unknown error' };
+    }
 }
 
 export function upsertModelMeta(modelVersion: string, exportedAtISO?: string, classes?: string[]) {

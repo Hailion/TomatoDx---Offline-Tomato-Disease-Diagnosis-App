@@ -1,113 +1,145 @@
 // app/tomatodx/scan.tsx - Compact Scan Screen
 import Colors from '@/constants/Colors';
+import { getRecentDiagnoses } from '@/src/db/repository';
 import { Ionicons } from '@expo/vector-icons';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ScanScreen() {
-    const [permission, requestPermission] = useCameraPermissions();
-    const [isCameraActive, setIsCameraActive] = useState(false);
-    const cameraRef = useRef<CameraView>(null);
+    const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+    type RecentItem = {
+    id: string;
+    disease: string;
+    date: string;
+    confidence: number;
+    };
+
+    const [recentScans, setRecentScans] = useState<RecentItem[]>([]);
+    const mapDiseaseNameToId = (name: string): string => {
+    const nameLower = name.toLowerCase();
+    if (nameLower.includes('early') && nameLower.includes('blight')) return 'early_blight';
+    if (nameLower.includes('late') && nameLower.includes('blight')) return 'late_blight';
+    if (nameLower.includes('healthy')) return 'healthy';
+    if (nameLower.includes('leaf') && nameLower.includes('mold')) return 'leaf_mold';
+    if (nameLower.includes('septoria')) return 'septoria_leaf_spot';
+    if (nameLower.includes('yellow') && nameLower.includes('curl')) return 'tomato_yellow_leaf_curl';
+    if (nameLower.includes('target') && nameLower.includes('spot')) return 'target_spot';
+    if (nameLower.includes('spider') && nameLower.includes('mite')) return 'spider_mites_two_spotted_spider_mites';
+    if (nameLower.includes('mosaic')) return 'tomato_mosaic_virus';
+    if (nameLower.includes('bacterial') && nameLower.includes('spot')) return 'bacterial_spot';
+    return 'healthy';
+    };
+
     const router = useRouter();
     const { theme } = useTheme();
     const { t } = useTranslation();
     const colors = Colors[theme];
 
-    // Enhanced animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(50)).current;
     const scaleAnim = useRef(new Animated.Value(0.8)).current;
     const buttonScaleAnim = useRef(new Animated.Value(0.9)).current;
-    const cameraTransitionAnim = useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
-        // Staggered entrance animations with spring physics
+
+
+    const startAnimations = () => {
+        fadeAnim.setValue(0);
+        slideAnim.setValue(50);
+        scaleAnim.setValue(0.8);
+        buttonScaleAnim.setValue(0.9);
+
         Animated.stagger(150, [
             Animated.parallel([
-                Animated.timing(fadeAnim, {
-                    toValue: 1,
-                    duration: 800,
-                    useNativeDriver: true,
-                }),
-                Animated.spring(slideAnim, {
-                    toValue: 0,
-                    tension: 50,
-                    friction: 8,
-                    useNativeDriver: true,
-                }),
-                Animated.spring(scaleAnim, {
-                    toValue: 1,
-                    tension: 60,
-                    friction: 8,
-                    useNativeDriver: true,
-                }),
+            Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+            Animated.spring(slideAnim, { toValue: 0, tension: 50, friction: 8, useNativeDriver: true }),
+            Animated.spring(scaleAnim, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
             ]),
-            Animated.spring(buttonScaleAnim, {
-                toValue: 1,
-                tension: 80,
-                friction: 6,
-                useNativeDriver: true,
-            }),
+            Animated.spring(buttonScaleAnim, { toValue: 1, tension: 80, friction: 6, useNativeDriver: true }),
         ]).start();
-    }, []);
+        };
+        const loadRecentScans = () => {
+  try {
+    const dbDiagnoses = getRecentDiagnoses(3);
+    const formatted = dbDiagnoses.map((d: any) => {
+      const confidence = Math.round((d.confidence || 0) * 100);
+      const diseaseId = mapDiseaseNameToId(d.nameEn || 'Unknown');
 
-    // Camera transition animation
-    const animateCameraTransition = (toCamera: boolean) => {
-        Animated.timing(cameraTransitionAnim, {
-            toValue: toCamera ? 1 : 0,
-            duration: 400,
-            useNativeDriver: true,
-        }).start();
-    };
+      const diseaseName = t(`diseases.${diseaseId}.name`, {
+        lng: 'en',
+        defaultValue: d.nameEn || 'Unknown',
+      });
 
-    if (!permission) {
-        return <View />;
-    }
+      const date = new Date(d.diagnosedAt).toLocaleDateString();
 
-    if (!permission.granted) {
-        return (
-            <View style={[styles.container, { backgroundColor: colors.background }]}>
-                <View style={styles.permissionContainer}>
-                    <Ionicons name="camera-outline" size={64} color={colors.muted} />
-                    <Text style={[styles.permissionTitle, { color: colors.text }]}>
-                        {t('scan.cameraPermission')}
-                    </Text>
-                    <Text style={[styles.permissionText, { color: colors.textSecondary }]}>
-                        {t('scan.cameraPermissionDesc')}
-                    </Text>
-                    <TouchableOpacity
-                        style={[styles.permissionButton, { backgroundColor: colors.primary }]}
-                        onPress={requestPermission}
-                    >
-                        <Text style={styles.permissionButtonText}>
-                            {t('scan.grantPermission')}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        );
-    }
+      return {
+        id: d.diagnosisId,
+        disease: diseaseName,
+        date,
+        confidence,
+      };
+    });
 
-    const handleCapture = async () => {
-        if (cameraRef.current) {
-            try {
-                const photo = await cameraRef.current.takePictureAsync();
-                router.push({
-                    pathname: '/tomatodx/preview',
-                    params: { uri: photo.uri }
+    setRecentScans(formatted);
+  } catch (error) {
+    console.error('Error loading recent scans:', error);
+    setRecentScans([]);
+  }
+};
+
+        useFocusEffect(
+        useCallback(() => {
+            startAnimations();
+             ImagePicker.getCameraPermissionsAsync().then(({ status }) => {
+                if (status === 'denied') {
+                    setHasCameraPermission(false);
+                } else if (status === 'granted') {
+                    setHasCameraPermission(true);
+                } else {
+                    setHasCameraPermission(null); // not decided yet
+                }
                 });
-            } catch (error) {
-                Alert.alert(t('scan.error'), t('scan.captureError'));
-            }
-        }
-    };
+
+                loadRecentScans();
+        }, [])
+        );    
+
+   
+
+const handleCameraWithCrop = async () => {
+  try {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (status !== 'granted') {
+      setHasCameraPermission(false);
+      Alert.alert(t('scan.permissionDenied'), t('scan.cameraPermissionDesc'));
+      return;
+    }
+
+    setHasCameraPermission(true);
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      router.push({
+        pathname: '/tomatodx/preview',
+        params: { uri: result.assets[0].uri },
+      });
+    }
+  } catch (error) {
+    console.error('Camera error:', error);
+    Alert.alert(t('scan.error'), t('scan.captureError'));
+  }
+};
 
     const handleGallery = async () => {
         try {
@@ -124,10 +156,10 @@ export default function ScanScreen() {
 
             // Launch image picker
             const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: 'images',
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 1,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
             });
 
             if (!result.canceled && result.assets[0]) {
@@ -141,54 +173,33 @@ export default function ScanScreen() {
             Alert.alert(t('scan.error'), t('scan.galleryError'));
         }
     };
-
+if (hasCameraPermission === false) {
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={styles.permissionContainer}>
+        <Ionicons name="camera-outline" size={64} color={colors.muted} />
+        <Text style={[styles.permissionTitle, { color: colors.text }]}>
+          {t('scan.cameraPermission')}
+        </Text>
+        <Text style={[styles.permissionText, { color: colors.textSecondary }]}>
+          {t('scan.cameraPermissionDesc')}
+        </Text>
+        <TouchableOpacity
+          style={[styles.permissionButton, { backgroundColor: colors.primary }]}
+          onPress={handleCameraWithCrop}
+        >
+          <Text style={styles.permissionButtonText}>
+            {t('scan.grantPermission')}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+else{
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-            {isCameraActive ? (
-                <>
-                    <CameraView
-                        ref={cameraRef}
-                        style={styles.camera}
-                        facing="back"
-                    />
-                    <View style={styles.cameraOverlay}>
-                        {/* Scan Frame with Corners */}
-                        <View style={styles.scanFrameContainer}>
-                            <View style={[styles.scanFrame, { borderColor: colors.primary }]} />
-                            <View style={[styles.corner, styles.cornerTL, { borderColor: colors.primary }]} />
-                            <View style={[styles.corner, styles.cornerTR, { borderColor: colors.primary }]} />
-                            <View style={[styles.corner, styles.cornerBL, { borderColor: colors.primary }]} />
-                            <View style={[styles.corner, styles.cornerBR, { borderColor: colors.primary }]} />
-                        </View>
-
-                        <Text style={styles.scanText}>{t('scan.alignGuide')}</Text>
-
-                        <View style={styles.cameraControls}>
-                            <TouchableOpacity
-                                style={[styles.controlButton, { backgroundColor: 'rgba(255,255,255,0.2)' }]}
-                                onPress={handleGallery}
-                            >
-                                <Ionicons name="images" size={20} color="#fff" />
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={styles.captureButton}
-                                onPress={handleCapture}
-                            >
-                                <View style={[styles.captureInner, { backgroundColor: colors.primary }]} />
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={[styles.controlButton, { backgroundColor: 'rgba(255,255,255,0.2)' }]}
-                                onPress={() => setIsCameraActive(false)}
-                            >
-                                <Ionicons name="close" size={20} color="#fff" />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </>
-            ) : (
-                <ScrollView
+            <ScrollView
                     style={styles.scanHome}
                     contentContainerStyle={styles.scanHomeContent}
                     showsVerticalScrollIndicator={false}
@@ -210,10 +221,10 @@ export default function ScanScreen() {
                     <Animated.View style={[styles.actionButtons, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <TouchableOpacity
                             style={[styles.actionButton, { backgroundColor: colors.card }]}
-                            onPress={() => setIsCameraActive(true)}
+                            onPress={handleCameraWithCrop}
                         >
                             <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
-                                <Ionicons name="camera" size={24} color="#fff" />
+                                <Ionicons name="camera" size={38} color="#fff" />
                             </View>
                             <Text style={[styles.actionButtonTitle, { color: colors.text }]}>
                                 {t('scan.takePhoto')}
@@ -224,11 +235,11 @@ export default function ScanScreen() {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={[styles.actionButton, { backgroundColor: colors.card }]}
+                            style={[styles.actionButton, { backgroundColor: colors.card}]}
                             onPress={handleGallery}
                         >
                             <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
-                                <Ionicons name="images" size={24} color="#fff" />
+                                <Ionicons name="images" size={36} color="#fff" />
                             </View>
                             <Text style={[styles.actionButtonTitle, { color: colors.text }]}>
                                 {t('scan.chooseGallery')}
@@ -271,153 +282,84 @@ export default function ScanScreen() {
 
                     {/* Recent Activity Preview (Optional) */}
                     <Animated.View style={[styles.recentSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                        <Text style={[styles.recentTitle, { color: colors.text }]}>
-                            {t('scan.quickStart')}
+                    <Text style={[styles.recentTitle, { color: colors.text }]}>
+                        {t('scan.recentScan')}
+                    </Text>
+                    <Text style={[styles.recentText, { color: colors.textSecondary }]}>
+                        {t('scan.recentScanDesc')}
+                    </Text>
+
+                    {recentScans.length > 0 ? (
+                        recentScans.map((item) => (
+                        <TouchableOpacity
+                            key={item.id}
+                            style={[styles.recentItem, { backgroundColor: colors.card }]}
+                            onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
+                        >
+                            <View>
+                            <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
+                                {item.disease}
+                            </Text>
+                            <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+                                {item.date}
+                            </Text>
+                            </View>
+                            <Text style={{ fontSize: 14, fontWeight: '700', color: colors.primary }}>
+                            {item.confidence}%
+                            </Text>
+                        </TouchableOpacity>
+                        ))
+                    ) : (
+                        <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 8 }}>
+                        {t('scan.noRecentScans', { defaultValue: 'No recent scans yet.' })}
                         </Text>
-                        <Text style={[styles.recentText, { color: colors.textSecondary }]}>
-                            {t('scan.quickStartDesc')}
-                        </Text>
+                    )}
                     </Animated.View>
                 </ScrollView>
-            )}
-        </View>
+            </View>
     );
+}
 }
 
 const styles = StyleSheet.create({
+    permissionContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 20,
+},
+permissionTitle: {
+  fontSize: 22,
+  fontWeight: '700',
+  marginTop: 20,
+  marginBottom: 8,
+  textAlign: 'center',
+},
+permissionText: {
+  fontSize: 14,
+  textAlign: 'center',
+  marginBottom: 30,
+  lineHeight: 20,
+},
+permissionButton: {
+  paddingHorizontal: 24,
+  paddingVertical: 12,
+  borderRadius: 12,
+},
+permissionButtonText: {
+  color: '#fff',
+  fontSize: 16,
+  fontWeight: '600',
+},
     container: {
         flex: 1,
-    },
-    permissionContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    permissionTitle: {
-        fontSize: 22,
-        fontWeight: '700',
-        marginTop: 20,
-        marginBottom: 8,
-        textAlign: 'center',
-    },
-    permissionText: {
-        fontSize: 14,
-        textAlign: 'center',
-        marginBottom: 30,
-        lineHeight: 20,
-    },
-    permissionButton: {
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderRadius: 12,
-    },
-    permissionButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    camera: {
-        flex: 1,
-    },
-    cameraOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        justifyContent: 'space-between',
-        paddingVertical: 50,
-        paddingHorizontal: 20,
-    },
-    scanFrameContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 80,
-    },
-    scanFrame: {
-        width: SCREEN_WIDTH * 0.8,
-        height: SCREEN_WIDTH * 0.85,
-        borderWidth: .5,
-        borderRadius: 12,
-        marginVertical: 20,
-    },
-    corner: {
-        position: 'absolute',
-        width: 20,
-        height: 20,
-        borderWidth: 3.5,
-    },
-    cornerTL: {
-        top: -1,
-        left: -1,
-        borderRightWidth: 0,
-        borderBottomWidth: 0,
-        borderTopLeftRadius: 8,
-    },
-    cornerTR: {
-        top: -1,
-        right: -1,
-        borderLeftWidth: 0,
-        borderBottomWidth: 0,
-        borderTopRightRadius: 8,
-    },
-    cornerBL: {
-        bottom: -1,
-        left: -1,
-        borderRightWidth: 0,
-        borderTopWidth: 0,
-        borderBottomLeftRadius: 8,
-    },
-    cornerBR: {
-        bottom: -1,
-        right: -1,
-        borderLeftWidth: 0,
-        borderTopWidth: 0,
-        borderBottomRightRadius: 8,
-    },
-    scanText: {
-        color: '#fff',
-        textAlign: 'center',
-        fontSize: 14,
-        fontWeight: '600',
-        marginTop: 20,
-        textShadowColor: 'rgba(0,0,0,0.5)',
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 3,
-    },
-    cameraControls: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 30,
-    },
-    controlButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    captureButton: {
-        width: 74,
-        height: 74,
-        borderRadius: 100,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 3,
-        borderColor: 'rgba(255,255,255,0.3)',
-    },
-    captureInner: {
-        width: 62,
-        height: 62,
-        borderRadius: 31,
-        opacity: 0.8
     },
     scanHome: {
         flex: 1,
     },
     scanHomeContent: {
-        paddingTop: 50,
-        paddingHorizontal: 16,
+        paddingTop: 60,
+        paddingHorizontal: 20,
         paddingBottom: 20,
     },
     scanHeader: {
@@ -461,9 +403,9 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     actionIcon: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 60,
+        height: 60,
+        borderRadius: 50,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 12,
@@ -483,6 +425,7 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 12,
         marginBottom: 24,
+        
     },
     tipsHeader: {
         flexDirection: 'row',
@@ -522,4 +465,13 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         paddingHorizontal: 20,
     },
+    recentItem: {
+  width: '100%',
+  marginTop: 12,
+  padding: 12,
+  borderRadius: 12,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+},
 });

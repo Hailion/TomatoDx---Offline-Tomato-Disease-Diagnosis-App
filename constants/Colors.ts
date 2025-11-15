@@ -4,6 +4,7 @@ export type ThemeTokens = {
   backgroundAlt: string;
   surface: string;
   card: string;
+  cardOverlay: string;
   text: string;
   textSecondary: string;
   textTertiary: string;
@@ -39,6 +40,7 @@ const light: ThemeTokens = {
   backgroundAlt: '#f8fffc',     // subtle alternate background found in files
   surface: '#ffffff',           // card / surface
   card: '#ffffff',
+  cardOverlay: '#ffffff9a', 
   // text
   text: '#1f2937',              // primary text dark gray
   textSecondary: '#374151',     // secondary text

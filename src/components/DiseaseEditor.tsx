@@ -2,7 +2,7 @@
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { getAllDiseases, getDiseaseById, upsertDisease } from '../db/repository';
 
@@ -169,213 +169,209 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
     if (!visible) return null;
 
     return (
-  <KeyboardAvoidingView
-    style={[styles.container, { backgroundColor: colors.background }]}
-    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    keyboardVerticalOffset={80}  // tune if header overlaps
-  >
-    <View style={styles.header}>
-                <TouchableOpacity style={styles.backButton} onPress={onClose}>
-                    <Ionicons name="chevron-back" size={24} color={colors.text} />
-                </TouchableOpacity>
-                <Text style={[styles.title, { color: colors.text }]}>Edit Diseases</Text>
-                <View style={styles.placeholder} />
-            </View>
-
-            <ScrollView
-      style={styles.scrollView}
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
-                <View style={styles.content}>
-                    <View style={styles.section}>
-                        <Text style={[styles.sectionTitle, { color: colors.text }]}>Select Disease</Text>
-                        {diseases.map((disease) => (
-                            <TouchableOpacity
-                                key={disease.diseaseId}
-                                style={[
-                                    styles.diseaseCard,
-                                    { backgroundColor: colors.card },
-                                    selectedDisease === disease.diseaseId && { borderColor: colors.primary, borderWidth: 2 },
-                                ]}
-                                onPress={() => handleSelectDisease(disease.diseaseId)}
-                            >
-                                <Text style={[styles.diseaseId, { color: colors.text }]}>{disease.diseaseId}</Text>
-                                {disease.nameEn && (
-                                    <Text style={[styles.diseaseName, { color: colors.textSecondary }]}>{disease.nameEn}</Text>
-                                )}
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-
-                    {selectedDisease && (
-                        <View style={styles.section}>
-                            <Text style={[styles.sectionTitle, { color: colors.text }]}>Edit Disease Information</Text>
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Disease ID</Text>
-                                <Text style={[styles.diseaseIdDisplay, { color: colors.textSecondary }]}>{selectedDisease}</Text>
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Name (English)</Text>
-                                <TextInput
-                                    style={[styles.input, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={nameEn}
-                                    onChangeText={setNameEn}
-                                    placeholder="Enter English name"
-                                    placeholderTextColor={colors.textTertiary}
-                                />
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Name (Amharic)</Text>
-                                <TextInput
-                                    style={[styles.input, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={nameAm}
-                                    onChangeText={setNameAm}
-                                    placeholder="Enter Amharic name"
-                                    placeholderTextColor={colors.textTertiary}
-                                />
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Symptoms (English)</Text>
-                                <TextInput
-                                    style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={symptomsEn}
-                                    onChangeText={setSymptomsEn}
-                                    placeholder="Enter symptoms in English (one per line or comma-separated)"
-                                    placeholderTextColor={colors.textTertiary}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Symptoms (Amharic)</Text>
-                                <TextInput
-                                    style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={symptomsAm}
-                                    onChangeText={setSymptomsAm}
-                                    placeholder="Enter symptoms in Amharic (one per line or comma-separated)"
-                                    placeholderTextColor={colors.textTertiary}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Immediate Treatment (English)</Text>
-                                <TextInput
-                                    style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={treatmentImmediateEn}
-                                    onChangeText={setTreatmentImmediateEn}
-                                    placeholder="Enter immediate treatment actions in English (one per line or comma-separated)"
-                                    placeholderTextColor={colors.textTertiary}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Immediate Treatment (Amharic)</Text>
-                                <TextInput
-                                    style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={treatmentImmediateAm}
-                                    onChangeText={setTreatmentImmediateAm}
-                                    placeholder="Enter immediate treatment actions in Amharic (one per line or comma-separated)"
-                                    placeholderTextColor={colors.textTertiary}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Long-term Treatment (English)</Text>
-                                <TextInput
-                                    style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={treatmentLongTermEn}
-                                    onChangeText={setTreatmentLongTermEn}
-                                    placeholder="Enter long-term treatment actions in English (one per line or comma-separated)"
-                                    placeholderTextColor={colors.textTertiary}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Long-term Treatment (Amharic)</Text>
-                                <TextInput
-                                    style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={treatmentLongTermAm}
-                                    onChangeText={setTreatmentLongTermAm}
-                                    placeholder="Enter long-term treatment actions in Amharic (one per line or comma-separated)"
-                                    placeholderTextColor={colors.textTertiary}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Prevention/Tips (English)</Text>
-                                <TextInput
-                                    style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={preventionEn}
-                                    onChangeText={setPreventionEn}
-                                    placeholder="Enter prevention tips in English (one per line or comma-separated)"
-                                    placeholderTextColor={colors.textTertiary}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-                            </View>
-
-                            <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.label, { color: colors.text }]}>Prevention/Tips (Amharic)</Text>
-                                <TextInput
-                                    style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
-                                    value={preventionAm}
-                                    onChangeText={setPreventionAm}
-                                    placeholder="Enter prevention tips in Amharic (one per line or comma-separated)"
-                                    placeholderTextColor={colors.textTertiary}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-                            </View>
-
-                            <View style={styles.buttonRow}>
-                                <TouchableOpacity
-                                    style={[styles.button, styles.cancelButton, { backgroundColor: colors.backgroundAlt }]}
-                                    onPress={handleCancel}
-                                >
-                                    <Text style={[styles.buttonText, { color: colors.text }]}>Cancel</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.button, styles.saveButton, { backgroundColor: colors.primary }]}
-                                    onPress={handleSave}
-                                    disabled={loading}
-                                >
-                                    <Text style={[styles.buttonText, { color: '#fff' }]}>
-                                        {loading ? 'Saving...' : 'Save'}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
+        <Modal visible={visible} animationType="slide">
+            <KeyboardAvoidingView
+                style={[styles.container, { backgroundColor: colors.background }]}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={80}
+            >
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.backButton} onPress={onClose}>
+                        <Ionicons name="chevron-back" size={24} color={colors.text} />
+                    </TouchableOpacity>
+                    <Text style={[styles.title, { color: colors.text }]}>Edit Diseases</Text>
+                    <View style={styles.placeholder} />
                 </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+
+                <ScrollView
+                    style={styles.scrollView}
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                >
+                    <View style={styles.content}>
+                        <View style={styles.section}>
+                            <Text style={[styles.sectionTitle, { color: colors.text }]}>Select Disease</Text>
+                            {diseases.map((disease) => (
+                                <TouchableOpacity
+                                    key={disease.diseaseId}
+                                    style={[
+                                        styles.diseaseCard,
+                                        { backgroundColor: colors.card },
+                                        selectedDisease === disease.diseaseId && { borderColor: colors.primary, borderWidth: 2 },
+                                    ]}
+                                    onPress={() => handleSelectDisease(disease.diseaseId)}
+                                >
+                                    <Text style={[styles.diseaseId, { color: colors.text }]}>{disease.diseaseId}</Text>
+                                    {disease.nameEn && (
+                                        <Text style={[styles.diseaseName, { color: colors.textSecondary }]}>{disease.nameEn}</Text>
+                                    )}
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        {selectedDisease && (
+                            <View style={styles.section}>
+                                <Text style={[styles.sectionTitle, { color: colors.text }]}>Edit Disease Information</Text>
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Disease ID</Text>
+                                    <Text style={[styles.diseaseIdDisplay, { color: colors.textSecondary }]}>{selectedDisease}</Text>
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Name (English)</Text>
+                                    <TextInput
+                                        style={[styles.input, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={nameEn}
+                                        onChangeText={setNameEn}
+                                        placeholder="Enter English name"
+                                        placeholderTextColor={colors.textTertiary}
+                                    />
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Name (Amharic)</Text>
+                                    <TextInput
+                                        style={[styles.input, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={nameAm}
+                                        onChangeText={setNameAm}
+                                        placeholder="Enter Amharic name"
+                                        placeholderTextColor={colors.textTertiary}
+                                    />
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Symptoms (English)</Text>
+                                    <TextInput
+                                        style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={symptomsEn}
+                                        onChangeText={setSymptomsEn}
+                                        placeholder="Enter symptoms in English (one per line or comma-separated)"
+                                        placeholderTextColor={colors.textTertiary}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Symptoms (Amharic)</Text>
+                                    <TextInput
+                                        style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={symptomsAm}
+                                        onChangeText={setSymptomsAm}
+                                        placeholder="Enter symptoms in Amharic (one per line or comma-separated)"
+                                        placeholderTextColor={colors.textTertiary}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Immediate Treatment (English)</Text>
+                                    <TextInput
+                                        style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={treatmentImmediateEn}
+                                        onChangeText={setTreatmentImmediateEn}
+                                        placeholder="Enter immediate treatment actions in English (one per line or comma-separated)"
+                                        placeholderTextColor={colors.textTertiary}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Immediate Treatment (Amharic)</Text>
+                                    <TextInput
+                                        style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={treatmentImmediateAm}
+                                        onChangeText={setTreatmentImmediateAm}
+                                        placeholder="Enter immediate treatment actions in Amharic (one per line or comma-separated)"
+                                        placeholderTextColor={colors.textTertiary}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Long-term Treatment (English)</Text>
+                                    <TextInput
+                                        style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={treatmentLongTermEn}
+                                        onChangeText={setTreatmentLongTermEn}
+                                        placeholder="Enter long-term treatment actions in English (one per line or comma-separated)"
+                                        placeholderTextColor={colors.textTertiary}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Long-term Treatment (Amharic)</Text>
+                                    <TextInput
+                                        style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={treatmentLongTermAm}
+                                        onChangeText={setTreatmentLongTermAm}
+                                        placeholder="Enter long-term treatment actions in Amharic (one per line or comma-separated)"
+                                        placeholderTextColor={colors.textTertiary}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Prevention/Tips (English)</Text>
+                                    <TextInput
+                                        style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={preventionEn}
+                                        onChangeText={setPreventionEn}
+                                        placeholder="Enter prevention tips in English (one per line or comma-separated)"
+                                        placeholderTextColor={colors.textTertiary}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+                                </View>
+
+                                <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.label, { color: colors.text }]}>Prevention/Tips (Amharic)</Text>
+                                    <TextInput
+                                        style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                        value={preventionAm}
+                                        onChangeText={setPreventionAm}
+                                        placeholder="Enter prevention tips in Amharic (one per line or comma-separated)"
+                                        placeholderTextColor={colors.textTertiary}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+                                </View>
+
+                                <View style={styles.buttonRow}>
+                                    <TouchableOpacity
+                                        style={[styles.button, styles.cancelButton, { backgroundColor: colors.backgroundAlt }]}
+                                        onPress={handleCancel}
+                                    >
+                                        <Text style={[styles.buttonText, { color: colors.text }]}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.button, styles.saveButton, { backgroundColor: colors.primary }]}
+                                        onPress={handleSave}
+                                        disabled={loading}
+                                    >
+                                        <Text style={[styles.buttonText, { color: '#fff' }]}>
+                                            {loading ? 'Saving...' : 'Save'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        )}
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </Modal>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 1000,
     },
     header: {
         flexDirection: 'row',

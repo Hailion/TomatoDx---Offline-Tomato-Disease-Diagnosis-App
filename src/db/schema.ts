@@ -8,7 +8,8 @@ export function initDb() {
   db.execute(`CREATE TABLE IF NOT EXISTS User (
     userId TEXT PRIMARY KEY,
     name TEXT,
-    nickname TEXT
+    nickname TEXT,
+    password TEXT
   );`);
 
   db.execute(`CREATE TABLE IF NOT EXISTS Image (
@@ -46,4 +47,7 @@ export function initDb() {
 
   // Create default device user if not exists
   db.execute(`INSERT OR IGNORE INTO User (userId, name, nickname) VALUES ('device', 'Device User', 'User');`);
+
+  // Create default admin user with a default password if not exists
+  db.execute(`INSERT OR IGNORE INTO User (userId, name, nickname, password) VALUES ('admin', 'Admin', 'Admin', 'admin123');`);
 }

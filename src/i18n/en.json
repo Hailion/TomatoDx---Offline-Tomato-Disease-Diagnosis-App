@@ -297,18 +297,19 @@
     "title": "Admin Panel",
     "caution": "Admin Mode - Use with caution",
     "modelManagement": {
-      "title": "Admin Panel",
+      "title": "Model Management",
       "updateModel": {
-        "title": "Update Model",
-        "uploadModel": "Upload Model",
-        "uploadModelDesc": "Model upload functionality. Select a TensorFlow.js model file to upload."
+        "title": "Model Metadata (Local)",
+        "uploadModel": "Select Model Metadata",
+        "uploadModelDesc": "This tool only reads and registers model metadata locally on this device. It does not upload or replace the AI model used by TomatoDx. Official model updates are bundled with new app releases.",
+        "selectModelFile": "Select Model Metadata"
       },
-        "updateInstructions": "Upload new TensorFlow.js Model",
-        "updateAvailable": "Updates Avalable",
-        "updating": "Updating...",
-        "updateSuccess": "Updated Successfully",
-        "updateFailed": "Update Failed"
-      },
+      "updateInstructions": "Inspect or register local TensorFlow.js model metadata",
+      "updateAvailable": "Updates Available",
+      "updating": "Processing metadata...",
+      "updateSuccess": "Model metadata updated successfully.",
+      "updateFailed": "Failed to update model metadata."
+    },
     "databaseManagement": {
       "title": "Database Management",
       "edit": {
@@ -325,6 +326,7 @@
         "summaryTitle": "Total diagnoses: {{count}}",
         "avgConfidence": "Average confidence: {{value}}",
         "healthyCount": "Healthy leaves: {{count}}",
+        "successRateLabel": "Success rate",
         "topDisease": "Most common: {{name}} ({{count}} cases)",
         "last7Days": "Scans in the last 7 days",
         "levels": "Confidence levels - Low: {{low}}, Medium: {{medium}}, High: {{high}}",
@@ -334,25 +336,85 @@
         "verifyingAccess": "Verifying admin access…",
         "authError": "Unable to verify admin access.",
         "loadError": "Failed to load analytics data.",
-        "exportData": "Export analytics data",
+        "exportData": "Export Data",
         "exportSuccess": "Analytics data exported successfully.",
-        "exportError": "Failed to export analytics data."
-    },
+        "exportError": "Failed to export analytics data.",
+        "subtitle": "Comprehensive Analysis & Insights",
+        "tabOverview": "Overview",
+        "tabDiseases": "Diseases",
+        "tabTrends": "Trends",
+        "totalScansLabel": "Total scans",
+        "healthyLabel": "Healthy leaves",
+        "atRiskLabel": "At-risk leaves",  
+        "riskDistributionTitle": "Risk Distribution",      
+        "sevenDayTrend": "7-Day Activity Trend",
+        "topDiseasesTitle": "Top Detected Diseases",
+        "topDiseasesSubtitle": "Most frequently identified conditions",
+        "monthlyTrendsTitle": "Monthly Trends",
+        "dataManagementTitle": "Data Management",
+        "exportDataButton": "Export Data",
+        "clearDataButton": "Clear Data",
+        "exportModal": {
+          "title": "Export",
+          "fileNamePlaceholder": "File name",
+          "json": "JSON",
+          "csv": "CSV"
+        },
+        "clearModal": {
+          "title": "Clear All Analytics Data?",
+          "message": "This will delete all stored analytics records. This cannot be undone."
+        },
+        "clearSuccess": "All analytics data has been cleared successfully.",
+        "clearError": "Failed to clear analytics data."
+            }, 
     "system": {
-      "title": "System",
+      "title": "Security",
+      "systemAdministration": "System Administration",
       "lockAdmin": {
         "title": "Lock Admin Mode",
         "resetAdminAccess": "Reset Admin Access",
-        "resetQuestion": "Are you sure you want to lock admin mode?"
+        "resetQuestion": "Are you sure you want to lock admin mode?",
+        "description": "Locking admin mode will prevent unauthorized access to the admin panel."
       },
       "removeAdminAccess": "Remove Admin access"
     },
+    "auth": {
+      "title": "Admin Authentication",
+      "subtitle": "Enter your admin password to unlock admin mode.",
+      "passwordPlaceholder": "Enter Password",
+      "unlockButton": "Unlock Admin Mode",
+      "errorAllRequired":"All fields are required",
+      "errorMismatch":"Passwords do not match",
+      "errorIncorrect":"Incorrect password",
+      "errorCurrentIncorrect":"Current password is incorrect",
+      "updateSuccess":"Password updated successfully.",
+      "updateError":"Failed to update password.",
+      "verifyError":"Unable to verify admin access."
+   
+    },
+    "password":{
+      "changeTitle":"Change Password",
+      "changeDescription":"Enter your admin password to unlock admin mode.",
+      "changeMessage":"Enter your admin password to unlock admin mode.",
+      "currentPlaceholder":"Enter Current Password",
+      "newPlaceholder":"Enter New Password",
+      "confirmPlaceholder":"Confirm New Password",
+      "errorAllRequired":"All fields are required",
+      "errorMismatch":"Passwords do not match",
+      "errorCurrentIncorrect":"Current password is incorrect",
+      "errorTooShort":"Password must be at least 8 characters long.",
+      "changeButton":"Change Password",
+      "changeSuccess":"Password changed successfully.",
+      "changeError":"Failed to change password."
+    },  
     "info": "Development admin panel. Production needs proper authentication."
   },
   "common": {
     "ok": "OK",
     "cancel": "Cancel",
     "delete": "Delete",
+    "save": "Save",
+    "confirm":"Confirm",
     "edit": "Edit",
     "loading": "Loading...",
     "error": "Error",

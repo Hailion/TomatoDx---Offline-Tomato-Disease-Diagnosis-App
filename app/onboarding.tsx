@@ -10,13 +10,15 @@ import {
     Animated,
     Dimensions,
     Easing,
+    ImageBackground,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../src/contexts/ThemeContext';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -41,6 +43,13 @@ const ONBOARDING_STEPS = [
         titleKey: 'onboarding.steps.history.title',
         descriptionKey: 'onboarding.steps.history.description'
     }
+];
+
+const STEP_BACKGROUNDS = [
+    require('../assets/images/background/wellcome_bg-3.jpg'),   // welcome
+    require('../assets/images/background/scan_bg.jpg'),       // capture
+    require('../assets/images/background/analysis.jpg'), // analysis
+    require('../assets/images/background/history_bg.jpg'),    // history
 ];
 
 export default function OnboardingScreen() {
@@ -150,125 +159,136 @@ export default function OnboardingScreen() {
     const isFirstStep = currentStep === 0;
     const isLastStep = currentStep === ONBOARDING_STEPS.length - 1;
 
-    return (
-        <View style={[
-            styles.container, { backgroundColor: colors.background }
-        ]}>
-            {/* Background Pattern */}
-            <View style={styles.backgroundPattern}>
-                <View style={[styles.circle, styles.circle1]} />
-                <View style={[styles.circle, styles.circle2]} />
-                <View style={[styles.circle, styles.circle3]} />
-            </View>
+ return (
+  <View style={[styles.container, { backgroundColor: colors.background }]}>
+    {/* Background image per step */}
+    <ImageBackground
+      source={STEP_BACKGROUNDS[currentStep]}
+      style={StyleSheet.absoluteFillObject}
+      resizeMode="cover"
+    />
 
-            {/* Skip Button */}
-            {!isLastStep && (
-                <TouchableOpacity
-                    style={styles.skipButton}
-                    onPress={handleSkip}
-                >
-                    <Text style={[
-                        styles.skipText,
-                        theme === 'dark' && styles.darkText
-                    ]}>
-                        {t('common.skip')}
-                    </Text>
-                </TouchableOpacity>
-            )}
+    {/* Dark overlay for readability */}
+    <View style={styles.overlay} />
 
-            {/* Content */}
-            <View style={styles.content}>
-                <Animated.View
-                    style={[
-                        styles.stepContent,
-                        {
-                            opacity: fadeAnim,
-                            transform: [{ translateX: slideAnim }]
-                        }
-                    ]}
-                >
-                    {/* Icon */}
-                    <View style={styles.iconContainer}>
-                        <Text style={styles.icon}>{step.icon}</Text>
-                    </View>
+    {/* Skip Button */}
+    {!isLastStep && (
+      <TouchableOpacity
+        style={styles.skipButton}
+        onPress={handleSkip}
+      >
+        <Text
+          style={[
+            styles.skipText,
+            theme === 'dark' && styles.darkText,
+          ]}
+        >
+          {t('common.skip')}
+        </Text>
+      </TouchableOpacity>
+    )}
 
-                    {/* Text Content */}
-                    <View style={styles.textContainer}>
-                        <Text style={[
-                            styles.title,
-                            theme === 'dark' && styles.darkText
-                        ]}>
-                            {t(step.titleKey)}
-                        </Text>
-                        <Text style={[
-                            styles.description,
-                            theme === 'dark' && styles.darkSubtext
-                        ]}>
-                            {t(step.descriptionKey)}
-                        </Text>
-                    </View>
-                </Animated.View>
+    {/* Content */}
+    <View style={styles.content}>
+      <Animated.View
+        style={[
+          styles.stepContent,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateX: slideAnim }],
+          },
+        ]}
+      >
+        {/* Icon */}
+        {/* <View style={styles.iconContainer}>
+          <Text style={styles.icon}>{step.icon}</Text>
+        </View> */}
 
-                {/* Progress Dots */}
-                <View style={styles.dotsContainer}>
-                    {ONBOARDING_STEPS.map((_, index) => (
-                        <View
-                            key={index}
-                            style={[
-                                styles.dot,
-                                index === currentStep ? styles.activeDot : styles.inactiveDot,
-                                theme === 'dark' && index !== currentStep && styles.darkInactiveDot
-                            ]}
-                        />
-                    ))}
-                </View>
-
-                {/* Navigation Buttons */}
-                <View style={styles.buttonsContainer}>
-                    {!isFirstStep && (
-                        <TouchableOpacity
-                            style={[
-                                styles.button,
-                                styles.secondaryButton,
-                                theme === 'dark' && styles.darkSecondaryButton
-                            ]}
-                            onPress={handlePrevious}
-                        >
-                            <Ionicons
-                                name="arrow-back"
-                                size={20}
-                                color={theme === 'dark' ? '#fff' : '#666'}
-                            />
-                            <Text style={[
-                                styles.buttonText,
-                                styles.secondaryButtonText,
-                                theme === 'dark' && styles.darkText
-                            ]}>
-                                {t('common.back')}
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-
-                    <TouchableOpacity
-                        style={[
-                            styles.button,
-                            styles.primaryButton,
-                            { flex: isFirstStep ? 1 : 2 }
-                        ]}
-                        onPress={handleNext}
-                    >
-                        <Text style={styles.primaryButtonText}>
-                            {isLastStep ? t('common.getStarted') : t('common.continue')}
-                        </Text>
-                        <Ionicons name="arrow-forward" size={20} color="#fff" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Bottom Safe Area */}
-            <View style={{ height: insets.bottom }} />
+        {/* Text Content */}
+        <View style={styles.textContainer}>
+          <Text
+            style={[
+              styles.title,
+              theme === 'dark' && styles.darkText,
+            ]}
+          >
+            {t(step.titleKey)}
+          </Text>
+          <Text
+            style={[
+              styles.description,
+              theme === 'dark' && styles.darkSubtext,
+            ]}
+          >
+            {t(step.descriptionKey)}
+          </Text>
         </View>
-    );
+      </Animated.View>
+
+      {/* Progress Dots */}
+      <View style={styles.dotsContainer}>
+        {ONBOARDING_STEPS.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              index === currentStep ? styles.activeDot : styles.inactiveDot,
+              theme === 'dark' &&
+                index !== currentStep &&
+                styles.darkInactiveDot,
+            ]}
+          />
+        ))}
+      </View>
+
+      {/* Navigation Buttons */}
+      <View style={styles.buttonsContainer}>
+        {!isFirstStep && (
+          <TouchableOpacity
+            style={[
+              styles.button,
+              styles.secondaryButton,
+              theme === 'dark' && styles.darkSecondaryButton,
+            ]}
+            onPress={handlePrevious}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={20}
+              color={theme === 'dark' ? '#fff' : '#666'}
+            />
+            <Text
+              style={[
+                styles.buttonText,
+                styles.secondaryButtonText,
+                theme === 'dark' && styles.darkText,
+              ]}
+            >
+              {t('common.back')}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity
+          style={[
+            styles.button,
+            styles.primaryButton,
+            { flex: isFirstStep ? 1 : 2 },
+          ]}
+          onPress={handleNext}
+        >
+          <Text style={styles.primaryButtonText}>
+            {isLastStep ? t('common.getStarted') : t('common.continue')}
+          </Text>
+          <Ionicons name="arrow-forward" size={20} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    </View>
+
+    {/* Bottom Safe Area */}
+    <View style={{ height: insets.bottom }} />
+  </View>
+);
 }
 
 const styles = StyleSheet.create({
@@ -288,7 +308,12 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
     },
-    circle: {
+     // add this:
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.65)', // tweak opacity as you like
+    },
+       circle: {
         position: 'absolute',
         borderRadius: 500,
     },
@@ -364,7 +389,7 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
     darkSubtext: {
-        color: '#999',
+        color: '#cacacaff',
     },
     dotsContainer: {
         flexDirection: 'row',

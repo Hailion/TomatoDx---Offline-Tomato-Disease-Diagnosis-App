@@ -178,7 +178,7 @@
   },
   "admin": {
     "title": "የአስተዳደር ገጽ",
-    "caution": "የአስተዳድሪ ቦታ - በጥንቃቄ ይጠቀሙ",
+    "caution": "የአስተዳድሪ ፓነል - በጥንቃቄ ይጠቀሙ",
     "online": "መስመር ላይ",
     "updateInstructions": "የሞዴል ዝመና መመሪያዎች",
     "systemInformation": "የስርዓት መረጃ",
@@ -189,12 +189,13 @@
     "modelManagement": {
       "title": "የሞዴል አስተዳደር",
       "updateModel": {
-        "title": "የሞዴል ዝመና",
-        "uploadModel": "u l",
-        "uploadModelDesc": "upload description"
-      },
-      "updateInstructions": "አዲስ የ TensorFlow.js ሞዴል ይጫኑ።",
-      "runSystemCheck": "የስርዓት ፍተሻን ያሂዱ",
+       "title": "የሞዴል መረጃ (በመሣሪያው ላይ)",
+      "uploadModel": "የሞዴል መረጃ ይምረጡ",
+      "uploadModelDesc": "ይህ መሣሪያ የሞዴሉን መረጃ በመሣሪያው ላይ ብቻ ያነባልና ይመዝግባል። በመተግበሪያው ውስጥ የሚሰራውን AI ሞዴል አይቀይርም እና አይቀይርም። እውነተኛ የሞዴል ዝመናዎች ከአዲስ የመተግበሪያ ሥሪት ጋር ብቻ ይመጣሉ።",
+      "selectModelFile": "የሞዴል መረጃ ይምረጡ"
+    },
+    "updateInstructions": "በመሣሪያው ላይ ያለውን የ TensorFlow.js የሞዴል መረጃ ይመርምሩ ወይም ይመዝግቡ",
+    "runSystemCheck": "የስርዓት ፍተሻን ያሂዱ",
       "currentModel": "የአሁኑ ሞዴል",
       "checkUpdates": "ዝመናዎች ካሉ ፈልግ",
       "lastChecked": "የመጨረሻ ፍቺ",
@@ -229,21 +230,78 @@
       "verifyingAccess": "በመጠቀም ላይ...",
       "authError": "የአድሚን ፈቃድ የሎትም",
       "loadError": "የመጫን ስህተት",
-      "exportData": "መረጃ ወደ መሳሪያ አስቅምጥ",
+      "exportData": "አስቀምጥ",
       "exportSuccess": "በተሳካ ሁኔታ ተቀምጧል",
-      "exportError": "አልተሳካም"
+      "exportError": "አልተሳካም",
+      "subtitle": "ዝርዝር ትንተና እና እይታዎች",
+      "tabOverview": "አጠቃላይ",
+      "tabDiseases": "በሽታዎች",
+      "tabTrends": "ዝንባሌዎች",
+
+      "totalScansLabel": "ጠቅላላ ምርመራዎች",
+      "healthyLabel": "ጤናማ ምርመራዎች",
+      "atRiskLabel": "ስጋት ያሉ ምርመራዎች",
+      "successRateLabel": "የስኬት መጠን",
+      "riskDistributionTitle": "የስጋት መመደብ",
+      "sevenDayTrend": "የ7 ቀን የተግባር ዝንባሌ",
+      "topDiseasesTitle": "በጣም የሚታዩ በሽታዎች",
+      "topDiseasesSubtitle": "ብዛት በመመካት የተመዘገቡ ሁኔታዎች",
+      "monthlyTrendsTitle": "ወርሃዊ ዝንባሌዎች",
+      "dataManagementTitle": "የመረጃ አስተዳደር",
+      "exportDataButton": "መረጃ አስቀምጥ",
+      "clearDataButton": "መረጃ አጥፋ",
+
+      "exportModal": {
+        "title": "የትንተና መረጃን አስቀምጥ",
+        "fileNamePlaceholder": "የፋይል ስም",
+        "json": "JSON",
+        "csv": "CSV",
+        "cancel": "ይቅር"
+      },
+      "clearModal": {
+        "title": "ሁሉንም የትንተና መረጃ ይጥፉ?",
+        "message": "ይህ ሁሉንም የተቀመጡ የትንተና መዝገቦች በቋሚነት ያጠፋል። ይህን ሂደት መመለስ አይቻልም።"
+      },
+      "clearSuccess": "ሁሉም የትንተና መረጃ በተሳካ ሁኔታ ተጠፍቷል።",
+      "clearError": "የትንተና መረጃን መጥፋት አልተሳካም።"
     },
     "system": {
-      "title": "ስርዓት",
+      "title": "",
+      "systemAdministration": "የስርዓት አስተዳደር",
       "lockAdmin": {
-        "title":"የአስተዳደር ገጽ ዝጋ",
+        "title": "የአስተዳደር ገጽ ዝጋ",
         "resetAdminAccess": "የአስተዳደር ገጽ ፈቃድ አንሳ",
-        "resetQuestion": "እርግጠኛ ነዎት የአስተዳደር ገጹን መዝጋት ይፈልጋሉ?"
+        "resetQuestion": "እርግጠኛ ነዎት የአስተዳደር ገጹን መዝጋት ይፈልጋሉ?",
+        "description": "ከአድሚን ሞድ ይውጡ እና እንደገና የይለፍ ቃል እንዲፈለግ ያድርጉ."
       },
-        "removeAdminAccess": "የአስተዳደር ገጽ ፈቃድ አስወግድ"
-
+      "removeAdminAccess": "የአስተዳደር ገጽ ፈቃድ አስወግድ"
     },
-    "info": "የግንባታ አስተዳደር ቦታ። ግንባታ ትክክለኛ የሆነ የማስተዳደር ፈቃድ ይጠይቃል። "
+    "auth": {
+      "title": "የአስተዳደር ማረጋገጫ",
+      "subtitle": "ወደ የስርዓት መቆጣጠሪያ እና ትንተና ለመግባት የአስተዳደር የይለፍ ቃልዎን ያስገቡ",
+      "passwordPlaceholder": "የአስተዳደር የይለፍ ቃል ያስገቡ",
+      "unlockButton": "የአስተዳደር ገጹን ክፈት",
+      "errorRequired": "የይለፍ ቃል መሙላት አስፈላጊ ነው",
+      "errorIncorrect": "የይለፍ ቃሉ ትክክል አይደለም",
+      "verifyError": "የይለፍ ቃሉን ማረጋገጥ አልተሳካም። እንደገና ይሞክሩ።"
+    },
+    "password": {
+      "changeTitle": "የአስተዳደር የይለፍ ቃል ቀይር",
+      "changeDescription": "ይህን ገጽ ለመክፈት የሚጠቀሙትን የአስተዳደር የይለፍ ቃል ያሻሽሉ",
+      "changeMessage": "የአሁኑን የይለፍ ቃልዎን ያስገቡ እና አዲስ ያዘጋጁ.",
+      "currentPlaceholder": "የአሁኑ የይለፍ ቃል",
+      "newPlaceholder": "አዲስ የይለፍ ቃል",
+      "confirmPlaceholder": "አዲሱን የይለፍ ቃል ያረጋግጡ",
+      "errorAllRequired": "ሁሉንም መስኮች መሙላት አለብዎት",
+      "errorMismatch": "አዲሱ የይለፍ ቃል ከማረጋገጫው ጋር አይዛመድም",
+      "errorCurrentIncorrect": "የአሁኑ የይለፍ ቃል ትክክል አይደለም",
+      "errorTooShort":"የይለፍ ቃለ ቢያንስ ስምንት ፊደል ወይም ቁጥር መያዝ አለበት",
+      "updateError": "የይለፍ ቃል መቀየር አልተሳካም"
+      
+    },
+      "recentActivity": "የቅርብ ተግባር",
+    
+      "info":"የአስተዳደር ገጽ የመረጃ አስተዳደር ፓነል። ማስተካከያ ትክክለኛ የአስተዳዳሪነት ማረጋገጫ ያስፈልገዋል።"
     },
   "help": {
     "title": "እገዛ እና ድጋፍ",
@@ -355,6 +413,7 @@
     "ok": "እሺ",
     "cancel": "ይቅር",
     "save": "አስቀምጥ",
+    "confirm": "አረጋግጥ",
     "share": "አጋራ",
     "delete": "አጥፋ",
     "skip": "ዝለል",

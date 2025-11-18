@@ -1,12 +1,11 @@
 // app/tomatodx/about.tsx - About Screen
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, FlatList, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function AboutScreen() {
@@ -15,18 +14,20 @@ export default function AboutScreen() {
     const { t } = useTranslation();
     const colors = Colors[theme];
     const [visible, setVisible] = useState(false);
+    const { width: SCREEN_WIDTH } = Dimensions.get('window');
+    const [currentDevIndex, setCurrentDevIndex] = useState(0);
+    const devListRef = useRef<FlatList<any> | null>(null);
 
     // Admin unlock state
     const [tapCount, setTapCount] = useState(0);
+    
 
-    // Handle version tap for admin unlock
-    const handleVersionTap = async () => {
+    // Handle version tap for admin entry (no auto-unlock)
+    const handleVersionTap = () => {
         const newCount = tapCount + 1;
         setTapCount(newCount);
 
         if (newCount === 6) {
-            // Unlock admin mode
-            await AsyncStorage.setItem('adminUnlocked', 'true');
             setVisible(true);
             setTapCount(0);
         } else if (newCount > 6) {
@@ -129,6 +130,50 @@ export default function AboutScreen() {
         }
     ];
 
+    const devTeam = [
+    {
+        name: 'Haileamlak G.',
+        role: t('about.teamMembers.mobileDevelopers.role'),
+        photo: require('../../assets/images/team/avatar.png'), // replace with real photo
+    },
+    {
+        name: 'Habtamu M.',
+        role: t('about.teamMembers.aiEngineers.role'),
+        photo: require('../../assets/images/team/avatar.png'), // replace path
+    },
+    {
+        name: 'Kemal S.',
+        role: t('about.teamMembers.agricultureExperts.role'),
+        photo: require('../../assets/images/team/avatar.png'), // replace path
+    },
+    {
+        name: 'Derara W.',
+        role: t('about.teamMembers.agricultureExperts.role'),
+        photo: require('../../assets/images/team/avatar.png'), // replace path
+    },
+    {
+        name: 'Admassu E.',
+        role: t('about.teamMembers.agricultureExperts.role'),
+        photo: require('../../assets/images/team/avatar.png'), // replace path
+    },
+    ];
+
+    useEffect(() => {
+    if (devTeam.length === 0) return;
+
+    const interval = setInterval(() => {
+        setCurrentDevIndex((prev) => {
+        const next = (prev + 1) % devTeam.length;
+        devListRef.current?.scrollToIndex({ index: next, animated: true });
+        return next;
+        });
+    }, 4000);
+
+    return () => clearInterval(interval);
+    }, [devTeam.length]);
+
+ 
+
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             {/* Header */}
@@ -153,7 +198,8 @@ export default function AboutScreen() {
                 {/* Hero Section */}
                 <View style={[styles.heroCard, { backgroundColor: colors.card }]}>
                     <View style={[styles.logo, { backgroundColor: colors.primaryOverlay }]}>
-                        <Ionicons name="leaf" size={48} color={colors.primary} />
+                        {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}
+                        <Image source={require('../../assets/images/icon(2).jpg')} style={{width:80,height:80,borderRadius:60}} />
                     </View>
                     <Text style={[styles.appName, { color: colors.text }]}>
                         TomatoDx
@@ -243,26 +289,82 @@ export default function AboutScreen() {
                 </View>
 
                 {/* Team */}
-                <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        {t('about.team')}
-                    </Text>
-                    {team.map((member, index) => (
+                <View style={styles.teamSection}>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                    {t('about.team')}
+                </Text>
+
+                {/* Dev team carousel – one per screen, swipe + auto-rotate */}
+                {devTeam.length > 0 && (
+                    <>
+                    <FlatList
+                        ref={devListRef}
+                        data={devTeam}
+                        keyExtractor={(_, index) => `dev-${index}`}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        onMomentumScrollEnd={(event) => {
+                        const index = Math.round(
+                            event.nativeEvent.contentOffset.x / SCREEN_WIDTH
+                        );
+                        setCurrentDevIndex(index);
+                        }}
+                        renderItem={({ item }) => (
                         <View
-                            key={index}
-                            style={[styles.teamCard, { backgroundColor: colors.card }]}
+                            style={[
+                            styles.teamCardHorizontal,
+                            { backgroundColor: colors.card, width: SCREEN_WIDTH - 40 },
+                            ]}
                         >
+                            <Image source={item.photo} style={styles.teamAvatar} />
                             <Text style={[styles.teamName, { color: colors.text }]}>
-                                {member.name}
+                            {item.name}
                             </Text>
                             <Text style={[styles.teamRole, { color: colors.primary }]}>
-                                {member.role}
-                            </Text>
-                            <Text style={[styles.teamDesc, { color: colors.textSecondary }]}>
-                                {member.description}
+                            {item.role}
                             </Text>
                         </View>
-                    ))}
+                        )}
+                        contentContainerStyle={{ paddingHorizontal: 0 }}
+                        ItemSeparatorComponent={() => <View style={{ width:10 }} />}  // <-- gap
+                    />
+
+                    {/* Indicator dots under the carousel */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10, gap: 6 }}>
+                        {devTeam.map((_, idx) => (
+                        <View
+                            key={idx}
+                            style={{
+                            width: idx === currentDevIndex ? 10 : 6,
+                            height: 6,
+                            borderRadius: 3,
+                            backgroundColor:
+                                idx === currentDevIndex ? colors.primary : 'rgba(0,0,0,0.15)',
+                            }}
+                        />
+                        ))}
+                    </View>
+                    </>
+                )}
+
+                {/* Optional: keep the existing role/description cards, or remove if redundant */}
+                {team.map((member, index) => (
+                    <View
+                    key={`role-${index}`}
+                    style={[styles.teamCard, { backgroundColor: colors.card }]}
+                    >
+                    <Text style={[styles.teamName, { color: colors.text }]}>
+                        {member.name}
+                    </Text>
+                    <Text style={[styles.teamRole, { color: colors.primary }]}>
+                        {member.role}
+                    </Text>
+                    <Text style={[styles.teamDesc, { color: colors.textSecondary }]}>
+                        {member.description}
+                    </Text>
+                    </View>
+                ))}
                 </View>
 
                 {/* Footer */}
@@ -391,33 +493,34 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     heroCard: {
-        margin: 20,
-        borderRadius: 20,
-        padding: 32,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 8,
+    margin: 16,
+    borderRadius: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
     },
     logo: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 16,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
     },
     appName: {
-        fontSize: 32,
-        fontWeight: '800',
-        marginBottom: 8,
+    fontSize: 26,
+    fontWeight: '800',
+    marginBottom: 4,
     },
     tagline: {
-        fontSize: 16,
-        textAlign: 'center',
-        marginBottom: 8,
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 4,
     },
     version: {
         fontSize: 14,
@@ -645,4 +748,35 @@ const styles = StyleSheet.create({
         marginTop: 10,
 
     },
+    teamCarousel: {
+    paddingVertical: 4,
+    paddingHorizontal: 4,
+    gap: 12,
+},
+
+teamSection: {
+        padding: 16,
+        marginBottom: 24,
+      
+    },
+teamCardHorizontal: {
+  // width will be set inline: width: SCREEN_WIDTH - 40
+  padding: 16,
+  paddingBottom:20,
+  borderRadius: 16,
+  marginRight: 0,
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 8,
+  elevation: 4,
+  },
+teamAvatar: {
+    width: 230,
+    height: 230,
+    borderRadius: 1000,
+    marginBottom: 8,
+    backgroundColor: 'rgba(0,0,0,0.06)',
+},
 });

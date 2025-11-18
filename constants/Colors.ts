@@ -82,6 +82,7 @@ const dark: ThemeTokens = {
   backgroundAlt: '#111827',    // alternative dark bg possibility
   surface: '#111827',          // dark card surface
   card: '#111827',
+  cardOverlay: '#1118279a',
   // text
   text: '#f8fffc',             // bright text from files
   textSecondary: '#e5e7eb',    // lighter secondary text in dark mode

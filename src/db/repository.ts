@@ -1,3 +1,4 @@
+import * as FileSystem from 'expo-file-system/legacy';
 import { db } from './schema';
 
 export function run(sql: string, params: any[] = []) {
@@ -27,6 +28,29 @@ export function getCurrentUser() {
         ['device']
     );
     return rows[0] ?? null;
+}
+
+export function validateAdminPassword(inputPassword: string) {
+    const rows = getAll<{ password?: string }>(
+        `SELECT password FROM User WHERE userId = 'admin' LIMIT 1`
+    );
+    const stored = rows[0]?.password;
+    if (!stored) return false;
+    return stored === inputPassword;
+}
+
+export function changeAdminPassword(currentPassword: string, newPassword: string) {
+    const rows = getAll<{ password?: string }>(
+        `SELECT password FROM User WHERE userId = 'admin' LIMIT 1`
+    );
+    const stored = rows[0]?.password;
+
+    if (!stored || stored !== currentPassword) {
+        return false;
+    }
+
+    run(`UPDATE User SET password = ? WHERE userId = 'admin'`, [newPassword]);
+    return true;
 }
 
 export function insertImage(imageId: string, filePath: string, capturedAtISO: string, userId?: string) {
@@ -165,10 +189,52 @@ export function getAllDiagnosesExport() {
 
 // Lightweight helper for admin-info export button. It returns all diagnoses
 // so the UI can decide how to persist/share them (e.g. write to a file).
-export async function exportAnalyticsData() {
+// src/db/repository.ts
+function buildAnalyticsExportContent(
+    diagnoses: any[],
+    format: 'json' | 'csv',
+): string {
+    if (format === 'csv') {
+        if (!diagnoses.length) return '';
+
+        const headers = Object.keys(diagnoses[0]);
+        const escape = (value: any) => {
+            if (value == null) return '';
+            const str = String(value).replace(/"/g, '""');
+            return /[",\n]/.test(str) ? `"${str}"` : str;
+        };
+
+        const rows = diagnoses.map(row =>
+            headers.map(key => escape((row as any)[key])).join(',')
+        );
+
+        return [headers.join(','), ...rows].join('\n');
+    }
+
+    // default JSON
+    return JSON.stringify(diagnoses, null, 2);
+}
+
+export async function exportAnalyticsData(
+    format: 'json' | 'csv' = 'json',
+    fileName?: string
+) {
     try {
         const diagnoses = getAllDiagnosesExport();
-        return { success: true, data: diagnoses as any[] };
+
+        const safeFileName = (fileName && fileName.trim().length > 0)
+            ? fileName.trim()
+            : `analytics-${new Date().toISOString().split('T')[0]}`;
+        const extension = format === 'csv' ? 'csv' : 'json';
+        const content = buildAnalyticsExportContent(diagnoses, format);
+
+        const dir: string = (FileSystem as any).documentDirectory || (FileSystem as any).cacheDirectory || '';
+        const filePath = `${safeFileName}.${extension}`;
+        const fullPath = dir ? `${dir}${filePath}` : filePath;
+
+        await FileSystem.writeAsStringAsync(fullPath, content);
+
+        return { success: true, filePath: fullPath };
     } catch (error: any) {
         console.error('exportAnalyticsData error:', error);
         return { success: false, error: error?.message ?? 'Unknown error' };
@@ -216,4 +282,61 @@ export function getLast7DaysCounts() {
          GROUP BY date(diagnosedAt)
          ORDER BY day ASC`
     );
+}
+
+// Top N diseases by diagnosis count with percentage of total
+export function getTopDiseases(limit = 5) {
+    const totalRows = getAll<{ total: number }>(
+        `SELECT COUNT(*) as total FROM Diagnosis`
+    );
+    const total = totalRows[0]?.total ?? 0;
+
+    const rows = getAll<{
+        diseaseId: string;
+        nameEn?: string;
+        nameAm?: string;
+        count: number;
+    }>(
+        `SELECT d.diseaseId, ds.nameEn, ds.nameAm, COUNT(*) as count
+         FROM Diagnosis d
+         LEFT JOIN Disease ds ON ds.diseaseId = d.diseaseId
+         GROUP BY d.diseaseId
+         ORDER BY count DESC
+         LIMIT ?`,
+        [limit]
+    );
+
+    return rows.map((row) => ({
+        ...row,
+        percentage: total > 0 ? Number(((row.count * 100) / total).toFixed(1)) : 0,
+    }));
+}
+
+// Monthly trends: total, healthy, and at-risk counts per month
+export function getMonthlyTrends() {
+    return getAll<{
+        month: string;
+        count: number;
+        healthy: number;
+        risk: number;
+    }>(
+        `SELECT strftime('%Y-%m', diagnosedAt) as month,
+                COUNT(*) as count,
+                SUM(CASE WHEN d.diseaseId LIKE '%healthy%' THEN 1 ELSE 0 END) as healthy,
+                SUM(CASE WHEN d.diseaseId NOT LIKE '%healthy%' THEN 1 ELSE 0 END) as risk
+         FROM Diagnosis d
+         GROUP BY strftime('%Y-%m', diagnosedAt)
+         ORDER BY month ASC`
+    );
+}
+
+// Clear all analytics data (diagnoses); keep diseases and users intact
+export async function clearAnalyticsData() {
+    try {
+        run(`DELETE FROM Diagnosis`, []);
+        return true;
+    } catch (error) {
+        console.error('clearAnalyticsData error:', error);
+        return false;
+    }
 }

@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import {
     ActivityIndicator,
     Dimensions,
+    ImageBackground,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -21,7 +22,6 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import AdminModal from '../src/components/AdminModal';
 import DiseaseEditor from '../src/components/DiseaseEditor';
 import { useTheme } from '../src/contexts/ThemeContext';
 import { changeAdminPassword, getAnalyticsSummary, getLast7DaysCounts, upsertModelMeta, validateAdminPassword } from '../src/db/repository';
@@ -82,6 +82,7 @@ const [showNewPassword, setShowNewPassword] = useState(false);
 const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 const [isChangingPassword, setIsChangingPassword] = useState(false);
 const [changePasswordError, setChangePasswordError] = useState<string | null>(null);
+const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 
     // Analytics State
     const [analyticsSummary, setAnalyticsSummary] = useState<ReturnType<typeof getAnalyticsSummary> | null>(null);
@@ -174,7 +175,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                 return;
             }
 
-            setVisibleChangePassword(false);
+            setIsPasswordChanged(true);
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
@@ -241,6 +242,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
     useEffect(() => {
         if (isAuthorized) {
             loadAnalytics();
+            
         }
     }, [isAuthorized, loadAnalytics]);
 
@@ -316,6 +318,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                     iconColor: colors.warning,
                     action: () => {
                         setChangePasswordError(null);
+                        setIsPasswordChanged(false);
                         setCurrentPassword('');
                         setNewPassword('');
                         setConfirmPassword('');
@@ -341,12 +344,19 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
     // Render authentication screen
     if (!isAuthorized) {
         return (
+            <ImageBackground
+     source={require('../assets/images/screenBg/admin.jpg')}  
+    style={styles.backgroundImage}
+    imageStyle={{ resizeMode: 'cover' }}
+  >
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
+      
             <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={[styles.container, { backgroundColor: `${colors.background}80` }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
                 {/* Header */}
-                <View style={[styles.header, { backgroundColor: colors.card }]}>
+                <View style={styles.header}>
                     <TouchableOpacity 
                         style={styles.backButton} 
                         onPress={() => router.back()}
@@ -360,7 +370,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
 
                 {/* Authentication Card */}
                 <View style={styles.authContainer}>
-                    <View style={[styles.authCard, { backgroundColor: colors.card }]}>
+                    <View style={[styles.authCard, { backgroundColor: `${colors.card}CC` }]}>
                         <View style={[styles.authIconContainer, { backgroundColor: colors.primaryOverlay }]}>
                             <Ionicons name="shield-checkmark" size={32} color={colors.primary} />
                         </View>
@@ -445,14 +455,23 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                     </View>
                 </View>
             </KeyboardAvoidingView>
+            </View>
+            </ImageBackground>
         );
     }
 
     // Render main admin panel
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <ImageBackground
+    source={require('../assets/images/screenBg/admin.jpg')}   
+    style={styles.backgroundImage}
+    imageStyle={{ resizeMode: 'cover' }}
+  >
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
+      
+        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}99` : `${colors.background}60` }]}>
             {/* Header */}
-            <View style={[styles.header, { backgroundColor: colors.card }]}>
+            <View style={[styles.header]}>
                 <TouchableOpacity 
                     style={styles.backButton} 
                     onPress={() => router.back()}
@@ -463,7 +482,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                 
                 <View style={styles.headerTitleContainer}>
                     <Text style={[styles.title, { color: colors.text }]}>{t('admin.title')}</Text>
-                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                    <Text style={[styles.subtitle, { color: theme === 'dark' ? colors.textSecondary : colors.text }]}>
                         {t('admin.system.systemAdministration')}
                     </Text>
                 </View>
@@ -482,7 +501,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
             </View>
 
             {/* Warning Banner */}
-            <View style={[styles.warningBanner, { backgroundColor: colors.warning }]}>
+            <View style={[styles.warningBanner, { backgroundColor: `${colors.warning}BB` }]}>
                 <Ionicons name="warning" size={20} color="#fff" />
                 <Text style={styles.warningText}>{t('admin.caution')}</Text>
             </View>
@@ -519,7 +538,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                                     key={item.id}
                                     style={[
                                         styles.actionCard,
-                                        { backgroundColor: colors.card }
+                                        { backgroundColor: `${colors.card}BB` }
                                     ]}
                                     onPress={item.action}
                                     activeOpacity={0.7}
@@ -567,7 +586,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                 {last7DaysCounts.length > 0 && (
                     <View style={styles.section}>
                         <View style={styles.sectionHeader}>
-                            <View style={[styles.sectionIcon, { backgroundColor: colors.success + '20' }]}>
+                            <View style={[styles.sectionIcon, { backgroundColor: colors.success + '50' }]}>
                                 <Ionicons name="calendar" size={18} color={colors.success} />
                             </View>
                             <Text style={[styles.sectionTitle, { color: colors.text }]}>
@@ -575,7 +594,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                             </Text>
                         </View>
                         
-                        <View style={[styles.trendCard, { backgroundColor: colors.card }]}>
+                        <View style={[styles.trendCard, { backgroundColor: `${colors.card}BB` }]}>
                             <View style={styles.trendGrid}>
                                 {last7DaysCounts.slice(0, 7).map((item, index) => (
                                     <View key={item.day} style={styles.trendItem}>
@@ -607,16 +626,16 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                 )}
 
                 {/* Information Card */}
-                <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
+                <View style={[styles.infoCard]}>
                     <Ionicons name="information-circle" size={20} color={colors.primary} />
-                    <Text style={[styles.infoText, { color: colors.textSecondary }]}>
+                    <Text style={[styles.infoText, { color: colors.text }]}>
                         {t('admin.info')}
                     </Text>
                 </View>
             </ScrollView>
 
             {/* Modals */}
-            <AdminModal
+            {/* <AdminModal
                 visible={visibleUpdate}
                 onClose={() => setVisibleUpdate(false)}
                 icon="cloud-upload"
@@ -643,9 +662,9 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                         <Text style={styles.uploadButtonText}>{t('admin.modelManagement.updateModel.selectModelFile')}</Text>
                     </TouchableOpacity>
                 )}
-            </AdminModal>
+            </AdminModal> */}
 
-            <AdminModal
+            {/* <AdminModal
                 visible={visibleReset}
                 onClose={() => setVisibleReset(false)}
                 icon="lock-closed"
@@ -663,7 +682,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                         style: 'danger',
                     },
                 ]}
-            />
+            /> */}
 
             <Modal
                 visible={visibleChangePassword}
@@ -683,8 +702,12 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                         <Text style={[styles.modalTitle, { color: colors.text }]}>
                             {t('admin.password.changeTitle')}
                         </Text>
-                        <Text style={[styles.modalMessage,   { color: changePasswordError ? '#FF3B30' : colors.textSecondary },]}>
-                           {changePasswordError || t('admin.password.changeMessage')}
+                        <Text style={[styles.modalMessage,   { color: changePasswordError ? '#FF3B30' : (isPasswordChanged ? colors.success : colors.textSecondary) },]}>
+                           {changePasswordError
+                            ? changePasswordError
+                            : isPasswordChanged
+                            ? t('admin.password.changeSuccess')
+                            : t('admin.password.changeMessage')}
                         </Text>
 
                         <ScrollView
@@ -713,6 +736,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                                     onChangeText={(text) => {
                                         setCurrentPassword(text);
                                         if (changePasswordError) setChangePasswordError(null);
+                                        if (isPasswordChanged) setIsPasswordChanged(false);
                                     }}
                                 />
                                 <TouchableOpacity
@@ -749,6 +773,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                                     onChangeText={(text) => {
                                         setNewPassword(text);
                                         if (changePasswordError) setChangePasswordError(null);
+                                        if (isPasswordChanged) setIsPasswordChanged(false);
                                     }}
                                 />
                                 <TouchableOpacity
@@ -785,6 +810,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                                     onChangeText={(text) => {
                                         setConfirmPassword(text);
                                         if (changePasswordError) setChangePasswordError(null);
+                                        if (isPasswordChanged) setIsPasswordChanged(false);
                                     }}
                                 />
                                 <TouchableOpacity
@@ -804,7 +830,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                             <TouchableOpacity
                                 style={[
                                     styles.modalButton,
-                                    { backgroundColor: colors.backgroundAlt },
+                                    { backgroundColor: colors.background },
                                     styles.modalButtonSingle,
                                 ]}
                                 onPress={() => setVisibleChangePassword(false)}
@@ -812,7 +838,7 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                                 <Text
                                     style={[
                                         styles.modalButtonText,
-                                        { color: '#fff' },
+                                        { color: colors.text },
                                     ]}
                                 >
                                     {t('common.cancel')}
@@ -824,7 +850,15 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                                     { backgroundColor: colors.primary },
                                     styles.modalButtonSingle,
                                 ]}
-                                onPress={() => !isChangingPassword && handleSubmitChangePassword()}
+                                onPress={() => {
+                                    if (isPasswordChanged) {
+                                        setVisibleChangePassword(false);
+                                        return;
+                                    }
+                                    if (!isChangingPassword) {
+                                        handleSubmitChangePassword();
+                                    }
+                                }}
                             >
                                 <Text
                                     style={[
@@ -832,7 +866,11 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
                                         { color: '#fff' },
                                     ]}
                                 >
-                                    {isChangingPassword ? t('common.loading') : t('common.confirm')}
+                                    {isChangingPassword
+                                        ? t('common.loading')
+                                        : isPasswordChanged
+                                        ? t('common.ok')
+                                        : t('common.confirm')}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -842,13 +880,21 @@ const [changePasswordError, setChangePasswordError] = useState<string | null>(nu
 
             <DiseaseEditor visible={visibleEdit} onClose={() => setVisibleEdit(false)} />
         </View>
+        </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { 
-        flex: 1 
+    backgroundImage: {
+        flex: 1,
     },
+    overlay: {
+        flex: 1,
+    },
+    container: {
+        flex: 1,
+  },
     // Header Styles
     header: {
         flexDirection: 'row',
@@ -856,15 +902,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingTop: 60,
         paddingBottom: 20,
-        marginBottom: 20,
+        marginBottom: 10,
         paddingHorizontal: 20,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 3,
+        
     },
     headerTitleContainer: {
         flex: 1,
@@ -876,7 +918,7 @@ const styles = StyleSheet.create({
         letterSpacing: -0.5,
     },
     subtitle: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '500',
         marginTop: 2,
         opacity: 0.7,
@@ -899,7 +941,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 24,
-        paddingBottom: 60
+        paddingBottom: 40
     },
     authCard: {
         width: '100%',
@@ -907,11 +949,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 16,
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.1,
-        shadowRadius: 16,
-        elevation: 8,
+       
     },
     authIconContainer: {
         width: 80,
@@ -1044,11 +1082,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 16,
         borderRadius: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 4,
     },
     actionIcon: {
         width: 48,
@@ -1078,11 +1111,6 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 16,
         marginHorizontal: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 4,
     },
     trendGrid: {
         flexDirection: 'row',
@@ -1119,19 +1147,19 @@ const styles = StyleSheet.create({
     // Info Card Styles
     infoCard: {
         flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
         padding: 16,
         marginHorizontal: 20,
         marginBottom: 20,
         borderRadius: 12,
         gap: 12,
-        alignItems: 'flex-start',
     },
     infoText: { 
         flex: 1, 
         fontSize: 13, 
         lineHeight: 18,
-        opacity: 0.8,
-    },
+           },
     
     // Modal Content Styles
     changePasswordContainer: {

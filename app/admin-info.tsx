@@ -3,12 +3,14 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import * as Sharing from 'expo-sharing';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     ActivityIndicator,
     Alert,
     Dimensions,
+    ImageBackground,
     Modal,
     RefreshControl,
     ScrollView,
@@ -178,9 +180,15 @@ export default function AdminInfoScreen() {
             const exportResult = await exportAnalyticsData(format, exportFileName);
             
             if (exportResult.success) {
+                const filePath = exportResult.filePath || '';
+                const isDownloads = /download/i.test(filePath);
+                const locationMsg = isDownloads
+                    ? t('admin.analytics.exportLocation.downloads')
+                    : t('admin.analytics.exportLocation.internal');
+
                 Alert.alert(
                     t('common.success'),
-                    `Data exported successfully as ${format.toUpperCase()}`,
+                    `${t('admin.analytics.exportSuccess')}\n${locationMsg}`,
                     [
                         { text: 'OK', style: 'default' },
                         { 
@@ -189,6 +197,7 @@ export default function AdminInfoScreen() {
                         }
                     ]
                 );
+                console.log('Exported analytics path:', exportResult.filePath);
                 setShowExportModal(false);
             } else {
                 throw new Error(exportResult.error || 'Export failed');
@@ -208,15 +217,29 @@ export default function AdminInfoScreen() {
      * Share exported file
      */
     const handleShareExport = async (filePath: string) => {
-        try {
-            await Share.share({
-                url: filePath,
-                title: 'Analytics Data Export'
+    try {
+        const ext = filePath.split('.').pop()?.toLowerCase();
+        const mimeType = ext === 'csv' ? 'text/csv' : 'application/json';
+
+        const sharingAvailable = await Sharing.isAvailableAsync();
+
+        if (sharingAvailable) {
+            await Sharing.shareAsync(filePath, {
+                mimeType,
+                dialogTitle: 'Analytics Data Export',
             });
-        } catch (error) {
-            console.error('Share failed:', error);
+            return;
         }
-    };
+
+        await Share.share({
+            url: filePath,
+            message: filePath,
+            title: 'Analytics Data Export',
+        });
+    } catch (error) {
+        console.error('Share failed:', error);
+    }
+};
 
     /**
      * Clear analytics data with confirmation
@@ -300,10 +323,17 @@ export default function AdminInfoScreen() {
     }
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+         <ImageBackground
+    source={require('../assets/images/screenBg/adminInfo.jpg')}
+    style={styles.backgroundImage}
+    imageStyle={{ resizeMode: 'cover' }}
+  >
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
+     
+        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}99` : `${colors.background}60` }]}>
             
             {/* Enhanced Header Section */}
-            <View style={[styles.header, { backgroundColor: colors.card }]}>
+            <View style={[styles.header]}>
                 <TouchableOpacity 
                     style={styles.backButton} 
                     onPress={() => router.back()}
@@ -346,12 +376,12 @@ export default function AdminInfoScreen() {
                 </View>
             </View>
             <View style={[styles.headerSubtitleContainer]}>
-                <Text style={[styles.subtitle, { color: colors.text }]}>
+                <Text style={[styles.subtitle, { color: theme === 'dark' ? colors.textSecondary : colors.text }]}>
                     {t('admin.analytics.subtitle')}
                 </Text>
             </View>
             {/* Navigation Tabs */}
-            <View style={[styles.tabContainer, { backgroundColor: colors.card }]}>
+            <View style={[styles.tabContainer, { backgroundColor: `${colors.card}BB` }]}>
                 {[
                     { id: 'overview', label: t('admin.analytics.tabOverview'), icon: 'grid' },
                     { id: 'diseases', label: t('admin.analytics.tabDiseases'), icon: 'medical' },
@@ -403,7 +433,7 @@ export default function AdminInfoScreen() {
                     <>
                         {/* Quick Stats Cards */}
                         <View style={styles.statsGrid}>
-                            <View style={[styles.statCard, { backgroundColor: colors.primary + '10' }]}>
+                            <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? colors.primary + '30' : colors.primary + '55' ,borderColor: colors.primary, borderWidth: theme === 'light' ? 1 : 0}]}> 
                                 <Ionicons name="scan" size={24} color={colors.primary} />
                                 <Text style={[styles.statValue, { color: colors.text }]}>
                                     {analyticsSummary?.total || 0}
@@ -413,7 +443,7 @@ export default function AdminInfoScreen() {
                                 </Text>
                             </View>
                             
-                            <View style={[styles.statCard, { backgroundColor: colors.success + '10' }]}>
+                            <View style={[styles.statCard, { backgroundColor:theme === 'dark' ? colors.success + '30' : colors.success + '55' ,borderColor: colors.success, borderWidth: theme === 'light' ? 1 : 0}]}>
                                 <Ionicons name="leaf" size={24} color={colors.success} />
                                 <Text style={[styles.statValue, { color: colors.text }]}>
                                     {analyticsSummary?.healthyCount || 0}
@@ -423,7 +453,7 @@ export default function AdminInfoScreen() {
                                 </Text>
                             </View>
                             
-                            <View style={[styles.statCard, { backgroundColor: colors.warning + '10' }]}>
+                            <View style={[styles.statCard, { backgroundColor:theme === 'dark' ? colors.warning + '30' : colors.warning + '55' ,borderColor: colors.warning, borderWidth: theme === 'light' ? 1 : 0}]}>
                                 <Ionicons name="alert-circle" size={24} color={colors.warning} />
                                 <Text style={[styles.statValue, { color: colors.text }]}>
                                     {analyticsSummary ? analyticsSummary.medium + analyticsSummary.high : 0}
@@ -433,7 +463,7 @@ export default function AdminInfoScreen() {
                                 </Text>
                             </View>
                             
-                            <View style={[styles.statCard, { backgroundColor: colors.primary + '10' }]}>
+                            <View style={[styles.statCard, { backgroundColor:theme === 'dark' ? colors.primary + '30' : colors.primary + '55' ,borderColor: colors.primary, borderWidth: theme === 'light' ? 1 : 0 }]}>
                                 <Ionicons name="trending-up" size={24} color={colors.primary} />
                                 <Text style={[styles.statValue, { color: colors.text }]}>
                                     {metrics?.successRate || '0'}%
@@ -445,14 +475,14 @@ export default function AdminInfoScreen() {
                         </View>
 
                         {/* Risk Distribution Card */}
-                        <View style={[styles.card, { backgroundColor: colors.card }]}>
+                        <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
                             <View style={styles.cardHeader}>
                                 <Text style={[styles.cardTitle, { color: colors.text }]}>
                                     {t('admin.analytics.riskDistributionTitle')}
                                 </Text>
                                 <View style={styles.riskStats}>
                                     <Text style={[styles.riskStat, { color: colors.textSecondary }]}>
-                                        {metrics?.riskPercentage}% Risk
+                                        {metrics?.riskPercentage}% {t('admin.analytics.riskLabel')}
                                     </Text>
                                 </View>
                             </View>
@@ -461,9 +491,9 @@ export default function AdminInfoScreen() {
                                 <View style={styles.riskDistribution}>
                                     <View style={styles.riskBarContainer}>
                                         {[
-                                            { value: analyticsSummary.low, color: colors.success, label: 'Low' },
-                                            { value: analyticsSummary.medium, color: colors.warning, label: 'Medium' },
-                                            { value: analyticsSummary.high, color: colors.danger, label: 'High' }
+                                            { value: analyticsSummary.low, color: colors.success, label: t('admin.analytics.lowRiskLabel') },
+                                            { value: analyticsSummary.medium, color: colors.warning, label: t('admin.analytics.mediumRiskLabel') },
+                                            { value: analyticsSummary.high, color: colors.danger, label: t('admin.analytics.highRiskLabel') }
                                         ].map((risk, index) => (
                                             <View key={risk.label} style={styles.riskBarSegment}>
                                                 <View 
@@ -490,7 +520,7 @@ export default function AdminInfoScreen() {
 
                         {/* Recent Activity Trend */}
                         {last7DaysCounts.length > 0 && (
-                            <View style={[styles.card, { backgroundColor: colors.card }]}>
+                            <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
                                 <View style={styles.cardHeader}>
                                     <Text style={[styles.cardTitle, { color: colors.text }]}>
                                         {t('admin.analytics.sevenDayTrend')}
@@ -533,8 +563,8 @@ export default function AdminInfoScreen() {
 
                 {/* Diseases Tab */}
                 {activeTab === 'diseases' && topDiseases.length > 0 && (
-                    <View style={[styles.card, { backgroundColor: colors.card }]}>
-                        <View style={styles.cardHeader}>
+                    <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
+                        <View style={[styles.cardHeader, {flexDirection: 'column'}]}>
                             <Text style={[styles.cardTitle, { color: colors.text }]}>
                                 {t('admin.analytics.topDiseasesTitle')}
                             </Text>
@@ -574,7 +604,7 @@ export default function AdminInfoScreen() {
 
                 {/* Trends Tab */}
                 {activeTab === 'trends' && monthlyTrends.length > 0 && (
-                    <View style={[styles.card, { backgroundColor: colors.card }]}>
+                    <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
                         <View style={styles.cardHeader}>
                             <Text style={[styles.cardTitle, { color: colors.text }]}>
                                 {t('admin.analytics.monthlyTrendsTitle')}
@@ -620,7 +650,7 @@ export default function AdminInfoScreen() {
                 )}
 
                 {/* Data Management Card */}
-                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
                     <Text style={[styles.cardTitle, { color: colors.text }]}>
                         {t('admin.analytics.dataManagementTitle')}
                     </Text>
@@ -657,7 +687,7 @@ export default function AdminInfoScreen() {
                 onRequestClose={() => setShowExportModal(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                    <View style={[styles.modalContent, { backgroundColor: `${colors.card}ED` }]}>
                         <Text style={[styles.modalTitle, { color: colors.text }]}>
                             {t('admin.analytics.exportModal.title')}
                         </Text>
@@ -718,7 +748,7 @@ export default function AdminInfoScreen() {
                 onRequestClose={() => setShowClearDataModal(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                    <View style={[styles.modalContent, { backgroundColor: `${colors.card}ED` }]}>
                         <View style={styles.warningIcon}>
                             <Ionicons name="warning" size={48} color={colors.danger} />
                         </View>
@@ -742,7 +772,7 @@ export default function AdminInfoScreen() {
                             </TouchableOpacity>
                             
                             <TouchableOpacity 
-                                style={[styles.modalButton, { backgroundColor: colors.danger }]}
+                                style={[styles.modalButton, { backgroundColor: `${colors.danger}DD` }]}
                                 onPress={handleClearData}
                             >
                                 <Text style={[styles.modalButtonText, { color: '#fff' }]}>
@@ -754,10 +784,14 @@ export default function AdminInfoScreen() {
                 </View>
             </Modal>
         </View>
+        </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    backgroundImage: { flex: 1 },
+overlay: { flex: 1 },
     container: {
         flex: 1,
     },
@@ -780,11 +814,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 3,
+       
     },
     headerTitleContainer: {
         flex: 1,
@@ -877,11 +907,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         borderRadius: 16,
         padding: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 4,
+        
     },
     cardHeader: {
         flexDirection: 'row',

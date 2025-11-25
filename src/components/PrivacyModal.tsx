@@ -92,7 +92,7 @@ export default function PrivacyModal({ visible, onClose, onToggle, optIn }: Priv
 
     return (
           <ImageBackground
-    source={require('../../assets/images/image.png')}
+    source={require('../../assets/images/screenBg/homeHeader.png')}
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >

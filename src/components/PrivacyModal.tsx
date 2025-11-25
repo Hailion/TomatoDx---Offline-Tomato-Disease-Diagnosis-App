@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import {
     Animated,
     Dimensions,
+    ImageBackground,
     Modal,
     ScrollView,
     StyleSheet,
@@ -90,6 +91,13 @@ export default function PrivacyModal({ visible, onClose, onToggle, optIn }: Priv
     if (!visible) return null;
 
     return (
+          <ImageBackground
+    source={require('../../assets/images/image.png')}
+    style={styles.backgroundImage}
+    imageStyle={{ resizeMode: 'cover' }}
+  >
+    <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.75)' : 'rgba(255,255,255,0.65)' }]}>
+    
         <Modal
             transparent
             visible={visible}
@@ -101,7 +109,7 @@ export default function PrivacyModal({ visible, onClose, onToggle, optIn }: Priv
                     style={[
                         styles.modalContainer,
                         {
-                            backgroundColor: colors.card,
+                            backgroundColor: `${colors.card}BB`,
                             transform: [
                                 { translateY: slideAnim },
                                 { scale: scaleAnim },
@@ -200,10 +208,13 @@ export default function PrivacyModal({ visible, onClose, onToggle, optIn }: Priv
                 </Animated.View>
             </Animated.View>
         </Modal>
+        </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    backgroundImage: { flex: 1 },
     overlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
@@ -217,11 +228,7 @@ const styles = StyleSheet.create({
         maxHeight: SCREEN_HEIGHT * 0.8,
         borderRadius: 20,
         padding: 24,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.3,
-        shadowRadius: 20,
-        elevation: 10,
+       
     },
     header: {
         alignItems: 'center',

@@ -13,7 +13,9 @@
     "lastScan": "የመጨረሻ ምርመራ የተደረገው",
     "totalScans": "ምርመራዎች",
     "accuracy": "እርግጥኝነት",
-    "healthy": "ጤነኛ"
+    "healthy": "ጤነኛ",
+    "last7Days": "ሳምንታዊ ምርመራዎች",
+    "noData": "በሽታዉ አጭር ገላጻ የለውም"
   },
   "scan": {
     "title": "የቅጠል ፎቶ ያንሱ",
@@ -23,18 +25,16 @@
     "cameraPermissionDesc": "ፈቃድ ያስፈልጋል፣ የሚዲያ ላይብራሪ ፈቃድ ያስፈልጋል።",
     "grantPermission": "ፍቃድ ይስጡ",
     "takePhoto": "ፎቶ ያንሱ",
-    "takePhotoDesc": "ቅጠሉን ፎቶ ለመቅረፅ ካሜራዎን ይጠቀሙ።",
+    "takePhotoDesc": "ቅጠሉን ፎቶ ለማንሳት ካሜራዎን ይጠቀሙ።",
     "chooseGallery": "ከጋለሪ ይምረጡ",
-    "chooseGalleryDesc": "ጋሌሪዎ ዉስጥ ያለ ፎቶ ይምረጡ።",
-    "alignGuide": "ቅጠሉን በፍሬም ውስጥ ያስተካክሉ።",
-    "tips": "የፎቶ አነሳስ ምክሮች",
-    "tip1": "ለትክክለኛ ምርመራ ቅጠሉ በቂ ብርሃን ውስጥ መሆኑን እና ግልጽ ሆኖ እንዲታይ ያድርጉ።",
-    "tip2": "ትኩረትዎን የተጎዱ ቅጠሎች ላይ ያድርጉ።",
-    "tip3": "የፎቶው ጥራት በእንቅስቃሴ እንዳይደበዝዝ ካሜራውን አረጋግተው በመያዝ ያንሱ።",
-    "recentScan": "የቅርብ ምርመራዎች",
-    "recentScanDesc": "በቅርብ ጊዜ ያደረጉትን የቲማቲም ምርመራ ውጤቶች በፍጥነት ይክፈቱና ይመልከቱ።",
-    "error": "ስህተት",
-    "captureError": "ፎቶ ማንሳት አልተሳካም"
+    "chooseGalleryDesc": "ጋለሪዎ ዉስጥ ያለ ፎቶ ይምረጡ።",
+    "alignGuide": "አንድ የቲማቲም ቅጠል ብቻ ከላይ እንደሚታየው የካመራዎ ፍሬም ውስጥ እንዲገባ አድርገው ያስተካክሉ እና ፎቶ ያንሱ።",
+    "tips": "ጥሩ ፎቶ እንዴት እናንሳ?",
+    "tip1": "ካሜራውን ከቅጠሉ 20–30 ሴንቲ ሜትር ርቀት ላይ ያድርጉ እና አንድ ቅጠል ብቻ እንዲሞላ በፍሬሙ ውስጥ ያድርጉ።",
+    "tip2": "ምስሉ ሳይደበዝዝ እና ሳይፈዝ ግልጽ እንዲሆን ከ2–3 ሰከንድ ስልኩን አረጋግተው ያዙ።",
+    "tip3": "ደማቅ የተፈጥሮ ብርሃን ይጠቀሙ እና ጠንካራ ጥላዎችን ወይም በጣም ጥቁር ዳራዎችን ያስወግዱ።",
+    "recentScan":"የቅርብ ምርመራዎች",
+    "recentScanDesc":"የመጨረሻውን የቲማቲም ቅጠል ቅኝት ይገምግሙ እና ውጤታቸውን በፍጥነት ይክፈቱ"
   },
   "preview": {
     "title": "ቅድመ እይታ",
@@ -43,7 +43,7 @@
     "tipsTitle": "ለመተንተን ዝግጁ",
     "tipsText": "ይህ ምስል ለመተንተን ዝግጁ ነው። ለትክክለኛ ምርመራ ይረዳ ዘንድ ቅጠሉ በቂ ብርሃን ውስጥ መሆኑን እና ግልጽ ሆኖ እንዲታይ ያድርጉ።",
     "analyze": "ምስሉን ይተንትኑ",
-    "retake": "ፎቶ እንደገና ያንሱ",
+    "retake": "እንደገና ያንሱ",
     "analyzing": "በመተንተን ላይ...",
     "analyzeSuccess": "ትንተናው ተሳክቷል",
     "analyzeFailed": "ትንተናው አልተሳካም",
@@ -66,6 +66,9 @@
     "prevention": "የመከላከል ምክሮች",
     "quickActions": "ፈጣን እርምጃዎች",
     "noDescription": "ለበሽታዉ አጭር ገላጻ የለውም",
+    "addNotes": "ማስታወሻ አስቀምጥ",
+    "addNotesDesc": "ስለዚህ ምርመራ ማስታዎሻ አስቀምጥ",
+    "notesPlaceholder": "ማስታዎሻዎትን እዚህ ዉስጥ ያስቀምጡ...",
     "save": "ውጤት አስቀምጥ",
     "saved": "ተቀምጧል",
     "savedMessage": "ውጤቱ በታሪክዎ ተቀምጧል",
@@ -112,7 +115,7 @@
       "confidence": "የመተማመን ደረጃ",
       "newest": "የቅርብ",
       "oldest": "የቆዩ",
-      "highConfidence": "ከፍ ያለ መተማማን",
+      "highConfidence": "ትልቅ መተማማን",
       "lowConfidence": "የወረደ መተማመን"
     },
     "deleteConfirmTitle": "ምርመራዉ ይጥፋ?",
@@ -232,6 +235,10 @@
       "loadError": "የመጫን ስህተት",
       "exportData": "አስቀምጥ",
       "exportSuccess": "በተሳካ ሁኔታ ተቀምጧል",
+      "exportLocation": {
+        "downloads": "በ \"Downloads\" ዶሴ ተቀምጧል።",
+        "internal": "በመተግበሪያው ውስጥ ያለው የውሂብ ቦታ ተቀምጧል።"
+      },
       "exportError": "አልተሳካም",
       "subtitle": "ዝርዝር ትንተና እና እይታዎች",
       "tabOverview": "አጠቃላይ",
@@ -241,6 +248,10 @@
       "totalScansLabel": "ጠቅላላ ምርመራዎች",
       "healthyLabel": "ጤናማ ምርመራዎች",
       "atRiskLabel": "ስጋት ያሉ ምርመራዎች",
+      "riskLabel": "ስጋት",
+      "lowRiskLabel": "ዝቅተኛ",
+      "mediumRiskLabel": "መካከለኛ",
+      "highRiskLabel": "ከፍተኛ",
       "successRateLabel": "የስኬት መጠን",
       "riskDistributionTitle": "የስጋት መመደብ",
       "sevenDayTrend": "የ7 ቀን የተግባር ዝንባሌ",
@@ -382,19 +393,29 @@
     "team": "ቡድናችን",
     "teamMembers": {
       "agricultureExperts": {
-        "name": "የግብርና ባለሙያዎች",
+        "title": "የግብርና ባለሙያዎች",
+        "name": "አድማሱ እጅጉ",
         "role": "የእፅዋት በሽታ ጥናት",
         "description": "ትክክለኛ የበሽታ መለያ እና የሕክምና ምክሮችን ማረጋገጥ"
       },
       "aiEngineers": {
-        "name": "የ ኤይ መሐንዲሶች",
+        "title": "የ ኤይ መሐንዲሶች",
+        "name": "ሀብታሙ ሙሉሰው",
+        "name2": "ከማል ሰይድ",
         "role": "የማሽን መማሪያ",
         "description": "የላቁ የኮምፒውተር እይታ ሞዴሎችን ማዳበር እና ማሠልጠን"
       },
       "mobileDevelopers": {
-        "name": "የሞባይል ገንቢዎች",
+        "title": "የሞባይል ገንቢዎች",
+        "name": "ሀይለአምላክ ጋሻው",
         "role": "የመተግበሪያ ብልጽጋ",
         "description": "አጠቃቀማቸው ቀላል እና ለተጠቃሚ ምቹ የሆኑ የሞባይል ልመምዶችን መፍጠር"
+      },
+      "dataAnalyst": {
+        "title": "የውሂብ ተንታኝ",
+        "name": "ደራራ ዋቅቶላ",
+        "role": "የውሂብ ተንታኝ",
+        "description": "የውሂብ ተንታኝ እና ለተጠቃሚ ምቹ የሆኑ የሞባይል ልመምዶችን መፍጠር"
       }
     },
     "footer": {

@@ -1,6 +1,52 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { db } from './schema';
 
+export type SaveToDownloadsResult =
+    | { ok: true; path: string }
+    | { ok: false; error: string };
+
+export async function saveToAndroidDownloads(
+    fileName: string,
+    data: string | object
+): Promise<SaveToDownloadsResult> {
+    try {
+        // NOTE: On Android, access to the public Downloads directory depends on
+        // OS version and Expo/runtime permissions. Modern Expo-managed apps
+        // usually can write here, but production behavior may vary. When the
+        // Downloads directory is not exposed (e.g. Expo Go, some emulators or
+        // non-Android platforms), we gracefully fall back to app-internal
+        // storage so the export still works.
+        const downloadsDir = (FileSystem as any).downloadsDirectory as string | undefined;
+        const appDir =
+            ((FileSystem as any).documentDirectory as string | undefined) ||
+            ((FileSystem as any).cacheDirectory as string | undefined);
+
+        if (!downloadsDir && !appDir) {
+            return {
+                ok: false,
+                error:
+                    'Neither Downloads nor app storage directories are available on this platform or Expo runtime.',
+            };
+        }
+
+        const baseDir = downloadsDir ?? appDir!;
+        const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        const normalizedName = fileName.replace(/^\/+/, '');
+        const fullPath = `${baseDir}${normalizedName}`;
+
+        await FileSystem.writeAsStringAsync(fullPath, content);
+
+        return { ok: true, path: fullPath };
+    } catch (error: any) {
+        return {
+            ok: false,
+            error:
+                error?.message ??
+                'Failed to write file to storage (Android Downloads or app storage; permissions/OS limitations).',
+        };
+    }
+}
+
 export function run(sql: string, params: any[] = []) {
     db.execute(sql, params);
 }
@@ -228,13 +274,14 @@ export async function exportAnalyticsData(
         const extension = format === 'csv' ? 'csv' : 'json';
         const content = buildAnalyticsExportContent(diagnoses, format);
 
-        const dir: string = (FileSystem as any).documentDirectory || (FileSystem as any).cacheDirectory || '';
-        const filePath = `${safeFileName}.${extension}`;
-        const fullPath = dir ? `${dir}${filePath}` : filePath;
+        const result = await saveToAndroidDownloads(`${safeFileName}.${extension}`, content);
 
-        await FileSystem.writeAsStringAsync(fullPath, content);
+        if (!result.ok) {
+            console.error('exportAnalyticsData error (Downloads):', result.error);
+            return { success: false, error: result.error };
+        }
 
-        return { success: true, filePath: fullPath };
+        return { success: true, filePath: result.path };
     } catch (error: any) {
         console.error('exportAnalyticsData error:', error);
         return { success: false, error: error?.message ?? 'Unknown error' };

@@ -17,7 +17,9 @@
     "lastScan": "Last scan completed",
     "totalScans": "Total Scans",
     "accuracy": "Accuracy",
-    "healthy": "Healthy"
+    "healthy": "Healthy",
+    "last7Days": "Last 7 days",
+    "noData": "No data"
   },
   "scan": {
     "title": "Scan Leaf",
@@ -27,16 +29,16 @@
     "takePhotoDesc": "Use your camera to capture a leaf",
     "chooseGallery": "Choose from Gallery",
     "chooseGalleryDesc": "Select an existing photo",
-    "tips": "Tips for Best Results",
-    "tip1": "Ensure good lighting",
-    "tip2": "Focus on the affected area",
-    "tip3": "Keep the leaf centered",
+    "tips": "How to take a good scan",
+    "tip1": "Hold the camera 20–30 cm away and fill most of the frame with a single tomato leaf.",
+    "tip2": "Keep your phone steady for 2–3 seconds so the leaf is sharp and not blurry.",
+    "tip3": "Use bright natural light and avoid strong shadows or very dark backgrounds.",
     "recentScan": "Recent scans",
     "recentScanDesc": "Review your last tomato leaf scans and quickly reopen their results",
     "cameraPermission": "Camera Permission Required",
     "cameraPermissionDesc": "Please grant camera access to scan leaves",
     "grantPermission": "Grant Permission",
-    "alignGuide": "Align leaf within frame",
+    "alignGuide": "Align one tomato leaf inside the square frame below, then tap 'Take Photo'.",
     "error": "Error",
     "captureError": "Failed to capture photo",
     "permissionDenied": "Permission Denied",
@@ -70,6 +72,9 @@
     "longTermActions": "Long-term Actions",
     "prevention": "Prevention Tips",
     "quickActions": "Quick Actions",
+    "addNotes": "Add Notes",
+    "addNotesDesc": "Add notes about this diagnosis",
+    "notesPlaceholder": "Enter your notes here...",
     "save": "Save Result",
     "saved": "Saved",
     "savedMessage": "Result saved to your history",
@@ -265,20 +270,30 @@
     },
     "team": "Our Team",
     "teamMembers": {
+      "mobileDevelopers": {
+        "title": "Mobile Developers",
+        "name": "Haileamlak Gashaw",
+        "role": "App Development",
+        "description": "Creating intuitive and user-friendly mobile experiences"
+      },
       "agricultureExperts": {
-        "name": "Agriculture Experts",
+        "title": "Agriculture Experts",
+        "name": "Admassu Ejigu",
         "role": "Plant Pathology",
         "description": "Ensuring accurate disease identification and treatment recommendations"
       },
       "aiEngineers": {
-        "name": "AI Engineers",
+        "title": "AI Engineers",
+        "name": "Habtamu Mulusew",
+        "name2": "Kemal Seid",
         "role": "Machine Learning",
         "description": "Developing and training advanced computer vision models"
       },
-      "mobileDevelopers": {
-        "name": "Mobile Developers",
-        "role": "App Development",
-        "description": "Creating intuitive and user-friendly mobile experiences"
+      "dataAnalyst": {
+        "title": "Data Analyst",
+        "name": "Derara Waktola",
+        "role": "Data Analysis",
+        "description": "Analyzing and interpreting data to provide insights and recommendations"
       }
     },
     "footer": {
@@ -339,6 +354,10 @@
         "exportData": "Export Data",
         "exportSuccess": "Analytics data exported successfully.",
         "exportError": "Failed to export analytics data.",
+        "exportLocation": {
+          "downloads": "Saved to Downloads folder.",
+          "internal": "Saved to internal app storage."
+        },
         "subtitle": "Comprehensive Analysis & Insights",
         "tabOverview": "Overview",
         "tabDiseases": "Diseases",
@@ -346,6 +365,10 @@
         "totalScansLabel": "Total scans",
         "healthyLabel": "Healthy leaves",
         "atRiskLabel": "At-risk leaves",  
+        "riskLabel": "Risk",
+        "lowRiskLabel": "Low",
+        "mediumRiskLabel": "Medium",
+        "highRiskLabel": "High",
         "riskDistributionTitle": "Risk Distribution",      
         "sevenDayTrend": "7-Day Activity Trend",
         "topDiseasesTitle": "Top Detected Diseases",

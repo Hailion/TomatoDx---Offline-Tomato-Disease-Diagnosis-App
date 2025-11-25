@@ -1,100 +1,124 @@
 // app/tomatodx/scan.tsx - Compact Scan Screen
 import Colors from '@/constants/Colors';
 import { getRecentDiagnoses } from '@/src/db/repository';
+import { formatEthiopianDate } from '@/src/utils/ethiopianCalendar';
+
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
-
 
 export default function ScanScreen() {
     const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
     type RecentItem = {
-    id: string;
-    disease: string;
-    date: string;
-    confidence: number;
+        id: string;
+        disease: string;
+        date: string;
+        confidence: number;
     };
 
     const [recentScans, setRecentScans] = useState<RecentItem[]>([]);
     const mapDiseaseNameToId = (name: string): string => {
-    const nameLower = name.toLowerCase();
-    if (nameLower.includes('early') && nameLower.includes('blight')) return 'early_blight';
-    if (nameLower.includes('late') && nameLower.includes('blight')) return 'late_blight';
-    if (nameLower.includes('healthy')) return 'healthy';
-    if (nameLower.includes('leaf') && nameLower.includes('mold')) return 'leaf_mold';
-    if (nameLower.includes('septoria')) return 'septoria_leaf_spot';
-    if (nameLower.includes('yellow') && nameLower.includes('curl')) return 'tomato_yellow_leaf_curl';
-    if (nameLower.includes('target') && nameLower.includes('spot')) return 'target_spot';
-    if (nameLower.includes('spider') && nameLower.includes('mite')) return 'spider_mites_two_spotted_spider_mites';
-    if (nameLower.includes('mosaic')) return 'tomato_mosaic_virus';
-    if (nameLower.includes('bacterial') && nameLower.includes('spot')) return 'bacterial_spot';
-    return 'healthy';
+        const nameLower = name.toLowerCase();
+        if (nameLower.includes('early') && nameLower.includes('blight')) return 'early_blight';
+        if (nameLower.includes('late') && nameLower.includes('blight')) return 'late_blight';
+        if (nameLower.includes('healthy')) return 'healthy';
+        if (nameLower.includes('leaf') && nameLower.includes('mold')) return 'leaf_mold';
+        if (nameLower.includes('septoria')) return 'septoria_leaf_spot';
+        if (nameLower.includes('yellow') && nameLower.includes('curl')) return 'tomato_yellow_leaf_curl';
+        if (nameLower.includes('target') && nameLower.includes('spot')) return 'target_spot';
+        if (nameLower.includes('spider') && nameLower.includes('mite')) return 'spider_mites_two_spotted_spider_mites';
+        if (nameLower.includes('mosaic')) return 'tomato_mosaic_virus';
+        if (nameLower.includes('bacterial') && nameLower.includes('spot')) return 'bacterial_spot';
+        return 'healthy';
     };
 
     const router = useRouter();
     const { theme } = useTheme();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const colors = Colors[theme];
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(50)).current;
     const scaleAnim = useRef(new Animated.Value(0.8)).current;
     const buttonScaleAnim = useRef(new Animated.Value(0.9)).current;
-
-
+    const scanLineAnim = useRef(new Animated.Value(0)).current;
 
     const startAnimations = () => {
         fadeAnim.setValue(0);
         slideAnim.setValue(50);
         scaleAnim.setValue(0.8);
         buttonScaleAnim.setValue(0.9);
+        scanLineAnim.setValue(0);
 
         Animated.stagger(150, [
             Animated.parallel([
-            Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
-            Animated.spring(slideAnim, { toValue: 0, tension: 50, friction: 8, useNativeDriver: true }),
-            Animated.spring(scaleAnim, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
+                Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+                Animated.spring(slideAnim, { toValue: 0, tension: 50, friction: 8, useNativeDriver: true }),
+                Animated.spring(scaleAnim, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
             ]),
             Animated.spring(buttonScaleAnim, { toValue: 1, tension: 80, friction: 6, useNativeDriver: true }),
         ]).start();
-        };
-        const loadRecentScans = () => {
-  try {
-    const dbDiagnoses = getRecentDiagnoses(3);
-    const formatted = dbDiagnoses.map((d: any) => {
-      const confidence = Math.round((d.confidence || 0) * 100);
-      const diseaseId = mapDiseaseNameToId(d.nameEn || 'Unknown');
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(scanLineAnim, {
+                    toValue: 1,
+                    duration: 1800,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(scanLineAnim, {
+                    toValue: 0,
+                    duration: 1800,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    };
 
-      const diseaseName = t(`diseases.${diseaseId}.name`, {
-        lng: 'en',
-        defaultValue: d.nameEn || 'Unknown',
-      });
+    const loadRecentScans = () => {
+        try {
+            const dbDiagnoses = getRecentDiagnoses(3);
+            const formatted = dbDiagnoses.map((d: any) => {
+                const confidence = Math.round((d.confidence || 0) * 100);
+                const diseaseId = mapDiseaseNameToId(d.nameEn || 'Unknown');
 
-      const date = new Date(d.diagnosedAt).toLocaleDateString();
+                const diseaseNameEn = t(`diseases.${diseaseId}.name`, {
+                    lng: 'en',
+                    defaultValue: d.nameEn || 'Unknown',
+                });
+                const diseaseNameAm = t(`diseases.${diseaseId}.name`, {
+                    lng: 'am',
+                    defaultValue: d.nameAm || diseaseNameEn,
+                });
+                const diseaseName = i18n.language === 'am' ? diseaseNameAm : diseaseNameEn;
 
-      return {
-        id: d.diagnosisId,
-        disease: diseaseName,
-        date,
-        confidence,
-      };
-    });
+                const dateObj = new Date(d.diagnosedAt);
+                const displayDate = i18n.language === 'am'
+                    ? formatEthiopianDate(dateObj)
+                    : dateObj.toLocaleDateString();
 
-    setRecentScans(formatted);
-  } catch (error) {
-    console.error('Error loading recent scans:', error);
-    setRecentScans([]);
-  }
-};
+                return {
+                    id: d.diagnosisId,
+                    disease: diseaseName,
+                    date: displayDate,
+                    confidence,
+                };
+            });
 
-        useFocusEffect(
+            setRecentScans(formatted);
+        } catch (error) {
+            console.error('Error loading recent scans:', error);
+            setRecentScans([]);
+        }
+    };
+
+    useFocusEffect(
         useCallback(() => {
             startAnimations();
-             ImagePicker.getCameraPermissionsAsync().then(({ status }) => {
+            ImagePicker.getCameraPermissionsAsync().then(({ status }) => {
                 if (status === 'denied') {
                     setHasCameraPermission(false);
                 } else if (status === 'granted') {
@@ -198,16 +222,23 @@ if (hasCameraPermission === false) {
 }
 else{
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <ScrollView
-                    style={styles.scanHome}
-                    contentContainerStyle={styles.scanHomeContent}
+        <ImageBackground
+  source={require('../../assets/images/screenBg/scan1.jpg')}
+  style={styles.backgroundImage}
+  imageStyle={{ resizeMode: 'cover' }}
+>
+  <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.77)' : 'rgba(0,0,0,0.87)' }]}>
+   
+        <View style={[styles.container, { backgroundColor:  theme === 'dark' ? `${colors.background}99` : `${colors.background}80` }]}>
+            <ScrollView                    
                     showsVerticalScrollIndicator={false}
                 >
+                <View style={styles.scanHome}>
+                    <View style={styles.scanHomeContent}>
                     {/* Compact Header */}
                     <Animated.View style={[styles.scanHeader, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                        <View style={[styles.logoContainer, { backgroundColor: colors.primaryOverlay }]}>
-                            <Ionicons name="camera" size={28} color={colors.primary} />
+                        <View style={[styles.logoContainer, { backgroundColor: theme === 'dark' ? colors.primaryOverlay : `${colors.primaryOverlay3}99` }]}>
+                            <Ionicons name="camera" size={52} color={colors.primary} />
                         </View>
                         <Text style={[styles.scanTitle, { color: colors.text }]}>
                             {t('scan.title')}
@@ -220,38 +251,55 @@ else{
                     {/* Compact Action Buttons - Side by Side */}
                     <Animated.View style={[styles.actionButtons, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <TouchableOpacity
-                            style={[styles.actionButton, { backgroundColor: colors.card }]}
+                            style={styles.actionButton}
                             onPress={handleCameraWithCrop}
                         >
-                            <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
-                                <Ionicons name="camera" size={38} color="#fff" />
-                            </View>
-                            <Text style={[styles.actionButtonTitle, { color: colors.text }]}>
-                                {t('scan.takePhoto')}
-                            </Text>
-                            <Text style={[styles.actionButtonDesc, { color: colors.textSecondary }]}>
-                                {t('scan.takePhotoDesc')}
-                            </Text>
+                            <ImageBackground
+                                source={require('../../assets/images/scan/takePhoto.png')}
+                                style={styles.actionButtonBackground}
+                                imageStyle={{ resizeMode: 'cover', borderRadius: 16 }}
+                            >
+                                {/* <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
+                                    <Ionicons name="camera" size={38} color="#fff" />
+                                </View> */}
+                                <View style={[styles.actionContentOverlay,{ backgroundColor: 'rgba(0,0,0,0.5)'}]}>
+                                <Text style={[styles.actionButtonTitle, { color: '#fff' }]}>
+                                    {t('scan.takePhoto')}
+                                </Text>
+                                <Text style={[styles.actionButtonDesc, { color: '#fff' }]}>
+                                    {t('scan.takePhotoDesc')}
+                                </Text>
+                                </View>
+                            </ImageBackground>
                         </TouchableOpacity>
+                        
 
                         <TouchableOpacity
-                            style={[styles.actionButton, { backgroundColor: colors.card}]}
+                            style={styles.actionButton}
                             onPress={handleGallery}
                         >
-                            <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
-                                <Ionicons name="images" size={36} color="#fff" />
-                            </View>
-                            <Text style={[styles.actionButtonTitle, { color: colors.text }]}>
-                                {t('scan.chooseGallery')}
-                            </Text>
-                            <Text style={[styles.actionButtonDesc, { color: colors.textSecondary }]}>
-                                {t('scan.chooseGalleryDesc')}
-                            </Text>
+                            <ImageBackground
+                                source={require('../../assets/images/scan/fromGallery.png')}
+                                style={styles.actionButtonBackground}
+                                imageStyle={{ resizeMode: 'cover', borderRadius: 16 }}
+                            >
+                                {/* <View style={[styles.actionIcon, { backgroundColor: colors.primary ,opacity: 0.5}]}>
+                                    <Ionicons name="images" size={36} color="#fff" />
+                                </View> */}
+                                <View style={[styles.actionContentOverlay,{ backgroundColor: 'rgba(0,0,0,0.5)'}]}>
+                                <Text style={[styles.actionButtonTitle, { color: '#fff' }]}>
+                                    {t('scan.chooseGallery')}
+                                </Text>
+                                <Text style={[styles.actionButtonDesc, { color: '#fff' }]}>
+                                    {t('scan.chooseGalleryDesc')}
+                                </Text>
+                                </View>
+                            </ImageBackground>
                         </TouchableOpacity>
                     </Animated.View>
 
                     {/* Quick Tips - More Compact */}
-                    <Animated.View style={[styles.tips, { backgroundColor: colors.primaryOverlay, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                    <Animated.View style={[styles.tips, { backgroundColor: `${colors.card}70`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <View style={styles.tipsHeader}>
                             <Ionicons name="bulb-outline" size={18} color={colors.primary} />
                             <Text style={[styles.tipsTitle, { color: colors.text }]}>
@@ -280,6 +328,55 @@ else{
                         </View>
                     </Animated.View>
 
+                    <Animated.View style={[styles.guideSection, { backgroundColor: theme === 'dark'?`${colors.card}BB`:`${colors.card}70`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                       <View style={[styles.imageContainer]}>
+                            {/* <Ionicons name="camera" size={64} color={colors.primary} /> */}
+                            <Image
+                                source={theme === 'dark' ? require('../../assets/images/screenBg/scan1.jpg') : require('../../assets/images/scan/sample-tomato-leaf.png')}
+                                style={styles.image}
+                                resizeMode="cover"                              
+                                height={300}
+                            />      
+                            {/* Scan frame overlay */}
+                            <View style={styles.scanOverlay}>
+                            <View style={styles.scanFrame}>
+                                {/* Corner brackets */}
+                                <View style={[styles.corner, styles.cornerTopLeft]} />
+                                <View style={[styles.corner, styles.cornerTopRight]} />
+                                <View style={[styles.corner, styles.cornerBottomLeft]} />
+                                <View style={[styles.corner, styles.cornerBottomRight]} />
+                                <View style={[styles.crossOverlay, {backgroundColor: `${colors.primary}60`}]}>
+                                <View style={[styles.centerCross]}>
+                                    <View style={[ styles.verticalBar]}/>
+                                    <View style={[ styles.horizontalBar]}/>
+                                </View>
+                                </View>
+                                {/* Animated scan line */}
+                                <Animated.View
+                                style={[
+                                    styles.scanLine,
+                                    {
+                                    transform: [
+                                        {
+                                        translateY: scanLineAnim.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: [0, 180], // adjust for frame height
+                                        }),
+                                        },
+                                    ],
+                                    },
+                                ]}
+                                />
+                            </View>
+                            </View>                      
+                        </View>
+                        <View style={[styles.guideTitleContainer,{backgroundColor: theme === 'dark'?`${colors.card}BB`:`${colors.card}70`}]}>
+                        <Text style={[styles.guideTitle, { color: colors.text }]}>
+                                {t('scan.alignGuide')}
+                        </Text>
+                        </View>
+                    </Animated.View>
+
                     {/* Recent Activity Preview (Optional) */}
                     <Animated.View style={[styles.recentSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <Text style={[styles.recentTitle, { color: colors.text }]}>
@@ -293,7 +390,7 @@ else{
                         recentScans.map((item) => (
                         <TouchableOpacity
                             key={item.id}
-                            style={[styles.recentItem, { backgroundColor: colors.card }]}
+                            style={[styles.recentItem, { backgroundColor: `${colors.card}CC` }]}
                             onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
                         >
                             <View>
@@ -315,42 +412,52 @@ else{
                         </Text>
                     )}
                     </Animated.View>
+                    </View>
+                </View>
                 </ScrollView>
             </View>
+            </View>
+            </ImageBackground>
     );
 }
 }
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+    },
+    overlay: {
+        flex: 1,
+    },
     permissionContainer: {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: 20,
-},
-permissionTitle: {
-  fontSize: 22,
-  fontWeight: '700',
-  marginTop: 20,
-  marginBottom: 8,
-  textAlign: 'center',
-},
-permissionText: {
-  fontSize: 14,
-  textAlign: 'center',
-  marginBottom: 30,
-  lineHeight: 20,
-},
-permissionButton: {
-  paddingHorizontal: 24,
-  paddingVertical: 12,
-  borderRadius: 12,
-},
-permissionButtonText: {
-  color: '#fff',
-  fontSize: 16,
-  fontWeight: '600',
-},
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    permissionTitle: {
+        fontSize: 22,
+        fontWeight: '700',
+        marginTop: 20,
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    permissionText: {
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 30,
+        lineHeight: 20,
+    },
+    permissionButton: {
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 12,
+    },
+    permissionButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
+    },
     container: {
         flex: 1,
     },
@@ -358,6 +465,7 @@ permissionButtonText: {
         flex: 1,
     },
     scanHomeContent: {
+        flex: 1,
         paddingTop: 60,
         paddingHorizontal: 20,
         paddingBottom: 20,
@@ -367,12 +475,25 @@ permissionButtonText: {
         marginBottom: 30,
     },
     logoContainer: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
+        flex:1,
+        padding:10,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 16,
+        borderWidth: .5,
+        borderColor: '#fff',
+        borderRadius: 50,
+        
+
+    },
+    logo: {
+       borderRadius: 5,
+       outlineWidth: 1,
+       outlineColor: '#fff',
+       outlineOffset: 3,
+       outlineStyle: 'solid',
+    //    overflow: 'hidden',
+    width:"100%",
     },
     scanTitle: {
         fontSize: 28,
@@ -391,16 +512,27 @@ permissionButtonText: {
         gap: 12,
         marginBottom: 30,
     },
+    actionContentOverlay: {
+        flex:1,
+        justifyContent:'center',
+        height:"100%",
+        borderRadius: 12,       
+        alignItems: 'center',
+    },
     actionButton: {
         flex: 1,
-        padding: 16,
         borderRadius: 16,
+        overflow: 'hidden',
+        height: 150,
+    },
+    actionButtonBackground: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
+        borderWidth: 1,
+        borderColor: '#ccccccc4',
     },
     actionIcon: {
         width: 60,
@@ -411,20 +543,25 @@ permissionButtonText: {
         marginBottom: 12,
     },
     actionButtonTitle: {
-        fontSize: 16,
+        fontSize: 22,
         fontWeight: '700',
         marginBottom: 4,
         textAlign: 'center',
     },
     actionButtonDesc: {
         fontSize: 12,
+        fontWeight: '600',
         textAlign: 'center',
         lineHeight: 16,
+        padding:6
     },
     tips: {
         padding: 16,
-        borderRadius: 12,
-        marginBottom: 24,
+        borderTopRightRadius: 16,
+        borderTopLeftRadius: 16,
+        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: '#ccccccc4',
         
     },
     tipsHeader: {
@@ -450,6 +587,138 @@ permissionButtonText: {
         lineHeight: 18,
         flex: 1,
     },
+    guideSection: {
+        alignItems: 'center',
+        borderBottomRightRadius:16,
+        borderBottomLeftRadius:16,
+        overflow:"hidden",
+        borderWidth: 1,
+        borderColor: '#ccccccc4',
+    },
+    imageContainer:{
+         flex:1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width:"100%",
+    },
+    image:{
+        width:"100%",
+        borderRadius: 5,
+    },
+
+    guideTitleContainer:{
+        flex:1,
+        width:"100%",
+        paddingVertical: 16,
+
+    }    ,
+    guideTitle: {
+       fontSize: 14,
+        textAlign: 'center',
+        lineHeight: 20,
+        paddingHorizontal: 20,
+    },
+    guideText: {
+        fontSize: 14,
+        textAlign: 'center',
+        lineHeight: 20,
+        paddingHorizontal: 20,
+    },
+    scanOverlay: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+scanFrame: {
+  width: '75%',
+  aspectRatio: 1,
+//   borderRadius: 12,
+  borderColor: 'rgba(255,255,255,0.25)',
+  borderWidth: 1,
+  justifyContent: 'center',
+  overflow: 'hidden',
+},
+
+corner: {
+  position: 'absolute',
+  width: 26,
+  height: 26,
+  borderColor: '#00ff88',
+  borderWidth: 3,
+},
+
+cornerTopLeft: {
+  top: 0,
+  left: 0,
+  borderRightWidth: 0,
+  borderBottomWidth: 0,
+},
+
+cornerTopRight: {
+  top: 0,
+  right: 0,
+  borderLeftWidth: 0,
+  borderBottomWidth: 0,
+},
+
+cornerBottomLeft: {
+  bottom: 0,
+  left: 0,
+  borderRightWidth: 0,
+  borderTopWidth: 0,
+},
+
+cornerBottomRight: {
+  bottom: 0,
+  right: 0,
+  borderLeftWidth: 0,
+  borderTopWidth: 0,
+},
+
+crossOverlay: {
+    position: 'relative',
+    padding:40,
+    margin:'auto',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius:100,
+    borderColor: '#ffffff82',
+    borderWidth: 1,
+    opacity: 0.8,
+
+},
+centerCross: {
+   flexDirection: 'row',
+   alignItems: 'center',
+   justifyContent: 'center',
+},
+
+verticalBar: {
+    position:'absolute',
+    width: 2,
+    height: 50,
+    backgroundColor: '#00ff88',
+},
+
+horizontalBar: {
+    position:'absolute',
+    width: 50,
+    height: 2,
+    backgroundColor: '#00ff88',
+},
+scanLine: {
+  position: 'absolute',
+  left: 0,
+  right: 0,
+  height: 3,
+  backgroundColor: '#00ff88',
+  opacity: 0.9,
+},
     recentSection: {
         alignItems: 'center',
         paddingVertical: 20,

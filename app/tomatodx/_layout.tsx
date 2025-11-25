@@ -3,6 +3,7 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { ImageBackground, StyleSheet, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function TabLayout() {
@@ -12,10 +13,16 @@ export default function TabLayout() {
   const colors = Colors[theme];
 
   return (
+    <ImageBackground
+    source={require('../../assets/images/image.png')}
+    style={styles.backgroundImage}
+    imageStyle={{ resizeMode: 'cover' }}
+  >
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: colors.card,
+          backgroundColor: theme === 'dark' ? `${colors.card}DD` : `${colors.card}`,
           borderTopColor: colors.border,
         },
         tabBarActiveTintColor: colors.primary,
@@ -89,5 +96,20 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </View>
+    </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+    backgroundImage: {
+      flex: 1,
+      width: '100%',
+      height: '100%',
+    },
+    overlay: {
+      flex: 1,
+      width: '100%',
+      height: '100%',
+    },
+  });

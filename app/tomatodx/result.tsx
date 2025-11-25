@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, ImageBackground, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getDiseaseInfo } from '../../src/data/diseaseInfo';
 import { getDiagnosisById, updateDiagnosisNotes } from '../../src/db/repository';
@@ -365,6 +365,14 @@ export default function ResultScreen() {
     router.push('/tomatodx/scan');
   };
 
+  const handleGoToHistory = () => {
+    router.push('/tomatodx/history');
+  };
+
+  const handleGoToInsights = () => {
+    router.push('/tomatodx/insights');
+  };
+
   if (loading || !result) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }, styles.centered]}>
@@ -376,11 +384,17 @@ export default function ResultScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+     <ImageBackground
+    source={require('../../assets/images/image.png')}
+    style={styles.backgroundImage}
+    imageStyle={{ resizeMode: 'cover' }}
+  >
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
+     
+    <View style={[styles.container, { backgroundColor: `${colors.background}80` }]}>
       {/* Header */}
-      <LinearGradient
-        colors={[colors.background, colors.backgroundAlt]}
-        style={styles.header}
+      <View
+         style={styles.header}
       >
         <TouchableOpacity
           style={styles.backButton}
@@ -396,14 +410,14 @@ export default function ResultScreen() {
           {t('result.title')}
         </Text>
         <View style={styles.placeholder} />
-      </LinearGradient>
+      </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Result Card */}
         <Animated.View style={[
           styles.resultCard,
           {
-            backgroundColor: colors.card,
+            backgroundColor: `${colors.card}80`,
             opacity: fadeAnim,
             transform: [
               { translateY: slideAnim },
@@ -414,7 +428,7 @@ export default function ResultScreen() {
           {/* Diagnosis Header */}
           <View style={styles.diagnosisHeader}>
             <View style={styles.diseaseIconContainer}>
-              <View style={[styles.diseaseIcon, { backgroundColor: colors.primaryOverlay }]}>
+              <View style={[styles.diseaseIcon, { backgroundColor: `${colors.primaryOverlay}80` }]}>
                 {result.imageUri ? (
                   <Image
                     source={{ uri: result.imageUri }}
@@ -613,7 +627,7 @@ export default function ResultScreen() {
           </Text>
           <View style={styles.actionsRow}>
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: colors.card }]}
+              style={[styles.actionButton, { backgroundColor: `${colors.card}CC` }]}
               onPress={handleAddNotes}
             >
               <Ionicons
@@ -627,7 +641,7 @@ export default function ResultScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: colors.card }]}
+              style={[styles.actionButton, { backgroundColor: `${colors.card}CC` }]}
               onPress={handleShare}
             >
               <Ionicons
@@ -640,6 +654,36 @@ export default function ResultScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.actionsRow}>
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: `${colors.card}CC` }]}
+              onPress={handleGoToHistory}
+            >
+              <Ionicons
+                name="time"
+                size={20}
+                color={colors.textSecondary}
+              />
+              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
+                {t('history.title')}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: `${colors.card}CC` }]}
+              onPress={handleGoToInsights}
+            >
+              <Ionicons
+                name="stats-chart"
+                size={20}
+                color={colors.textSecondary}
+              />
+              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
+                {t('home.insights')}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
 
       </ScrollView>
@@ -647,11 +691,11 @@ export default function ResultScreen() {
       {/* Fixed Action Button */}
       <View style={styles.fixedActions}>
         <TouchableOpacity
-          style={[styles.newScanButton, styles.shadow]}
+          style={[styles.newScanButton]}
           onPress={handleNewScan}
         >
           <LinearGradient
-            colors={[colors.primary, colors.primaryDark]}
+            colors={[ `${colors.primary}CC`, `${colors.primaryDark}CC` ]}
             style={styles.newScanGradient}
           >
             <Ionicons name="camera" size={20} color="#fff" />
@@ -721,16 +765,22 @@ export default function ResultScreen() {
         </View>
       </Modal>
     </View>
+    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
-  darkContainer: {
-    backgroundColor: '#000',
-  },
+  
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -746,12 +796,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
   },
-  darkText: {
-    color: '#fff',
-  },
-  darkSubtext: {
-    color: '#999',
-  },
   placeholder: {
     width: 40,
   },
@@ -761,15 +805,7 @@ const styles = StyleSheet.create({
   resultCard: {
     margin: 20,
     borderRadius: 20,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  darkCard: {
-    backgroundColor: '#1a1a1a',
+    padding: 16,  
   },
   diagnosisHeader: {
     alignItems: 'center',
@@ -780,8 +816,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   diseaseIcon: {
-    width: 300,
-    height: 300,
+    width: 280,
+    height: 280,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -793,8 +829,8 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   diseaseImage: {
-    width: 300,
-    height: 300,
+    width: 280,
+    height: 280,
   },
   diseaseEmoji: {
     fontSize: 48,
@@ -923,6 +959,7 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
     gap: 12,
+    marginBottom: 20,
   },
   actionButton: {
     flex: 1,
@@ -971,14 +1008,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-  shadow: {
-    shadowColor: '#10b981',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  centered: {
+   centered: {
     justifyContent: 'center',
     alignItems: 'center',
   },

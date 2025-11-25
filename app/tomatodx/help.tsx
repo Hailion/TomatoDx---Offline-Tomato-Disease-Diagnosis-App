@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, ImageBackground, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function HelpScreen() {
@@ -103,46 +103,67 @@ export default function HelpScreen() {
     ];
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => router.back()}
-                >
-                    <Ionicons
-                        name="chevron-back"
-                        size={24}
-                        color={colors.text}
-                    />
-                </TouchableOpacity>
-                <Text style={[styles.title, { color: colors.text }]}>
-                    {t('help.title')}
-                </Text>
-                <View style={styles.placeholder} />
-            </View>
+        // Background image placeholder for Help screen - replace with a suitable image from assets later
+        <ImageBackground
+            source={require('../../assets/images/screenBg/help.jpg')}
+            style={styles.backgroundImage}
+            imageStyle={{ resizeMode: 'cover' }}
+        >
+            <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.7)' }] }>
+                <View style={[styles.container,{ backgroundColor: theme === 'dark' ? `${colors.card}80` : `${colors.card}79` }]}>
+                    {/* Header */}
+                    <View style={styles.header}>
+                        <TouchableOpacity
+                            style={styles.backButton}
+                            onPress={() => router.back()}
+                        >
+                            <Ionicons
+                                name="chevron-back"
+                                size={24}
+                                color={colors.text}
+                            />
+                        </TouchableOpacity>
+                        <Text style={[styles.title, { color: colors.text }]}>
+                            {t('help.title')}
+                        </Text>
+                        <View style={styles.placeholder} />
+                    </View>
 
-            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-                {/* Welcome Section */}
-                <View style={[styles.welcomeCard, { backgroundColor: colors.card }]}>
-                    <Ionicons name="help-circle" size={48} color={colors.primary} />
-                    <Text style={[styles.welcomeTitle, { color: colors.text }]}>
-                        {t('help.welcomeTitle')}
-                    </Text>
-                    <Text style={[styles.welcomeText, { color: colors.textSecondary }]}>
-                        {t('help.welcomeText')}
-                    </Text>
-                </View>
+                    <ScrollView style={[styles.scrollView]} showsVerticalScrollIndicator={false}>
+                        {/* Welcome Section */}
+                        <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                          
+                        <View style={[styles.wellcomeCardContainer,{ backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)' ,marginHorizontal: 20,borderRadius: 10}]}>
+                            <ImageBackground
+                                source={require('../../assets/images/screenBg/about.jpg')}
+                                style={styles.backgroundImage}
+                                imageStyle={{ resizeMode: 'cover' }}
+                            >
+                                <View style={styles.overlay}>
+                                    <View style={[styles.welcomeCard]}>
+                                        <View style={[styles.iconContainer,{ backgroundColor: colors.background }]}>
+                                            <Ionicons name="help-circle" size={48} color={colors.primary} />
+                                        </View>
+                                        <Text style={[styles.welcomeTitle, { color:  '#fff' }]}>
+                                            {t('help.welcomeTitle')}
+                                        </Text>
+                                        <Text style={[styles.welcomeText, { color: '#fff' }]}>
+                                            {t('help.welcomeText')}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </ImageBackground>
+                        </View>
 
                 {/* FAQ Section */}
-                <View style={styles.section}>
+                <View style={[styles.section,{paddingTop: 16}]}>
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
                         {t('help.faq')}
                     </Text>
                     {faqs.map((faq, index) => (
                         <TouchableOpacity
                             key={index}
-                            style={[styles.faqCard, { backgroundColor: colors.card }]}
+                            style={[styles.faqCard, { backgroundColor: `${colors.card}` }]}
                             onPress={() => toggleFaq(index)}
                         >
                             <View style={styles.faqHeader}>
@@ -165,14 +186,14 @@ export default function HelpScreen() {
                 </View>
 
                 {/* Contact Methods */}
-                <View style={styles.section}>
+                <View style={[styles.section]}>
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
                         {t('help.contact')}
                     </Text>
                     {contactMethods.map((method, index) => (
                         <TouchableOpacity
                             key={index}
-                            style={[styles.contactCard, { backgroundColor: colors.card }]}
+                            style={[styles.contactCard, { backgroundColor: `${colors.card}BB` }]}
                             onPress={method.action}
                         >
                             <View style={styles.contactLeft}>
@@ -198,7 +219,7 @@ export default function HelpScreen() {
                 </View>
 
                 {/* Quick Tips */}
-                <View style={[styles.tipsCard, { backgroundColor: colors.card }]}>
+                <View style={[styles.tipsCard, { backgroundColor: `${colors.card}65` }]}>
                     <Ionicons name="bulb" size={24} color={colors.warning} />
                     <View style={styles.tipsContent}>
                         <Text style={[styles.tipsTitle, { color: colors.text }]}>
@@ -224,12 +245,21 @@ export default function HelpScreen() {
                         </View>
                     </View>
                 </View>
+                </Animated.View>
             </ScrollView>
         </View>
+        </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+    },
+    overlay: {
+        flex: 1,
+    },
     container: {
         flex: 1,
     },
@@ -254,16 +284,20 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
     },
+    wellcomeCardContainer: {
+        marginHorizontal: 20,
+        borderRadius: 10,
+        overflow: 'hidden',
+    },
     welcomeCard: {
-        margin: 20,
-        borderRadius: 20,
+        // margin: 20,
+        marginBottom: 20,
+        // borderRadius: 20,
         padding: 24,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 8,
+        alignItems: 'center'
+    },
+    iconContainer: {
+       borderRadius: 100,   
     },
     welcomeTitle: {
         fontSize: 24,
@@ -290,11 +324,7 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 12,
         marginBottom: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
+        
     },
     faqHeader: {
         flexDirection: 'row',
@@ -319,11 +349,6 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 12,
         marginBottom: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
     },
     contactLeft: {
         flexDirection: 'row',
@@ -354,11 +379,6 @@ const styles = StyleSheet.create({
         margin: 20,
         padding: 20,
         borderRadius: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
     },
     tipsContent: {
         flex: 1,

@@ -6,7 +6,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, ImageBackground, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getCurrentUser, upsertUser } from '../../src/db/repository';
 
@@ -159,10 +159,24 @@ export default function ProfileScreen() {
     ];
 
     return (
-        <>
-            <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-                {/* Header */}
-                <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+        <ImageBackground
+  source={require('../../assets/images/screenBg/about.jpg')}
+  style={styles.backgroundImage}
+  imageStyle={{ resizeMode: 'cover' }}
+>
+  <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.55)' }]}>
+    
+
+         {/* Header */}
+                <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                      <ImageBackground
+                      source={require('../../assets/images/screenBg/profile3.jpg')}
+                       imageStyle={{ resizeMode: 'cover' }}
+                    >
+                      {/* Softer overlay only where the content is */}
+                      <View
+                        style={[styles.headerContent, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.25)' }]}
+                      >
                     <TouchableOpacity
                         style={[styles.avatar, { backgroundColor: colors.primary }]}
                         onPress={handleEditProfile}
@@ -174,25 +188,28 @@ export default function ProfileScreen() {
                             <Ionicons name="pencil" size={12} color="#fff" />
                         </View>
                     </TouchableOpacity>
-                    <Text style={[styles.userName, { color: colors.text }]}>
+                    <Text style={[styles.userName, { color: '#fff' }]}>
                         {userName}
                     </Text>
                     {userNickname ? (
-                        <Text style={[styles.userNickname, { color: colors.textSecondary }]}>
+                        <Text style={[styles.userNickname, { color: '#fff'}]}>
                             @{userNickname}
                         </Text>
                     ) : null}
                     <TouchableOpacity
-                        style={[styles.editButton, { backgroundColor: colors.successBg }]}
+                        style={[styles.editButton, { backgroundColor: `${colors.successBg}CC` }]}
                         onPress={handleEditProfile}
                     >
                         <Ionicons name="create-outline" size={16} color={colors.primary} />
                         <Text style={[styles.editButtonText, { color: colors.primary }]}>{t('profile.editProfile')}</Text>
                     </TouchableOpacity>
+                     </View>
+                    </ImageBackground>
                 </Animated.View>
-
+            <ScrollView style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}99` : `${colors.background}70` }]}>
+               
                 {/* Theme Selector */}
-                <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                <Animated.View style={[styles.card, { backgroundColor: `${colors.card}BB`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <Text style={[styles.cardTitle, { color: colors.text }]}>
                         {t('profile.theme')}
                     </Text>
@@ -202,8 +219,8 @@ export default function ProfileScreen() {
                                 key={mode}
                                 style={[
                                     styles.themeOption,
-                                    { backgroundColor: colors.backgroundAlt },
-                                    themeMode === mode && [styles.themeOptionActive, { backgroundColor: colors.successBg }],
+                                    { backgroundColor: `${colors.backgroundAlt}FF` },
+                                    themeMode === mode && [styles.themeOptionActive, { backgroundColor: `${colors.successBg}BB` }],
                                 ]}
                                 onPress={() => setThemeMode(mode as any)}
                             >
@@ -228,7 +245,7 @@ export default function ProfileScreen() {
                 </Animated.View>
 
                 {/* Settings */}
-                <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                <Animated.View style={[styles.card, { backgroundColor: `${colors.card}BB`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <Text style={[styles.cardTitle, { color: colors.text }]}>
                         {t('profile.settings')}
                     </Text>
@@ -270,12 +287,13 @@ export default function ProfileScreen() {
                 </Animated.View>
 
                 {/* App Info */}
-                <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                <Animated.View style={[styles.footer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <View style={styles.appInfo}>
-                        <Ionicons name="leaf" size={32} color={colors.primary} />
+                        {/* <Ionicons name="leaf" size={32} color={colors.primary} /> */}
                         <Text style={[styles.appName, { color: colors.text }]}>
                             TomatoDx
                         </Text>
+                        <View style={[styles.divider, { backgroundColor: colors.border }]} />
                         <Text style={[styles.appVersion, { color: colors.textSecondary }]}>
                             {t("common.version")} {Constants.expoConfig?.version || '1.0.0'}
                         </Text>
@@ -291,7 +309,7 @@ export default function ProfileScreen() {
                 onRequestClose={() => setEditModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                    <View style={[styles.modalContent, { backgroundColor: `${colors.card}` }]}>
                         <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
                             <Text style={[styles.modalTitle, { color: colors.text }]}>
                                 {t('profile.editProfile')}
@@ -309,7 +327,7 @@ export default function ProfileScreen() {
                                 style={[
                                     styles.input,
                                     {
-                                        backgroundColor: colors.backgroundAlt,
+                                        backgroundColor: `${colors.backgroundAlt}BB`,
                                         borderColor: colors.border,
                                         color: colors.text
                                     }
@@ -327,7 +345,7 @@ export default function ProfileScreen() {
                                 style={[
                                     styles.input,
                                     {
-                                        backgroundColor: colors.backgroundAlt,
+                                        backgroundColor: `${colors.backgroundAlt}BB`,
                                         borderColor: colors.border,
                                         color: colors.text
                                     }
@@ -341,13 +359,13 @@ export default function ProfileScreen() {
 
                         <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
                             <TouchableOpacity
-                                style={[styles.modalButton, styles.cancelButton, { backgroundColor: colors.backgroundAlt }]}
+                                style={[styles.modalButton, styles.cancelButton, { backgroundColor: `${colors.backgroundAlt}BB` }]}
                                 onPress={() => setEditModalVisible(false)}
                             >
                                 <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.modalButton, styles.saveButton, { backgroundColor: colors.primary }]}
+                                style={[styles.modalButton, styles.saveButton, { backgroundColor: `${colors.primary}BB` }]}
                                 onPress={handleSaveProfile}
                             >
                                 <Text style={styles.saveButtonText}>{t('common.save')}</Text>
@@ -356,27 +374,42 @@ export default function ProfileScreen() {
                     </View>
                 </View>
             </Modal>
-        </>
+            </View>
+        </ImageBackground>
+    
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    backgroundImage: {
         flex: 1,
     },
-    header: {
-        alignItems: 'center',
-        paddingTop: 60,
-        paddingBottom: 30,
-        paddingHorizontal: 20,
+    overlay: {
+        flex: 1,
     },
+    container: {
+        flex: 1,
+        paddingTop:16
+    },
+    headerContent: {
+      paddingHorizontal: 20,
+      paddingTop: 60,
+      paddingBottom: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.75)', // much lighter
+  },
     avatar: {
         width: 80,
         height: 80,
+        borderWidth:1,
+        borderColor:'#fff',
         borderRadius: 40,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 16,
+        opacity:0.65
+
     },
     avatarText: {
         color: '#fff',
@@ -417,15 +450,11 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     card: {
-        margin: 20,
+        margin: 10,
         marginTop: 0,
         borderRadius: 16,
-        padding: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
+        padding: 14,
+    
     },
     cardTitle: {
         fontSize: 18,
@@ -482,18 +511,31 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     appInfo: {
+        flex:1,
+        flexDirection:'row',
+        justifyContent:'center',
         alignItems: 'center',
-        paddingVertical: 20,
+        gap:16
     },
     appName: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: '700',
-        marginTop: 12,
-        marginBottom: 4,
     },
     appVersion: {
-        fontSize: 14,
+        fontSize: 12,
+
     },
+    footer: {
+        margin: 20,
+        marginTop: 0,
+        borderRadius: 16,
+        padding: 20,
+       
+    },
+    divider: {        
+          width:2,
+          height:'100%',
+     },
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',

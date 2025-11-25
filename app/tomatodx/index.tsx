@@ -1,10 +1,9 @@
 // app/tomatodx/index.tsx - Home Screen
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getAnalyticsSummary, getRecentDiagnoses } from '../../src/db/repository';
@@ -12,7 +11,7 @@ import { getAnalyticsSummary, getRecentDiagnoses } from '../../src/db/repository
 export default function HomeScreen() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t} = useTranslation();
   const colors = Colors[theme];
   const [stats, setStats] = useState({
     totalScans: 0,
@@ -146,32 +145,36 @@ export default function HomeScreen() {
   ];
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-        <LinearGradient
-          colors={theme === 'dark'
-            ? [colors.background, colors.backgroundAlt]
-            : [colors.background, colors.backgroundAlt]
-          }
-          style={styles.header}
-        >
-          <View style={styles.headerContent}>
-            <View style={[styles.logo, { backgroundColor: colors.successBg }]}>
-              <Ionicons name="leaf" size={32} color={colors.success} />
-            </View>
-            <Text style={[styles.title, { color: colors.text }]}>
-              TomatoDx
-            </Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-              {t('home.tagline')}
-            </Text>
+      <ImageBackground
+    source={require('../../assets/images/screenBg/home4.jpg')}
+    style={styles.backgroundImage}
+    imageStyle={{ resizeMode: 'cover' }}
+  >
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.77)' }]}>
+      {/* Fixed Header */}
+    <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+      <ImageBackground
+        source={theme === 'dark' ? require('../../assets/images/background/wellcome_bg.jpg') : require('../../assets/images/image.png')}
+        style={styles.header}
+        imageStyle={{ resizeMode: 'cover' }}
+      >
+        <View style={styles.headerContent}>
+          <View style={[styles.logo, { backgroundColor: colors.successBg }]}>
+            <Ionicons name="leaf" size={32} color={colors.success} />
           </View>
-        </LinearGradient>
-      </Animated.View>
-
+          <Text style={[styles.title, { color: '#fff' }]}>
+            TomatoDx
+          </Text>
+          <Text style={[styles.subtitle, { color: '#fff' }]}>
+            {t('home.tagline')}
+          </Text>
+        </View>
+      </ImageBackground>
+    </Animated.View>
+    <ScrollView style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
+     
       {/* Stats Overview */}
-      <Animated.View style={[styles.statsCard, { backgroundColor: colors.card, opacity: statsAnim }]}>
+      <Animated.View style={[styles.statsCard, { backgroundColor: theme === 'dark' ? `${colors.card}BB` : `${colors.card}BB`, opacity: statsAnim }]}>
         <View style={styles.statItem}>
           <Text style={[styles.statNumber, { color: colors.text }]}>
             {stats.totalScans}
@@ -208,7 +211,7 @@ export default function HomeScreen() {
         {features.map((feature, index) => (
           <TouchableOpacity
             key={index}
-            style={[styles.featureCard, { backgroundColor: colors.card }]}
+            style={[styles.featureCard, { backgroundColor: `${colors.card}EE` }]}
             onPress={() => router.push(feature.route as any)}
           >
             <View style={[styles.featureIcon, { backgroundColor: feature.color }]}>
@@ -239,7 +242,7 @@ export default function HomeScreen() {
         <TouchableOpacity
           disabled={!lastScan}
           onPress={() => lastScan && router.push({ pathname: '/tomatodx/result', params: { id: lastScan.id } } as any)}
-          style={[styles.activityCard, { backgroundColor: colors.card }]}
+          style={[styles.activityCard, { backgroundColor: `${colors.card}BB` }]}
         >
           <Ionicons name="time-outline" size={24} color={colors.success} />
           <View style={styles.activityContent}>
@@ -253,20 +256,34 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </Animated.View>
     </ScrollView>
+    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+     },
+  overlay: {
+    flex: 1,
+     },
   container: {
     flex: 1,
   },
   header: {
-    paddingTop: 60,
-    paddingBottom: 30,
-    paddingHorizontal: 20,
+    // paddingTop: 60,
+    // paddingBottom: 30,
+    // paddingHorizontal: 20,
   },
   headerContent: {
-    alignItems: 'center',
+    // flex: 1,
+      paddingHorizontal: 20,
+      paddingTop: 60,
+      paddingBottom: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.65)', // much lighter
   },
   logo: {
     width: 60,
@@ -289,12 +306,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     margin: 20,
     borderRadius: 16,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    padding: 16,
+   
   },
   statItem: {
     flex: 1,
@@ -327,11 +340,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+   
   },
   featureIcon: {
     width: 48,
@@ -357,11 +366,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+   
   },
   activityContent: {
     flex: 1,

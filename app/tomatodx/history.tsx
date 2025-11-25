@@ -6,7 +6,7 @@ import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, Modal, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, ImageBackground, Modal, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { deleteDiagnosis, getRecentDiagnoses } from '../../src/db/repository';
@@ -246,10 +246,14 @@ export default function HistoryScreen() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'healthy': return t('history.status.healthy');
-      case 'treated': return t('history.status.treated');
-      case 'pending': return t('history.status.pending');
-      default: return t('history.status.unknown');
+      case 'healthy':
+        return t('history.status.healthy', { defaultValue: 'Healthy' });
+      case 'treated':
+        return t('history.status.treated', { defaultValue: 'Treated' });
+      case 'pending':
+        return t('history.status.pending', { defaultValue: 'Pending' });
+      default:
+        return t('history.status.unknown', { defaultValue: 'Unknown' });
     }
   };
 
@@ -323,7 +327,7 @@ export default function HistoryScreen() {
       overshootRight={false}
     >
       <TouchableOpacity
-        style={[styles.scanCard, { backgroundColor: colors.card }]}
+        style={[styles.scanCard, { backgroundColor: `${colors.card}CC` }]}
         onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
       >
         <View style={styles.scanHeader}>
@@ -350,9 +354,9 @@ export default function HistoryScreen() {
             <View style={styles.scanMetaRow}>
               <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>
                 <Ionicons name="ellipse" size={8} color={getStatusColor(item.status)} />
-                <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+                {/* <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
                   {getStatusText(item.status)}
-                </Text>
+                </Text> */}
               </View>
               <Text style={[styles.scanDate, { color: colors.textSecondary }]}>
                 {item.date}
@@ -397,13 +401,17 @@ export default function HistoryScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+       <ImageBackground
+      source={theme === 'dark' ? require('../../assets/images/screenBg/history1.jpg') : require('../../assets/images/screenBg/history.jpg')}
+      style={styles.backgroundImage}
+      imageStyle={{ resizeMode: 'cover' }}
+    >
+      <View style={[styles.overlay, { backgroundColor:theme === 'dark' ? 'rgba(0,0,0,0.75)':'rgba(0,0,0,0.65)' }]}>
+      <View style={[styles.container, { backgroundColor: `${colors.background}85` }]}>
           {/* Header */}
-          <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-            <View style={styles.headerTop}>
+          <View style={styles.headerTop}>
               <View style={styles.titleContainer}>
-                <Text style={[styles.title, { color: colors.text }]}>
+                <Text style={[styles.title, { color: colors.text}]}>
                   {t('history.title')}
                 </Text>
                 <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
@@ -411,7 +419,7 @@ export default function HistoryScreen() {
                 </Text>
               </View>
               <TouchableOpacity
-                style={[styles.filterButton, { backgroundColor: colors.card }]}
+                style={[styles.filterButton, { backgroundColor: `${colors.card}CC` }]}
                 onPress={() => setShowFilters(!showFilters)}
               >
                 <Ionicons
@@ -424,10 +432,14 @@ export default function HistoryScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+
+          <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+            
 
             {/* Quick Stats */}
             <View style={styles.statsRow}>
-              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+              <View style={[styles.statCard, { backgroundColor: `${colors.card}CC` }]}>
                 <Ionicons name="scan" size={20} color={colors.primary} />
                 <Text style={[styles.statNumber, { color: colors.text }]}>
                   {filteredAndSortedScans.length}
@@ -436,7 +448,7 @@ export default function HistoryScreen() {
                   {t('history.totalScans')}
                 </Text>
               </View>
-              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+              <View style={[styles.statCard, { backgroundColor: `${colors.card}CC` }]}>
                 <Ionicons name="trending-up" size={20} color={colors.primary} />
                 <Text style={[styles.statNumber, { color: colors.text }]}>
                   {Math.round(filteredAndSortedScans.reduce((acc, scan) => acc + scan.confidence, 0) / filteredAndSortedScans.length) || 0}%
@@ -445,7 +457,7 @@ export default function HistoryScreen() {
                   {t('history.avgConfidence')}
                 </Text>
               </View>
-              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+              <View style={[styles.statCard, { backgroundColor: `${colors.card}CC` }]}>
                 <Ionicons name="heart" size={20} color={colors.primary} />
                 <Text style={[styles.statNumber, { color: colors.text }]}>
                   {filteredAndSortedScans.filter(scan => scan.severity === 'none').length}
@@ -459,12 +471,12 @@ export default function HistoryScreen() {
 
           {/* Filters Panel */}
           {showFilters && (
-            <View style={[styles.filtersPanel, { backgroundColor: colors.card }]}>
+            <View style={[styles.filtersPanel, { backgroundColor: `${colors.card}CC` }]}>
               {/* Filter Types */}
               <Text style={[styles.filtersTitle, { color: colors.text }]}>
                 {t('history.filters.title')}
               </Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersScroll}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.filtersScroll}>
                 <View style={styles.filtersRow}>
                   {filters.map((filter) => (
                     <TouchableOpacity
@@ -496,6 +508,7 @@ export default function HistoryScreen() {
               <Text style={[styles.filtersTitle, { color: colors.text }]}>
                 {t('history.sort.title')}
               </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={true}>
               <View style={styles.sortOptions}>
                 {sortOptions.map((sort) => (
                   <TouchableOpacity
@@ -522,6 +535,7 @@ export default function HistoryScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
+              </ScrollView>
             </View>
           )}
 
@@ -533,7 +547,7 @@ export default function HistoryScreen() {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <ScanItem item={item} />}
                 renderSectionHeader={({ section: { title } }) => (
-                  <Text style={[styles.sectionHeader, { color: colors.text }]}>
+                  <Text style={[styles.sectionHeader, { color: colors.textSecondary}]}>
                     {title}
                   </Text>
                 )}
@@ -607,11 +621,19 @@ export default function HistoryScreen() {
           </View>
         </Modal>
       </View>
+      </View>
+    </ImageBackground>
     </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
@@ -619,11 +641,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingTop: 60,
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   headerTop: {
+     paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -647,11 +671,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 12,
     gap: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    
   },
   filterButtonText: {
     fontSize: 14,
@@ -665,12 +685,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    alignItems: 'center'
   },
   statNumber: {
     fontSize: 20,
@@ -686,11 +701,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    
   },
   filtersTitle: {
     fontSize: 16,
@@ -698,7 +709,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   filtersScroll: {
-    marginBottom: 20,
+    marginBottom: 16,
+    paddingBottom:10
   },
   filtersRow: {
     flexDirection: 'row',
@@ -706,9 +718,10 @@ const styles = StyleSheet.create({
   },
   filterChip: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
     gap: 6,
@@ -724,12 +737,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    paddingBottom:6
   },
   sortOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 6,
     borderRadius: 8,
     gap: 6,
   },
@@ -758,11 +772,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    
   },
   scanHeader: {
     flexDirection: 'row',

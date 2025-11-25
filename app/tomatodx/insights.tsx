@@ -1,11 +1,10 @@
 // app/tomatodx/insights.tsx - Insights Screen
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getAnalyticsSummary, getLast7DaysCounts, getRecentDiagnoses } from '../../src/db/repository';
 
@@ -87,9 +86,15 @@ export default function InsightsScreen() {
     const barMax = Math.max(1, ...trend.map(d => d.count));
 
     return (
-        <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+        <ImageBackground
+            source={theme === 'dark' ? require('../../assets/images/screenBg/insights1.jpg') : require('../../assets/images/screenBg/insights.jpg')}
+            style={styles.backgroundImage}
+            imageStyle={{ resizeMode: 'cover' }}
+        >
+            <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.5)' }] }>
+                
             {/* Header */}
-            <LinearGradient colors={[colors.background, colors.backgroundAlt]} style={styles.header}>
+            <View style={[styles.header, {backgroundColor: `${colors.background}99`}]}>
                 <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
                     <Ionicons name="chevron-back" size={24} color={colors.text} />
                 </TouchableOpacity>
@@ -97,8 +102,9 @@ export default function InsightsScreen() {
                     {t('home.insights')}
                 </Text>
                 <View style={styles.placeholder} />
-            </LinearGradient>
+            </View>
 
+            <ScrollView style={[styles.container, { backgroundColor: `${colors.background}80` }]}>
             {/* Summary Cards */}
             <Animated.View style={[styles.cardsRow, { opacity: cardsAnim, transform: [{ scale: cardsAnim }] }]}>
                 <View style={[styles.card, { backgroundColor: colors.card }]}>
@@ -130,7 +136,7 @@ export default function InsightsScreen() {
 
             {/* 7-day trend */}
             <Animated.View style={[styles.section, { opacity: chartAnim, transform: [{ translateY: Animated.multiply(chartAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }), 1) }] }]}>
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>Last 7 days</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('home.last7Days')}</Text>
                 <View style={[styles.trendCard, { backgroundColor: colors.card }]}>
                     <View style={styles.trendBars}>
                         {trend.map((d, idx) => (
@@ -142,7 +148,7 @@ export default function InsightsScreen() {
                             </View>
                         ))}
                         {trend.length === 0 && (
-                            <Text style={{ color: colors.textTertiary }}>No data</Text>
+                            <Text style={{ color: colors.textTertiary }}>{t('home.noData')}</Text>
                         )}
                     </View>
                 </View>
@@ -174,10 +180,14 @@ export default function InsightsScreen() {
                 ))}
             </Animated.View>
         </ScrollView>
+            </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    backgroundImage: { flex: 1 },
+    overlay: { flex: 1 },
     container: { flex: 1 },
     header: {
         flexDirection: 'row',

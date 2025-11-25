@@ -4,8 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -13,6 +13,7 @@ import {
   Animated,
   Dimensions,
   Image,
+  ImageBackground,
   Modal,
   ScrollView,
   StyleSheet,
@@ -21,7 +22,7 @@ import {
   View
 } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
-import { insertDiagnosis, insertImage, upsertDisease } from '../../src/db/repository';
+import { deleteDiagnosis, insertDiagnosis, insertImage, upsertDisease } from '../../src/db/repository';
 
 // Research service constants
 const RESEARCH_OPT_IN_KEY = '@tomatodx_research_opt_in';
@@ -164,7 +165,11 @@ export default function PreviewScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
 
-  useEffect(() => {
+  const startAnimations = useCallback(() => {
+    scaleAnim.setValue(0.9);
+    fadeAnim.setValue(0);
+    slideAnim.setValue(20);
+
     Animated.parallel([
       Animated.spring(scaleAnim, {
         toValue: 1,
@@ -184,7 +189,13 @@ export default function PreviewScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [scaleAnim, fadeAnim, slideAnim]);
+
+  useFocusEffect(
+    useCallback(() => {
+      startAnimations();
+    }, [startAnimations])
+  );
 
   const handleAnalyze = async () => {
     if (!uri) {
@@ -287,6 +298,13 @@ export default function PreviewScreen() {
   };
 
   const handleLowConfidenceRetake = () => {
+    if (pendingResult) {
+      try {
+        deleteDiagnosis(pendingResult.diagnosisId);
+      } catch (error) {
+        console.error('Failed to delete low-confidence diagnosis on retake:', error);
+      }
+    }
     setShowLowConfidenceModal(false);
     setPendingResult(null);
     router.back();
@@ -301,12 +319,16 @@ export default function PreviewScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <ImageBackground
+    source={require('../../assets/images/screenBg/preview.jpg')}
+    style={styles.backgroundImage}
+    imageStyle={{ resizeMode: 'cover' }}
+  >
+    <View style={[styles.overlay,{backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.5)':'rgba(0,0,0,0.5)'}]}>
+    
+    <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}99` : `${colors.background}70` }]}>
       {/* Header */}
-      <LinearGradient
-        colors={[colors.background, colors.backgroundAlt]}
-        style={styles.header}
-      >
+      <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
@@ -321,11 +343,11 @@ export default function PreviewScreen() {
           {t('preview.title')}
         </Text>
         <View style={styles.placeholder} />
-      </LinearGradient>
+      </View>
 
       {/* Image Preview */}
       <ScrollView
-        style={styles.scrollView}
+        style={[styles.scrollView]}
         contentContainerStyle={styles.imageContainer}
         showsVerticalScrollIndicator={false}
       >
@@ -338,7 +360,7 @@ export default function PreviewScreen() {
           }
         ]}>
           <Image
-            source={uri ? { uri: uri as string } : require('../../assets/sample-tomato-leaf.png')}
+            source={uri ? { uri: uri as string } : require('../../assets/images/sample-tomato-leaf.png')}
             style={styles.image}
             resizeMode="cover"
           />
@@ -382,13 +404,13 @@ export default function PreviewScreen() {
       {/* Action Buttons */}
       <View style={styles.actions}>
         <TouchableOpacity
-          style={[styles.analyzeButton, styles.shadow]}
+          style={[styles.analyzeButton]}
           onPress={handleAnalyze}
           disabled={analyzing}
         >
           <LinearGradient
             colors={[colors.primary, colors.primaryDark]}
-            style={styles.analyzeGradient}
+            style={[styles.analyzeGradient]}
           >
             {analyzing ? (
               <>
@@ -405,7 +427,7 @@ export default function PreviewScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.retakeButton, { borderColor: colors.border }]}
+          style={[styles.retakeButton, { borderColor: colors.border,backgroundColor:theme === 'dark' ? "":`${colors.background}70` }]} 
           onPress={handleRetake}
         >
           <Ionicons
@@ -427,7 +449,7 @@ export default function PreviewScreen() {
         onRequestClose={handleLowConfidenceRetake}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, { backgroundColor: colors.card }]}>
+          <View style={[styles.modalContainer, { backgroundColor:colors.background }]}>
             {/* Warning Icon */}
             <View style={[styles.iconContainer, { backgroundColor: colors.primaryOverlay2 }]}>
               <Ionicons name="warning" size={48} color={colors.warning} />
@@ -498,10 +520,20 @@ export default function PreviewScreen() {
         </View>
       </Modal>
     </View>
+   
+    </View>
+
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+      },
+  overlay: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
@@ -528,9 +560,16 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     padding: 20,
+    paddingBottom: 0,
   },
   imageWrapper: {
     borderRadius: 20,
+    borderWidth: .4,
+
+    outlineWidth: .5,
+    outlineOffset: 2,
+    outlineStyle: 'solid',
+    outlineColor: '#ffffff7b',
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -599,10 +638,14 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   actions: {
-    padding: 20,
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical:16,
+    marginBottom: 40,
     gap: 12,
   },
   analyzeButton: {
+    flex:1,
     borderRadius: 16,
     overflow: 'hidden',
   },
@@ -611,35 +654,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 18,
-    paddingHorizontal: 24,
+    paddingHorizontal:18,
     gap: 12,
   },
   analyzeText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: '700',
   },
   retakeButton: {
+    // flex:1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    paddingHorizontal: 24,
+    paddingHorizontal: 18,
     borderRadius: 16,
     borderWidth: 2,
     gap: 12,
   },
   retakeText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
-  shadow: {
-    shadowColor: '#10b981',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
+  
   // Modal styles
   modalOverlay: {
     flex: 1,
@@ -649,16 +687,12 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContainer: {
-    width: width - 40,
+    width: width - 20,
     maxWidth: 400,
     borderRadius: 24,
-    padding: 24,
+    padding: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 12,
+    
   },
   iconContainer: {
     width: 80,

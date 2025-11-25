@@ -7,14 +7,14 @@ import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    Animated,
-    Dimensions,
-    Easing,
-    ImageBackground,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  Dimensions,
+  Easing,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../src/contexts/ThemeContext';
@@ -29,7 +29,7 @@ const ONBOARDING_STEPS = [
         descriptionKey: 'onboarding.steps.welcome.description'
     },
     {
-        icon: '📸',
+        icon: '📷',
         titleKey: 'onboarding.steps.capture.title',
         descriptionKey: 'onboarding.steps.capture.description'
     },
@@ -200,9 +200,9 @@ export default function OnboardingScreen() {
         ]}
       >
         {/* Icon */}
-        {/* <View style={styles.iconContainer}>
+        <View style={styles.iconContainer}>
           <Text style={styles.icon}>{step.icon}</Text>
-        </View> */}
+        </View>
 
         {/* Text Content */}
         <View style={styles.textContainer}>
@@ -255,7 +255,7 @@ export default function OnboardingScreen() {
             <Ionicons
               name="arrow-back"
               size={20}
-              color={theme === 'dark' ? '#fff' : '#666'}
+              color={theme === 'dark' ? '#fff' : '#fff'}
             />
             <Text
               style={[
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     skipText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#666',
+        color: '#fff',
     },
     content: {
         flex: 1,
@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
         marginBottom: 48,
     },
     icon: {
-        fontSize: 96,
+        fontSize: 60,
     },
     textContainer: {
         alignItems: 'center',
@@ -373,14 +373,14 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         fontWeight: '800',
-        color: '#1a1a1a',
+        color: '#fff',
         textAlign: 'center',
         marginBottom: 16,
         lineHeight: 38,
     },
     description: {
         fontSize: 18,
-        color: '#666',
+        color: '#fff',
         textAlign: 'center',
         lineHeight: 28,
         paddingHorizontal: 20,
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#e5e5e5',
     },
     darkInactiveDot: {
-        backgroundColor: '#333',
+        backgroundColor: '#fff',
     },
     buttonsContainer: {
         flexDirection: 'row',
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
         borderColor: '#e5e5e5',
     },
     darkSecondaryButton: {
-        borderColor: '#333',
+        borderColor: '#fff',
     },
     buttonText: {
         fontSize: 16,
@@ -451,6 +451,6 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
     secondaryButtonText: {
-        color: '#666',
+        color: '#fff',
     },
 });

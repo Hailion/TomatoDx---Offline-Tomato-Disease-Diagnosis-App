@@ -255,7 +255,7 @@ else{
                             onPress={handleCameraWithCrop}
                         >
                             <ImageBackground
-                                source={require('../../assets/images/scan/takePhoto.png')}
+                                source={require('../../assets/images/scan/takePhoto.jpg')}
                                 style={styles.actionButtonBackground}
                                 imageStyle={{ resizeMode: 'cover', borderRadius: 16 }}
                             >
@@ -279,7 +279,7 @@ else{
                             onPress={handleGallery}
                         >
                             <ImageBackground
-                                source={require('../../assets/images/scan/fromGallery.png')}
+                                source={require('../../assets/images/scan/fromGallery.jpg')}
                                 style={styles.actionButtonBackground}
                                 imageStyle={{ resizeMode: 'cover', borderRadius: 16 }}
                             >
@@ -332,7 +332,7 @@ else{
                        <View style={[styles.imageContainer]}>
                             {/* <Ionicons name="camera" size={64} color={colors.primary} /> */}
                             <Image
-                                source={theme === 'dark' ? require('../../assets/images/screenBg/scan1.jpg') : require('../../assets/images/scan/sample-tomato-leaf.png')}
+                                source={theme === 'dark' ? require('../../assets/images/screenBg/scan1.jpg') : require('../../assets/images/scan/sample-tomato-leaf.jpg')}
                                 style={styles.image}
                                 resizeMode="cover"                              
                                 height={300}

@@ -385,7 +385,7 @@ export default function ResultScreen() {
 
   return (
      <ImageBackground
-    source={require('../../assets/images/image.png')}
+    source={require('../../assets/images/screenBg/homeHeader.png')}
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >

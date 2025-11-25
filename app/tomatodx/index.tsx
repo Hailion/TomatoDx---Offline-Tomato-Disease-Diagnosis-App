@@ -154,7 +154,7 @@ export default function HomeScreen() {
       {/* Fixed Header */}
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
       <ImageBackground
-        source={theme === 'dark' ? require('../../assets/images/background/wellcome_bg.jpg') : require('../../assets/images/image.png')}
+        source={theme === 'dark' ? require('../../assets/images/background/wellcome_bg.jpg') : require('../../assets/images/screenBg/homeHeader.png')}
         style={styles.header}
         imageStyle={{ resizeMode: 'cover' }}
       >

@@ -17,6 +17,10 @@ android/app/release/*.apk
 android/app/release/*.aab
 android/app/release/
 
+# Ignore optimization guides
 APK_OPTIMIZATION_GUIDE.md
 OPTIMIZATION_SUMMARY.md
-android/app/release/
+# Ignore app flow description
+APP_FLOW_DESCRIPTION.md
+# Ignore system model
+CHAPTER_3_SYSTEM_MODEL.md

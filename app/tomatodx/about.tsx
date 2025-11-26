@@ -191,10 +191,10 @@ export default function AboutScreen() {
                 <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                 {/* Hero Section */}
                 <View style={[styles.heroCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}40` }]}>
-                    <View style={[styles.logo, { backgroundColor: colors.primaryOverlay }]}>
+                    <View style={[styles.logo, { backgroundColor: colors.primaryOverlay,     borderRadius: theme === 'dark' ? 15:60 }]}>
                         {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}
                         <TouchableOpacity  onPress={handleVersionTap}>
-                            <Image source={require('../../assets/images/app/iconSimple.jpg')} style={{width:60,height:60,borderRadius:60}} />
+                            <Image source={ theme === 'dark' ? require('../../assets/images/app/iconSquare.png') : require('../../assets/images/app/iconSimple.jpg')} style={{...styles.logoImage, borderWidth:theme === 'dark' ? 0:1,borderRadius: theme === 'dark' ? 15:60, borderColor: theme === 'dark' ? 'white' : '#000000a4'}} />
                         </TouchableOpacity>
                     </View>
                     <Text style={[styles.appName, { color: colors.text }]}>
@@ -429,7 +429,7 @@ export default function AboutScreen() {
                 onRequestClose={handleCancel}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: `${colors.card}EE` }]}>
+                    <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
                         <View style={[styles.modalIcon, { backgroundColor: colors.background + '80' }]}>
                             <Text style={styles.modalEmoji}>
                                 <Ionicons name="key" size={40} color={colors.primary} />
@@ -491,6 +491,12 @@ const styles = StyleSheet.create({
     backButton: {
         padding: 8,
     },
+    logoImage:{
+        width:60,
+        height:60,
+        borderRadius:60,
+        borderColor: '#fff'
+    },
     title: {
         fontSize: 20,
         fontWeight: '700',
@@ -510,8 +516,8 @@ const styles = StyleSheet.create({
    
     },
     logo: {
-    width: 64,
-    height: 64,
+    width: 68,
+    height: 68,
     borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
@@ -703,6 +709,8 @@ const styles = StyleSheet.create({
     modalButtonCancel: {
         flex: 1.3,
         backgroundColor: '#f3f4f6',
+        borderWidth: 1,
+        borderColor: '#cccccc',
     },
     modalButtonAdmin: {
         flex: 2,

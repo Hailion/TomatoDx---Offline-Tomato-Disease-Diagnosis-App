@@ -191,6 +191,12 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
      * Handle admin lock and navigation
      */
     const handleLockAdmin = async () => {
+        try {
+            await AsyncStorage.removeItem('adminUnlocked');
+        } catch (error) {
+            console.error('Error clearing adminUnlocked flag:', error);
+        }
+
         setIsAuthorized(false);
         router.back();
     };
@@ -333,7 +339,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
                     description: t('admin.system.lockAdmin.description'),
                     icon: 'lock-closed',
                     iconColor: '#FF3B30',
-                    action: () => setVisibleReset(true),
+                    action: handleLockAdmin,
                     type: 'danger',
                     showChevron: true
                 }
@@ -370,7 +376,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 
                 {/* Authentication Card */}
                 <View style={styles.authContainer}>
-                    <View style={[styles.authCard, { backgroundColor: `${colors.card}CC` }]}>
+                    <View style={[styles.authCard, { backgroundColor: theme === 'dark' ? `${colors.card}` : `${colors.card}CC` ,borderColor: theme === 'dark' ? colors.border : ''}]}>
                         <View style={[styles.authIconContainer, { backgroundColor: colors.primaryOverlay }]}>
                             <Ionicons name="shield-checkmark" size={32} color={colors.primary} />
                         </View>
@@ -947,6 +953,7 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 400,
         borderRadius: 20,
+        borderWidth:1,
         padding: 16,
         alignItems: 'center',
        

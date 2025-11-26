@@ -14,7 +14,7 @@ export default function TabLayout() {
 
   return (
     <ImageBackground
-    source={require('../../assets/images//screenBg/homeHeader.png')}
+    source={require('../../assets/images/screenBg/homeHeader.png')}
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >

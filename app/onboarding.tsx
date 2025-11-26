@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
      // add this:
     overlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0, 0, 0, 0.65)', // tweak opacity as you like
+        backgroundColor: 'rgba(0, 0, 0, 0.70)', // tweak opacity as you like
     },
        circle: {
         position: 'absolute',

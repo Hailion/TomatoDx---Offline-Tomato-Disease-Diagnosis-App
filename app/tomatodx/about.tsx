@@ -194,7 +194,7 @@ export default function AboutScreen() {
                     <View style={[styles.logo, { backgroundColor: colors.primaryOverlay,     borderRadius: theme === 'dark' ? 15:60 }]}>
                         {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}
                         <TouchableOpacity  onPress={handleVersionTap}>
-                            <Image source={ theme === 'dark' ? require('../../assets/images/app/iconSquare.png') : require('../../assets/images/app/iconSimple.jpg')} style={{...styles.logoImage, borderWidth:theme === 'dark' ? 0:1,borderRadius: theme === 'dark' ? 15:60, borderColor: theme === 'dark' ? 'white' : '#000000a4'}} />
+                            <Image source={ theme === 'dark' ? require('../../assets/images/app/iconSquare.png') : require('../../assets/images/app/iconSimple.jpg')} style={{...styles.logoImage, borderWidth:theme === 'dark' ? 0:1,borderRadius: theme === 'dark' ? 15:60, borderColor: theme === 'dark' ? '#646464' : '#646464'}} />
                         </TouchableOpacity>
                     </View>
                     <Text style={[styles.appName, { color: colors.text }]}>
@@ -662,7 +662,7 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 400,
         alignItems: 'center',
-        borderColor: '#cccccc88',
+        borderColor: '#646464',
         borderWidth: 1,
     },
     modalIcon: {
@@ -710,7 +710,7 @@ const styles = StyleSheet.create({
         flex: 1.3,
         backgroundColor: '#f3f4f6',
         borderWidth: 1,
-        borderColor: '#cccccc',
+        borderColor: '#646464',
     },
     modalButtonAdmin: {
         flex: 2,

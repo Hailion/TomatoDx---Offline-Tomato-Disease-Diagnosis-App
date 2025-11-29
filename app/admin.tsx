@@ -126,7 +126,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 
         setIsVerifying(true);
         try {
-            const isValid = validateAdminPassword(password.trim());
+            const isValid = await validateAdminPassword(password.trim());
             if (isValid) {
                 await AsyncStorage.setItem('adminUnlocked', 'true');
                 setIsAuthorized(true);
@@ -146,7 +146,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
     /**
      * Handle admin password change
      */
-    const handleSubmitChangePassword = () => {
+    const handleSubmitChangePassword = async () => {
         if (!currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim()) {
             setChangePasswordError(t('admin.password.errorAllRequired'));
             return;
@@ -169,7 +169,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 
         setIsChangingPassword(true);
         try {
-            const success = changeAdminPassword(currentPassword.trim(), newPassword.trim());
+            const success = await changeAdminPassword(currentPassword.trim(), newPassword.trim());
             if (!success) {
                 setChangePasswordError(t('admin.password.errorCurrentIncorrect'));
                 return;

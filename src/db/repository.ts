@@ -1,3 +1,4 @@
+import * as Crypto from 'expo-crypto';
 import * as FileSystem from 'expo-file-system/legacy';
 import { db } from './schema';
 
@@ -60,6 +61,32 @@ export function getAll<T = any>(sql: string, params: any[] = []): T[] {
     return rows as T[];
 }
 
+// Password hashing helpers (salted SHA-256 stored as "salt$hash" in the password column)
+async function generateSalt(length = 16): Promise<string> {
+    const bytes = (await Crypto.getRandomBytesAsync(length)) as Uint8Array;
+    return Array.from(bytes)
+        .map((b: number) => b.toString(16).padStart(2, '0'))
+        .join('');
+}
+
+async function hashPassword(password: string, salt?: string): Promise<{ salt: string; hash: string }> {
+    const actualSalt = salt ?? (await generateSalt());
+    const digest = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        actualSalt + password
+    );
+    return { salt: actualSalt, hash: digest };
+}
+
+function parseStoredPassword(stored?: string | null): { salt: string; hash: string } | null {
+    if (!stored) return null;
+    const parts = stored.split('$');
+    if (parts.length !== 2) return null;
+    const [salt, hash] = parts;
+    if (!salt || !hash) return null;
+    return { salt, hash };
+}
+
 export function upsertUser(userId: string, name?: string, nickname?: string) {
     run(
         `INSERT INTO User (userId, name, nickname) VALUES (?, ?, ?)
@@ -76,26 +103,57 @@ export function getCurrentUser() {
     return rows[0] ?? null;
 }
 
-export function validateAdminPassword(inputPassword: string) {
+export async function validateAdminPassword(inputPassword: string): Promise<boolean> {
     const rows = getAll<{ password?: string }>(
         `SELECT password FROM User WHERE userId = 'admin' LIMIT 1`
     );
-    const stored = rows[0]?.password;
+    const stored = rows[0]?.password ?? null;
     if (!stored) return false;
-    return stored === inputPassword;
+
+    const parsed = parseStoredPassword(stored);
+
+    // Legacy plaintext password: migrate to hashed format on successful match
+    if (!parsed) {
+        if (stored !== inputPassword) {
+            return false;
+        }
+
+        const { salt, hash } = await hashPassword(inputPassword);
+        run(`UPDATE User SET password = ? WHERE userId = 'admin'`, [`${salt}$${hash}`]);
+        return true;
+    }
+
+    const { salt, hash } = parsed;
+    const candidate = await hashPassword(inputPassword, salt);
+    return candidate.hash === hash;
 }
 
-export function changeAdminPassword(currentPassword: string, newPassword: string) {
+export async function changeAdminPassword(currentPassword: string, newPassword: string): Promise<boolean> {
     const rows = getAll<{ password?: string }>(
         `SELECT password FROM User WHERE userId = 'admin' LIMIT 1`
     );
-    const stored = rows[0]?.password;
+    const stored = rows[0]?.password ?? null;
+    if (!stored) return false;
 
-    if (!stored || stored !== currentPassword) {
+    const parsed = parseStoredPassword(stored);
+
+    let currentMatches = false;
+
+    if (!parsed) {
+        // Legacy plaintext comparison
+        currentMatches = stored === currentPassword;
+    } else {
+        const { salt, hash } = parsed;
+        const candidate = await hashPassword(currentPassword, salt);
+        currentMatches = candidate.hash === hash;
+    }
+
+    if (!currentMatches) {
         return false;
     }
 
-    run(`UPDATE User SET password = ? WHERE userId = 'admin'`, [newPassword]);
+    const { salt, hash } = await hashPassword(newPassword);
+    run(`UPDATE User SET password = ? WHERE userId = 'admin'`, [`${salt}$${hash}`]);
     return true;
 }
 
@@ -211,8 +269,46 @@ export function getDiagnosesPage(
     return getAll(sql, [...params, limit, offset]);
 }
 
-export function deleteDiagnosis(diagnosisId: string) {
+export async function deleteDiagnosis(diagnosisId: string) {
+    const imageRows = getAll<{ imageId: string; filePath: string }>(
+        `SELECT i.imageId, i.filePath
+         FROM Diagnosis d
+         JOIN Image i ON i.imageId = d.imageId
+         WHERE d.diagnosisId = ?
+         LIMIT 1`,
+        [diagnosisId]
+    );
+
+    const image = imageRows[0];
+
+    // Always delete the diagnosis row itself
     run(`DELETE FROM Diagnosis WHERE diagnosisId = ?`, [diagnosisId]);
+
+    if (!image) {
+        return;
+    }
+
+    // Check if any other diagnoses still reference this image
+    const remaining = getAll<{ count: number }>(
+        `SELECT COUNT(*) as count FROM Diagnosis WHERE imageId = ?`,
+        [image.imageId]
+    );
+
+    const remainingCount = remaining[0]?.count ?? 0;
+    if (remainingCount > 0) {
+        return;
+    }
+
+    // No more diagnoses reference this image: remove DB row and underlying file
+    run(`DELETE FROM Image WHERE imageId = ?`, [image.imageId]);
+
+    try {
+        if (image.filePath) {
+            await FileSystem.deleteAsync(image.filePath, { idempotent: true });
+        }
+    } catch (error) {
+        console.error('Failed to delete image file for diagnosis cleanup:', error);
+    }
 }
 
 export function updateDiagnosisNotes(diagnosisId: string, notes: string) {

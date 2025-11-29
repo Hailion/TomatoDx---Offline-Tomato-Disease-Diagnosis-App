@@ -311,6 +311,13 @@
   "admin": {
     "title": "Admin Panel",
     "caution": "Admin Mode - Use with caution",
+    "online": "Online",
+    "updateInstructions": "Model update instructions",
+    "systemInformation": "System Information",
+    "appVersion": "App Version",
+    "modelVersion": "Model Version",
+    "lastUpdated": "Last Updated",
+    "totalScans": "Total Scans",
     "modelManagement": {
       "title": "Model Management",
       "updateModel": {
@@ -320,6 +327,11 @@
         "selectModelFile": "Select Model Metadata"
       },
       "updateInstructions": "Inspect or register local TensorFlow.js model metadata",
+      "runSystemCheck": "Run System Check",
+      "currentModel": "Current Model",
+      "checkUpdates": "Check for Updates",
+      "lastChecked": "Last Checked",
+      "noUpdates": "No updates available",
       "updateAvailable": "Updates Available",
       "updating": "Processing metadata...",
       "updateSuccess": "Model metadata updated successfully.",
@@ -381,7 +393,8 @@
           "title": "Export",
           "fileNamePlaceholder": "File name",
           "json": "JSON",
-          "csv": "CSV"
+          "csv": "CSV",
+          "cancel": "Cancel"
         },
         "clearModal": {
           "title": "Clear All Analytics Data?",
@@ -428,7 +441,8 @@
       "errorTooShort":"Password must be at least 8 characters long.",
       "changeButton":"Change Password",
       "changeSuccess":"Password changed successfully.",
-      "changeError":"Failed to change password."
+      "changeError":"Failed to change password.",
+      "updateError":"Failed to update password."
     },  
     "info": "Development admin panel. Production needs proper authentication."
   },
@@ -437,6 +451,7 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "save": "Save",
+    "share": "Share",
     "confirm":"Confirm",
     "edit": "Edit",
     "loading": "Loading...",

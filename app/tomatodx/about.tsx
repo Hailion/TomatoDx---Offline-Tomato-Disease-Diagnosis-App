@@ -194,7 +194,7 @@ export default function AboutScreen() {
                     <View style={[styles.logo, { backgroundColor: colors.primaryOverlay,     borderRadius: theme === 'dark' ? 15:60 }]}>
                         {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}
                         <TouchableOpacity  onPress={handleVersionTap}>
-                            <Image source={ theme === 'dark' ? require('../../assets/images/app/iconSquare.png') : require('../../assets/images/app/iconSimple.jpg')} style={{...styles.logoImage, borderWidth:theme === 'dark' ? 0:1,borderRadius: theme === 'dark' ? 15:60, borderColor: theme === 'dark' ? '#646464' : '#646464'}} />
+                            <Image source={ theme === 'dark' ? require('../../assets/images/app/iconSquare.png') : require('../../assets/images/app/iconAngel.png')} style={{...styles.logoImage, borderWidth:theme === 'dark' ? 0:1,borderRadius: theme === 'dark' ? 15:60, borderColor: theme === 'dark' ? '#646464' : '#646464'}} />
                         </TouchableOpacity>
                     </View>
                     <Text style={[styles.appName, { color: colors.text }]}>

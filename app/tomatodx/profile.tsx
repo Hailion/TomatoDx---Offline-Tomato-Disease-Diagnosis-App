@@ -6,7 +6,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, ImageBackground, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, ImageBackground, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getCurrentUser, upsertUser } from '../../src/db/repository';
 
@@ -124,17 +124,17 @@ export default function ProfileScreen() {
             value: i18n.language === 'en' ? 'English' : 'Amharic',
             onPress: () => i18n.changeLanguage(i18n.language === 'en' ? 'am' : 'en'),
         },
-        // {
-        //     icon: 'notifications',
-        //     title: t('profile.notifications'),
-        //     component: (
-        //         <Switch
-        //             value={notifications}
-        //             onValueChange={setNotifications}
-        //             trackColor={{ false: colors.muted, true: colors.primary }}
-        //         />
-        //     ),
-        // },
+        {
+            icon: 'notifications',
+            title: t('profile.notifications'),
+            component: (
+                <Switch
+                    value={notifications}
+                    onValueChange={setNotifications}
+                    trackColor={{ false: colors.muted, true: colors.primary }}
+                />
+            ),
+        },
         // {
         //     icon: 'analytics',
         //     title: t('profile.analytics'),
@@ -170,19 +170,20 @@ export default function ProfileScreen() {
          {/* Header */}
                 <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                       <ImageBackground
-                      source={require('../../assets/images/screenBg/profile3.jpg')}
-                       imageStyle={{ resizeMode: 'cover' }}
-                    >
+                        source={require('../../assets/images/screenBg/profile3.jpg')}
+                        imageStyle={{ resizeMode: 'cover' }}
+                        >
                       {/* Softer overlay only where the content is */}
                       <View
                         style={[styles.headerContent, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.25)' }]}
                       >
                     <TouchableOpacity
-                        style={[styles.avatar, { backgroundColor: colors.primary }]}
+                        style={[styles.avatar, { backgroundColor: `${colors.primary}60` }]}
                         onPress={handleEditProfile}
                     >
                         <Text style={styles.avatarText}>
                             {userName.charAt(0).toUpperCase()}
+                            {/* <Ionicons name="person" size={40} color="#fff" /> */}
                         </Text>
                         <View style={[styles.editBadge, { backgroundColor: colors.primary }]}>
                             <Ionicons name="pencil" size={12} color="#fff" />
@@ -359,13 +360,13 @@ export default function ProfileScreen() {
 
                         <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
                             <TouchableOpacity
-                                style={[styles.modalButton, styles.cancelButton, { backgroundColor: `${colors.backgroundAlt}BB` }]}
+                                style={[styles.modalButton, styles.cancelButton, { backgroundColor: `${colors.background}BB` }]}
                                 onPress={() => setEditModalVisible(false)}
                             >
                                 <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.modalButton, styles.saveButton, { backgroundColor: `${colors.primary}BB` }]}
+                                style={[styles.modalButton, styles.saveButton, { backgroundColor: `${colors.primary}` }]}
                                 onPress={handleSaveProfile}
                             >
                                 <Text style={styles.saveButtonText}>{t('common.save')}</Text>
@@ -389,7 +390,8 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        paddingTop:16
+        padding:9,
+        paddingVertical:16
     },
     headerContent: {
       paddingHorizontal: 20,
@@ -398,7 +400,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: 'rgba(0,0,0,0.75)', // much lighter
-  },
+    },
     avatar: {
         width: 80,
         height: 80,
@@ -407,9 +409,8 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 16,
-        opacity:0.65
-
+        marginBottom: 6,
+        opacity:0.75
     },
     avatarText: {
         color: '#fff',
@@ -529,8 +530,8 @@ const styles = StyleSheet.create({
         margin: 20,
         marginTop: 0,
         borderRadius: 16,
-        padding: 20,
-       
+        padding: 16,
+        marginBottom:40     
     },
     divider: {        
           width:2,
@@ -538,7 +539,7 @@ const styles = StyleSheet.create({
      },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
@@ -557,15 +558,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 20,
-        borderBottomWidth: 1,
+        padding: 16,
+        paddingBottom:0
+        // borderBottomWidth: .5,
     },
     modalTitle: {
         fontSize: 20,
         fontWeight: '700',
     },
     modalBody: {
-        padding: 20,
+        padding: 16,
     },
     inputLabel: {
         fontSize: 14,
@@ -582,8 +584,8 @@ const styles = StyleSheet.create({
     modalFooter: {
         flexDirection: 'row',
         gap: 12,
-        padding: 20,
-        borderTopWidth: 1,
+        padding: 16,
+        // borderTopWidth: 1,
     },
     modalButton: {
         flex: 1,

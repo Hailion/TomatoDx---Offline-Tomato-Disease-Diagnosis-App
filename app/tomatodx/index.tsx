@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Colors';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getAnalyticsSummary, getRecentDiagnoses } from '../../src/db/repository';
@@ -150,7 +150,7 @@ export default function HomeScreen() {
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.77)' }]}>
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.8)' }]}>
       {/* Fixed Header */}
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
       <ImageBackground
@@ -160,7 +160,8 @@ export default function HomeScreen() {
       >
         <View style={styles.headerContent}>
           <View style={[styles.logo, { backgroundColor: colors.successBg }]}>
-            <Ionicons name="leaf" size={32} color={colors.success} />
+            {/* <Ionicons name="leaf" size={32} color={colors.success} /> */}
+            <Image source={ require('../../assets/images/app/3.png')} style={{...styles.logoImage,borderRadius: 60}} />
           </View>
           <Text style={[styles.title, { color: '#fff' }]}>
             TomatoDx
@@ -293,6 +294,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  logoImage:{
+        width:60,
+        height:60,
+        borderRadius:60,
+        borderColor: '#fff'
+    },
   title: {
     fontSize: 32,
     fontWeight: '800',

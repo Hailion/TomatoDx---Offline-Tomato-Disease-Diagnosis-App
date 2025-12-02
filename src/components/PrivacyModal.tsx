@@ -92,11 +92,11 @@ export default function PrivacyModal({ visible, onClose, onToggle, optIn }: Priv
 
     return (
           <ImageBackground
-    source={require('../../assets/images/screenBg/homeHeader.png')}
+    source={require('../../assets/images/screenBg/layout.jpg')}
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >
-    <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.75)' : 'rgba(255,255,255,0.65)' }]}>
+    <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.65)' }]}>
     
         <Modal
             transparent

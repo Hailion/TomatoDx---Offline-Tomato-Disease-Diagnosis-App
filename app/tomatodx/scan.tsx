@@ -249,7 +249,7 @@ else{
                     </Animated.View>
 
                     {/* Compact Action Buttons - Side by Side */}
-                    <Animated.View style={[styles.actionButtons, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                    <Animated.View style={[styles.actionButtons, { backgroundColor: theme === 'dark'? `${colors.card}CC`:`${colors.card}60`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <TouchableOpacity
                             style={styles.actionButton}
                             onPress={handleCameraWithCrop}
@@ -510,7 +510,9 @@ const styles = StyleSheet.create({
     actionButtons: {
         flexDirection: 'row',
         gap: 12,
-        marginBottom: 30,
+        marginBottom: 10,
+        padding:12,
+        borderRadius:16
     },
     actionContentOverlay: {
         flex:1,
@@ -531,8 +533,9 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1,
+        borderWidth: .5,
         borderColor: '#ccccccc4',
+        borderRadius:16
     },
     actionIcon: {
         width: 60,
@@ -560,7 +563,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 16,
         borderTopLeftRadius: 16,
         marginBottom: 8,
-        borderWidth: 1,
+        borderWidth: .2,
         borderColor: '#ccccccc4',
         
     },
@@ -592,7 +595,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius:16,
         borderBottomLeftRadius:16,
         overflow:"hidden",
-        borderWidth: 1,
+        borderWidth: .2,
         borderColor: '#ccccccc4',
     },
     imageContainer:{

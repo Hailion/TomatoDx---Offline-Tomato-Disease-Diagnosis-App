@@ -402,11 +402,11 @@ export default function HistoryScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
        <ImageBackground
-      source={theme === 'dark' ? require('../../assets/images/screenBg/history1.jpg') : require('../../assets/images/screenBg/history.jpg')}
+      source={theme === 'dark' ? require('../../assets/images/screenBg/history.jpg') : require('../../assets/images/screenBg/history1.jpg')}
       style={styles.backgroundImage}
       imageStyle={{ resizeMode: 'cover' }}
     >
-      <View style={[styles.overlay, { backgroundColor:theme === 'dark' ? 'rgba(0,0,0,0.75)':'rgba(0,0,0,0.65)' }]}>
+      <View style={[styles.overlay, { backgroundColor:theme === 'dark' ? 'rgba(0,0,0,0.85)':'rgba(0,0,0,0.65)' }]}>
       <View style={[styles.container, { backgroundColor: `${colors.background}85` }]}>
           {/* Header */}
           <View style={styles.headerTop}>

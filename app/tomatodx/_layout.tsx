@@ -3,7 +3,7 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function TabLayout() {
@@ -13,12 +13,6 @@ export default function TabLayout() {
   const colors = Colors[theme];
 
   return (
-    <ImageBackground
-    source={require('../../assets/images/screenBg/homeHeader.png')}
-    style={styles.backgroundImage}
-    imageStyle={{ resizeMode: 'cover' }}
-  >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
     <Tabs
       screenOptions={{
         tabBarStyle: {
@@ -38,15 +32,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="scan"
-        options={{
-          title: t('scan.navtitle'),
-          tabBarIcon: ({ size, color }) => (
-            <Ionicons name="camera" size={size} color={color} />
-          ),
-        }}
-      />
+     
       <Tabs.Screen
         name="history"
         options={{
@@ -54,6 +40,41 @@ export default function TabLayout() {
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="time" size={size} color={color} />
           ),
+        }}
+      />
+       <Tabs.Screen
+        name="scan"
+        options={{
+          title: t('scan.navtitle'),
+          tabBarIcon: ({ size, color, focused }) => (
+            <View style={styles.scanIconContainer}>
+              <View style={[
+                styles.scanIconBackground,
+                { backgroundColor: focused ? `${colors.primary}EE` : `${colors.card}`, borderColor:  `${colors.border}` }
+              ]}>
+                <Ionicons 
+                  name="camera" 
+                  size={size * 1.4} 
+                  color={focused ? '#ffffff' : colors.primary} 
+                />
+              </View>
+            </View>
+          ),
+          tabBarButton: (props) => {
+            const { style, delayLongPress, disabled, ...restProps } = props;
+            const cleanProps: any = {
+              ...restProps,
+              ...(delayLongPress !== null && delayLongPress !== undefined ? { delayLongPress } : {}),
+              ...(disabled !== null && disabled !== undefined ? { disabled: !!disabled } : {}),
+            };
+            return (
+              <TouchableOpacity
+                {...cleanProps}
+                style={[style, styles.scanTabButton]}
+                activeOpacity={0.7}
+              />
+            );
+          },
         }}
       />
       <Tabs.Screen
@@ -86,7 +107,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="help"
         options={{
-          href: null,
+           title: t('help.navtitle'),
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name="help-circle" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -96,8 +120,7 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-    </View>
-    </ImageBackground>
+      
   );
 }
 
@@ -111,5 +134,24 @@ const styles = StyleSheet.create({
       flex: 1,
       width: '100%',
       height: '100%',
+    },
+    scanIconContainer: {
+      top: -16,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    scanIconBackground: {
+      width: 60,
+      height: 58,
+      borderRadius: 50,
+      justifyContent: 'center',
+      alignItems: 'center',      
+      borderTopWidth: 1,
+      borderLeftWidth: .3,
+      borderRightWidth: .3,
+      borderBottomWidth: .1,
+          },
+    scanTabButton: {
+      top: 5,
     },
   });

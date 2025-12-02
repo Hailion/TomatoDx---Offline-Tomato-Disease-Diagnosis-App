@@ -19,7 +19,7 @@
     "accuracy": "እርግጥኝነት",
     "healthy": "ጤነኛ",
     "last7Days": "ሳምንታዊ ምርመራዎች",
-    "noData": "በሽታዉ አጭር ገላጻ የለውም"
+    "noData": "ምንም መረጃ የለም"
   },
   "scan": {
     "title": "የቅጠል ፎቶ ያንሱ",
@@ -100,17 +100,17 @@
     "avgConfidence": "የመተማመን ደረጃ",
     "healthy": "ጤናማ",
     "noResults": "ምንም ታሪክ የለም",
-    "noResultsDesc": "ለዚህ የቀን ገድብ ምንም የምርመራ ታሪክ የለም",
+    "noResultsDesc": "ለዚህ የቀን ገደብ ምንም የምርመራ ታሪክ የለም",
     "resetFilters": "ማጣሪያ አድስ",
     "status": {
-  "title": "ሁኔታ",
-  "healthy": "ጤናማ",
-  "diseased": "የታመሙ",
-  "all": "ሁሉም",
-  "highRisk": "ከባድ ሁኔታ",
-  "treated": "የታከሙ",
-  "pending": "በሂደት ላይ"
-},
+      "title": "ሁኔታ",
+      "healthy": "ጤናማ",
+      "diseased": "የታመሙ",
+      "all": "ሁሉም",
+      "highRisk": "ከባድ ሁኔታ",
+      "treated": "የታከሙ",
+      "pending": "በሂደት ላይ"
+    },
     "filters": {
       "title": "ማጣሪያ",
       "healthy": "ጤናማ",
@@ -336,6 +336,7 @@
     },
   "help": {
     "title": "እገዛ እና ድጋፍ",
+    "navtitle": "እገዛና ድጋፍ",
     "welcomeTitle": "እንዴት ልንረዳዎ እንችላለን?",
     "welcomeText": "ለተለመዱ ጥያቄዎች መልስ ያግኙ ወይም የድጋፍ ቡድናችንን ያግኙ።",
     "faq": "በተደጋጋሚ የሚጠየቁ ጥያቄዎች",
@@ -429,7 +430,7 @@
       "mobileDevelopers": {
         "title": "የሞባይል ገንቢዎች",
         "name": "ሀይለአምላክ ጋሻው",
-        "role": "የመተግበሪያ ብልጽጋ",
+        "role": "የመተግበሪያ ብልጸጋ",
         "description": "አጠቃቀማቸው ቀላል እና ለተጠቃሚ ምቹ የሆኑ የሞባይል ልመምዶችን መፍጠር"
       },
       "dataAnalyst": {

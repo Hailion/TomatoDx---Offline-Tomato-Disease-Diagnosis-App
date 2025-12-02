@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Dimensions, FlatList, Image, ImageBackground, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, FlatList, Image, ImageBackground, Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function AboutScreen() {
@@ -134,13 +134,13 @@ export default function AboutScreen() {
     {
         name: t('about.teamMembers.agricultureExperts.name'),
         role: t('about.teamMembers.agricultureExperts.role'),
-        photo: require('../../assets/images/team/avatar.png'), // replace path
+        photo: require('../../assets/images/team/admasu.jpg'), // replace path
         description: t('about.teamMembers.agricultureExperts.description')
     },
     {
         name: t('about.teamMembers.dataAnalyst.name'),
         role: t('about.teamMembers.dataAnalyst.role'),
-        photo: require('../../assets/images/team/derara.png'), // replace path
+        photo: require('../../assets/images/team/derara.jpg'), // replace path
         description: t('about.teamMembers.dataAnalyst.description')
     }
     ];
@@ -190,17 +190,15 @@ export default function AboutScreen() {
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                 {/* Hero Section */}
-                <View style={[styles.heroCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}40` }]}>
-                    <View style={[styles.logo, { backgroundColor: colors.primaryOverlay,     borderRadius: theme === 'dark' ? 15:60 }]}>
-                        {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}
-                        <TouchableOpacity  onPress={handleVersionTap}>
-                            <Image source={ theme === 'dark' ? require('../../assets/images/app/iconSquare.png') : require('../../assets/images/app/iconAngel.png')} style={{...styles.logoImage, borderWidth:theme === 'dark' ? 0:1,borderRadius: theme === 'dark' ? 15:60, borderColor: theme === 'dark' ? '#646464' : '#646464'}} />
-                        </TouchableOpacity>
+                <View style={[styles.heroCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}80` , borderRadius: 16}]}>
+                    <View style={[styles.logo, { backgroundColor: colors.primaryOverlay,  outlineColor:theme === 'dark' ?'#FFF':'#000',   borderRadius:60 }]}>
+                        {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}                        
+                            <Image source={ require('../../assets/images/app/3.png')} style={{...styles.logoImage,borderWidth:theme === 'dark' ? 0:0.6, borderColor:theme === 'dark' ? "":'#0000009c',borderRadius: 60}} />
                     </View>
                     <Text style={[styles.appName, { color: colors.text }]}>
                         TomatoDx
                     </Text>
-                    <Text style={[styles.tagline, { color: colors.textSecondary }]}>
+                    <Text style={[styles.tagline, { color: colors.text }]}>
                         {t('about.subtitle')}
                     </Text>
                     <TouchableOpacity
@@ -307,10 +305,10 @@ export default function AboutScreen() {
                         setCurrentDevIndex(index);
                         }}
                         renderItem={({ item }) => (
-                        <View
+                      <View
                             style={[
                             styles.teamCardHorizontal,
-                            { width: SCREEN_WIDTH - 40 },
+                            { width: SCREEN_WIDTH - 42, borderRadius:20 },
                             ]}
                         >
                             
@@ -325,6 +323,7 @@ export default function AboutScreen() {
                             {item.description}
                             </Text>
                         </View>
+                        
                         )}
                         contentContainerStyle={{ paddingHorizontal: 0 }}
                         ItemSeparatorComponent={() => <View style={{ width:10 }} />}  // <-- gap
@@ -401,19 +400,19 @@ export default function AboutScreen() {
                     <View style={styles.socialLinks}>
                         <TouchableOpacity
                             style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primary : colors.textSecondary, borderWidth: 1 }]}
-                        // onPress={() => Linking.openURL('https://t.me/hailion')}
+                        onPress={() => Linking.openURL('https://t.me/hailion')}
                         >
                             <Ionicons name="paper-plane" size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primary : colors.textSecondary, borderWidth: 1} ]}
-                        // onPress={() => Linking.openURL('https://github.com/haileamlak12')}
+                        onPress={() => Linking.openURL('https://github.com/haileamlak12')}
                         >
                             <Ionicons name="logo-github" size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primary : colors.textSecondary, borderWidth: 1} ]}
-                        // onPress={() => Linking.openURL('https://x.com/tomatodx')}
+                        onPress={() => Linking.openURL('https://x.com/tomatodx')}
                         >
                             <Ionicons name="logo-twitter" size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
@@ -479,6 +478,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+        paddingBottom:10
     },
     header: {
         flexDirection: 'row',
@@ -491,12 +491,7 @@ const styles = StyleSheet.create({
     backButton: {
         padding: 8,
     },
-    logoImage:{
-        width:60,
-        height:60,
-        borderRadius:60,
-        borderColor: '#fff'
-    },
+   
     title: {
         fontSize: 20,
         fontWeight: '700',
@@ -508,30 +503,36 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     heroCard: {
-    margin: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    borderRadius:16,
-   
-    },
+        margin: 16,
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        alignItems: 'center',
+        borderRadius:16,
+        },
     logo: {
-    width: 68,
-    height: 68,
-    borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
+        width: 68,
+        height: 68,
+        borderRadius: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 12,
+        outlineWidth:.5
+    },
+    logoImage:{
+        width:62,
+        height:62,
+        borderRadius:60,
+        // borderColor: '#fff'
     },
     appName: {
-    fontSize: 26,
-    fontWeight: '800',
-    marginBottom: 4,
+        fontSize: 26,
+        fontWeight: '800',
+        marginBottom: 4,
     },
     tagline: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 4,
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 4,
     },
     version: {
         fontSize: 14,
@@ -600,7 +601,7 @@ const styles = StyleSheet.create({
     teamCard: {
         padding: 20,
         borderRadius: 16,
-        marginBottom: 12,
+        marginBottom: 12
     },
     teamName: {
         fontSize: 18,
@@ -619,7 +620,8 @@ const styles = StyleSheet.create({
     },
     footer: {
         margin: 20,
-        padding: 24,
+        marginTop:0,
+        padding: 16,
         borderRadius: 16,
         alignItems: 'center',
        
@@ -751,18 +753,19 @@ const styles = StyleSheet.create({
 teamSection: {
         padding: 16,    
     },
+
 teamCardHorizontal: {
-  // width will be set inline: width: SCREEN_WIDTH - 40
-  padding: 16,
-  paddingBottom:20,
-  borderRadius: 16,
+  padding: 10,
+  paddingBottom:10,
+  borderRadius: 20,
   marginRight: 0,
   alignItems: 'center',
-
+  overflow:'hidden'
+ 
   },
 teamAvatar: {
-    width: 230,
-    height: 230,
+    width: 200,
+    height: 200,
     borderRadius: 1000,
     marginBottom: 8,
     backgroundColor: 'rgba(0,0,0,0.06)',

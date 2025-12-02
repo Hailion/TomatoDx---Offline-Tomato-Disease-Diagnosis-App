@@ -94,12 +94,12 @@ export default function HelpScreen() {
             description: t('help.contactMethods.website.description'),
             action: () => Linking.openURL('https://tomatodx.com/help')
         },
-        {
-            icon: 'chatbubbles',
-            title: t('help.contactMethods.chat.title'),
-            description: t('help.contactMethods.chat.description'),
-            action: () => console.log('Open live chat')
-        }
+        // {
+        //     icon: 'chatbubbles',
+        //     title: t('help.contactMethods.chat.title'),
+        //     description: t('help.contactMethods.chat.description'),
+        //     action: () => console.log('Open live chat')
+        // }
     ];
 
     return (
@@ -132,120 +132,125 @@ export default function HelpScreen() {
                     <ScrollView style={[styles.scrollView]} showsVerticalScrollIndicator={false}>
                         {/* Welcome Section */}
                         <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                          
-                        <View style={[styles.wellcomeCardContainer,{ backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)' ,marginHorizontal: 20,borderRadius: 10}]}>
-                            <ImageBackground
-                                source={require('../../assets/images/screenBg/about.jpg')}
-                                style={styles.backgroundImage}
-                                imageStyle={{ resizeMode: 'cover' }}
-                            >
-                                <View style={styles.overlay}>
-                                    <View style={[styles.welcomeCard]}>
-                                        <View style={[styles.iconContainer,{ backgroundColor: colors.background }]}>
-                                            <Ionicons name="help-circle" size={48} color={colors.primary} />
+                            <View style={[styles.wellcomeCardContainer,{ backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)' ,marginHorizontal: 20,borderRadius: 10}]}>
+                                <ImageBackground
+                                    source={require('../../assets/images/screenBg/about.jpg')}
+                                    style={styles.backgroundImage}
+                                    imageStyle={{ resizeMode: 'cover' }}
+                                >
+                                    <View style={[styles.overlay, {backgroundColor:'rgba(0,0,0,0.7)'}]}>
+                                        <View style={[styles.welcomeCard]}>
+                                            <View style={[styles.iconContainer]}>
+                                                <Ionicons name="help-circle" size={48} color={colors.primary} />
+                                            </View>
+                                            <Text style={[styles.welcomeTitle, { color:  '#fff' }]}>
+                                                {t('help.welcomeTitle')}
+                                            </Text>
+                                            <Text style={[styles.welcomeText, { color: '#fff' }]}>
+                                                {t('help.welcomeText')}
+                                            </Text>
                                         </View>
-                                        <Text style={[styles.welcomeTitle, { color:  '#fff' }]}>
-                                            {t('help.welcomeTitle')}
+                                    </View>
+                                </ImageBackground>
+                            </View>
+                        </Animated.View>
+
+                        {/* FAQ Section */}
+                        <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                            <View style={[styles.section,{paddingTop: 16}]}>
+                                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                                    {t('help.faq')}
+                                </Text>
+                                {faqs.map((faq, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={[styles.faqCard, { backgroundColor: `${colors.card}` }]}
+                                        onPress={() => toggleFaq(index)}
+                                    >
+                                        <View style={styles.faqHeader}>
+                                            <Text style={[styles.faqQuestion, { color: colors.text }]}>
+                                                {faq.question}
+                                            </Text>
+                                            <Ionicons
+                                                name={expandedFaq === index ? 'chevron-up' : 'chevron-down'}
+                                                size={20}
+                                                color={colors.textSecondary}
+                                            />
+                                        </View>
+                                        {expandedFaq === index && (
+                                            <Text style={[styles.faqAnswer, { color: colors.textSecondary }]}>
+                                                {faq.answer}
+                                            </Text>
+                                        )}
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </Animated.View>
+
+                        {/* Contact Methods */}
+                        <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                            <View style={[styles.section]}>
+                                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                                    {t('help.contact')}
+                                </Text>
+                                {contactMethods.map((method, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={[styles.contactCard, { backgroundColor: `${colors.card}EE` }]}
+                                        onPress={method.action}
+                                    >
+                                        <View style={styles.contactLeft}>
+                                            <View style={[styles.contactIcon, { backgroundColor: colors.primaryOverlay }]}>
+                                                <Ionicons name={method.icon as any} size={24} color={colors.primary} />
+                                            </View>
+                                            <View style={styles.contactInfo}>
+                                                <Text style={[styles.contactTitle, { color: colors.text }]}>
+                                                    {method.title}
+                                                </Text>
+                                                <Text style={[styles.contactDesc, { color: colors.textSecondary }]}>
+                                                    {method.description}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <Ionicons
+                                            name="chevron-forward"
+                                            size={20}
+                                            color={colors.textTertiary}
+                                        />
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </Animated.View>
+
+                        {/* Quick Tips */}
+                        <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                            <View style={[styles.tipsCard, { backgroundColor: `${colors.card}85` }]}>
+                                <Ionicons name="bulb" size={24} color={colors.warning} />
+                                <View style={styles.tipsContent}>
+                                    <Text style={[styles.tipsTitle, { color: colors.text }]}>
+                                        {t('help.tips')}
+                                    </Text>
+                                    <View style={styles.tipItem}>
+                                        <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+                                        <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                                            {t('help.quickTips.tip1')}
                                         </Text>
-                                        <Text style={[styles.welcomeText, { color: '#fff' }]}>
-                                            {t('help.welcomeText')}
+                                    </View>
+                                    <View style={styles.tipItem}>
+                                        <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+                                        <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                                            {t('help.quickTips.tip2')}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.tipItem}>
+                                        <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+                                        <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                                            {t('help.quickTips.tip3')}
                                         </Text>
                                     </View>
                                 </View>
-                            </ImageBackground>
-                        </View>
-
-                {/* FAQ Section */}
-                <View style={[styles.section,{paddingTop: 16}]}>
-                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        {t('help.faq')}
-                    </Text>
-                    {faqs.map((faq, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={[styles.faqCard, { backgroundColor: `${colors.card}` }]}
-                            onPress={() => toggleFaq(index)}
-                        >
-                            <View style={styles.faqHeader}>
-                                <Text style={[styles.faqQuestion, { color: colors.text }]}>
-                                    {faq.question}
-                                </Text>
-                                <Ionicons
-                                    name={expandedFaq === index ? 'chevron-up' : 'chevron-down'}
-                                    size={20}
-                                    color={colors.textSecondary}
-                                />
                             </View>
-                            {expandedFaq === index && (
-                                <Text style={[styles.faqAnswer, { color: colors.textSecondary }]}>
-                                    {faq.answer}
-                                </Text>
-                            )}
-                        </TouchableOpacity>
-                    ))}
-                </View>
-
-                {/* Contact Methods */}
-                <View style={[styles.section]}>
-                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        {t('help.contact')}
-                    </Text>
-                    {contactMethods.map((method, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={[styles.contactCard, { backgroundColor: `${colors.card}BB` }]}
-                            onPress={method.action}
-                        >
-                            <View style={styles.contactLeft}>
-                                <View style={[styles.contactIcon, { backgroundColor: colors.primaryOverlay }]}>
-                                    <Ionicons name={method.icon as any} size={24} color={colors.primary} />
-                                </View>
-                                <View style={styles.contactInfo}>
-                                    <Text style={[styles.contactTitle, { color: colors.text }]}>
-                                        {method.title}
-                                    </Text>
-                                    <Text style={[styles.contactDesc, { color: colors.textSecondary }]}>
-                                        {method.description}
-                                    </Text>
-                                </View>
-                            </View>
-                            <Ionicons
-                                name="chevron-forward"
-                                size={20}
-                                color={colors.textTertiary}
-                            />
-                        </TouchableOpacity>
-                    ))}
-                </View>
-
-                {/* Quick Tips */}
-                <View style={[styles.tipsCard, { backgroundColor: `${colors.card}65` }]}>
-                    <Ionicons name="bulb" size={24} color={colors.warning} />
-                    <View style={styles.tipsContent}>
-                        <Text style={[styles.tipsTitle, { color: colors.text }]}>
-                            {t('help.tips')}
-                        </Text>
-                        <View style={styles.tipItem}>
-                            <Ionicons name="checkmark-circle" size={16} color={colors.success} />
-                            <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                                {t('help.quickTips.tip1')}
-                            </Text>
-                        </View>
-                        <View style={styles.tipItem}>
-                            <Ionicons name="checkmark-circle" size={16} color={colors.success} />
-                            <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                                {t('help.quickTips.tip2')}
-                            </Text>
-                        </View>
-                        <View style={styles.tipItem}>
-                            <Ionicons name="checkmark-circle" size={16} color={colors.success} />
-                            <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                                {t('help.quickTips.tip3')}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-                </Animated.View>
+                        </Animated.View>
             </ScrollView>
         </View>
         </View>
@@ -262,6 +267,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+        paddingBottom:10
     },
     header: {
         flexDirection: 'row',
@@ -291,8 +297,8 @@ const styles = StyleSheet.create({
     },
     welcomeCard: {
         // margin: 20,
-        marginBottom: 20,
         // borderRadius: 20,
+        marginBottom: 20,        
         padding: 24,
         alignItems: 'center'
     },
@@ -302,7 +308,7 @@ const styles = StyleSheet.create({
     welcomeTitle: {
         fontSize: 24,
         fontWeight: '700',
-        marginTop: 16,
+        marginTop: 10,
         marginBottom: 8,
         textAlign: 'center',
     },
@@ -313,7 +319,7 @@ const styles = StyleSheet.create({
     },
     section: {
         paddingHorizontal: 20,
-        marginBottom: 24,
+        marginBottom: 16,
     },
     sectionTitle: {
         fontSize: 20,
@@ -377,6 +383,7 @@ const styles = StyleSheet.create({
     tipsCard: {
         flexDirection: 'row',
         margin: 20,
+        marginTop:0,
         padding: 20,
         borderRadius: 16,
     },

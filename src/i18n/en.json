@@ -193,6 +193,7 @@
   },
   "help": {
     "title": "Help & Support",
+    "navtitle": "Help/Support",
     "welcomeTitle": "How can we help you?",
     "welcomeText": "Find answers to common questions or get in touch with our support team.",
     "faq": "Frequently Asked Questions",

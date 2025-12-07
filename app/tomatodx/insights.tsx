@@ -1,5 +1,6 @@
 // app/tomatodx/insights.tsx - Insights Screen
 import Colors from '@/constants/Colors';
+import { formatEthiopianDate } from '@/src/utils/ethiopianCalendar';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
@@ -11,11 +12,11 @@ import { getAnalyticsSummary, getLast7DaysCounts, getRecentDiagnoses } from '../
 export default function InsightsScreen() {
     const router = useRouter();
     const { theme } = useTheme();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const colors = Colors[theme];
 
     const [summary, setSummary] = useState<{ total: number; avgConfidence: number; healthyCount: number; topDisease: any | null }>({ total: 0, avgConfidence: 0, healthyCount: 0, topDisease: null });
-    const [trend, setTrend] = useState<Array<{ day: string; count: number }>>([]);
+    const [trend, setTrend] = useState<Array<{ day: string; count: number; date: Date }>>([]);
     const [recent, setRecent] = useState<any[]>([]);
 
     // Animation values
@@ -74,7 +75,12 @@ export default function InsightsScreen() {
 
         try {
             const days = getLast7DaysCounts();
-            setTrend(days);
+            // Convert date strings to Date objects for proper formatting
+            const daysWithDates = days.map(day => ({
+                ...day,
+                date: new Date(day.day) // Convert day string to Date object
+            }));
+            setTrend(daysWithDates);
         } catch (e) { }
 
         try {
@@ -91,7 +97,7 @@ export default function InsightsScreen() {
             style={styles.backgroundImage}
             imageStyle={{ resizeMode: 'cover' }}
         >
-            <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.5)' }] }>
+            <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.5)' }]}>
                 
             {/* Header */}
             <View style={[styles.header, {backgroundColor: `${colors.background}99`}]}>
@@ -126,7 +132,10 @@ export default function InsightsScreen() {
                 <Animated.View style={[styles.topDiseaseCard, { backgroundColor: colors.card, opacity: chartAnim, transform: [{ translateY: Animated.multiply(chartAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }), 1) }] }]}>
                     <Ionicons name="analytics-outline" size={20} color={colors.warning} />
                     <Text style={[styles.topDiseaseText, { color: colors.text }]}>
-                        {summary.topDisease.nameEn || summary.topDisease.diseaseId}
+                        {i18n.language === 'am' 
+                        ? summary.topDisease.nameAm || summary.topDisease.nameEn || summary.topDisease.diseaseId
+                        : summary.topDisease.nameEn || summary.topDisease.diseaseId
+                    }
                     </Text>
                     <Text style={[styles.topDiseaseCount, { color: colors.textTertiary }]}>
                         × {summary.topDisease.c}
@@ -143,7 +152,10 @@ export default function InsightsScreen() {
                             <View key={idx} style={styles.trendBarWrap}>
                                 <View style={[styles.trendBar, { height: Math.max(6, Math.round((d.count / barMax) * 80)), backgroundColor: colors.primary }]} />
                                 <Text style={[styles.trendLabel, { color: colors.textTertiary }]}>
-                                    {d.day.slice(5)}
+                                    {i18n.language === 'am' 
+                                        ? formatEthiopianDate(d.date).split('፣')[0].split(' ')[0] // Just show day number in Ethiopian
+                                        : d.date.getDate().toString() // Show day number in Gregorian
+                                    }
                                 </Text>
                             </View>
                         ))}
@@ -169,10 +181,16 @@ export default function InsightsScreen() {
                         <Ionicons name="leaf" size={18} color={colors.success} />
                         <View style={styles.recentContent}>
                             <Text style={[styles.recentTitle, { color: colors.text }]}>
-                                {r.nameEn || r.diseaseId}
+                                {i18n.language === 'am' 
+                                    ? r.nameAm || r.nameEn || r.diseaseId
+                                    : r.nameEn || r.diseaseId
+                                }
                             </Text>
                             <Text style={[styles.recentMeta, { color: colors.textTertiary }]}>
-                                {new Date(r.diagnosedAt).toLocaleString()} • {(Math.round((r.confidence || 0) * 100))}%
+                                {i18n.language === 'am' 
+                                    ? formatEthiopianDate(new Date(r.diagnosedAt))
+                                    : new Date(r.diagnosedAt).toLocaleString()
+                                } • {Math.round((r.confidence || 0) * 100)}%
                             </Text>
                         </View>
                         <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />

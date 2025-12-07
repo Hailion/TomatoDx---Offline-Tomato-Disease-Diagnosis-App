@@ -768,5 +768,41 @@
         "በእፅዋት መካከል በቂ ክፍተት እንዲኖር ያድርጉ።"
       ]
     }
+  },
+  "diseaseEditor": {
+    "title": "የበሽታ አስተካክል",
+    "selectDisease": "በሽታ ይምረጡ",
+    "diseaseInfo": "የበሽታ መረጃ",
+    "nameEn": "ስም (እንግሊዝኛ)",
+    "nameAm": "ስም (አማርኛ)",
+    "nameEnPlaceholder":"የበሽታዉን የእንግሊዝኛ ስም ያስገቡ",
+    "nameAmPlaceholder":"የበሽታዉን የአማርኛ ስም ያስገቡ",
+    "symptoms": "ምልክቶች",
+    "symptomsEn": "ምልክቶች (እንግሊዝኛ)",
+    "symptomsAm": "ምልክቶች (አማርኛ)",
+    "symptomsEnPlaceholder":"የበሽታዉን ምልክቶች በእንግሊዝኛ ያስገቡ(እያንዳንዱን በመስመር አንድ ወይም በጭረት ይለዩ)",
+    "symptomsAmPlaceholder":"የበሽታዉን ምልክቶች በአማርኛ ያስገቡ(እያንዳንዱን በመስመር አንድ ወይም በጭረት ይለዩ)",
+    "treatmentImmediate": "ወዲያውኑ የሚወሰድ ህክምና",
+    "treatmentImmediateEn": "ወዲያውኑ የሚወሰድ ህክምና (እንግሊዝኛ)",
+    "treatmentImmediateAm": "ወዲያውኑ የሚወሰድ ህክምና (አማርኛ)",
+    "treatmentImmediateEnPlaceholder": "የወዲያውኑ የሚወሰዱ ህክምና ዘዴዎችን ያስገቡ በእንግሊዝኛ(እያንዳንዱን በመስመር አንድ ወይም በጭረት ይለዩ)",
+    "treatmentImmediateAmPlaceholder": "የወዲያውኑ የሚወሰዱ ህክምና ዘዴዎችን ያስገቡ በአማርኛ(እያንዳንዱን በመስመር አንድ ወይም በጭረት ይለዩ)",
+    "treatmentLongTerm": "ረጅም ጊዜ የሚወስድ ህክምና",
+    "treatmentLongTermEn": "ለረጅም ጊዜ የሚወስድ ህክምና (እንግሊዝኛ)",
+    "treatmentLongTermAm": "ለረጅም ጊዜ የሚወስድ ህክምና (አማርኛ)",
+    "treatmentLongTermEnPlaceholder": "ለረጅም ጊዜ የሚወሰዱ ህክምና ዘዴዎችን ያስገቡ በእንግሊዝኛ(እያንዳንዱን በመስመር አንድ ወይም በጭረት ይለዩ)",
+    "treatmentLongTermAmPlaceholder": "ለረጅም ጊዜ የሚወሰዱ ህክምና ዘዴዎችን ያስገቡ በአማርኛ(እያንዳንዱን በመስመር አንድ ወይም በጭረት ይለዩ)",
+    "prevention": "መከላከያ",
+    "preventionEn": "መከላከያ (እንግሊዝኛ)",
+    "preventionAm": "መከላከያ (አማርኛ)",
+    "preventionEnPlaceholder": "የመከላከያ ዘዴዎችን ያስገቡ በእንግሊዝኛ(እያንዳንዱን በመስመር አንድ ወይም በጭረት ይለዩ)",
+    "preventionAmPlaceholder": "የመከላከያ ዘዴዎችን ያስገቡ በአማርኛ(እያንዳንዱን በመስመር አንድ ወይም በጭረት ይለዩ)",
+    "saveButton": "ለውጦችን አስቀምጥ",
+    "cancelButton": "ይቅር",
+    "saveSuccess": "በሽታው በተሳካ ሁኔታ ተዘምኗል",
+    "saveError": "በሽታውን ማስቀመጥ አልተቻለም",
+    "selectDiseasePrompt": "እባክዎ መጀመሪያ በሽታ ይምረጡ",
+    "loadingDiseases": "የበሽታዎች መጫን...",
+    "loadingDiseasesError": "የበሽታዎችን መጫን አልተቻለም"
   }
 }

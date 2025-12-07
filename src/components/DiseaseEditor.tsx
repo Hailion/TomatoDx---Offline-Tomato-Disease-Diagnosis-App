@@ -2,7 +2,8 @@
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Alert, Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { getAllDiseases, getDiseaseById, upsertDisease } from '../db/repository';
 
@@ -12,6 +13,7 @@ interface DiseaseEditorProps {
 }
 
 export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) {
+    const { t } = useTranslation();
     const { theme } = useTheme();
     const colors = Colors[theme];
     const [diseases, setDiseases] = useState<{ diseaseId: string; nameEn?: string; nameAm?: string; symptoms?: string; advice?: string }[]>([]);
@@ -27,6 +29,24 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
     const [preventionEn, setPreventionEn] = useState('');
     const [preventionAm, setPreventionAm] = useState('');
     const [loading, setLoading] = useState(false);
+    const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => setKeyboardVisible(true)
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => setKeyboardVisible(false)
+        );
+
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
+
 
     useEffect(() => {
         if (visible) {
@@ -40,7 +60,7 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
             setDiseases(allDiseases);
         } catch (error) {
             console.error('Error loading diseases:', error);
-            Alert.alert('Error', 'Failed to load diseases');
+            Alert.alert(t('common.error'), t('diseaseEditor.loadingDiseasesError'));
         }
     };
 
@@ -102,7 +122,7 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
 
     const handleSave = () => {
         if (!selectedDisease) {
-            Alert.alert('Error', 'Please select a disease first');
+            Alert.alert(t('common.error'), t('diseaseEditor.selectDiseasePrompt'));
             return;
         }
 
@@ -141,12 +161,12 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                 symptomsJson,
                 adviceJson
             );
-            Alert.alert('Success', 'Disease updated successfully');
+            Alert.alert(t('common.success'), t('diseaseEditor.saveSuccess'));
             loadDiseases();
             handleCancel();
         } catch (error) {
             console.error('Error saving disease:', error);
-            Alert.alert('Error', 'Failed to save disease');
+            Alert.alert(t('common.error'), t('diseaseEditor.saveError'));
         } finally {
             setLoading(false);
         }
@@ -169,28 +189,44 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
     if (!visible) return null;
 
     return (
-        <Modal visible={visible} animationType="slide">
+        <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
             <KeyboardAvoidingView
-                style={[styles.container, { backgroundColor: colors.background }]}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={80}
+                style={[styles.container, { backgroundColor: colors.background ,flex: 1,}]}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
             >
-                <View style={styles.header}>
+                <View style={[styles.header,{ 
+                paddingTop: Platform.OS === 'ios' ? 50 : 50,
+                // paddingBottom: 20,
+                // backgroundColor: colors.card,
+                // borderBottomWidth: 1,
+                // borderBottomColor: colors.border,
+                // elevation: 4,
+                // shadowColor: '#000',
+                // shadowOffset: { width: 0, height: 2 },
+                // shadowOpacity: 0.1,
+                // shadowRadius: 4,
+            }]}>
                     <TouchableOpacity style={styles.backButton} onPress={onClose}>
                         <Ionicons name="chevron-back" size={24} color={colors.text} />
                     </TouchableOpacity>
-                    <Text style={[styles.title, { color: colors.text }]}>Edit Diseases</Text>
+                    <Text style={[styles.title, { color: colors.text }]}>{t('diseaseEditor.title')}</Text>
                     <View style={styles.placeholder} />
                 </View>
 
                 <ScrollView
                     style={styles.scrollView}
                     keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={{ paddingBottom: 40 }}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={[
+                    // styles.scrollContent,
+                    { paddingBottom: keyboardVisible ? 300 : 0 },
+                    
+                ]}
                 >
                     <View style={styles.content}>
                         <View style={styles.section}>
-                            <Text style={[styles.sectionTitle, { color: colors.text }]}>Select Disease</Text>
+                            <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('diseaseEditor.selectDisease')}</Text>
                             {diseases.map((disease) => (
                                 <TouchableOpacity
                                     key={disease.diseaseId}
@@ -202,9 +238,13 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                     onPress={() => handleSelectDisease(disease.diseaseId)}
                                 >
                                     <Text style={[styles.diseaseId, { color: colors.text }]}>{disease.diseaseId}</Text>
+                                    <View style={styles.diseaseNameContainer}>
                                     {disease.nameEn && (
                                         <Text style={[styles.diseaseName, { color: colors.textSecondary }]}>{disease.nameEn}</Text>
+                                    )} <Text style={[styles.diseaseName, { color: colors.textSecondary }]}> / </Text> {disease.nameAm && (
+                                        <Text style={[styles.diseaseName, { color: colors.textSecondary }]}>{disease.nameAm}</Text>
                                     )}
+                                    </View>
                                 </TouchableOpacity>
                             ))}
                         </View>
@@ -218,34 +258,34 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                 </View>
 
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Name (English)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.nameEn')}</Text>
                                     <TextInput
                                         style={[styles.input, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={nameEn}
                                         onChangeText={setNameEn}
-                                        placeholder="Enter English name"
+                                        placeholder={t('diseaseEditor.nameEnPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                     />
                                 </View>
 
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Name (Amharic)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.nameAm')}</Text>
                                     <TextInput
                                         style={[styles.input, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={nameAm}
                                         onChangeText={setNameAm}
-                                        placeholder="Enter Amharic name"
+                                        placeholder={t('diseaseEditor.nameAmPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                     />
                                 </View>
 
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Symptoms (English)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.symptomsEn')}</Text>
                                     <TextInput
                                         style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={symptomsEn}
                                         onChangeText={setSymptomsEn}
-                                        placeholder="Enter symptoms in English (one per line or comma-separated)"
+                                        placeholder={t('diseaseEditor.symptomsEnPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                         multiline
                                         numberOfLines={4}
@@ -253,12 +293,12 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                 </View>
 
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Symptoms (Amharic)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.symptomsAm')}</Text>
                                     <TextInput
                                         style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={symptomsAm}
                                         onChangeText={setSymptomsAm}
-                                        placeholder="Enter symptoms in Amharic (one per line or comma-separated)"
+                                        placeholder={t('diseaseEditor.symptomsAmPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                         multiline
                                         numberOfLines={4}
@@ -266,12 +306,12 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                 </View>
 
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Immediate Treatment (English)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.treatmentImmediateEn')}</Text>
                                     <TextInput
                                         style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={treatmentImmediateEn}
                                         onChangeText={setTreatmentImmediateEn}
-                                        placeholder="Enter immediate treatment actions in English (one per line or comma-separated)"
+                                        placeholder={t('diseaseEditor.treatmentImmediateEnPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                         multiline
                                         numberOfLines={4}
@@ -279,12 +319,12 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                 </View>
 
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Immediate Treatment (Amharic)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.treatmentImmediateAm')}</Text>
                                     <TextInput
                                         style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={treatmentImmediateAm}
                                         onChangeText={setTreatmentImmediateAm}
-                                        placeholder="Enter immediate treatment actions in Amharic (one per line or comma-separated)"
+                                        placeholder={t('diseaseEditor.treatmentImmediateAmPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                         multiline
                                         numberOfLines={4}
@@ -292,57 +332,57 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                 </View>
 
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Long-term Treatment (English)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.treatmentLongTermEn')}</Text>
                                     <TextInput
                                         style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={treatmentLongTermEn}
                                         onChangeText={setTreatmentLongTermEn}
-                                        placeholder="Enter long-term treatment actions in English (one per line or comma-separated)"
+                                        placeholder={t('diseaseEditor.treatmentLongTermEnPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                         multiline
                                         numberOfLines={4}
                                     />
                                 </View>
-
+                                {/* Treatment in Amharic */}
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Long-term Treatment (Amharic)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.treatmentLongTermAm')}</Text>
                                     <TextInput
                                         style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={treatmentLongTermAm}
                                         onChangeText={setTreatmentLongTermAm}
-                                        placeholder="Enter long-term treatment actions in Amharic (one per line or comma-separated)"
+                                        placeholder={t('diseaseEditor.treatmentLongTermAmPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                         multiline
                                         numberOfLines={4}
                                     />
                                 </View>
-
+                                {/* Prevention in English */}
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Prevention/Tips (English)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.preventionEn')}</Text>
                                     <TextInput
                                         style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={preventionEn}
                                         onChangeText={setPreventionEn}
-                                        placeholder="Enter prevention tips in English (one per line or comma-separated)"
+                                        placeholder={t('diseaseEditor.preventionEnPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                         multiline
                                         numberOfLines={4}
                                     />
                                 </View>
-
+                                {/* Prevention in Amharic */}
                                 <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
-                                    <Text style={[styles.label, { color: colors.text }]}>Prevention/Tips (Amharic)</Text>
+                                    <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.preventionAm')}</Text>
                                     <TextInput
                                         style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
                                         value={preventionAm}
                                         onChangeText={setPreventionAm}
-                                        placeholder="Enter prevention tips in Amharic (one per line or comma-separated)"
+                                        placeholder={t('diseaseEditor.preventionAmPlaceholder')}
                                         placeholderTextColor={colors.textTertiary}
                                         multiline
                                         numberOfLines={4}
                                     />
                                 </View>
-
+                                {/* action buttons */}
                                 <View style={styles.buttonRow}>
                                     <TouchableOpacity
                                         style={[styles.button, styles.cancelButton, { backgroundColor: colors.backgroundAlt }]}
@@ -416,6 +456,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         marginBottom: 4,
+    },
+    diseaseNameContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
     },
     diseaseName: {
         fontSize: 14,

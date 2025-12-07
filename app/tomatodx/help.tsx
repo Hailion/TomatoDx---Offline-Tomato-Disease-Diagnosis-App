@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     tipsCard: {
         flexDirection: 'row',
         margin: 20,
-        marginTop:0,
+        marginTop:30,
         padding: 20,
         borderRadius: 16,
     },

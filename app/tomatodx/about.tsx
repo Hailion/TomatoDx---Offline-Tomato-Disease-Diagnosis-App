@@ -190,7 +190,7 @@ export default function AboutScreen() {
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                 {/* Hero Section */}
-                <View style={[styles.heroCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}80` , borderRadius: 16}]}>
+                <View style={[styles.heroCard, {borderRadius: 16, backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}80`}]}>
                     <View style={[styles.logo, { backgroundColor: colors.primaryOverlay,  outlineColor:theme === 'dark' ?'#FFF':'#000',   borderRadius:60 }]}>
                         {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}                        
                             <Image source={ require('../../assets/images/app/3.png')} style={{...styles.logoImage,borderWidth:theme === 'dark' ? 0:0.6, borderColor:theme === 'dark' ? "":'#0000009c',borderRadius: 60}} />

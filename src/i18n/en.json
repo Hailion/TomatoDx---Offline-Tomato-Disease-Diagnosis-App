@@ -445,6 +445,7 @@
       "changeError":"Failed to change password.",
       "updateError":"Failed to update password."
     },  
+    "recentActivity": "Recent Activity",
     "info": "Development admin panel. Production needs proper authentication."
   },
   "common": {
@@ -765,5 +766,41 @@
         "Space plants appropriately"
       ]
     }
+  },
+  "diseaseEditor": {
+    "title": "Edit Diseases",
+    "selectDisease": "Select Disease",
+    "diseaseInfo": "Disease Information",
+    "nameEn": "Name (English)",
+    "nameAm": "Name (Amharic)",
+    "nameEnPlaceholder": "Enter disease name in English",
+    "nameAmPlaceholder": "Enter disease name in Amharic",
+    "symptoms": "Symptoms",
+    "symptomsEn": "Symptoms (English)",
+    "symptomsAm": "Symptoms (Amharic)",
+    "symptomsEnPlaceholder": "Enter symptoms in English (one per line or comma-separated)",
+    "symptomsAmPlaceholder": "Enter symptoms in Amharic (one per line or comma-separated)",
+    "treatmentImmediate": "Immediate Treatment",
+    "treatmentImmediateEn": "Immediate Treatment (English)",
+    "treatmentImmediateAm": "Immediate Treatment (Amharic)",
+    "treatmentImmediateEnPlaceholder": "Enter immediate treatment actions in English (one per line or comma-separated)",
+    "treatmentImmediateAmPlaceholder": "Enter immediate treatment actions in Amharic (one per line or comma-separated)",
+    "treatmentLongTerm": "Long-term Treatment",
+    "treatmentLongTermEn": "Long-term Treatment (English)",
+    "treatmentLongTermAm": "Long-term Treatment (Amharic)",
+    "treatmentLongTermEnPlaceholder": "Enter long-term treatment actions in English (one per line or comma-separated)",
+    "treatmentLongTermAmPlaceholder": "Enter long-term treatment actions in Amharic (one per line or comma-separated)",
+    "prevention": "Prevention",
+    "preventionEn": "Prevention (English)",
+    "preventionAm": "Prevention (Amharic)",
+    "preventionEnPlaceholder": "Enter prevention tips in English (one per line or comma-separated)",
+    "preventionAmPlaceholder": "Enter prevention tips in Amharic (one per line or comma-separated)",
+    "saveButton": "Save Changes",
+    "cancelButton": "Cancel",
+    "saveSuccess": "Disease updated successfully",
+    "saveError": "Failed to save disease",
+    "selectDiseasePrompt": "Please select a disease first",
+    "loadingDiseases": "Loading diseases...",
+    "loadingDiseasesError": "Failed to load diseases"
   }
 }

@@ -150,7 +150,7 @@ export default function HomeScreen() {
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.8)' }]}>
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
       {/* Fixed Header */}
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
       <ImageBackground

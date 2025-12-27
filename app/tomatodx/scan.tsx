@@ -227,9 +227,9 @@ else{
   style={styles.backgroundImage}
   imageStyle={{ resizeMode: 'cover' }}
 >
-  <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.77)' : 'rgba(0,0,0,0.87)' }]}>
+  <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
    
-        <View style={[styles.container, { backgroundColor:  theme === 'dark' ? `${colors.background}99` : `${colors.background}80` }]}>
+        <View style={[styles.container, { backgroundColor:  theme === 'dark'? `${colors.card}00`: `${colors.card}CC` }]}>
             <ScrollView                    
                     showsVerticalScrollIndicator={false}
                 >
@@ -238,7 +238,7 @@ else{
                     {/* Compact Header */}
                     <Animated.View style={[styles.scanHeader, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <View style={[styles.logoContainer, { backgroundColor: theme === 'dark' ? colors.primaryOverlay : `${colors.primaryOverlay3}99` }]}>
-                            <Ionicons name="camera" size={52} color={colors.primary} />
+                            <Ionicons name="camera" size={30} color={colors.primary} />
                         </View>
                         <Text style={[styles.scanTitle, { color: colors.text }]}>
                             {t('scan.title')}
@@ -249,7 +249,7 @@ else{
                     </Animated.View>
 
                     {/* Compact Action Buttons - Side by Side */}
-                    <Animated.View style={[styles.actionButtons, { backgroundColor: theme === 'dark'? `${colors.card}CC`:`${colors.card}60`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                    <Animated.View style={[styles.actionButtons, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <TouchableOpacity
                             style={styles.actionButton}
                             onPress={handleCameraWithCrop}
@@ -257,7 +257,7 @@ else{
                             <ImageBackground
                                 source={require('../../assets/images/scan/takePhoto.jpg')}
                                 style={styles.actionButtonBackground}
-                                imageStyle={{ resizeMode: 'cover', borderRadius: 16 }}
+                                imageStyle={{ resizeMode: 'cover', borderRadius: 8 }}
                             >
                                 {/* <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
                                     <Ionicons name="camera" size={38} color="#fff" />
@@ -281,7 +281,7 @@ else{
                             <ImageBackground
                                 source={require('../../assets/images/scan/fromGallery.jpg')}
                                 style={styles.actionButtonBackground}
-                                imageStyle={{ resizeMode: 'cover', borderRadius: 16 }}
+                                imageStyle={{ resizeMode: 'cover', borderRadius: 8 }}
                             >
                                 {/* <View style={[styles.actionIcon, { backgroundColor: colors.primary ,opacity: 0.5}]}>
                                     <Ionicons name="images" size={36} color="#fff" />
@@ -299,28 +299,28 @@ else{
                     </Animated.View>
 
                     {/* Quick Tips - More Compact */}
-                    <Animated.View style={[styles.tips, { backgroundColor: `${colors.card}70`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                    <Animated.View style={[styles.tips, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                         <View style={styles.tipsHeader}>
-                            <Ionicons name="bulb-outline" size={18} color={colors.primary} />
+                            {/* <Ionicons name="bulb-outline" size={18} color={colors.primary} /> */}
                             <Text style={[styles.tipsTitle, { color: colors.text }]}>
                                 {t('scan.tips')}
                             </Text>
                         </View>
                         <View style={styles.tipsList}>
                             <View style={styles.tipItem}>
-                                <Ionicons name="checkmark-circle" size={14} color={colors.primary} />
+                                {/* <Ionicons name="checkmark-circle" size={14} color={colors.primary} /> */}
                                 <Text style={[styles.tipText, { color: colors.textSecondary }]}>
                                     {t('scan.tip1')}
                                 </Text>
                             </View>
                             <View style={styles.tipItem}>
-                                <Ionicons name="checkmark-circle" size={14} color={colors.primary} />
+                                {/* <Ionicons name="checkmark-circle" size={14} color={colors.primary} /> */}
                                 <Text style={[styles.tipText, { color: colors.textSecondary }]}>
                                     {t('scan.tip2')}
                                 </Text>
                             </View>
                             <View style={styles.tipItem}>
-                                <Ionicons name="checkmark-circle" size={14} color={colors.primary} />
+                                {/* <Ionicons name="checkmark-circle" size={14} color={colors.primary} /> */}
                                 <Text style={[styles.tipText, { color: colors.textSecondary }]}>
                                     {t('scan.tip3')}
                                 </Text>
@@ -328,7 +328,7 @@ else{
                         </View>
                     </Animated.View>
 
-                    <Animated.View style={[styles.guideSection, { backgroundColor: theme === 'dark'?`${colors.card}BB`:`${colors.card}70`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                    <Animated.View style={[styles.guideSection, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                        <View style={[styles.imageContainer]}>
                             {/* <Ionicons name="camera" size={64} color={colors.primary} /> */}
                             <Image
@@ -370,7 +370,7 @@ else{
                             </View>
                             </View>                      
                         </View>
-                        <View style={[styles.guideTitleContainer,{backgroundColor: theme === 'dark'?`${colors.card}BB`:`${colors.card}70`}]}>
+                        <View style={[styles.guideTitleContainer,{backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`}]}>
                         <Text style={[styles.guideTitle, { color: colors.text }]}>
                                 {t('scan.alignGuide')}
                         </Text>
@@ -390,7 +390,7 @@ else{
                         recentScans.map((item) => (
                         <TouchableOpacity
                             key={item.id}
-                            style={[styles.recentItem, { backgroundColor: `${colors.card}CC` }]}
+                            style={[styles.recentItem, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
                             onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
                         >
                             <View>
@@ -472,19 +472,17 @@ const styles = StyleSheet.create({
     },
     scanHeader: {
         alignItems: 'center',
-        marginBottom: 30,
+        marginBottom: 10,
     },
     logoContainer: {
         flex:1,
         padding:10,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 6,
         borderWidth: .5,
         borderColor: '#fff',
-        borderRadius: 50,
-        
-
+        borderRadius: 50
     },
     logo: {
        borderRadius: 5,
@@ -493,7 +491,7 @@ const styles = StyleSheet.create({
        outlineOffset: 3,
        outlineStyle: 'solid',
     //    overflow: 'hidden',
-    width:"100%",
+       width:"100%",
     },
     scanTitle: {
         fontSize: 28,
@@ -509,23 +507,24 @@ const styles = StyleSheet.create({
     },
     actionButtons: {
         flexDirection: 'row',
-        gap: 12,
+        gap: 8,
         marginBottom: 10,
-        padding:12,
-        borderRadius:16
+        padding:3,
+        borderRadius:10,
+        borderWidth:.5
     },
     actionContentOverlay: {
         flex:1,
         justifyContent:'center',
         height:"100%",
-        borderRadius: 12,       
+        borderRadius: 10,       
         alignItems: 'center',
     },
     actionButton: {
         flex: 1,
-        borderRadius: 16,
+        borderRadius: 8,
         overflow: 'hidden',
-        height: 150,
+        height: 130,
     },
     actionButtonBackground: {
         flex: 1,
@@ -535,7 +534,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderWidth: .5,
         borderColor: '#ccccccc4',
-        borderRadius:16
+        borderRadius:8
     },
     actionIcon: {
         width: 60,
@@ -559,16 +558,16 @@ const styles = StyleSheet.create({
         padding:6
     },
     tips: {
-        padding: 16,
-        borderTopRightRadius: 16,
-        borderTopLeftRadius: 16,
-        marginBottom: 8,
+        padding: 10,
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+        marginBottom: 2,
         borderWidth: .2,
-        borderColor: '#ccccccc4',
-        
+               
     },
     tipsHeader: {
         flexDirection: 'row',
+        justifyContent:'center',
         alignItems: 'center',
         marginBottom: 12,
         gap: 8,
@@ -592,11 +591,12 @@ const styles = StyleSheet.create({
     },
     guideSection: {
         alignItems: 'center',
-        borderBottomRightRadius:16,
-        borderBottomLeftRadius:16,
+        borderBottomRightRadius:10,
+        borderBottomLeftRadius:10,
         overflow:"hidden",
         borderWidth: .2,
         borderColor: '#ccccccc4',
+        padding:2
     },
     imageContainer:{
          flex:1,
@@ -606,19 +606,19 @@ const styles = StyleSheet.create({
     },
     image:{
         width:"100%",
-        borderRadius: 5,
+        borderRadius: 0,
     },
 
     guideTitleContainer:{
         flex:1,
         width:"100%",
-        paddingVertical: 16,
+        paddingVertical: 10,
 
     }    ,
     guideTitle: {
        fontSize: 14,
         textAlign: 'center',
-        lineHeight: 20,
+        lineHeight: 16,
         paddingHorizontal: 20,
     },
     guideText: {
@@ -628,14 +628,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     scanOverlay: {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  justifyContent: 'center',
-  alignItems: 'center',
-},
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 
 scanFrame: {
   width: '75%',
@@ -724,7 +724,7 @@ scanLine: {
 },
     recentSection: {
         alignItems: 'center',
-        paddingVertical: 20,
+        paddingVertical: 10,
     },
     recentTitle: {
         fontSize: 18,
@@ -738,12 +738,13 @@ scanLine: {
         paddingHorizontal: 20,
     },
     recentItem: {
-  width: '100%',
-  marginTop: 12,
-  padding: 12,
-  borderRadius: 12,
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-},
+        width: '100%',
+        marginTop: 12,
+        padding: 8,
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderWidth:.5
+    },
 });

@@ -160,12 +160,11 @@ export default function ProfileScreen() {
 
     return (
         <ImageBackground
-  source={require('../../assets/images/screenBg/about.jpg')}
-  style={styles.backgroundImage}
-  imageStyle={{ resizeMode: 'cover' }}
->
-  <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.55)' }]}>
-    
+        source={require('../../assets/images/screenBg/about.jpg')}
+        style={styles.backgroundImage}
+        imageStyle={{ resizeMode: 'cover' }}
+        >
+        <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>    
 
          {/* Header */}
                 <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
@@ -207,10 +206,10 @@ export default function ProfileScreen() {
                      </View>
                     </ImageBackground>
                 </Animated.View>
-            <ScrollView style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}99` : `${colors.background}70` }]}>
+            <ScrollView style={[styles.container, { backgroundColor:theme === 'dark' ? `${colors.background}80` : `${colors.background}79`}]}>
                
                 {/* Theme Selector */}
-                <Animated.View style={[styles.card, { backgroundColor: `${colors.card}BB`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                <Animated.View style={[styles.card, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <Text style={[styles.cardTitle, { color: colors.text }]}>
                         {t('profile.theme')}
                     </Text>
@@ -220,7 +219,7 @@ export default function ProfileScreen() {
                                 key={mode}
                                 style={[
                                     styles.themeOption,
-                                    { backgroundColor: `${colors.backgroundAlt}FF` },
+                                    { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  },
                                     themeMode === mode && [styles.themeOptionActive, { backgroundColor: `${colors.successBg}BB` }],
                                 ]}
                                 onPress={() => setThemeMode(mode as any)}
@@ -246,7 +245,7 @@ export default function ProfileScreen() {
                 </Animated.View>
 
                 {/* Settings */}
-                <Animated.View style={[styles.card, { backgroundColor: `${colors.card}BB`, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                <Animated.View style={[styles.card, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                     <Text style={[styles.cardTitle, { color: colors.text }]}>
                         {t('profile.settings')}
                     </Text>
@@ -310,8 +309,8 @@ export default function ProfileScreen() {
                 onRequestClose={() => setEditModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: `${colors.card}` }]}>
-                        <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+                    <View style={[styles.modalContent, { backgroundColor: theme === 'dark'? `${colors.card}CC`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
+                        <View style={[styles.modalHeader, { borderBottomColor: theme === 'dark'? colors.borderLight : colors.borderDark }]}>
                             <Text style={[styles.modalTitle, { color: colors.text }]}>
                                 {t('profile.editProfile')}
                             </Text>
@@ -360,7 +359,7 @@ export default function ProfileScreen() {
 
                         <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
                             <TouchableOpacity
-                                style={[styles.modalButton, styles.cancelButton, { backgroundColor: `${colors.background}BB` }]}
+                                style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
                                 onPress={() => setEditModalVisible(false)}
                             >
                                 <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
@@ -442,38 +441,40 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 8,
     },
     editButtonText: {
         fontSize: 14,
         fontWeight: '600',
     },
     card: {
-        margin: 10,
+        margin:10,
+        marginVertical: 14,
         marginTop: 0,
-        borderRadius: 16,
-        padding: 14,
-    
+        borderRadius: 8,
+        padding: 16,
+        borderWidth:.5    
     },
     cardTitle: {
         fontSize: 18,
         fontWeight: '700',
-        marginBottom: 16,
+        marginBottom: 10,
     },
     themeOptions: {
         flexDirection: 'row',
-        gap: 12,
+        gap: 8,
     },
     themeOption: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 12,
-        borderRadius: 8,
+        padding: 10,
+        borderRadius: 6,
         gap: 8,
+        borderWidth:.5
     },
     themeOptionActive: {
         borderWidth: 1,
@@ -489,7 +490,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 16,
+        paddingVertical: 10,
     },
     settingItemBorder: {
         borderBottomWidth: 1,
@@ -539,15 +540,16 @@ const styles = StyleSheet.create({
      },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
     },
     modalContent: {
-        borderRadius: 20,
+        borderRadius: 12,
         width: '100%',
         maxWidth: 400,
+        padding:14,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -558,16 +560,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 16,
-        paddingBottom:0
-        // borderBottomWidth: .5,
+        paddingBottom:10,
+        borderBottomWidth: .5,
     },
     modalTitle: {
         fontSize: 20,
         fontWeight: '700',
     },
     modalBody: {
-        padding: 16,
+        paddingBottom: 12,
     },
     inputLabel: {
         fontSize: 14,
@@ -576,25 +577,25 @@ const styles = StyleSheet.create({
         marginTop: 12,
     },
     input: {
-        borderRadius: 12,
-        padding: 14,
+        borderRadius: 8,
+        padding: 10,
         fontSize: 16,
         borderWidth: 1,
     },
     modalFooter: {
         flexDirection: 'row',
         gap: 12,
-        padding: 16,
+        // padding: 14,
         // borderTopWidth: 1,
     },
     modalButton: {
         flex: 1,
-        paddingVertical: 14,
-        borderRadius: 12,
+        paddingVertical: 10,
+        borderRadius: 8,
         alignItems: 'center',
     },
     cancelButton: {
-        borderWidth: 1,
+        borderWidth: .5,
     },
     cancelButtonText: {
         fontSize: 16,

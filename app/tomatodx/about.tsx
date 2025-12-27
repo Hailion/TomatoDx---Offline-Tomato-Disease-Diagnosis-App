@@ -128,7 +128,7 @@ export default function AboutScreen() {
     {
         name: t('about.teamMembers.aiEngineers.name2'),
         role: t('about.teamMembers.aiEngineers.role'),
-        photo: require('../../assets/images/team/kemal.png'), // replace path
+        photo: require('../../assets/images/team/kemal.jpg'), // replace path
         description: t('about.teamMembers.aiEngineers.description')
     },
     {
@@ -167,10 +167,10 @@ export default function AboutScreen() {
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >
-    <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.75)' : 'rgba(0,0,0,0.65)' }]}>
-        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}99` : `${colors.background}60` }]}>
+    <View style={[styles.overlay, { backgroundColor:'rgba(0,0,0,0.9)'}]}>
+        <View style={[styles.container, { backgroundColor:  theme === 'dark' ? `${colors.background}80` : `${colors.background}79`}]}>
             {/* Header */}
-            <View style={styles.header}>
+            <View style={[styles.header,{backgroundColor: theme === 'dark' ? `${colors.card}50` : `${colors.card}BB`,borderColor: theme === 'dark' ? colors.border : colors.borderDark}]}>
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => router.back()}
@@ -190,7 +190,7 @@ export default function AboutScreen() {
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                 {/* Hero Section */}
-                <View style={[styles.heroCard, {borderRadius: 16, backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}80`}]}>
+                <View style={[styles.heroCard, { backgroundColor:  theme === 'dark' ? `${colors.card}50` : `${colors.card}BB`,borderColor: theme === 'dark' ? colors.border : colors.borderDark}]}>
                     <View style={[styles.logo, { backgroundColor: colors.primaryOverlay,  outlineColor:theme === 'dark' ?'#FFF':'#000',   borderRadius:60 }]}>
                         {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}                        
                             <Image source={ require('../../assets/images/app/3.png')} style={{...styles.logoImage,borderWidth:theme === 'dark' ? 0:0.6, borderColor:theme === 'dark' ? "":'#0000009c',borderRadius: 60}} />
@@ -216,7 +216,7 @@ export default function AboutScreen() {
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
                         {t('about.mission')}
                     </Text>
-                    <View style={[styles.missionCard, { backgroundColor:theme === 'dark' ? `${colors.card}99` : `${colors.card}99` }]}>
+                    <View style={[styles.missionCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
                         <Text style={[styles.missionText, { color: colors.textSecondary }]}>
                             {t('about.missiondesc')}
                         </Text>
@@ -232,7 +232,7 @@ export default function AboutScreen() {
                     {features.map((feature, index) => (
                         <View
                             key={index}
-                            style={[styles.featureCard, { backgroundColor: `${colors.card}99` }]}
+                            style={[styles.featureCard, { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}
                         >
                             <View style={[styles.featureIcon, { backgroundColor: colors.primaryOverlay }]}>
                                 <Ionicons name={feature.icon as any} size={24} color={colors.primary} />
@@ -254,7 +254,7 @@ export default function AboutScreen() {
                     <Text style={[styles.sectionTitle, { color: colors.text }]}>
                         {t('about.technology')}
                     </Text>
-                    <View style={[styles.techCard, { backgroundColor: `${colors.card}99` }]}>
+                    <View style={[styles.techCard, { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
                         <View style={styles.techItem}>
                             <Ionicons name="hardware-chip" size={20} color={colors.primary} />
                             <Text style={[styles.techText, { color: colors.text }]}>
@@ -308,20 +308,22 @@ export default function AboutScreen() {
                       <View
                             style={[
                             styles.teamCardHorizontal,
-                            { width: SCREEN_WIDTH - 42, borderRadius:20 },
+                            { width: SCREEN_WIDTH - 42, backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark },
                             ]}
                         >
                             
                             <Image source={item.photo} style={styles.teamAvatar} />
-                            <Text style={[styles.teamName, { color: colors.text }]}>
-                            {item.name}
-                            </Text>
-                            <Text style={[styles.teamRole, { color: colors.primary }]}>
-                            {item.role}
-                            </Text>
-                            <Text style={[styles.teamDesc, { color: colors.textSecondary }]}>
-                            {item.description}
-                            </Text>
+                            <View style={styles.teamContent}>
+                                <Text style={[styles.teamName, { color: colors.text }]}>
+                                {item.name}
+                                </Text>
+                                <Text style={[styles.teamRole, { color: colors.primary }]}>
+                                {item.role}
+                                </Text>
+                                <Text style={[styles.teamDesc, { color: colors.textSecondary }]}>
+                                {item.description}
+                                </Text>
+                            </View>
                         </View>
                         
                         )}
@@ -330,16 +332,16 @@ export default function AboutScreen() {
                     />
 
                     {/* Indicator dots under the carousel */}
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10, gap: 6 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10, gap: 8 }}>
                         {devTeam.map((_, idx) => (
                         <View
                             key={idx}
                             style={{
-                            width: idx === currentDevIndex ? 10 : 6,
-                            height: 6,
+                            width: idx === currentDevIndex ? 24 : 14,
+                            height: 8,
                             borderRadius: 3,
                             backgroundColor:
-                                idx === currentDevIndex ? colors.primary : 'rgba(0,0,0,0.15)',
+                                idx === currentDevIndex ? colors.primary : colors.border,
                             }}
                         />
                         ))}
@@ -367,8 +369,8 @@ export default function AboutScreen() {
                 </View>
 
                 {/* Footer */}
-                <View style={[styles.footer, { backgroundColor:  theme === 'dark' ? `${colors.card}86` : `${colors.card}46`,borderColor: theme === 'dark' ? colors.primary : colors.textSecondary,borderWidth: 0.2 }]}>
-                    <Text style={[styles.footerText, { color: theme === 'dark' ? colors.primary : colors.text }]}>
+                <View style={[styles.footer, { backgroundColor:   theme === 'dark' ? `${colors.card}50` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary }]}>
+                    <Text style={[styles.footerText, { color: theme === 'dark' ? colors.primaryDark : colors.text }]}>
                         {t('about.footer.madeWith')}
                     </Text>
                     <Text style={[styles.copyright, { color: colors.textTertiary }]}>
@@ -399,19 +401,19 @@ export default function AboutScreen() {
                     {/* Social Media Links */}
                     <View style={styles.socialLinks}>
                         <TouchableOpacity
-                            style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primary : colors.textSecondary, borderWidth: 1 }]}
+                            style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary, borderWidth: .5 }]}
                         onPress={() => Linking.openURL('https://t.me/hailion')}
                         >
                             <Ionicons name="paper-plane" size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primary : colors.textSecondary, borderWidth: 1} ]}
+                            style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary, borderWidth: .5} ]}
                         onPress={() => Linking.openURL('https://github.com/haileamlak12')}
                         >
                             <Ionicons name="logo-github" size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primary : colors.textSecondary, borderWidth: 1} ]}
+                            style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary, borderWidth: .5} ]}
                         onPress={() => Linking.openURL('https://x.com/tomatodx')}
                         >
                             <Ionicons name="logo-twitter" size={20} color={colors.textSecondary} />
@@ -478,14 +480,14 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        paddingBottom:10
+        // paddingBottom:10
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: 60,
-        paddingBottom: 20,
+        // paddingBottom: 10,
         paddingHorizontal: 20,
     },
     backButton: {
@@ -503,24 +505,25 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     heroCard: {
-        margin: 16,
-        paddingVertical: 16,
+        marginBottom: 10,
+        paddingBottom: 10,
         paddingHorizontal: 16,
         alignItems: 'center',
-        borderRadius:16,
+        // borderRadius:10,
+        borderBottomWidth:.5
         },
     logo: {
-        width: 68,
-        height: 68,
+        width: 60,
+        height: 60,
         borderRadius: 32,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 12,
+        marginBottom: 6,
         outlineWidth:.5
     },
     logoImage:{
-        width:62,
-        height:62,
+        width:58,
+        height:58,
         borderRadius:60,
         // borderColor: '#fff'
     },
@@ -534,34 +537,33 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 4,
     },
-    version: {
-        fontSize: 14,
-    },
+    
     section: {
-        paddingHorizontal: 20,
-        marginBottom: 24,
+        paddingHorizontal: 16,
+        marginBottom: 10,
     },
     sectionTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: '700',
-        marginBottom: 16,
+        marginBottom: 8,
     },
     missionCard: {
-        padding: 20,
-        borderRadius: 16,
-       
+        padding: 10,
+        borderRadius: 8,
+        borderWidth:.5       
     },
     missionText: {
-        fontSize: 16,
-        lineHeight: 24,
+        fontSize: 15,
+        lineHeight: 20,
         textAlign: 'center',
     },
     featureCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 12,
+        padding: 8,
+        borderRadius: 8,
+        marginBottom: 10,
+        borderWidth:.5
     },
     featureIcon: {
         width: 48,
@@ -580,13 +582,13 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     featureDesc: {
-        fontSize: 14,
+        fontSize: 13,
         lineHeight: 20,
     },
     techCard: {
-        padding: 20,
-        borderRadius: 16,
-       
+        padding: 10,
+        borderRadius: 10,
+        borderWidth:.5       
     },
     techItem: {
         flexDirection: 'row',
@@ -599,9 +601,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     teamCard: {
-        padding: 20,
+        padding: 10,
         borderRadius: 16,
-        marginBottom: 12
+        marginBottom: 12,
+        borderWidth:1
     },
     teamName: {
         fontSize: 18,
@@ -619,22 +622,22 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     footer: {
-        margin: 20,
+        paddingBottom: 30,
         marginTop:0,
         padding: 16,
-        borderRadius: 16,
+        // borderRadius: 16,
         alignItems: 'center',
+        borderTopWidth: 0.2
        
     },
     footerText: {
         fontSize: 16,
         textAlign: 'center',
-        marginBottom: 8,
     },
     copyright: {
-        fontSize: 14,
+        fontSize: 13,
         textAlign: 'center',
-        marginBottom: 16,
+        margin: 10,
     },
     links: {
         flexDirection: 'row',
@@ -653,14 +656,14 @@ const styles = StyleSheet.create({
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
     },
     modalContent: {
-        borderRadius: 20,
-        padding: 24,
+        borderRadius: 10,
+        padding: 10,
         width: '100%',
         maxWidth: 400,
         alignItems: 'center',
@@ -698,24 +701,23 @@ const styles = StyleSheet.create({
     },
     modalButtons: {
         flexDirection: 'row',
-        gap: 12,
+        gap: 8,
         width: '100%',
+        marginTop:10
     },
     modalButton: {
         flex: 1,
         paddingVertical: 12,
         paddingHorizontal: 20,
-        borderRadius: 12,
+        borderRadius: 8,
         alignItems: 'center',
     },
     modalButtonCancel: {
-        flex: 1.3,
         backgroundColor: '#f3f4f6',
         borderWidth: 1,
         borderColor: '#646464',
     },
     modalButtonAdmin: {
-        flex: 2,
         backgroundColor: '#f3f4f6',
     },
     modalButtonDelete: {
@@ -729,20 +731,25 @@ const styles = StyleSheet.create({
     socialLinks: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 20,
-        gap: 16,
+        marginTop: 10,
+        gap: 8,
     },
     socialLink: {
-        width: 40,
+        width: 80,
         height: 40,
-        borderRadius: 20,
+        borderRadius: 2,
         backgroundColor: 'rgba(0, 0, 0, 0.05)',
         justifyContent: 'center',
         alignItems: 'center',
     },
     versionTap: {
-        marginTop: 10,
+        margin: 10,
+        textDecorationLine:'underline',
 
+    },
+    version: {
+        fontSize: 14,
+        textDecorationLine:'underline'
     },
     teamCarousel: {
     paddingVertical: 4,
@@ -751,23 +758,32 @@ const styles = StyleSheet.create({
 },
 
 teamSection: {
-        padding: 16,    
+        padding: 10,
+        paddingHorizontal:16    
     },
 
 teamCardHorizontal: {
-  padding: 10,
-  paddingBottom:10,
-  borderRadius: 20,
+//   padding: 10,
+  paddingBottom:20,
+  borderRadius: 8,
+  borderWidth:1,
   marginRight: 0,
   alignItems: 'center',
-  overflow:'hidden'
- 
+  overflow:'hidden' ,
+    flex:1,
+    flexDirection:'column',
+    gap:8
   },
 teamAvatar: {
-    width: 200,
-    height: 200,
-    borderRadius: 1000,
-    marginBottom: 8,
+    width: '100%',
+    height:300,
+    // borderRadius: 1000,
+    // marginBottom: 8,
     backgroundColor: 'rgba(0,0,0,0.06)',
+},
+teamContent:{
+    flex:1,
+    alignItems: 'center',
+    padding:10
 }
 });

@@ -327,7 +327,7 @@ export default function HistoryScreen() {
       overshootRight={false}
     >
       <TouchableOpacity
-        style={[styles.scanCard, { backgroundColor: `${colors.card}CC` }]}
+        style={[styles.scanCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`,borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
         onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
       >
         <View style={styles.scanHeader}>
@@ -406,7 +406,7 @@ export default function HistoryScreen() {
       style={styles.backgroundImage}
       imageStyle={{ resizeMode: 'cover' }}
     >
-      <View style={[styles.overlay, { backgroundColor:theme === 'dark' ? 'rgba(0,0,0,0.85)':'rgba(0,0,0,0.65)' }]}>
+      <View style={[styles.overlay, { backgroundColor:'rgba(0,0,0,0.9)' }]}>
       <View style={[styles.container, { backgroundColor: `${colors.background}85` }]}>
           {/* Header */}
           <View style={styles.headerTop}>
@@ -419,7 +419,7 @@ export default function HistoryScreen() {
                 </Text>
               </View>
               <TouchableOpacity
-                style={[styles.filterButton, { backgroundColor: `${colors.card}CC` }]}
+                style={[styles.filterButton, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
                 onPress={() => setShowFilters(!showFilters)}
               >
                 <Ionicons
@@ -439,7 +439,7 @@ export default function HistoryScreen() {
 
             {/* Quick Stats */}
             <View style={styles.statsRow}>
-              <View style={[styles.statCard, { backgroundColor: `${colors.card}CC` }]}>
+              <View style={[styles.statCard, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark }]}>
                 <Ionicons name="scan" size={20} color={colors.primary} />
                 <Text style={[styles.statNumber, { color: colors.text }]}>
                   {filteredAndSortedScans.length}
@@ -448,7 +448,7 @@ export default function HistoryScreen() {
                   {t('history.totalScans')}
                 </Text>
               </View>
-              <View style={[styles.statCard, { backgroundColor: `${colors.card}CC` }]}>
+              <View style={[styles.statCard, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
                 <Ionicons name="trending-up" size={20} color={colors.primary} />
                 <Text style={[styles.statNumber, { color: colors.text }]}>
                   {Math.round(filteredAndSortedScans.reduce((acc, scan) => acc + scan.confidence, 0) / filteredAndSortedScans.length) || 0}%
@@ -457,7 +457,7 @@ export default function HistoryScreen() {
                   {t('history.avgConfidence')}
                 </Text>
               </View>
-              <View style={[styles.statCard, { backgroundColor: `${colors.card}CC` }]}>
+              <View style={[styles.statCard, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
                 <Ionicons name="heart" size={20} color={colors.primary} />
                 <Text style={[styles.statNumber, { color: colors.text }]}>
                   {filteredAndSortedScans.filter(scan => scan.severity === 'none').length}
@@ -471,7 +471,7 @@ export default function HistoryScreen() {
 
           {/* Filters Panel */}
           {showFilters && (
-            <View style={[styles.filtersPanel, { backgroundColor: `${colors.card}CC` }]}>
+            <View style={[styles.filtersPanel, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
               {/* Filter Types */}
               <Text style={[styles.filtersTitle, { color: colors.text }]}>
                 {t('history.filters.title')}
@@ -647,11 +647,11 @@ const styles = StyleSheet.create({
   headerTop: {
      paddingTop: 60,
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   titleContainer: {
     flex: 1,
@@ -669,8 +669,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 12,
+    borderRadius: 8,
     gap: 6,
+    borderWidth:.5
     
   },
   filterButtonText: {
@@ -679,13 +680,14 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 8,
   },
   statCard: {
     flex: 1,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center'
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth:.5
   },
   statNumber: {
     fontSize: 20,
@@ -698,10 +700,10 @@ const styles = StyleSheet.create({
   },
   filtersPanel: {
     marginHorizontal: 20,
-    marginBottom: 20,
-    borderRadius: 16,
-    padding: 20,
-    
+    marginBottom: 0,
+    borderRadius: 10,
+    padding: 16,
+    borderWidth:.5            
   },
   filtersTitle: {
     fontSize: 16,
@@ -762,17 +764,17 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 18,
     fontWeight: '700',
-    marginTop: 20,
+    // marginTop: 20,
     marginBottom: 12,
   },
   listContent: {
     paddingBottom: 20,
   },
   scanCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    borderWidth:.5
   },
   scanHeader: {
     flexDirection: 'row',
@@ -887,8 +889,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 80,
     marginBottom: 12,
-    borderRadius: 12,
-  },
+    borderTopRightRadius:10,
+    borderBottomRightRadius:10
+    },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

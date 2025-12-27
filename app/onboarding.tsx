@@ -232,7 +232,7 @@ export default function OnboardingScreen() {
             key={index}
             style={[
               styles.dot,
-              index === currentStep ? styles.activeDot : styles.inactiveDot,
+              index === currentStep ? [styles.activeDot,{backgroundColor:colors.primaryDark}] : styles.inactiveDot,
               theme === 'dark' &&
                 index !== currentStep &&
                 styles.darkInactiveDot,
@@ -273,7 +273,7 @@ export default function OnboardingScreen() {
           style={[
             styles.button,
             styles.primaryButton,
-            { flex: isFirstStep ? 1 : 2 },
+            { flex: isFirstStep ? 1 : 2, backgroundColor:colors.primaryDark },
           ]}
           onPress={handleNext}
         >
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     activeDot: {
-        backgroundColor: '#10b981',
+        
         width: 24,
     },
     inactiveDot: {
@@ -424,16 +424,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 16,
         paddingHorizontal: 24,
-        borderRadius: 16,
+        borderRadius: 10,
         gap: 8,
     },
     primaryButton: {
-        backgroundColor: '#10b981',
-        shadowColor: '#10b981',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 6,
+        
+        
     },
     secondaryButton: {
         backgroundColor: 'transparent',

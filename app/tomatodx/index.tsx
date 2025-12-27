@@ -175,7 +175,7 @@ export default function HomeScreen() {
     <ScrollView style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
      
       {/* Stats Overview */}
-      <Animated.View style={[styles.statsCard, { backgroundColor: theme === 'dark' ? `${colors.card}BB` : `${colors.card}BB`, opacity: statsAnim }]}>
+      <Animated.View style={[styles.statsCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}BB`, opacity: statsAnim, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark}]}>
         <View style={styles.statItem}>
           <Text style={[styles.statNumber, { color: colors.text }]}>
             {stats.totalScans}
@@ -212,7 +212,7 @@ export default function HomeScreen() {
         {features.map((feature, index) => (
           <TouchableOpacity
             key={index}
-            style={[styles.featureCard, { backgroundColor: `${colors.card}EE` }]}
+            style={[styles.featureCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark}]}
             onPress={() => router.push(feature.route as any)}
           >
             <View style={[styles.featureIcon, { backgroundColor: feature.color }]}>
@@ -236,14 +236,14 @@ export default function HomeScreen() {
       </Animated.View>
 
       {/* Recent Activity */}
-      <Animated.View style={[styles.section, { opacity: recentAnim, transform: [{ translateY: Animated.multiply(recentAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }]}>
+      <Animated.View style={[styles.section, {marginBottom:24, opacity: recentAnim, transform: [{ translateY: Animated.multiply(recentAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }]}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {t('home.recentActivity')}
         </Text>
         <TouchableOpacity
           disabled={!lastScan}
           onPress={() => lastScan && router.push({ pathname: '/tomatodx/result', params: { id: lastScan.id } } as any)}
-          style={[styles.activityCard, { backgroundColor: `${colors.card}BB` }]}
+          style={[styles.activityCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}BB`,borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
         >
           <Ionicons name="time-outline" size={24} color={colors.success} />
           <View style={styles.activityContent}>
@@ -312,8 +312,9 @@ const styles = StyleSheet.create({
   statsCard: {
     flexDirection: 'row',
     margin: 20,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 10,
+    padding: 10,
+    borderWidth:.5,  
    
   },
   statItem: {
@@ -334,7 +335,6 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingHorizontal: 20,
-    marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 20,
@@ -344,10 +344,10 @@ const styles = StyleSheet.create({
   featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-   
+    padding: 8,
+    borderRadius: 8,
+    marginBottom: 12,   
+    borderWidth:.5,
   },
   featureIcon: {
     width: 48,
@@ -371,9 +371,9 @@ const styles = StyleSheet.create({
   activityCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-   
+    padding: 10,
+    borderRadius: 8,   
+    borderWidth:.5,
   },
   activityContent: {
     flex: 1,

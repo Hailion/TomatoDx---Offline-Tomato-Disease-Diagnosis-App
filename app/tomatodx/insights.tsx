@@ -16,7 +16,7 @@ export default function InsightsScreen() {
     const colors = Colors[theme];
 
     const [summary, setSummary] = useState<{ total: number; avgConfidence: number; healthyCount: number; topDisease: any | null }>({ total: 0, avgConfidence: 0, healthyCount: 0, topDisease: null });
-    const [trend, setTrend] = useState<Array<{ day: string; count: number; date: Date }>>([]);
+    const [trend, setTrend] = useState<{ day: string; count: number; date: Date }[]>([]);
     const [recent, setRecent] = useState<any[]>([]);
 
     // Animation values
@@ -97,10 +97,10 @@ export default function InsightsScreen() {
             style={styles.backgroundImage}
             imageStyle={{ resizeMode: 'cover' }}
         >
-            <View style={[styles.overlay, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.5)' }]}>
+            <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
                 
             {/* Header */}
-            <View style={[styles.header, {backgroundColor: `${colors.background}99`}]}>
+            <View style={[styles.header, {backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79`}]}>
                 <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
                     <Ionicons name="chevron-back" size={24} color={colors.text} />
                 </TouchableOpacity>
@@ -110,18 +110,18 @@ export default function InsightsScreen() {
                 <View style={styles.placeholder} />
             </View>
 
-            <ScrollView style={[styles.container, { backgroundColor: `${colors.background}80` }]}>
+            <ScrollView style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
             {/* Summary Cards */}
             <Animated.View style={[styles.cardsRow, { opacity: cardsAnim, transform: [{ scale: cardsAnim }] }]}>
-                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                <View style={[styles.card, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
                     <Text style={[styles.cardValue, { color: colors.text }]}>{summary.total}</Text>
                     <Text style={[styles.cardLabel, { color: colors.textTertiary }]}>{t('home.totalScans')}</Text>
                 </View>
-                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                <View style={[styles.card, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
                     <Text style={[styles.cardValue, { color: colors.text }]}>{summary.avgConfidence}%</Text>
                     <Text style={[styles.cardLabel, { color: colors.textTertiary }]}>{t('home.accuracy')}</Text>
                 </View>
-                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                <View style={[styles.card, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
                     <Text style={[styles.cardValue, { color: colors.text }]}>{summary.healthyCount}</Text>
                     <Text style={[styles.cardLabel, { color: colors.textTertiary }]}>{t('home.healthy')}</Text>
                 </View>
@@ -221,15 +221,16 @@ const styles = StyleSheet.create({
 
     cardsRow: {
         flexDirection: 'row',
-        gap: 12,
+        gap: 8,
         paddingHorizontal: 20,
         marginTop: 12,
     },
     card: {
         flex: 1,
-        borderRadius: 12,
-        padding: 16,
+        borderRadius: 9,
+        padding: 10,
         alignItems: 'center',
+        borderWidth:.5
     },
     cardValue: { fontSize: 20, fontWeight: '700' },
     cardLabel: { fontSize: 12 },
@@ -237,11 +238,12 @@ const styles = StyleSheet.create({
     topDiseaseCard: {
         marginHorizontal: 20,
         marginTop: 12,
-        borderRadius: 12,
-        padding: 14,
+        borderRadius: 8,
+        padding: 10,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 8,
+        borderWidth:.5
     },
     topDiseaseText: { fontSize: 14, fontWeight: '700', flex: 1 },
     topDiseaseCount: { fontSize: 12 },
@@ -249,19 +251,19 @@ const styles = StyleSheet.create({
     section: { paddingHorizontal: 20, marginTop: 20 },
     sectionTitle: { fontSize: 18, fontWeight: '700', marginBottom: 12 },
 
-    trendCard: { borderRadius: 12, padding: 16 },
+    trendCard: { borderRadius: 10, padding: 10 },
     trendBars: { flexDirection: 'row', gap: 8, alignItems: 'flex-end' },
     trendBarWrap: { alignItems: 'center' },
-    trendBar: { width: 18, borderRadius: 6 },
+    trendBar: { width: 18, borderRadius: 4 },
     trendLabel: { fontSize: 10, marginTop: 6 },
 
     recentItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
-        padding: 14,
-        borderRadius: 12,
-        marginBottom: 10,
+        gap: 8,
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 8,
     },
     recentContent: { flex: 1 },
     recentTitle: { fontSize: 14, fontWeight: '600' },

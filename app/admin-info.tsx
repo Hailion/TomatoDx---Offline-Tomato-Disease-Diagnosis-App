@@ -328,9 +328,9 @@ export default function AdminInfoScreen() {
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
      
-        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}99` : `${colors.background}60` }]}>
+        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
             
             {/* Enhanced Header Section */}
             <View style={[styles.header]}>
@@ -390,7 +390,7 @@ export default function AdminInfoScreen() {
                     <TouchableOpacity
                         key={tab.id}
                         style={[
-                            styles.tab,
+                            styles.tab,{backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark},
                             activeTab === tab.id && { 
                                 backgroundColor: colors.primary + '15',
                                 borderColor: colors.primary
@@ -475,7 +475,7 @@ export default function AdminInfoScreen() {
                         </View>
 
                         {/* Risk Distribution Card */}
-                        <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
+                        <View style={[styles.card, { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
                             <View style={styles.cardHeader}>
                                 <Text style={[styles.cardTitle, { color: colors.text }]}>
                                     {t('admin.analytics.riskDistributionTitle')}
@@ -650,7 +650,7 @@ export default function AdminInfoScreen() {
                 )}
 
                 {/* Data Management Card */}
-                <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
+                <View style={[styles.card, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
                     <Text style={[styles.cardTitle, { color: colors.text }]}>
                         {t('admin.analytics.dataManagementTitle')}
                     </Text>
@@ -687,7 +687,7 @@ export default function AdminInfoScreen() {
                 onRequestClose={() => setShowExportModal(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: `${colors.card}ED` }]}>
+                    <View style={[styles.modalContent, { backgroundColor: theme === 'dark' ? `${colors.card}EE` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark}]}>
                         <Text style={[styles.modalTitle, { color: colors.text }]}>
                             {t('admin.analytics.exportModal.title')}
                         </Text>
@@ -706,7 +706,7 @@ export default function AdminInfoScreen() {
                         
                         <View style={styles.exportOptions}>
                             <TouchableOpacity 
-                                style={[styles.exportOption, { backgroundColor: colors.primary + '15' }]}
+                                style={[styles.exportOption, { backgroundColor: colors.primary + '15' ,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}
                                 onPress={() => handleExportData('json')}
                             >
                                 <Ionicons name="document-text" size={24} color={colors.primary} />
@@ -716,7 +716,7 @@ export default function AdminInfoScreen() {
                             </TouchableOpacity>
                             
                             <TouchableOpacity 
-                                style={[styles.exportOption, { backgroundColor: colors.success + '15' }]}
+                                style={[styles.exportOption, { backgroundColor: colors.success + '15',borderColor: theme === 'dark' ? colors.border : colors.borderDark  }]}
                                 onPress={() => handleExportData('csv')}
                             >
                                 <Ionicons name="document" size={24} color={colors.success} />
@@ -810,7 +810,7 @@ overlay: { flex: 1 },
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: 60,
-        paddingBottom: 20,
+        paddingBottom: 0,
         paddingHorizontal: 20,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
@@ -832,7 +832,6 @@ overlay: { flex: 1 },
     subtitle: {
         fontSize: 14,
         fontWeight: '500',
-        marginTop: 2,
         opacity: 0.7,
         paddingTop: 16,
     },
@@ -852,8 +851,8 @@ overlay: { flex: 1 },
         flexDirection: 'row',
         padding: 8,
         marginHorizontal: 20,
-        marginVertical: 16,
-        borderRadius: 12,
+        marginVertical: 8,
+        borderRadius: 8,
         gap: 4,
     },
     tab: {
@@ -863,7 +862,7 @@ overlay: { flex: 1 },
         justifyContent: 'center',
         paddingVertical: 8,
         paddingHorizontal: 12,
-        borderRadius: 8,
+        borderRadius: 6,
         borderWidth: 1,
         borderColor: 'transparent',
         gap: 6,
@@ -882,15 +881,15 @@ overlay: { flex: 1 },
         flexDirection: 'row',
         flexWrap: 'wrap',
         paddingHorizontal: 20,
-        gap: 12,
-        marginBottom: 16,
+        gap: 8,
+        marginBottom: 10,
     },
     statCard: {
         flex: 1,
-        minWidth: (SCREEN_WIDTH - 52) / 2,
+        minWidth: (SCREEN_WIDTH - 50) / 2,
         alignItems: 'center',
-        padding: 16,
-        borderRadius: 16,
+        padding: 10,
+        borderRadius: 8,
         gap: 8,
     },
     statValue: {
@@ -904,16 +903,16 @@ overlay: { flex: 1 },
     },
     card: {
         marginHorizontal: 20,
-        marginBottom: 16,
-        borderRadius: 16,
-        padding: 20,
-        
+        marginBottom: 10,
+        borderRadius: 10,
+        padding: 14,
+        borderWidth:.5        
     },
     cardHeader: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 16,
+        marginBottom: 10,
     },
     cardTitle: {
         fontSize: 17,
@@ -942,7 +941,7 @@ overlay: { flex: 1 },
     },
     riskBarFill: {
         height: 8,
-        borderRadius: 4,
+        borderRadius: 2,
         minWidth: 4,
     },
     riskLabelContainer: {
@@ -1068,7 +1067,7 @@ overlay: { flex: 1 },
         justifyContent: 'center',
         paddingVertical: 12,
         paddingHorizontal: 16,
-        borderRadius: 12,
+        borderRadius: 8,
         gap: 8,
     },
     dataButtonText: {
@@ -1077,7 +1076,7 @@ overlay: { flex: 1 },
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0,0,0,0.9)',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
@@ -1085,9 +1084,9 @@ overlay: { flex: 1 },
     modalContent: {
         width: '100%',
         maxWidth: 400,
-        borderRadius: 20,
-        padding: 24,
-        gap: 20,
+        borderRadius: 10,
+        padding: 16,
+        gap: 10,
     },
     modalTitle: {
         fontSize: 18,
@@ -1101,20 +1100,21 @@ overlay: { flex: 1 },
     },
     textInput: {
         borderWidth: 1,
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
         fontSize: 16,
     },
     exportOptions: {
         flexDirection: 'row',
-        gap: 12,
+        gap: 8,
     },
     exportOption: {
         flex: 1,
         alignItems: 'center',
         padding: 16,
-        borderRadius: 12,
+        borderRadius: 10,
+        borderWidth:.5,
         gap: 8,
     },
     exportOptionText: {
@@ -1128,7 +1128,7 @@ overlay: { flex: 1 },
     modalButton: {
         flex: 1,
         paddingVertical: 14,
-        borderRadius: 12,
+        borderRadius: 8,
         alignItems: 'center',
     },
     modalButtonText: {

@@ -389,9 +389,9 @@ export default function ResultScreen() {
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
      
-    <View style={[styles.container, { backgroundColor: `${colors.background}80` }]}>
+    <View style={[styles.container, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`}]}>
       {/* Header */}
       <View
          style={styles.header}
@@ -417,7 +417,7 @@ export default function ResultScreen() {
         <Animated.View style={[
           styles.resultCard,
           {
-            backgroundColor: `${colors.card}80`,
+            backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark ,
             opacity: fadeAnim,
             transform: [
               { translateY: slideAnim },
@@ -428,7 +428,7 @@ export default function ResultScreen() {
           {/* Diagnosis Header */}
           <View style={styles.diagnosisHeader}>
             <View style={styles.diseaseIconContainer}>
-              <View style={[styles.diseaseIcon, { backgroundColor: `${colors.primaryOverlay}80` }]}>
+              <View style={[styles.diseaseIcon, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, outlineColor:theme === 'dark'? colors.borderLight : colors.borderDark , }]}>
                 {result.imageUri ? (
                   <Image
                     source={{ uri: result.imageUri }}
@@ -502,7 +502,7 @@ export default function ResultScreen() {
           {result.symptoms && result.symptoms.length > 0 && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Ionicons name="alert-circle" size={20} color={colors.warning} />
+                {/* <Ionicons name="alert-circle" size={20} color={colors.warning} /> */}
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>
                   {t('result.symptoms', { defaultValue: 'Symptoms' })}
                 </Text>
@@ -510,7 +510,8 @@ export default function ResultScreen() {
               <View style={styles.listContainer}>
                 {result.symptoms.map((symptom, index) => (
                   <View key={index} style={styles.listItem}>
-                    <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} />
+                    {/* <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} /> */}
+                    <Text style={{color: colors.warning}} >{index+1}</Text>
                     <Text style={[styles.listText, { color: colors.textSecondary }]}>
                       {symptom}
                     </Text>
@@ -523,7 +524,7 @@ export default function ResultScreen() {
           {/* Treatment Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="medical" size={20} color={colors.danger} />
+              {/* <Ionicons name="medical" size={20} color={colors.danger} /> */}
               <Text style={[styles.sectionTitle, { color: colors.text }]}>
                 {t('result.treatment')}
               </Text>
@@ -536,7 +537,8 @@ export default function ResultScreen() {
                 <View style={styles.listContainer}>
                   {result.treatmentImmediate.map((action, index) => (
                     <View key={index} style={styles.listItem}>
-                      <View style={[styles.bulletPoint, { backgroundColor: colors.danger }]} />
+                      {/* <View style={[styles.bulletPoint, { backgroundColor: colors.danger }]} /> */}
+                      <Text style={{color: colors.danger}} >{index+1}</Text>
                       <Text style={[styles.listText, { color: colors.textSecondary }]}>
                         {action}
                       </Text>
@@ -553,7 +555,8 @@ export default function ResultScreen() {
                 <View style={styles.listContainer}>
                   {result.treatmentLongTerm.map((action, index) => (
                     <View key={index} style={styles.listItem}>
-                      <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} />
+                      {/* <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} /> */}
+                      <Text style={{color: colors.warning}} >{index+1}</Text>
                       <Text style={[styles.listText, { color: colors.textSecondary }]}>
                         {action}
                       </Text>
@@ -568,7 +571,7 @@ export default function ResultScreen() {
           {result.prevention && result.prevention.length > 0 && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Ionicons name="shield-checkmark" size={20} color={colors.success} />
+                {/* <Ionicons name="shield-checkmark" size={20} color={colors.success} /> */}
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>
                   {t('result.prevention')}
                 </Text>
@@ -576,7 +579,7 @@ export default function ResultScreen() {
               <View style={styles.listContainer}>
                 {result.prevention.map((tip, index) => (
                   <View key={index} style={styles.listItem}>
-                    <View style={[styles.bulletPoint, { backgroundColor: colors.success }]} />
+                    <Text style={{color: colors.success}} >{index+1}</Text>
                     <Text style={[styles.listText, { color: colors.textSecondary }]}>
                       {tip}
                     </Text>
@@ -592,7 +595,7 @@ export default function ResultScreen() {
           <Animated.View style={[
             styles.notesSection,
             {
-              backgroundColor: colors.card,
+              backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark ,
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }]
             }
@@ -627,7 +630,7 @@ export default function ResultScreen() {
           </Text>
           <View style={styles.actionsRow}>
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: `${colors.card}CC` }]}
+              style={[styles.actionButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
               onPress={handleAddNotes}
             >
               <Ionicons
@@ -641,7 +644,7 @@ export default function ResultScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: `${colors.card}CC` }]}
+              style={[styles.actionButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
               onPress={handleShare}
             >
               <Ionicons
@@ -657,7 +660,7 @@ export default function ResultScreen() {
 
           <View style={styles.actionsRow}>
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: `${colors.card}CC` }]}
+              style={[styles.actionButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
               onPress={handleGoToHistory}
             >
               <Ionicons
@@ -671,7 +674,7 @@ export default function ResultScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: `${colors.card}CC` }]}
+              style={[styles.actionButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
               onPress={handleGoToInsights}
             >
               <Ionicons
@@ -745,7 +748,7 @@ export default function ResultScreen() {
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: colors.background }]}
+                style={[styles.modalButton,styles.modalButtonCancel ,{ backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark }]}
                 onPress={() => setShowNotesModal(false)}
               >
                 <Text style={[styles.modalButtonText, { color: colors.textSecondary }]}>
@@ -803,47 +806,53 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   resultCard: {
-    margin: 20,
-    borderRadius: 20,
+    marginHorizontal: 16,
+    borderRadius: 10,
     padding: 16,  
+    paddingTop:10,
+    borderWidth:1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+    
   },
   diagnosisHeader: {
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 16,
   },
   diseaseIconContainer: {
     position: 'relative',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   diseaseIcon: {
-    width: 280,
+    width: 310,
     height: 280,
-    borderRadius: 20,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
+    outlineWidth:.5,
+    outlineOffset:2
   },
   diseaseImage: {
-    width: 280,
+    width: 310,
     height: 280,
+    
   },
   diseaseEmoji: {
     fontSize: 48,
   },
   severityBadge: {
     position: 'absolute',
-    top: -6,
-    right: -6,
+    top: 3,
+    right: 3,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 10,
+    borderRadius: 6,
     gap: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -878,13 +887,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   confidenceSection: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   confidenceHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   confidenceLabel: {
     fontSize: 16,
@@ -896,15 +905,15 @@ const styles = StyleSheet.create({
   },
   confidenceBar: {
     height: 8,
-    borderRadius: 4,
+    borderRadius: 2,
     overflow: 'hidden',
   },
   confidenceFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: 2,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -921,7 +930,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   subsection: {
-    marginTop: 12,
+    marginTop: 4,
+    marginLeft:3
   },
   subsectionTitle: {
     fontSize: 15,
@@ -929,6 +939,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   listContainer: {
+    marginLeft:10,
     gap: 8,
   },
   listItem: {
@@ -949,7 +960,7 @@ const styles = StyleSheet.create({
   },
   quickActions: {
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginTop: 10,
   },
   actionsTitle: {
     fontSize: 18,
@@ -958,8 +969,8 @@ const styles = StyleSheet.create({
   },
   actionsRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 20,
+    gap: 8,
+    marginBottom: 10,
   },
   actionButton: {
     flex: 1,
@@ -968,13 +979,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 12,
+    borderRadius: 8,
     gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth:.5,
   },
   darkActionButton: {
     backgroundColor: '#1a1a1a',
@@ -988,11 +995,11 @@ const styles = StyleSheet.create({
   },
 
   fixedActions: {
-    padding: 20,
+    padding: 10,
     paddingBottom: 30,
   },
   newScanButton: {
-    borderRadius: 16,
+    borderRadius: 10,
     overflow: 'hidden',
   },
   newScanGradient: {
@@ -1017,7 +1024,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -1025,8 +1032,8 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '100%',
     maxWidth: 400,
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: 10,
+    padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -1044,7 +1051,7 @@ const styles = StyleSheet.create({
   },
   notesInput: {
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: 8,
     padding: 12,
     fontSize: 14,
     minHeight: 100,
@@ -1058,11 +1065,14 @@ const styles = StyleSheet.create({
   modalButton: {
     flex: 1,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 8,
     alignItems: 'center',
   },
   modalButtonPrimary: {
     // Primary button styles applied via backgroundColor prop
+  },
+  modalButtonCancel:{
+    borderWidth:.5
   },
   modalButtonText: {
     fontSize: 16,
@@ -1072,10 +1082,11 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   notesSection: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-    borderRadius: 16,
-    padding: 16,
+    marginHorizontal: 16,
+    marginVertical: 10,
+    borderRadius: 10,
+    padding: 12,
+    borderWidth:1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

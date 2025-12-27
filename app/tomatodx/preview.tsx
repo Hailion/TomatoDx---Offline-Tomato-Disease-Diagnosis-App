@@ -270,7 +270,7 @@ export default function PreviewScreen() {
       setAnalyzing(false);
 
       // Check confidence threshold
-      if (prediction.confidence < 0.6) {
+      if (prediction.confidence < 0.7) {
         // Show low confidence modal
         setPendingResult({
           prediction,
@@ -324,9 +324,9 @@ export default function PreviewScreen() {
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >
-    <View style={[styles.overlay,{backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.5)':'rgba(0,0,0,0.5)'}]}>
+    <View style={[styles.overlay,{backgroundColor: 'rgba(0,0,0,0.9)'}]}>
     
-    <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}99` : `${colors.background}70` }]}>
+    <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -366,25 +366,25 @@ export default function PreviewScreen() {
           />
 
           {/* Overlay Status */}
-          <View style={[styles.statusBadge, { backgroundColor: colors.success }]}>
+          <View style={[styles.statusBadge, { backgroundColor: `${colors.success}99` }]}>
             <Ionicons name="checkmark-circle" size={16} color="#fff" />
             <Text style={styles.statusText}>{t('preview.ready')}</Text>
           </View>
 
           {/* Image Quality Indicator */}
-          <View style={[styles.qualityIndicator, { backgroundColor: colors.whiteOverlay }]}>
+          {/* <View style={[styles.qualityIndicator, { backgroundColor: colors.whiteOverlay }]}>
             <Ionicons name="aperture" size={16} color={colors.success} />
             <Text style={[styles.qualityText, { color: colors.text }]}>
               {t('preview.highQuality')}
             </Text>
-          </View>
+          </View> */}
         </Animated.View>
 
         {/* Analysis Tips */}
         <Animated.View style={[
           styles.tipsCard,
           {
-            backgroundColor: colors.card,
+            backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark ,
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
           }
@@ -427,7 +427,7 @@ export default function PreviewScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.retakeButton, { borderColor: colors.border,backgroundColor:theme === 'dark' ? "":`${colors.background}70` }]} 
+          style={[styles.retakeButton, {backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]} 
           onPress={handleRetake}
         >
           <Ionicons
@@ -559,37 +559,31 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageContainer: {
-    padding: 20,
+    padding: 16,
     paddingBottom: 0,
   },
   imageWrapper: {
-    borderRadius: 20,
+    borderRadius: 10,
     borderWidth: .4,
-
     outlineWidth: .5,
     outlineOffset: 2,
     outlineStyle: 'solid',
     outlineColor: '#ffffff7b',
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
+    overflow: 'hidden'
   },
   image: {
     width: '100%',
-    height: width - 40,
+    height: width -50,
   },
   statusBadge: {
     position: 'absolute',
-    top: 16,
-    left: 16,
+    top: 10,
+    left: 8,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 12,
+    borderRadius: 8,
     gap: 6,
   },
   statusText: {
@@ -615,15 +609,12 @@ const styles = StyleSheet.create({
   tipsCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
+    padding: 10,
+    paddingVertical:20,
+    borderRadius: 10,
     marginTop: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
+    borderWidth:.5
+      },
   tipsContent: {
     flex: 1,
     marginLeft: 12,
@@ -639,14 +630,14 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical:16,
     marginBottom: 40,
-    gap: 12,
+    gap: 10,
   },
   analyzeButton: {
     flex:1,
-    borderRadius: 16,
+    borderRadius: 8,
     overflow: 'hidden',
   },
   analyzeGradient: {
@@ -667,10 +658,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 18,
-    borderRadius: 16,
-    borderWidth: 2,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
     gap: 12,
   },
   retakeText: {

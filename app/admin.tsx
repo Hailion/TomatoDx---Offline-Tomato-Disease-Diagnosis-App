@@ -355,10 +355,10 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
       
             <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: `${colors.background}80` }]}
+      style={[styles.container, { backgroundColor:theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
                 {/* Header */}
@@ -473,9 +473,9 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
     style={styles.backgroundImage}
     imageStyle={{ resizeMode: 'cover' }}
   >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.85)' }]}>
+    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
       
-        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}99` : `${colors.background}60` }]}>
+        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
             {/* Header */}
             <View style={[styles.header]}>
                 <TouchableOpacity 
@@ -544,7 +544,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
                                     key={item.id}
                                     style={[
                                         styles.actionCard,
-                                        { backgroundColor: `${colors.card}BB` }
+                                        { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }
                                     ]}
                                     onPress={item.action}
                                     activeOpacity={0.7}
@@ -701,7 +701,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     enabled
                 >
-                    <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                    <View style={[styles.modalContent, { backgroundColor:  colors.background,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
                         <View style={[styles.modalIcon, { backgroundColor: colors.background + '80' }]}>
                             <Ionicons name="key" size={40} color={colors.primary} />
                         </View>
@@ -836,7 +836,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
                             <TouchableOpacity
                                 style={[
                                     styles.modalButton,
-                                    { backgroundColor: colors.background },
+                                    { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark,borderWidth:.5 },
                                     styles.modalButtonSingle,
                                 ]}
                                 onPress={() => setVisibleChangePassword(false)}
@@ -952,9 +952,9 @@ const styles = StyleSheet.create({
     authCard: {
         width: '100%',
         maxWidth: 400,
-        borderRadius: 20,
+        borderRadius: 10,
         borderWidth:1,
-        padding: 16,
+        padding: 10,
         alignItems: 'center',
        
     },
@@ -964,7 +964,7 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 10,
     },
     authTitle: {
         fontSize: 24,
@@ -975,7 +975,7 @@ const styles = StyleSheet.create({
     authSubtitle: {
         fontSize: 15,
         textAlign: 'center',
-        marginBottom: 24,
+        marginBottom: 16,
         lineHeight: 22,
         opacity: 0.8,
     },
@@ -986,16 +986,16 @@ const styles = StyleSheet.create({
     passwordInputWrapper: {
         width: '100%',
         borderWidth: 1,
-        borderRadius: 12,
+        borderRadius: 8,
         paddingHorizontal: 12,
-        paddingVertical: 2,
+        // paddingVertical: 2,
         flexDirection: 'row',
         alignItems: 'center',
     },
     passwordInput: {
         flex: 1,
         paddingHorizontal: 4,
-        paddingVertical: 12,
+        paddingVertical: 10,
         fontSize: 16,
         fontWeight: '500',
     },
@@ -1021,7 +1021,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 14,
         paddingHorizontal: 24,
-        borderRadius: 12,
+        borderRadius: 10,
         width: '100%',
         gap: 8,
     },
@@ -1042,10 +1042,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 16,
+        padding: 8,
         marginHorizontal: 20,
-        marginBottom: 20,
-        borderRadius: 12,
+        marginBottom: 10,
+        borderRadius: 8,
         gap: 10,
     },
     warningText: { 
@@ -1056,7 +1056,7 @@ const styles = StyleSheet.create({
     
     // Section Styles
     section: {
-        marginBottom: 24,
+        marginBottom: 10,
     },
     sectionHeader: {
         flexDirection: 'row',
@@ -1087,8 +1087,9 @@ const styles = StyleSheet.create({
     actionCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
-        borderRadius: 16,
+        padding: 8,
+        borderRadius: 8,
+        borderWidth:.5
     },
     actionIcon: {
         width: 48,
@@ -1108,7 +1109,7 @@ const styles = StyleSheet.create({
         letterSpacing: -0.2,
     },
     actionDesc: { 
-        fontSize: 13, 
+        fontSize: 12, 
         lineHeight: 18,
         opacity: 0.8,
     },
@@ -1199,7 +1200,7 @@ const styles = StyleSheet.create({
     // change password modal styles
      modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
@@ -1207,8 +1208,9 @@ const styles = StyleSheet.create({
         paddingBottom: 0,
     },
     modalContent: {
-        borderRadius: 20,
-        padding: 16,
+        borderRadius: 10,
+        borderWidth:.5,
+        padding: 10,
         width: '100%',
         maxWidth: 400,
         alignItems: 'center',
@@ -1235,15 +1237,15 @@ const styles = StyleSheet.create({
     },
     modalButtons: {
         flexDirection: 'row',
-        gap: 12,
+        gap: 8,
         width: '100%',
         marginTop: 16,
     },
     modalButton: {
         flex: 1,
-        paddingVertical: 12,
+        paddingVertical: 10,
         paddingHorizontal: 20,
-        borderRadius: 12,
+        borderRadius: 8,
         alignItems: 'center',
     },
     modalButtonSingle: {

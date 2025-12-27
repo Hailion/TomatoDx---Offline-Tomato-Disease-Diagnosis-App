@@ -57,7 +57,8 @@ export default function HistoryScreen() {
     if (nameLower.includes('spider') && nameLower.includes('mite')) return 'spider_mites_two_spotted_spider_mites';
     if (nameLower.includes('mosaic')) return 'tomato_mosaic_virus';
     if (nameLower.includes('bacterial') && nameLower.includes('spot')) return 'bacterial_spot';
-    return 'healthy';
+    if (nameLower.includes('unknown')) return 'unknown'; // Explicitly handle unknown
+    return 'unknown'; // Default fallback should be unknown, not healthy
   };
 
   // Load diagnoses from database
@@ -124,8 +125,8 @@ export default function HistoryScreen() {
         else if (diseaseName.toLowerCase().includes('blight')) emoji = '⚠️';
         else if (diseaseName.toLowerCase().includes('spot')) emoji = '🦠';
         else if (diseaseName.toLowerCase().includes('mildew')) emoji = '🍂';
-        
-        
+
+
         // Date + time for the row
         const displayDate = i18n.language === 'am'
           ? formatEthiopianDate(date)           // your Ethiopian formatter WITH time
@@ -136,22 +137,22 @@ export default function HistoryScreen() {
           ? formatEthiopianDate(date).split('፣')[0]  // take only "day month year"
           : date.toLocaleDateString();               // date only in English
 
-      return {
-      id: d.diagnosisId,
-      disease: diseaseName,
-      diseaseAlt: diseaseNameAlt,
-      confidence,
-      date: displayDate,     // used in <Text>{item.date}</Text> (with time)
-      timestamp,
-      severity,
-      status,
-      image: d.filePath,
-      emoji,
-      imageUri: d.filePath,
-      groupDate,             // used only for grouping / section titles
-    };
-    });
-    setDiagnoses(formatted);
+        return {
+          id: d.diagnosisId,
+          disease: diseaseName,
+          diseaseAlt: diseaseNameAlt,
+          confidence,
+          date: displayDate,     // used in <Text>{item.date}</Text> (with time)
+          timestamp,
+          severity,
+          status,
+          image: d.filePath,
+          emoji,
+          imageUri: d.filePath,
+          groupDate,             // used only for grouping / section titles
+        };
+      });
+      setDiagnoses(formatted);
     } catch (error) {
       console.error('Error loading diagnoses:', error);
       setDiagnoses([]);
@@ -327,7 +328,7 @@ export default function HistoryScreen() {
       overshootRight={false}
     >
       <TouchableOpacity
-        style={[styles.scanCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`,borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+        style={[styles.scanCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
         onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
       >
         <View style={styles.scanHeader}>
@@ -401,17 +402,17 @@ export default function HistoryScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-       <ImageBackground
-      source={theme === 'dark' ? require('../../assets/images/screenBg/history.jpg') : require('../../assets/images/screenBg/history1.jpg')}
-      style={styles.backgroundImage}
-      imageStyle={{ resizeMode: 'cover' }}
-    >
-      <View style={[styles.overlay, { backgroundColor:'rgba(0,0,0,0.9)' }]}>
-      <View style={[styles.container, { backgroundColor: `${colors.background}85` }]}>
-          {/* Header */}
-          <View style={styles.headerTop}>
+      <ImageBackground
+        source={theme === 'dark' ? require('../../assets/images/screenBg/history.jpg') : require('../../assets/images/screenBg/history1.jpg')}
+        style={styles.backgroundImage}
+        imageStyle={{ resizeMode: 'cover' }}
+      >
+        <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
+          <View style={[styles.container, { backgroundColor: `${colors.background}85` }]}>
+            {/* Header */}
+            <View style={styles.headerTop}>
               <View style={styles.titleContainer}>
-                <Text style={[styles.title, { color: colors.text}]}>
+                <Text style={[styles.title, { color: colors.text }]}>
                   {t('history.title')}
                 </Text>
                 <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
@@ -419,7 +420,7 @@ export default function HistoryScreen() {
                 </Text>
               </View>
               <TouchableOpacity
-                style={[styles.filterButton, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
+                style={[styles.filterButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
                 onPress={() => setShowFilters(!showFilters)}
               >
                 <Ionicons
@@ -432,197 +433,197 @@ export default function HistoryScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
 
-          <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-            
+              <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
 
-            {/* Quick Stats */}
-            <View style={styles.statsRow}>
-              <View style={[styles.statCard, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark }]}>
-                <Ionicons name="scan" size={20} color={colors.primary} />
-                <Text style={[styles.statNumber, { color: colors.text }]}>
-                  {filteredAndSortedScans.length}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                  {t('history.totalScans')}
-                </Text>
-              </View>
-              <View style={[styles.statCard, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
-                <Ionicons name="trending-up" size={20} color={colors.primary} />
-                <Text style={[styles.statNumber, { color: colors.text }]}>
-                  {Math.round(filteredAndSortedScans.reduce((acc, scan) => acc + scan.confidence, 0) / filteredAndSortedScans.length) || 0}%
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                  {t('history.avgConfidence')}
-                </Text>
-              </View>
-              <View style={[styles.statCard, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
-                <Ionicons name="heart" size={20} color={colors.primary} />
-                <Text style={[styles.statNumber, { color: colors.text }]}>
-                  {filteredAndSortedScans.filter(scan => scan.severity === 'none').length}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                  {t('history.healthy')}
-                </Text>
-              </View>
-            </View>
-          </Animated.View>
 
-          {/* Filters Panel */}
-          {showFilters && (
-            <View style={[styles.filtersPanel, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
-              {/* Filter Types */}
-              <Text style={[styles.filtersTitle, { color: colors.text }]}>
-                {t('history.filters.title')}
-              </Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.filtersScroll}>
-                <View style={styles.filtersRow}>
-                  {filters.map((filter) => (
+                {/* Quick Stats */}
+                <View style={styles.statsRow}>
+                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                    <Ionicons name="scan" size={20} color={colors.primary} />
+                    <Text style={[styles.statNumber, { color: colors.text }]}>
+                      {filteredAndSortedScans.length}
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                      {t('history.totalScans')}
+                    </Text>
+                  </View>
+                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                    <Ionicons name="trending-up" size={20} color={colors.primary} />
+                    <Text style={[styles.statNumber, { color: colors.text }]}>
+                      {Math.round(filteredAndSortedScans.reduce((acc, scan) => acc + scan.confidence, 0) / filteredAndSortedScans.length) || 0}%
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                      {t('history.avgConfidence')}
+                    </Text>
+                  </View>
+                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                    <Ionicons name="heart" size={20} color={colors.primary} />
+                    <Text style={[styles.statNumber, { color: colors.text }]}>
+                      {filteredAndSortedScans.filter(scan => scan.severity === 'none').length}
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                      {t('history.healthy')}
+                    </Text>
+                  </View>
+                </View>
+              </Animated.View>
+
+              {/* Filters Panel */}
+              {showFilters && (
+                <View style={[styles.filtersPanel, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                  {/* Filter Types */}
+                  <Text style={[styles.filtersTitle, { color: colors.text }]}>
+                    {t('history.filters.title')}
+                  </Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.filtersScroll}>
+                    <View style={styles.filtersRow}>
+                      {filters.map((filter) => (
+                        <TouchableOpacity
+                          key={filter.key}
+                          style={[
+                            styles.filterChip,
+                            activeFilter === filter.key && [styles.filterChipActive, { backgroundColor: colors.primary }],
+                            { borderColor: filter.color }
+                          ]}
+                          onPress={() => setActiveFilter(filter.key)}
+                        >
+                          <Ionicons
+                            name={filter.icon as any}
+                            size={16}
+                            color={activeFilter === filter.key ? '#fff' : filter.color}
+                          />
+                          <Text style={[
+                            styles.filterChipText,
+                            { color: activeFilter === filter.key ? '#fff' : filter.color }
+                          ]}>
+                            {filter.label}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </ScrollView>
+
+                  {/* Sort Options */}
+                  <Text style={[styles.filtersTitle, { color: colors.text }]}>
+                    {t('history.sort.title')}
+                  </Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+                    <View style={styles.sortOptions}>
+                      {sortOptions.map((sort) => (
+                        <TouchableOpacity
+                          key={sort.key}
+                          style={[
+                            styles.sortOption,
+                            { backgroundColor: colors.backgroundAlt },
+                            activeSort === sort.key && [styles.sortOptionActive, { backgroundColor: colors.successBg }],
+                          ]}
+                          onPress={() => setActiveSort(sort.key)}
+                        >
+                          <Ionicons
+                            name={sort.icon as any}
+                            size={16}
+                            color={activeSort === sort.key ? colors.primary : colors.textSecondary}
+                          />
+                          <Text style={[
+                            styles.sortOptionText,
+                            { color: colors.textSecondary },
+                            activeSort === sort.key && { color: colors.primary }
+                          ]}>
+                            {sort.label}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </ScrollView>
+                </View>
+              )}
+
+              {/* Scan History */}
+              <View style={styles.section}>
+                {filteredAndSortedScans.length > 0 ? (
+                  <SectionList
+                    sections={groupedScans}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => <ScanItem item={item} />}
+                    renderSectionHeader={({ section: { title } }) => (
+                      <Text style={[styles.sectionHeader, { color: colors.textSecondary }]}>
+                        {title}
+                      </Text>
+                    )}
+                    scrollEnabled={false}
+                    contentContainerStyle={styles.listContent}
+                  />
+                ) : (
+                  <View style={styles.emptyState}>
+                    <Ionicons name="search" size={64} color={colors.muted} />
+                    <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                      {t('history.noResults')}
+                    </Text>
+                    <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                      {t('history.noResultsDesc')}
+                    </Text>
                     <TouchableOpacity
-                      key={filter.key}
-                      style={[
-                        styles.filterChip,
-                        activeFilter === filter.key && [styles.filterChipActive, { backgroundColor: colors.primary }],
-                        { borderColor: filter.color }
-                      ]}
-                      onPress={() => setActiveFilter(filter.key)}
+                      style={[styles.resetFiltersButton, { backgroundColor: colors.primary }]}
+                      onPress={() => setActiveFilter('all')}
                     >
-                      <Ionicons
-                        name={filter.icon as any}
-                        size={16}
-                        color={activeFilter === filter.key ? '#fff' : filter.color}
-                      />
-                      <Text style={[
-                        styles.filterChipText,
-                        { color: activeFilter === filter.key ? '#fff' : filter.color }
-                      ]}>
-                        {filter.label}
+                      <Text style={styles.resetFiltersText}>
+                        {t('history.resetFilters')}
                       </Text>
                     </TouchableOpacity>
-                  ))}
-                </View>
-              </ScrollView>
-
-              {/* Sort Options */}
-              <Text style={[styles.filtersTitle, { color: colors.text }]}>
-                {t('history.sort.title')}
-              </Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-              <View style={styles.sortOptions}>
-                {sortOptions.map((sort) => (
-                  <TouchableOpacity
-                    key={sort.key}
-                    style={[
-                      styles.sortOption,
-                      { backgroundColor: colors.backgroundAlt },
-                      activeSort === sort.key && [styles.sortOptionActive, { backgroundColor: colors.successBg }],
-                    ]}
-                    onPress={() => setActiveSort(sort.key)}
-                  >
-                    <Ionicons
-                      name={sort.icon as any}
-                      size={16}
-                      color={activeSort === sort.key ? colors.primary : colors.textSecondary}
-                    />
-                    <Text style={[
-                      styles.sortOptionText,
-                      { color: colors.textSecondary },
-                      activeSort === sort.key && { color: colors.primary }
-                    ]}>
-                      {sort.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              </ScrollView>
-            </View>
-          )}
-
-          {/* Scan History */}
-          <View style={styles.section}>
-            {filteredAndSortedScans.length > 0 ? (
-              <SectionList
-                sections={groupedScans}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <ScanItem item={item} />}
-                renderSectionHeader={({ section: { title } }) => (
-                  <Text style={[styles.sectionHeader, { color: colors.textSecondary}]}>
-                    {title}
-                  </Text>
+                  </View>
                 )}
-                scrollEnabled={false}
-                contentContainerStyle={styles.listContent}
-              />
-            ) : (
-              <View style={styles.emptyState}>
-                <Ionicons name="search" size={64} color={colors.muted} />
-                <Text style={[styles.emptyTitle, { color: colors.text }]}>
-                  {t('history.noResults')}
-                </Text>
-                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                  {t('history.noResultsDesc')}
-                </Text>
-                <TouchableOpacity
-                  style={[styles.resetFiltersButton, { backgroundColor: colors.primary }]}
-                  onPress={() => setActiveFilter('all')}
-                >
-                  <Text style={styles.resetFiltersText}>
-                    {t('history.resetFilters')}
-                  </Text>
-                </TouchableOpacity>
               </View>
-            )}
-          </View>
-        </ScrollView>
+            </ScrollView>
 
-        {/* Delete Confirmation Modal */}
-        <Modal
-          visible={deleteModalVisible}
-          transparent
-          animationType="fade"
-          onRequestClose={handleDeleteCancel}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-              <View style={[styles.modalIcon, { backgroundColor: colors.danger + '20' }]}>
-                <Text style={styles.modalEmoji}>{itemToDelete?.emoji || '⚠️'}</Text>
-              </View>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                {t('history.deleteConfirmTitle')}
-              </Text>
-              <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
-                {t('history.deleteConfirmMessage')}
-              </Text>
-              {itemToDelete && (
-                <Text style={[styles.modalDiseaseName, { color: colors.text }]}>
-                  {itemToDelete.disease}
-                </Text>
-              )}
-              <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: colors.backgroundAlt }]}
-                  onPress={handleDeleteCancel}
-                >
-                  <Text style={[styles.modalButtonText, { color: colors.text }]}>
-                    {t('common.cancel')}
+            {/* Delete Confirmation Modal */}
+            <Modal
+              visible={deleteModalVisible}
+              transparent
+              animationType="fade"
+              onRequestClose={handleDeleteCancel}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                  <View style={[styles.modalIcon, { backgroundColor: colors.danger + '20' }]}>
+                    <Text style={styles.modalEmoji}>{itemToDelete?.emoji || '⚠️'}</Text>
+                  </View>
+                  <Text style={[styles.modalTitle, { color: colors.text }]}>
+                    {t('history.deleteConfirmTitle')}
                   </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.modalButtonDelete, { backgroundColor: colors.danger }]}
-                  onPress={handleDeleteConfirm}
-                >
-                  <Text style={styles.modalButtonTextDelete}>
-                    {t('common.delete')}
+                  <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+                    {t('history.deleteConfirmMessage')}
                   </Text>
-                </TouchableOpacity>
+                  {itemToDelete && (
+                    <Text style={[styles.modalDiseaseName, { color: colors.text }]}>
+                      {itemToDelete.disease}
+                    </Text>
+                  )}
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity
+                      style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: colors.backgroundAlt }]}
+                      onPress={handleDeleteCancel}
+                    >
+                      <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                        {t('common.cancel')}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.modalButton, styles.modalButtonDelete, { backgroundColor: colors.danger }]}
+                      onPress={handleDeleteConfirm}
+                    >
+                      <Text style={styles.modalButtonTextDelete}>
+                        {t('common.delete')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
-            </View>
+            </Modal>
           </View>
-        </Modal>
-      </View>
-      </View>
-    </ImageBackground>
+        </View>
+      </ImageBackground>
     </GestureHandlerRootView>
   );
 }
@@ -645,7 +646,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerTop: {
-     paddingTop: 60,
+    paddingTop: 60,
     paddingHorizontal: 20,
     paddingBottom: 16,
     flexDirection: 'row',
@@ -671,8 +672,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     gap: 6,
-    borderWidth:.5
-    
+    borderWidth: .5
+
   },
   filterButtonText: {
     fontSize: 14,
@@ -687,7 +688,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
-    borderWidth:.5
+    borderWidth: .5
   },
   statNumber: {
     fontSize: 20,
@@ -703,7 +704,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     borderRadius: 10,
     padding: 16,
-    borderWidth:.5            
+    borderWidth: .5
   },
   filtersTitle: {
     fontSize: 16,
@@ -712,7 +713,7 @@ const styles = StyleSheet.create({
   },
   filtersScroll: {
     marginBottom: 16,
-    paddingBottom:10
+    paddingBottom: 10
   },
   filtersRow: {
     flexDirection: 'row',
@@ -739,7 +740,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    paddingBottom:6
+    paddingBottom: 6
   },
   sortOption: {
     flexDirection: 'row',
@@ -774,7 +775,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginBottom: 10,
-    borderWidth:.5
+    borderWidth: .5
   },
   scanHeader: {
     flexDirection: 'row',
@@ -889,9 +890,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 80,
     marginBottom: 12,
-    borderTopRightRadius:10,
-    borderBottomRightRadius:10
-    },
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

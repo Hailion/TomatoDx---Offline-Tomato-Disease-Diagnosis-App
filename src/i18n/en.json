@@ -348,62 +348,62 @@
       }
     },
     "analytics": {
-        "title": "Analytics",
-        "overviewTitle": "Overview",
-        "loading": "Loading analytics…",
-        "summaryTitle": "Total diagnoses: {{count}}",
-        "avgConfidence": "Average confidence: {{value}}",
-        "healthyCount": "Healthy leaves: {{count}}",
-        "successRateLabel": "Success rate",
-        "topDisease": "Most common: {{name}} ({{count}} cases)",
-        "last7Days": "Scans in the last 7 days",
-        "levels": "Confidence levels - Low: {{low}}, Medium: {{medium}}, High: {{high}}",
-        "lowRisk": "Low risk",
-        "mediumRisk": "Medium risk",
-        "highRisk": "High risk",
-        "verifyingAccess": "Verifying admin access…",
-        "authError": "Unable to verify admin access.",
-        "loadError": "Failed to load analytics data.",
-        "exportData": "Export Data",
-        "exportSuccess": "Analytics data exported successfully.",
-        "exportError": "Failed to export analytics data.",
-        "exportLocation": {
-          "downloads": "Saved to Downloads folder.",
-          "internal": "Saved to internal app storage."
-        },
-        "subtitle": "Comprehensive Analysis & Insights",
-        "tabOverview": "Overview",
-        "tabDiseases": "Diseases",
-        "tabTrends": "Trends",
-        "totalScansLabel": "Total scans",
-        "healthyLabel": "Healthy leaves",
-        "atRiskLabel": "At-risk leaves",  
-        "riskLabel": "Risk",
-        "lowRiskLabel": "Low",
-        "mediumRiskLabel": "Medium",
-        "highRiskLabel": "High",
-        "riskDistributionTitle": "Risk Distribution",      
-        "sevenDayTrend": "7-Day Activity Trend",
-        "topDiseasesTitle": "Top Detected Diseases",
-        "topDiseasesSubtitle": "Most frequently identified conditions",
-        "monthlyTrendsTitle": "Monthly Trends",
-        "dataManagementTitle": "Data Management",
-        "exportDataButton": "Export Data",
-        "clearDataButton": "Clear Data",
-        "exportModal": {
-          "title": "Export",
-          "fileNamePlaceholder": "File name",
-          "json": "JSON",
-          "csv": "CSV",
-          "cancel": "Cancel"
-        },
-        "clearModal": {
-          "title": "Clear All Analytics Data?",
-          "message": "This will delete all stored analytics records. This cannot be undone."
-        },
-        "clearSuccess": "All analytics data has been cleared successfully.",
-        "clearError": "Failed to clear analytics data."
-            }, 
+      "title": "Analytics",
+      "overviewTitle": "Overview",
+      "loading": "Loading analytics…",
+      "summaryTitle": "Total diagnoses: {{count}}",
+      "avgConfidence": "Average confidence: {{value}}",
+      "healthyCount": "Healthy leaves: {{count}}",
+      "successRateLabel": "Success rate",
+      "topDisease": "Most common: {{name}} ({{count}} cases)",
+      "last7Days": "Scans in the last 7 days",
+      "levels": "Confidence levels - Low: {{low}}, Medium: {{medium}}, High: {{high}}",
+      "lowRisk": "Low risk",
+      "mediumRisk": "Medium risk",
+      "highRisk": "High risk",
+      "verifyingAccess": "Verifying admin access…",
+      "authError": "Unable to verify admin access.",
+      "loadError": "Failed to load analytics data.",
+      "exportData": "Export Data",
+      "exportSuccess": "Analytics data exported successfully.",
+      "exportError": "Failed to export analytics data.",
+      "exportLocation": {
+        "downloads": "Saved to Downloads folder.",
+        "internal": "Saved to internal app storage."
+      },
+      "subtitle": "Comprehensive Analysis & Insights",
+      "tabOverview": "Overview",
+      "tabDiseases": "Diseases",
+      "tabTrends": "Trends",
+      "totalScansLabel": "Total scans",
+      "healthyLabel": "Healthy leaves",
+      "atRiskLabel": "At-risk leaves",
+      "riskLabel": "Risk",
+      "lowRiskLabel": "Low",
+      "mediumRiskLabel": "Medium",
+      "highRiskLabel": "High",
+      "riskDistributionTitle": "Risk Distribution",
+      "sevenDayTrend": "7-Day Activity Trend",
+      "topDiseasesTitle": "Top Detected Diseases",
+      "topDiseasesSubtitle": "Most frequently identified conditions",
+      "monthlyTrendsTitle": "Monthly Trends",
+      "dataManagementTitle": "Data Management",
+      "exportDataButton": "Export Data",
+      "clearDataButton": "Clear Data",
+      "exportModal": {
+        "title": "Export",
+        "fileNamePlaceholder": "File name",
+        "json": "JSON",
+        "csv": "CSV",
+        "cancel": "Cancel"
+      },
+      "clearModal": {
+        "title": "Clear All Analytics Data?",
+        "message": "This will delete all stored analytics records. This cannot be undone."
+      },
+      "clearSuccess": "All analytics data has been cleared successfully.",
+      "clearError": "Failed to clear analytics data."
+    },
     "system": {
       "title": "Security",
       "systemAdministration": "System Administration",
@@ -420,31 +420,30 @@
       "subtitle": "Enter your admin password to unlock admin mode.",
       "passwordPlaceholder": "Enter Password",
       "unlockButton": "Unlock Admin Mode",
-      "errorAllRequired":"All fields are required",
-      "errorMismatch":"Passwords do not match",
-      "errorIncorrect":"Incorrect password",
-      "errorCurrentIncorrect":"Current password is incorrect",
-      "updateSuccess":"Password updated successfully.",
-      "updateError":"Failed to update password.",
-      "verifyError":"Unable to verify admin access."
-   
+      "errorAllRequired": "All fields are required",
+      "errorMismatch": "Passwords do not match",
+      "errorIncorrect": "Incorrect password",
+      "errorCurrentIncorrect": "Current password is incorrect",
+      "updateSuccess": "Password updated successfully.",
+      "updateError": "Failed to update password.",
+      "verifyError": "Unable to verify admin access."
     },
-    "password":{
-      "changeTitle":"Change Password",
-      "changeDescription":"Enter your admin password to unlock admin mode.",
-      "changeMessage":"Enter your admin password to unlock admin mode.",
-      "currentPlaceholder":"Enter Current Password",
-      "newPlaceholder":"Enter New Password",
-      "confirmPlaceholder":"Confirm New Password",
-      "errorAllRequired":"All fields are required",
-      "errorMismatch":"Passwords do not match",
-      "errorCurrentIncorrect":"Current password is incorrect",
-      "errorTooShort":"Password must be at least 8 characters long.",
-      "changeButton":"Change Password",
-      "changeSuccess":"Password changed successfully.",
-      "changeError":"Failed to change password.",
-      "updateError":"Failed to update password."
-    },  
+    "password": {
+      "changeTitle": "Change Password",
+      "changeDescription": "Enter your admin password to unlock admin mode.",
+      "changeMessage": "Enter your admin password to unlock admin mode.",
+      "currentPlaceholder": "Enter Current Password",
+      "newPlaceholder": "Enter New Password",
+      "confirmPlaceholder": "Confirm New Password",
+      "errorAllRequired": "All fields are required",
+      "errorMismatch": "Passwords do not match",
+      "errorCurrentIncorrect": "Current password is incorrect",
+      "errorTooShort": "Password must be at least 8 characters long.",
+      "changeButton": "Change Password",
+      "changeSuccess": "Password changed successfully.",
+      "changeError": "Failed to change password.",
+      "updateError": "Failed to update password."
+    },
     "recentActivity": "Recent Activity",
     "info": "Development admin panel. Production needs proper authentication."
   },
@@ -454,7 +453,7 @@
     "delete": "Delete",
     "save": "Save",
     "share": "Share",
-    "confirm":"Confirm",
+    "confirm": "Confirm",
     "edit": "Edit",
     "loading": "Loading...",
     "error": "Error",
@@ -764,6 +763,25 @@
         "Disinfect tools and stakes",
         "Control splashing with mulch",
         "Space plants appropriately"
+      ]
+    },
+    "unknown": {
+      "name": "Unknown / Uncertain",
+      "description": "The disease could not be confidently identified.",
+      "symptoms": [
+        "Cannot identify specific symptoms"
+      ],
+      "treatment": {
+        "immediate": [
+          "Do not apply treatment without confirmation",
+          "Consult an agricultural expert"
+        ],
+        "longTerm": [
+          "Monitor plant progress"
+        ]
+      },
+      "prevention": [
+        "Regular monitoring"
       ]
     }
   },

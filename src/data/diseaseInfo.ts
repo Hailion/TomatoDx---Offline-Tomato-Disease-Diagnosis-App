@@ -15,6 +15,7 @@ export const DISEASE_IDS = {
   SPIDER_MITES_TWO_SPOTTED_SPIDER_MITES: 'spider_mites_two_spotted_spider_mites',
   TOMATO_MOSAIC_VIRUS: 'tomato_mosaic_virus',
   BACTERIAL_SPOT: 'bacterial_spot',
+  UNKNOWN: 'unknown',
 };
 
 export const DISEASE_INFO: Record<string, DiseaseInfo> = {
@@ -67,6 +68,11 @@ export const DISEASE_INFO: Record<string, DiseaseInfo> = {
     id: 'bacterial_spot',
     severity: 'Medium',
     image: '💧',
+  },
+  unknown: {
+    id: 'unknown',
+    severity: 'Low',
+    image: '❓',
   },
 };
 

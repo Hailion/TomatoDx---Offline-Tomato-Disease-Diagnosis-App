@@ -290,7 +290,11 @@ export default function ResultScreen() {
     if (nameLower.includes('spider') && nameLower.includes('mite')) return 'spider_mites_two_spotted_spider_mites';
     if (nameLower.includes('mosaic')) return 'tomato_mosaic_virus';
     if (nameLower.includes('bacterial') && nameLower.includes('spot')) return 'bacterial_spot';
-    return 'healthy';
+    if (nameLower.includes('unknown')) return 'unknown'; // Explicitly handle unknown
+    
+    // Default fallback: check if it looks healthy, otherwise unknown
+    // This prevents "Unknown" model output from being classified as "Healthy"
+    return 'unknown'; 
   };
 
   const getSeverityColor = (severity: string) => {

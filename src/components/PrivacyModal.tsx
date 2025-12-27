@@ -184,11 +184,11 @@ export default function PrivacyModal({ visible, onClose, onToggle, optIn }: Priv
                         {/* Actions */}
                         <View style={styles.actions}>
                             <TouchableOpacity
-                                style={[styles.declineButton, { backgroundColor: colors.backgroundAlt }]}
+                                style={[styles.declineButton, { backgroundColor: colors.backgroundAlt ,borderColor:colors.border}]}
                                 onPress={() => handleClose(false)}
                                 activeOpacity={0.8}
                             >
-                                <Text style={[styles.declineButtonText, { color: colors.textSecondary }]}>
+                                <Text style={[styles.declineButtonText, { color: colors.textSecondary, }]}>
                                     {t('privacy.decline')}
                                 </Text>
                             </TouchableOpacity>
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 400,
         maxHeight: SCREEN_HEIGHT * 0.8,
-        borderRadius: 20,
+        borderRadius: 10,
         padding: 24,
        
     },
@@ -309,9 +309,11 @@ const styles = StyleSheet.create({
         flex: 2,
         paddingVertical: 14,
         paddingHorizontal: 20,
-        borderRadius: 12,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth:1,
+        
     },
     declineButtonText: {
         fontSize: 16,
@@ -322,7 +324,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingVertical: 14,
         paddingHorizontal: 20,
-        borderRadius: 12,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,

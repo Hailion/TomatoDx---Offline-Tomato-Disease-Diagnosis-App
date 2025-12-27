@@ -11,6 +11,8 @@ export type ThemeTokens = {
   muted: string;
   mutedLight: string;
   border: string;
+  borderDark: string;
+  borderLight: string;
   primary: string;
   primaryDark: string;
   primaryDarker: string;
@@ -49,6 +51,8 @@ const light: ThemeTokens = {
   mutedLight: '#696f78ff',
   // borders / strokes
   border: '#a8b0c1ff',
+  borderDark: '#374151',
+  borderLight: '#a8b0c1ff',
   // primary / success / accent
   primary: '#22c55e',           // green (button backgrounds)
   primaryDark: '#16a34a',
@@ -84,13 +88,15 @@ const dark: ThemeTokens = {
   card: '#111827',
   cardOverlay: '#1118279a',
   // text
-  text: '#f8fffc',             // bright text from files
+  text: '#c0c4c2ff',             // bright text from files
   textSecondary: '#e5e7eb',    // lighter secondary text in dark mode
   textTertiary: '#9ca3af',
   muted: '#9ca3af',
   mutedLight: '#6b7280',
   // borders / strokes
   border: '#374151',
+  borderDark: '#374151',
+  borderLight: '#d5def4ff',
   // primary / success / accent
   primary: '#22c55e',          // keep primary green same in dark
   primaryDark: '#16a34a',

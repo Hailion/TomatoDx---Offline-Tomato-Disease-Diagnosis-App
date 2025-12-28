@@ -87,7 +87,17 @@
     "loading": "Loading...",
     "error": "Error",
     "notFound": "Diagnosis not found",
-    "loadError": "Failed to load diagnosis"
+    "loadError": "Failed to load diagnosis",
+    "shareTitle": "TomatoDx Diagnosis",
+    "disease": "Disease",
+    "severity": "Severity",
+    "downloadApp": "Download TomatoDx for accurate tomato disease diagnosis.",
+    "shareDesc": "Choose how you want to share this result",
+    "shareImage": "Share Image",
+    "shareImageDesc": "Share the diagnosis image",
+    "shareText": "Share Report",
+    "shareTextDesc": "Share the detailed diagnosis report",
+    "noImageError": "Image not available for sharing"
   },
   "history": {
     "title": "History",
@@ -794,7 +804,9 @@
   "diseaseEditor": {
     "title": "Edit Diseases",
     "selectDisease": "Select Disease",
+    "diseaseId": "Disease ID",
     "diseaseInfo": "Disease Information",
+    "editDiseaseInfo": "Edit Disease Information",
     "nameEn": "Name (English)",
     "nameAm": "Name (Amharic)",
     "nameEnPlaceholder": "Enter disease name in English",

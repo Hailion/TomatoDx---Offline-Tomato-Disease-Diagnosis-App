@@ -18,6 +18,7 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: theme === 'dark' ? `${colors.card}DD` : `${colors.card}`,
           borderTopColor: colors.border,
+          marginBottom: 6,
         },
         tabBarActiveTintColor: colors.primary,
         headerShown: false,
@@ -32,7 +33,7 @@ export default function TabLayout() {
           ),
         }}
       />
-     
+
       <Tabs.Screen
         name="history"
         options={{
@@ -42,7 +43,7 @@ export default function TabLayout() {
           ),
         }}
       />
-       <Tabs.Screen
+      <Tabs.Screen
         name="scan"
         options={{
           title: t('scan.navtitle'),
@@ -50,12 +51,12 @@ export default function TabLayout() {
             <View style={styles.scanIconContainer}>
               <View style={[
                 styles.scanIconBackground,
-                { backgroundColor: focused ? `${colors.primary}EE` : `${colors.card}`, borderColor:  `${colors.border}` }
+                { backgroundColor: focused ? `${colors.primary}EE` : `${colors.card}`, borderColor: `${colors.border}` }
               ]}>
-                <Ionicons 
-                  name="camera" 
-                  size={size * 1.4} 
-                  color={focused ? '#ffffff' : colors.primary} 
+                <Ionicons
+                  name="camera"
+                  size={size * 1.4}
+                  color={focused ? '#ffffff' : colors.primary}
                 />
               </View>
             </View>
@@ -107,7 +108,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="help"
         options={{
-           title: t('help.navtitle'),
+          title: t('help.navtitle'),
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="help-circle" size={size} color={color} />
           ),
@@ -120,38 +121,38 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-      
+
   );
 }
 
 const styles = StyleSheet.create({
-    backgroundImage: {
-      flex: 1,
-      width: '100%',
-      height: '100%',
-    },
-    overlay: {
-      flex: 1,
-      width: '100%',
-      height: '100%',
-    },
-    scanIconContainer: {
-      top: -16,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    scanIconBackground: {
-      width: 60,
-      height: 58,
-      borderRadius: 50,
-      justifyContent: 'center',
-      alignItems: 'center',      
-      borderTopWidth: 1,
-      borderLeftWidth: .3,
-      borderRightWidth: .3,
-      borderBottomWidth: .1,
-          },
-    scanTabButton: {
-      top: 5,
-    },
-  });
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  scanIconContainer: {
+    top: -16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scanIconBackground: {
+    width: 60,
+    height: 58,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderLeftWidth: .3,
+    borderRightWidth: .3,
+    borderBottomWidth: .1,
+  },
+  scanTabButton: {
+    top: 5,
+  },
+});

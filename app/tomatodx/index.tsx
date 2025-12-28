@@ -26,6 +26,7 @@ export default function HomeScreen() {
   const statsAnim = useRef(new Animated.Value(0)).current;
   const actionsAnim = useRef(new Animated.Value(0)).current;
   const recentAnim = useRef(new Animated.Value(0)).current;
+  const seesawAnim = useRef(new Animated.Value(0)).current;
 
   // Load stats from database
   useFocusEffect(
@@ -74,6 +75,32 @@ export default function HomeScreen() {
         useNativeDriver: true,
       }),
     ]).start();
+
+    sixSeven();
+  };
+
+  const sixSeven = () => {
+    seesawAnim.setValue(0);
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(seesawAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(seesawAnim, {
+          toValue: -1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(seesawAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]),
+      { iterations: 2 }
+    ).start();
   };
 
   const loadStats = () => {
@@ -163,9 +190,9 @@ export default function HomeScreen() {
                 {/* <Ionicons name="leaf" size={32} color={colors.success} /> */}
                 <Image source={require('../../assets/images/app/3.png')} style={{ ...styles.logoImage, borderRadius: 60 }} />
               </View>
-              <Text style={[styles.title, { color: '#fff' }]}>
+              <Animated.Text style={[styles.title, { color: '#fff', transform: [{ rotate: seesawAnim.interpolate({ inputRange: [-1, 1], outputRange: ['-10deg', '10deg'] }) }] }]}>
                 TomatoDx
-              </Text>
+              </Animated.Text>
               <Text style={[styles.subtitle, { color: '#fff' }]}>
                 {t('home.tagline')}
               </Text>
@@ -175,7 +202,7 @@ export default function HomeScreen() {
         <ScrollView style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
 
           {/* Stats Overview */}
-          <Animated.View style={[styles.statsCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}BB`, opacity: statsAnim, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+          <Animated.View style={[styles.statsCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}BB`, opacity: statsAnim, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}>
             <View style={styles.statItem}>
               <Text style={[styles.statNumber, { color: colors.text }]}>
                 {stats.totalScans}
@@ -212,7 +239,7 @@ export default function HomeScreen() {
             {features.map((feature, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.featureCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+                style={[styles.featureCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
                 onPress={() => router.push(feature.route as any)}
               >
                 <View style={[styles.featureIcon, { backgroundColor: feature.color }]}>
@@ -236,7 +263,7 @@ export default function HomeScreen() {
           </Animated.View>
 
           {/* Recent Activity */}
-          <Animated.View style={[styles.section, { marginBottom: 24, opacity: recentAnim, transform: [{ translateY: Animated.multiply(recentAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }]}>
+          <Animated.View style={[styles.section, { marginBottom: 24, opacity: recentAnim, transform: [{ translateY: Animated.multiply(recentAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }, theme !== 'dark' ? styles.cardShadow : undefined]}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               {t('home.recentActivity')}
             </Text>
@@ -268,6 +295,16 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
+  },
+  cardShadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   container: {
     flex: 1,

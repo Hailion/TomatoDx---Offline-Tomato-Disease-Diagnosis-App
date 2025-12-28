@@ -42,7 +42,7 @@ const light: ThemeTokens = {
   backgroundAlt: '#f8fffc',     // subtle alternate background found in files
   surface: '#ffffff',           // card / surface
   card: '#ffffff',
-  cardOverlay: '#ffffff9a', 
+  cardOverlay: '#ffffff9a',
   // text
   text: '#1f2937',              // primary text dark gray
   textSecondary: '#374151',     // secondary text
@@ -96,7 +96,7 @@ const dark: ThemeTokens = {
   // borders / strokes
   border: '#374151',
   borderDark: '#374151',
-  borderLight: '#d5def4ff',
+  borderLight: '#6b7282ff',
   // primary / success / accent
   primary: '#22c55e',          // keep primary green same in dark
   primaryDark: '#16a34a',

@@ -328,7 +328,7 @@ export default function HistoryScreen() {
       overshootRight={false}
     >
       <TouchableOpacity
-        style={[styles.scanCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+        style={[styles.scanCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
         onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
       >
         <View style={styles.scanHeader}>
@@ -440,7 +440,7 @@ export default function HistoryScreen() {
 
                 {/* Quick Stats */}
                 <View style={styles.statsRow}>
-                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}>
                     <Ionicons name="scan" size={20} color={colors.primary} />
                     <Text style={[styles.statNumber, { color: colors.text }]}>
                       {filteredAndSortedScans.length}
@@ -449,7 +449,7 @@ export default function HistoryScreen() {
                       {t('history.totalScans')}
                     </Text>
                   </View>
-                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
                     <Ionicons name="trending-up" size={20} color={colors.primary} />
                     <Text style={[styles.statNumber, { color: colors.text }]}>
                       {Math.round(filteredAndSortedScans.reduce((acc, scan) => acc + scan.confidence, 0) / filteredAndSortedScans.length) || 0}%
@@ -458,7 +458,7 @@ export default function HistoryScreen() {
                       {t('history.avgConfidence')}
                     </Text>
                   </View>
-                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
                     <Ionicons name="heart" size={20} color={colors.primary} />
                     <Text style={[styles.statNumber, { color: colors.text }]}>
                       {filteredAndSortedScans.filter(scan => scan.severity === 'none').length}
@@ -472,7 +472,7 @@ export default function HistoryScreen() {
 
               {/* Filters Panel */}
               {showFilters && (
-                <View style={[styles.filtersPanel, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                <View style={[styles.filtersPanel, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}>
                   {/* Filter Types */}
                   <Text style={[styles.filtersTitle, { color: colors.text }]}>
                     {t('history.filters.title')}
@@ -557,7 +557,7 @@ export default function HistoryScreen() {
                   />
                 ) : (
                   <View style={styles.emptyState}>
-                    <Ionicons name="search" size={64} color={colors.muted} />
+                    <Ionicons name="search" size={64} color={colors.whiteMuted} />
                     <Text style={[styles.emptyTitle, { color: colors.text }]}>
                       {t('history.noResults')}
                     </Text>
@@ -635,6 +635,16 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
   },
+  cardShadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
   container: {
     flex: 1,
   },
@@ -698,7 +708,7 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 12,
     fontWeight: '500',
-    textAlign:'center'
+    textAlign: 'center'
   },
   filtersPanel: {
     marginHorizontal: 20,
@@ -775,7 +785,7 @@ const styles = StyleSheet.create({
   scanCard: {
     padding: 10,
     borderRadius: 10,
-    marginBottom: 4,
+    marginBottom: 5,
     borderWidth: .5
   },
   scanHeader: {
@@ -879,7 +889,7 @@ const styles = StyleSheet.create({
   resetFiltersButton: {
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 8,
   },
   resetFiltersText: {
     color: '#fff',

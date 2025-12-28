@@ -20,7 +20,7 @@ export default function AboutScreen() {
 
     // Admin unlock state
     const [tapCount, setTapCount] = useState(0);
-    
+
 
     // Handle version tap for admin entry (no auto-unlock)
     const handleVersionTap = () => {
@@ -113,243 +113,244 @@ export default function AboutScreen() {
     ];
 
     const devTeam = [
-    {
-        name: t('about.teamMembers.mobileDevelopers.name'), 
-        role: t('about.teamMembers.mobileDevelopers.role'),
-        photo: require('../../assets/images/team/haileamlak.jpg'), // replace with real photo
-        description: t('about.teamMembers.mobileDevelopers.description')
-    },
-    {
-        name: t('about.teamMembers.aiEngineers.name'),
-        role: t('about.teamMembers.aiEngineers.role'),
-        photo: require('../../assets/images/team/habtamu.jpg'), // replace path
-        description: t('about.teamMembers.aiEngineers.description')
-    },
-    {
-        name: t('about.teamMembers.aiEngineers.name2'),
-        role: t('about.teamMembers.aiEngineers.role'),
-        photo: require('../../assets/images/team/kemal.jpg'), // replace path
-        description: t('about.teamMembers.aiEngineers.description')
-    },
-    {
-        name: t('about.teamMembers.agricultureExperts.name'),
-        role: t('about.teamMembers.agricultureExperts.role'),
-        photo: require('../../assets/images/team/admasu.jpg'), // replace path
-        description: t('about.teamMembers.agricultureExperts.description')
-    },
-    {
-        name: t('about.teamMembers.dataAnalyst.name'),
-        role: t('about.teamMembers.dataAnalyst.role'),
-        photo: require('../../assets/images/team/derara.jpg'), // replace path
-        description: t('about.teamMembers.dataAnalyst.description')
-    }
+        {
+            name: t('about.teamMembers.mobileDevelopers.name'),
+            role: t('about.teamMembers.mobileDevelopers.role'),
+            photo: require('../../assets/images/team/haileamlak.jpg'), // replace with real photo
+            description: t('about.teamMembers.mobileDevelopers.description')
+        },
+        {
+            name: t('about.teamMembers.aiEngineers.name'),
+            role: t('about.teamMembers.aiEngineers.role'),
+            photo: require('../../assets/images/team/habtamu.jpg'), // replace path
+            description: t('about.teamMembers.aiEngineers.description')
+        },
+        {
+            name: t('about.teamMembers.aiEngineers.name2'),
+            role: t('about.teamMembers.aiEngineers.role'),
+            photo: require('../../assets/images/team/kemal.jpg'), // replace path
+            description: t('about.teamMembers.aiEngineers.description')
+        },
+        {
+            name: t('about.teamMembers.agricultureExperts.name'),
+            role: t('about.teamMembers.agricultureExperts.role'),
+            photo: require('../../assets/images/team/admasu.jpg'), // replace path
+            description: t('about.teamMembers.agricultureExperts.description')
+        },
+        {
+            name: t('about.teamMembers.dataAnalyst.name'),
+            role: t('about.teamMembers.dataAnalyst.role'),
+            photo: require('../../assets/images/team/derara.jpg'), // replace path
+            description: t('about.teamMembers.dataAnalyst.description')
+        }
     ];
 
     useEffect(() => {
-    if (devTeam.length === 0) return;
+        if (devTeam.length === 0) return;
 
-    const interval = setInterval(() => {
-        setCurrentDevIndex((prev) => {
-        const next = (prev + 1) % devTeam.length;
-        devListRef.current?.scrollToIndex({ index: next, animated: true });
-        return next;
-        });
-    }, 4000);
+        const interval = setInterval(() => {
+            setCurrentDevIndex((prev) => {
+                const next = (prev + 1) % devTeam.length;
+                devListRef.current?.scrollToIndex({ index: next, animated: true });
+                return next;
+            });
+        }, 4000);
 
-    return () => clearInterval(interval);
+        return () => clearInterval(interval);
     }, [devTeam.length]);
 
- 
+
 
     return (
-         <ImageBackground
-    source={require('../../assets/images/screenBg/about.jpg')}
-    style={styles.backgroundImage}
-    imageStyle={{ resizeMode: 'cover' }}
-  >
-    <View style={[styles.overlay, { backgroundColor:'rgba(0,0,0,0.9)'}]}>
-        <View style={[styles.container, { backgroundColor:  theme === 'dark' ? `${colors.background}80` : `${colors.background}79`}]}>
-            {/* Header */}
-            <View style={[styles.header,{backgroundColor: theme === 'dark' ? `${colors.card}50` : `${colors.card}BB`,borderColor: theme === 'dark' ? colors.border : colors.borderDark}]}>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => router.back()}
-                >
-                    <Ionicons
-                        name="chevron-back"
-                        size={24}
-                        color={colors.text}
-                    />
-                </TouchableOpacity>
-                <Text style={[styles.title, { color: colors.text }]}>
-                    {t('about.title')}
-                </Text>
-                <View style={styles.placeholder} />
-            </View>
-
-            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-                <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                {/* Hero Section */}
-                <View style={[styles.heroCard, { backgroundColor:  theme === 'dark' ? `${colors.card}50` : `${colors.card}BB`,borderColor: theme === 'dark' ? colors.border : colors.borderDark}]}>
-                    <View style={[styles.logo, { backgroundColor: colors.primaryOverlay,  outlineColor:theme === 'dark' ?'#FFF':'#000',   borderRadius:60 }]}>
-                        {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}                        
-                            <Image source={ require('../../assets/images/app/3.png')} style={{...styles.logoImage,borderWidth:theme === 'dark' ? 0:0.6, borderColor:theme === 'dark' ? "":'#0000009c',borderRadius: 60}} />
-                    </View>
-                    <Text style={[styles.appName, { color: colors.text }]}>
-                        TomatoDx
-                    </Text>
-                    <Text style={[styles.tagline, { color: colors.text }]}>
-                        {t('about.subtitle')}
-                    </Text>
-                    <TouchableOpacity
-                        style={styles.versionTap}
-                        onPress={handleVersionTap}
-                    >
-                        <Text style={[styles.version, { color: colors.textTertiary }]}>
-                            {t('common.version')} {Constants.expoConfig?.version || '1.0.0'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Mission Section */}
-                <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        {t('about.mission')}
-                    </Text>
-                    <View style={[styles.missionCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
-                        <Text style={[styles.missionText, { color: colors.textSecondary }]}>
-                            {t('about.missiondesc')}
-                        </Text>
-                    </View>
-                </View>
-
-                {/* Features */}
-                <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        {t('about.features')}
-                    </Text>
-
-                    {features.map((feature, index) => (
-                        <View
-                            key={index}
-                            style={[styles.featureCard, { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}
+        <ImageBackground
+            source={require('../../assets/images/screenBg/about.jpg')}
+            style={styles.backgroundImage}
+            imageStyle={{ resizeMode: 'cover' }}
+        >
+            <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
+                <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
+                    {/* Header */}
+                    <View style={[styles.header, { backgroundColor: theme === 'dark' ? `${colors.card}50` : `${colors.card}BB`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                        <TouchableOpacity
+                            style={styles.backButton}
+                            onPress={() => router.back()}
                         >
-                            <View style={[styles.featureIcon, { backgroundColor: colors.primaryOverlay }]}>
-                                <Ionicons name={feature.icon as any} size={24} color={colors.primary} />
-                            </View>
-                            <View style={styles.featureContent}>
-                                <Text style={[styles.featureTitle, { color: colors.text }]}>
-                                    {feature.title}
-                                </Text>
-                                <Text style={[styles.featureDesc, { color: colors.textSecondary }]}>
-                                    {feature.description}
-                                </Text>
-                            </View>
-                        </View>
-                    ))}
-                </View>
-
-                {/* Technology */}
-                <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                        {t('about.technology')}
-                    </Text>
-                    <View style={[styles.techCard, { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
-                        <View style={styles.techItem}>
-                            <Ionicons name="hardware-chip" size={20} color={colors.primary} />
-                            <Text style={[styles.techText, { color: colors.text }]}>
-                                {t('about.techStack.tensorFlow')}
-                            </Text>
-                        </View>
-                        <View style={styles.techItem}>
-                            <Ionicons name="cellular" size={20} color={colors.primary} />
-                            <Text style={[styles.techText, { color: colors.text }]}>
-                                {t('about.techStack.reactNative')}
-                            </Text>
-                        </View>
-                        <View style={styles.techItem}>
-                            <Ionicons name="cloud" size={20} color={colors.primary} />
-                            <Text style={[styles.techText, { color: colors.text }]}>
-                                {t('about.techStack.computerVision')}
-                            </Text>
-                        </View>
-                        <View style={styles.techItem}>
-                            <Ionicons name="shield-checkmark" size={20} color={colors.primary} />
-                            <Text style={[styles.techText, { color: colors.text }]}>
-                                {t('about.techStack.privacyFirst')}
-                            </Text>
-                        </View>
+                            <Ionicons
+                                name="chevron-back"
+                                size={24}
+                                color={colors.text}
+                            />
+                        </TouchableOpacity>
+                        <Text style={[styles.title, { color: colors.text }]}>
+                            {t('about.title')}
+                        </Text>
+                        <View style={styles.placeholder} />
                     </View>
-                </View>
 
-                {/* Team */}
-                <View style={styles.teamSection}>
-                <Text style={[styles.sectionTitle, { color: colors.text, textAlign: 'center' }]}>
-                    {t('about.team')}
-                </Text>
-
-                {/* Dev team carousel – one per screen, swipe + auto-rotate */}
-                {devTeam.length > 0 && (
-                    <>
-                    <FlatList
-                        ref={devListRef}
-                        data={devTeam}
-                        keyExtractor={(_, index) => `dev-${index}`}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onMomentumScrollEnd={(event) => {
-                        const index = Math.round(
-                            event.nativeEvent.contentOffset.x / SCREEN_WIDTH
-                        );
-                        setCurrentDevIndex(index);
-                        }}
-                        renderItem={({ item }) => (
-                      <View
-                            style={[
-                            styles.teamCardHorizontal,
-                            { width: SCREEN_WIDTH - 42, backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark },
-                            ]}
-                        >
-                            
-                            <Image source={item.photo} style={styles.teamAvatar} />
-                            <View style={styles.teamContent}>
-                                <Text style={[styles.teamName, { color: colors.text }]}>
-                                {item.name}
+                    <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+                        <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                            {/* Hero Section */}
+                            <View style={[styles.heroCard, { backgroundColor: theme === 'dark' ? `${colors.card}50` : `${colors.card}BB`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                                <View style={[styles.logo, { backgroundColor: colors.primaryOverlay, outlineColor: theme === 'dark' ? '#FFF' : '#000', borderRadius: 60 }]}>
+                                    {/* <Ionicons name="leaf" size={48} color={colors.primary} /> */}
+                                    <Image source={require('../../assets/images/app/3.png')} style={{ ...styles.logoImage, borderWidth: theme === 'dark' ? 0 : 0.6, borderColor: theme === 'dark' ? "" : '#0000009c', borderRadius: 60 }} />
+                                </View>
+                                <Text style={[styles.appName, { color: colors.text }]}>
+                                    TomatoDx
                                 </Text>
-                                <Text style={[styles.teamRole, { color: colors.primary }]}>
-                                {item.role}
+                                <Text style={[styles.tagline, { color: colors.text }]}>
+                                    {t('about.subtitle')}
                                 </Text>
-                                <Text style={[styles.teamDesc, { color: colors.textSecondary }]}>
-                                {item.description}
-                                </Text>
+                                <TouchableOpacity
+                                    style={styles.versionTap}
+                                    onPress={handleVersionTap}
+                                >
+                                    <Text style={[styles.version, { color: colors.textTertiary }]}>
+                                        {t('common.version')} {Constants.expoConfig?.version || '1.0.0'}
+                                    </Text>
+                                </TouchableOpacity>
                             </View>
-                        </View>
-                        
-                        )}
-                        contentContainerStyle={{ paddingHorizontal: 0 }}
-                        ItemSeparatorComponent={() => <View style={{ width:10 }} />}  // <-- gap
-                    />
 
-                    {/* Indicator dots under the carousel */}
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10, gap: 8 }}>
-                        {devTeam.map((_, idx) => (
-                        <View
-                            key={idx}
-                            style={{
-                            width: idx === currentDevIndex ? 24 : 14,
-                            height: 8,
-                            borderRadius: 3,
-                            backgroundColor:
-                                idx === currentDevIndex ? colors.primary : colors.border,
-                            }}
-                        />
-                        ))}
-                    </View>
-                    </>
-                )}
+                            {/* Mission Section */}
+                            <View style={styles.section}>
+                                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                                    {t('about.mission')}
+                                </Text>
+                                <View style={[styles.missionCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                                    <Text style={[styles.missionText, { color: colors.textSecondary }]}>
+                                        {t('about.missiondesc')}
+                                    </Text>
+                                </View>
+                            </View>
 
-                {/* Optional: keep the existing role/description cards, or remove if redundant
+                            {/* Features */}
+                            <View style={styles.section}>
+                                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                                    {t('about.features')}
+                                </Text>
+
+                                {features.map((feature, index) => (
+                                    <View
+                                        key={index}
+                                        style={[styles.featureCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                                    >
+                                        <View style={[styles.featureIcon, { backgroundColor: colors.primaryOverlay }]}>
+                                            <Ionicons name={feature.icon as any} size={24} color={colors.primary} />
+                                        </View>
+                                        <View style={styles.featureContent}>
+                                            <Text style={[styles.featureTitle, { color: colors.text }]}>
+                                                {feature.title}
+                                            </Text>
+                                            <Text style={[styles.featureDesc, { color: colors.textSecondary }]}>
+                                                {feature.description}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ))}
+                            </View>
+
+                            {/* Technology */}
+                            <View style={styles.section}>
+                                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                                    {t('about.technology')}
+                                </Text>
+                                <View style={[styles.techCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                                    <View style={styles.techItem}>
+                                        <Ionicons name="hardware-chip" size={20} color={colors.primary} />
+                                        <Text style={[styles.techText, { color: colors.text }]}>
+                                            {t('about.techStack.tensorFlow')}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.techItem}>
+                                        <Ionicons name="cellular" size={20} color={colors.primary} />
+                                        <Text style={[styles.techText, { color: colors.text }]}>
+                                            {t('about.techStack.reactNative')}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.techItem}>
+                                        <Ionicons name="cloud" size={20} color={colors.primary} />
+                                        <Text style={[styles.techText, { color: colors.text }]}>
+                                            {t('about.techStack.computerVision')}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.techItem}>
+                                        <Ionicons name="shield-checkmark" size={20} color={colors.primary} />
+                                        <Text style={[styles.techText, { color: colors.text }]}>
+                                            {t('about.techStack.privacyFirst')}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>
+
+                            {/* Team */}
+                            <View style={styles.teamSection}>
+                                <Text style={[styles.sectionTitle, { color: colors.text, textAlign: 'center' }]}>
+                                    {t('about.team')}
+                                </Text>
+
+                                {/* Dev team carousel – one per screen, swipe + auto-rotate */}
+                                {devTeam.length > 0 && (
+                                    <>
+                                        <FlatList
+                                            ref={devListRef}
+                                            data={devTeam}
+                                            keyExtractor={(_, index) => `dev-${index}`}
+                                            horizontal
+                                            pagingEnabled
+                                            showsHorizontalScrollIndicator={false}
+                                            onMomentumScrollEnd={(event) => {
+                                                const index = Math.round(
+                                                    event.nativeEvent.contentOffset.x / SCREEN_WIDTH
+                                                );
+                                                setCurrentDevIndex(index);
+                                            }}
+                                            renderItem={({ item }) => (
+                                                <View
+                                                    style={[
+                                                        styles.teamCardHorizontal,
+                                                        { width: SCREEN_WIDTH - 42, backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark },
+                                                        theme !== 'dark' ? styles.cardShadow : undefined
+                                                    ]}
+                                                >
+
+                                                    <Image source={item.photo} style={styles.teamAvatar} />
+                                                    <View style={styles.teamContent}>
+                                                        <Text style={[styles.teamName, { color: colors.text }]}>
+                                                            {item.name}
+                                                        </Text>
+                                                        <Text style={[styles.teamRole, { color: colors.primary }]}>
+                                                            {item.role}
+                                                        </Text>
+                                                        <Text style={[styles.teamDesc, { color: colors.textSecondary }]}>
+                                                            {item.description}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+
+                                            )}
+                                            contentContainerStyle={{ paddingHorizontal: 0 }}
+                                            ItemSeparatorComponent={() => <View style={{ width: 10 }} />}  // <-- gap
+                                        />
+
+                                        {/* Indicator dots under the carousel */}
+                                        <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10, gap: 8 }}>
+                                            {devTeam.map((_, idx) => (
+                                                <View
+                                                    key={idx}
+                                                    style={{
+                                                        width: idx === currentDevIndex ? 24 : 14,
+                                                        height: 8,
+                                                        borderRadius: 3,
+                                                        backgroundColor:
+                                                            idx === currentDevIndex ? colors.primary : colors.border,
+                                                    }}
+                                                />
+                                            ))}
+                                        </View>
+                                    </>
+                                )}
+
+                                {/* Optional: keep the existing role/description cards, or remove if redundant
                 {team.map((member, index) => (
                     <View
                     key={`role-${index}`}
@@ -366,107 +367,107 @@ export default function AboutScreen() {
                     </Text>
                     </View>
                 ))} */}
-                </View>
+                            </View>
 
-                {/* Footer */}
-                <View style={[styles.footer, { backgroundColor:   theme === 'dark' ? `${colors.card}50` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary }]}>
-                    <Text style={[styles.footerText, { color: theme === 'dark' ? colors.primaryDark : colors.text }]}>
-                        {t('about.footer.madeWith')}
-                    </Text>
-                    <Text style={[styles.copyright, { color: colors.textTertiary }]}>
-                        {t('about.footer.copyright')}</Text>
-
-                    <View style={styles.links}>
-                        <TouchableOpacity
-                            style={styles.link}
-                        // onPress={() => Linking.openURL('https://tomatodx.com/privacy')}
-                        >
-                            <Text style={[styles.linkText, { color: colors.textSecondary}]}>
-                                {t('about.footer.privacyPolicy')}
-                            </Text>
-                        </TouchableOpacity>
-                        <Text style={[styles.linkSeparator, { color: colors.textTertiary }]}>
-                            •
-                        </Text>
-                        <TouchableOpacity
-                            style={styles.link}
-                        // onPress={() => Linking.openURL('https://tomatodx.com/terms')}
-                        >
-                            <Text style={[styles.linkText, { color: colors.textSecondary }]}>
-                                {t('about.footer.termsOfService')}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Social Media Links */}
-                    <View style={styles.socialLinks}>
-                        <TouchableOpacity
-                            style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary, borderWidth: .5 }]}
-                        onPress={() => Linking.openURL('https://t.me/hailion')}
-                        >
-                            <Ionicons name="paper-plane" size={20} color={colors.textSecondary} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary, borderWidth: .5} ]}
-                        onPress={() => Linking.openURL('https://github.com/haileamlak12')}
-                        >
-                            <Ionicons name="logo-github" size={20} color={colors.textSecondary} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.socialLink, { backgroundColor: `${colors.card}60`,borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary, borderWidth: .5} ]}
-                        onPress={() => Linking.openURL('https://x.com/tomatodx')}
-                        >
-                            <Ionicons name="logo-twitter" size={20} color={colors.textSecondary} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                </Animated.View>
-            </ScrollView>
-
-            <Modal
-                visible={visible}
-                transparent
-                animationType="fade"
-                onRequestClose={handleCancel}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-                        <View style={[styles.modalIcon, { backgroundColor: colors.background + '80' }]}>
-                            <Text style={styles.modalEmoji}>
-                                <Ionicons name="key" size={40} color={colors.primary} />
-                            </Text>
-                        </View>
-                        <Text style={[styles.modalTitle, { color: colors.text }]}>
-                            {t('about.modal.title')}
-                        </Text>
-                        <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
-                            {t('about.modal.subtitle')}
-                        </Text>
-                        <View style={styles.modalButtons}>
-
-                            <TouchableOpacity
-                                style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: colors.backgroundAlt }]}
-                                onPress={handleCancel}
-                            >
-                                <Text style={[styles.modalButtonText, { color: colors.text }]}>
-                                    {t('common.later')}
+                            {/* Footer */}
+                            <View style={[styles.footer, { backgroundColor: theme === 'dark' ? `${colors.card}50` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                                <Text style={[styles.footerText, { color: theme === 'dark' ? colors.primaryDark : colors.text }]}>
+                                    {t('about.footer.madeWith')}
                                 </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.modalButton, styles.modalButtonAdmin, { backgroundColor: colors.primary }]}
-                                onPress={handleGoToAdmin}
-                            >
-                                <Text style={[styles.modalButtonText, { color: colors.text }]}>
-                                    {t('about.modal.goToAdmin')} <Ionicons name="chevron-forward" size={16} color={colors.text}></Ionicons>
+                                <Text style={[styles.copyright, { color: colors.textTertiary }]}>
+                                    {t('about.footer.copyright')}</Text>
+
+                                <View style={styles.links}>
+                                    <TouchableOpacity
+                                        style={styles.link}
+                                    // onPress={() => Linking.openURL('https://tomatodx.com/privacy')}
+                                    >
+                                        <Text style={[styles.linkText, { color: colors.textSecondary }]}>
+                                            {t('about.footer.privacyPolicy')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <Text style={[styles.linkSeparator, { color: colors.textTertiary }]}>
+                                        •
+                                    </Text>
+                                    <TouchableOpacity
+                                        style={styles.link}
+                                    // onPress={() => Linking.openURL('https://tomatodx.com/terms')}
+                                    >
+                                        <Text style={[styles.linkText, { color: colors.textSecondary }]}>
+                                            {t('about.footer.termsOfService')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                {/* Social Media Links */}
+                                <View style={styles.socialLinks}>
+                                    <TouchableOpacity
+                                        style={[styles.socialLink, { backgroundColor: theme === 'dark' ? colors.card : colors.card, borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary, borderWidth: .5 }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                                        onPress={() => Linking.openURL('https://t.me/hailion')}
+                                    >
+                                        <Ionicons name="paper-plane" size={20} color={colors.textSecondary} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.socialLink, { backgroundColor: theme === 'dark' ? colors.card : colors.card, borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary, borderWidth: .5 }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                                        onPress={() => Linking.openURL('https://github.com/haileamlak12')}
+                                    >
+                                        <Ionicons name="logo-github" size={20} color={colors.textSecondary} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.socialLink, { backgroundColor: theme === 'dark' ? colors.card : colors.card, borderColor: theme === 'dark' ? colors.primaryDark : colors.textSecondary, borderWidth: .5 }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                                        onPress={() => Linking.openURL('https://x.com/tomatodx')}
+                                    >
+                                        <Ionicons name="logo-twitter" size={20} color={colors.textSecondary} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Animated.View>
+                    </ScrollView>
+
+                    <Modal
+                        visible={visible}
+                        transparent
+                        animationType="fade"
+                        onRequestClose={handleCancel}
+                    >
+                        <View style={styles.modalOverlay}>
+                            <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                                <View style={[styles.modalIcon, { backgroundColor: colors.background + '80' }]}>
+                                    <Text style={styles.modalEmoji}>
+                                        <Ionicons name="key" size={40} color={colors.primary} />
+                                    </Text>
+                                </View>
+                                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                                    {t('about.modal.title')}
                                 </Text>
-                            </TouchableOpacity>
+                                <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+                                    {t('about.modal.subtitle')}
+                                </Text>
+                                <View style={styles.modalButtons}>
+
+                                    <TouchableOpacity
+                                        style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: colors.backgroundAlt }]}
+                                        onPress={handleCancel}
+                                    >
+                                        <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                                            {t('common.later')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.modalButton, styles.modalButtonAdmin, { backgroundColor: colors.primary }]}
+                                        onPress={handleGoToAdmin}
+                                    >
+                                        <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                                            {t('about.modal.goToAdmin')} <Ionicons name="chevron-forward" size={16} color={colors.text}></Ionicons>
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
-                    </View>
+                    </Modal>
                 </View>
-            </Modal>
-        </View>
-        </View>
-  </ImageBackground>
+            </View>
+        </ImageBackground >
     );
 }
 
@@ -493,7 +494,7 @@ const styles = StyleSheet.create({
     backButton: {
         padding: 8,
     },
-   
+
     title: {
         fontSize: 20,
         fontWeight: '700',
@@ -510,8 +511,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         alignItems: 'center',
         // borderRadius:10,
-        borderBottomWidth:.5
-        },
+        borderBottomWidth: .5
+    },
     logo: {
         width: 60,
         height: 60,
@@ -519,12 +520,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 6,
-        outlineWidth:.5
+        outlineWidth: .5
     },
-    logoImage:{
-        width:58,
-        height:58,
-        borderRadius:60,
+    logoImage: {
+        width: 58,
+        height: 58,
+        borderRadius: 60,
         // borderColor: '#fff'
     },
     appName: {
@@ -537,7 +538,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 4,
     },
-    
+
     section: {
         paddingHorizontal: 16,
         marginBottom: 10,
@@ -550,7 +551,7 @@ const styles = StyleSheet.create({
     missionCard: {
         padding: 10,
         borderRadius: 8,
-        borderWidth:.5       
+        borderWidth: .5
     },
     missionText: {
         fontSize: 15,
@@ -563,7 +564,7 @@ const styles = StyleSheet.create({
         padding: 8,
         borderRadius: 8,
         marginBottom: 10,
-        borderWidth:.5
+        borderWidth: .5
     },
     featureIcon: {
         width: 48,
@@ -588,7 +589,7 @@ const styles = StyleSheet.create({
     techCard: {
         padding: 10,
         borderRadius: 10,
-        borderWidth:.5       
+        borderWidth: .5
     },
     techItem: {
         flexDirection: 'row',
@@ -604,7 +605,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 16,
         marginBottom: 12,
-        borderWidth:1
+        borderWidth: 1
     },
     teamName: {
         fontSize: 18,
@@ -623,12 +624,12 @@ const styles = StyleSheet.create({
     },
     footer: {
         paddingBottom: 30,
-        marginTop:0,
+        marginTop: 0,
         padding: 16,
         // borderRadius: 16,
         alignItems: 'center',
         borderTopWidth: 0.2
-       
+
     },
     footerText: {
         fontSize: 16,
@@ -670,6 +671,16 @@ const styles = StyleSheet.create({
         borderColor: '#646464',
         borderWidth: 1,
     },
+    cardShadow: {
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
     modalIcon: {
         marginBottom: 16,
         width: 80,
@@ -703,12 +714,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 8,
         width: '100%',
-        marginTop:10
+        marginTop: 10
     },
     modalButton: {
         flex: 1,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
         borderRadius: 8,
         alignItems: 'center',
     },
@@ -744,46 +755,46 @@ const styles = StyleSheet.create({
     },
     versionTap: {
         margin: 10,
-        textDecorationLine:'underline',
+        textDecorationLine: 'underline',
 
     },
     version: {
         fontSize: 14,
-        textDecorationLine:'underline'
+        textDecorationLine: 'underline'
     },
     teamCarousel: {
-    paddingVertical: 4,
-    paddingHorizontal: 4,
-    gap: 12,
-},
-
-teamSection: {
-        padding: 10,
-        paddingHorizontal:16    
+        paddingVertical: 4,
+        paddingHorizontal: 4,
+        gap: 12,
     },
 
-teamCardHorizontal: {
-//   padding: 10,
-  paddingBottom:20,
-  borderRadius: 8,
-  borderWidth:1,
-  marginRight: 0,
-  alignItems: 'center',
-  overflow:'hidden' ,
-    flex:1,
-    flexDirection:'column',
-    gap:8
-  },
-teamAvatar: {
-    width: '100%',
-    height:300,
-    // borderRadius: 1000,
-    // marginBottom: 8,
-    backgroundColor: 'rgba(0,0,0,0.06)',
-},
-teamContent:{
-    flex:1,
-    alignItems: 'center',
-    padding:10
-}
+    teamSection: {
+        padding: 10,
+        paddingHorizontal: 16
+    },
+
+    teamCardHorizontal: {
+        //   padding: 10,
+        paddingBottom: 20,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginRight: 0,
+        alignItems: 'center',
+        overflow: 'hidden',
+        flex: 1,
+        flexDirection: 'column',
+        gap: 8
+    },
+    teamAvatar: {
+        width: '100%',
+        height: 300,
+        // borderRadius: 1000,
+        // marginBottom: 8,
+        backgroundColor: 'rgba(0,0,0,0.06)',
+    },
+    teamContent: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 10
+    }
 });

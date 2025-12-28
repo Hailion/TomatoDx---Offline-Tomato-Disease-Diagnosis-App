@@ -5,9 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import * as Sharing from 'expo-sharing';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, ImageBackground, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, ImageBackground, Modal, Platform, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getDiseaseInfo } from '../../src/data/diseaseInfo';
 import { getDiagnosisById, updateDiagnosisNotes } from '../../src/db/repository';
@@ -37,6 +38,7 @@ export default function ResultScreen() {
   const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [showNotesModal, setShowNotesModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [existingNotes, setExistingNotes] = useState<string | null>(null);
 
@@ -47,13 +49,13 @@ export default function ResultScreen() {
   const modalAnim = useRef(new Animated.Value(0)).current;
 
   useFocusEffect(
-  useCallback(() => {
-    loadDiagnosis();
+    useCallback(() => {
+      loadDiagnosis();
 
-    // no cleanup needed
-    return () => {};
-  }, [id, i18n.language])
-);
+      // no cleanup needed
+      return () => { };
+    }, [id, i18n.language])
+  );
 
   const loadDiagnosis = () => {
     try {
@@ -137,13 +139,13 @@ export default function ResultScreen() {
 
       // Get disease information from database, fallback to translations
       const description = t(`diseases.${diseaseId}.description`, { defaultValue: t('result.noDescription') });
-      
+
       // Parse symptoms from database with language support
       const currentLang = i18n.language;
       const localizedSymptoms = getLocalizedContent(diagnosis.symptoms, currentLang);
       const dbSymptoms = parseToArray(localizedSymptoms, []);
-      const symptoms = dbSymptoms.length > 0 
-        ? dbSymptoms 
+      const symptoms = dbSymptoms.length > 0
+        ? dbSymptoms
         : (t(`diseases.${diseaseId}.symptoms`, { returnObjects: true, defaultValue: [] }) as string[]);
 
       // Parse advice from database with language support - structured format
@@ -198,14 +200,14 @@ export default function ResultScreen() {
             // Look for common patterns like "Treatment:" or "Prevention:" sections
             const treatmentMatch = localizedAdvice.match(/(?:treatment|immediate)[\s:]*([^]*?)(?=prevention|long.?term|$)/i);
             const preventionMatch = localizedAdvice.match(/prevention[\s:]*([^]*?)$/i);
-            
+
             if (treatmentMatch) {
               treatmentImmediate = parseToArray(treatmentMatch[1], []);
             }
             if (preventionMatch) {
               prevention = parseToArray(preventionMatch[1], []);
             }
-            
+
             // If no structured sections found, split by paragraphs or newlines
             if (treatmentImmediate.length === 0 && prevention.length === 0) {
               const allAdvice = parseToArray(localizedAdvice, []);
@@ -291,10 +293,10 @@ export default function ResultScreen() {
     if (nameLower.includes('mosaic')) return 'tomato_mosaic_virus';
     if (nameLower.includes('bacterial') && nameLower.includes('spot')) return 'bacterial_spot';
     if (nameLower.includes('unknown')) return 'unknown'; // Explicitly handle unknown
-    
+
     // Default fallback: check if it looks healthy, otherwise unknown
     // This prevents "Unknown" model output from being classified as "Healthy"
-    return 'unknown'; 
+    return 'unknown';
   };
 
   const getSeverityColor = (severity: string) => {
@@ -357,12 +359,79 @@ export default function ResultScreen() {
     }
   };
 
-  const handleShare = () => {
-    Alert.alert(
-      t('result.share'),
-      t('result.shareMessage'),
-      [{ text: t('common.ok') }]
-    );
+  const handleShare = async () => {
+    // On iOS, we can share both text and image directly
+    if (Platform.OS === 'ios') {
+      await shareBoth();
+    } else {
+      // On Android, show modal to let user choose
+      setShowShareModal(true);
+      // Animate modal
+      modalAnim.setValue(0);
+      Animated.spring(modalAnim, {
+        toValue: 1,
+        tension: 100,
+        friction: 10,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const getShareMessage = () => {
+    return `${t('result.shareTitle', { defaultValue: 'TomatoDx Diagnosis' })}
+      
+${t('result.disease', { defaultValue: 'Disease' })}: ${result?.disease}
+${t('result.confidence', { defaultValue: 'Confidence' })}: ${result?.confidence}%
+${t('result.severity', { defaultValue: 'Severity' })}: ${result?.severity}
+
+${result?.description}
+
+${t('result.downloadApp', { defaultValue: 'Download TomatoDx for accurate tomato disease diagnosis.' })}`;
+  };
+
+  const shareBoth = async () => {
+    try {
+      const message = getShareMessage();
+      await Share.share({
+        message,
+        url: result?.imageUri,
+        title: t('result.shareTitle', { defaultValue: 'TomatoDx Diagnosis' }),
+      });
+    } catch (error: any) {
+      Alert.alert(t('common.error'), error.message);
+    }
+  };
+
+  const shareImage = async () => {
+    try {
+      if (result?.imageUri && await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(result.imageUri, {
+          dialogTitle: t('result.shareTitle', { defaultValue: 'TomatoDx Diagnosis' }),
+          mimeType: 'image/jpeg',
+          UTI: 'public.jpeg',
+        });
+      } else {
+        Alert.alert(t('common.error'), t('result.noImageError', { defaultValue: 'Image not available for sharing' }));
+      }
+      setShowShareModal(false);
+    } catch (error: any) {
+      Alert.alert(t('common.error'), error.message);
+      setShowShareModal(false);
+    }
+  };
+
+  const shareText = async () => {
+    try {
+      const message = getShareMessage();
+      await Share.share({
+        message,
+        title: t('result.shareTitle', { defaultValue: 'TomatoDx Diagnosis' }),
+      });
+      setShowShareModal(false);
+    } catch (error: any) {
+      Alert.alert(t('common.error'), error.message);
+      setShowShareModal(false);
+    }
   };
 
   const handleNewScan = () => {
@@ -388,391 +457,464 @@ export default function ResultScreen() {
   }
 
   return (
-     <ImageBackground
-    source={require('../../assets/images/screenBg/homeHeader.png')}
-    style={styles.backgroundImage}
-    imageStyle={{ resizeMode: 'cover' }}
-  >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
-     
-    <View style={[styles.container, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`}]}>
-      {/* Header */}
-      <View
-         style={styles.header}
-      >
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons
-            name="chevron-back"
-            size={24}
-            color={colors.text}
-          />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text }]}>
-          {t('result.title')}
-        </Text>
-        <View style={styles.placeholder} />
-      </View>
+    <ImageBackground
+      source={require('../../assets/images/screenBg/homeHeader.png')}
+      style={styles.backgroundImage}
+      imageStyle={{ resizeMode: 'cover' }}
+    >
+      <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Result Card */}
-        <Animated.View style={[
-          styles.resultCard,
-          {
-            backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark ,
-            opacity: fadeAnim,
-            transform: [
-              { translateY: slideAnim },
-              { scale: scaleAnim }
-            ]
-          }
-        ]}>
-          {/* Diagnosis Header */}
-          <View style={styles.diagnosisHeader}>
-            <View style={styles.diseaseIconContainer}>
-              <View style={[styles.diseaseIcon, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, outlineColor:theme === 'dark'? colors.borderLight : colors.borderDark , }]}>
-                {result.imageUri ? (
-                  <Image
-                    source={{ uri: result.imageUri }}
-                    style={styles.diseaseImage}
-                    contentFit="cover"
+        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC` }]}>
+          {/* Header */}
+          <View
+            style={styles.header}
+          >
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color={colors.text}
+              />
+            </TouchableOpacity>
+            <Text style={[styles.title, { color: colors.text }]}>
+              {t('result.title')}
+            </Text>
+            <View style={styles.placeholder} />
+          </View>
+
+          <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+            {/* Result Card */}
+            <Animated.View style={[
+              styles.resultCard,
+              {
+                backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark,
+                opacity: fadeAnim,
+                transform: [
+                  { translateY: slideAnim },
+                  { scale: scaleAnim }
+                ]
+              }
+            ]}>
+              {/* Diagnosis Header */}
+              <View style={styles.diagnosisHeader}>
+                <View style={styles.diseaseIconContainer}>
+                  <View style={[styles.diseaseIcon, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, outlineColor: theme === 'dark' ? colors.borderLight : colors.borderDark, }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                    {result.imageUri ? (
+                      <Image
+                        source={{ uri: result.imageUri }}
+                        style={styles.diseaseImage}
+                        contentFit="cover"
+                      />
+                    ) : (
+                      <Text style={styles.diseaseEmoji}>{result.image}</Text>
+                    )}
+                  </View>
+                  <View
+                    style={[
+                      styles.severityBadge,
+                      { backgroundColor: getSeverityColor(result.severity) }
+                    ]}
+                  >
+                    <Ionicons
+                      name={getSeverityIcon(result.severity) as any}
+                      size={12}
+                      color="#fff"
+                    />
+                    <Text
+                      style={[
+                        styles.severityText,
+                        { color: '#fff' }
+                      ]}
+                    >
+                      {result.severity.charAt(0).toUpperCase() + result.severity.slice(1)}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.diseaseInfo}>
+                  <Text style={[styles.diseaseName, { color: colors.text }]}>
+                    {result.disease}
+                  </Text>
+                  {result.diseaseAlt && (
+                    <Text style={[styles.diseaseNameAlt, { color: colors.textTertiary }]}>
+                      {result.diseaseAlt}
+                    </Text>
+                  )}
+                  <Text style={[styles.diseaseDesc, { color: colors.textSecondary }]}>
+                    {result.description}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Confidence Meter */}
+              <View style={styles.confidenceSection}>
+                <View style={styles.confidenceHeader}>
+                  <Text style={[styles.confidenceLabel, { color: colors.textSecondary }]}>
+                    {t('result.confidence')}
+                  </Text>
+                  <Text style={[styles.confidenceValue, { color: colors.text }]}>
+                    {result.confidence}%
+                  </Text>
+                </View>
+                <View style={[styles.confidenceBar, { backgroundColor: colors.border }]}>
+                  <View
+                    style={[
+                      styles.confidenceFill,
+                      {
+                        width: `${result.confidence}%`,
+                        backgroundColor: getSeverityColor(result.severity)
+                      }
+                    ]}
                   />
-                ) : (
-                  <Text style={styles.diseaseEmoji}>{result.image}</Text>
+                </View>
+              </View>
+
+              {/* Symptoms Section */}
+              {result.symptoms && result.symptoms.length > 0 && (
+                <View style={styles.section}>
+                  <View style={styles.sectionHeader}>
+                    {/* <Ionicons name="alert-circle" size={20} color={colors.warning} /> */}
+                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                      {t('result.symptoms', { defaultValue: 'Symptoms' })}
+                    </Text>
+                  </View>
+                  <View style={styles.listContainer}>
+                    {result.symptoms.map((symptom, index) => (
+                      <View key={index} style={styles.listItem}>
+                        {/* <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} /> */}
+                        <Text style={{ color: colors.warning }} >{index + 1}</Text>
+                        <Text style={[styles.listText, { color: colors.textSecondary }]}>
+                          {symptom}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {/* Treatment Section */}
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  {/* <Ionicons name="medical" size={20} color={colors.danger} /> */}
+                  <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                    {t('result.treatment')}
+                  </Text>
+                </View>
+                {result.treatmentImmediate && result.treatmentImmediate.length > 0 && (
+                  <View style={styles.subsection}>
+                    <Text style={[styles.subsectionTitle, { color: colors.text }]}>
+                      {t('result.immediateActions', { defaultValue: 'Immediate Actions' })}
+                    </Text>
+                    <View style={styles.listContainer}>
+                      {result.treatmentImmediate.map((action, index) => (
+                        <View key={index} style={styles.listItem}>
+                          {/* <View style={[styles.bulletPoint, { backgroundColor: colors.danger }]} /> */}
+                          <Text style={{ color: colors.danger }} >{index + 1}</Text>
+                          <Text style={[styles.listText, { color: colors.textSecondary }]}>
+                            {action}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+                {result.treatmentLongTerm && result.treatmentLongTerm.length > 0 && (
+                  <View style={styles.subsection}>
+                    <Text style={[styles.subsectionTitle, { color: colors.text }]}>
+                      {t('result.longTermActions', { defaultValue: 'Long-term Actions' })}
+                    </Text>
+                    <View style={styles.listContainer}>
+                      {result.treatmentLongTerm.map((action, index) => (
+                        <View key={index} style={styles.listItem}>
+                          {/* <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} /> */}
+                          <Text style={{ color: colors.warning }} >{index + 1}</Text>
+                          <Text style={[styles.listText, { color: colors.textSecondary }]}>
+                            {action}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
                 )}
               </View>
-              <View
-                style={[
-                  styles.severityBadge,
-                  { backgroundColor: getSeverityColor(result.severity) }
-                ]}
-              >
-                <Ionicons
-                  name={getSeverityIcon(result.severity) as any}
-                  size={12}
-                  color="#fff"
-                />
-                <Text
-                  style={[
-                    styles.severityText,
-                    { color: '#fff' }
-                  ]}
-                >
-                  {result.severity.charAt(0).toUpperCase() + result.severity.slice(1)}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.diseaseInfo}>
-              <Text style={[styles.diseaseName, { color: colors.text }]}>
-                {result.disease}
-              </Text>
-              {result.diseaseAlt && (
-                <Text style={[styles.diseaseNameAlt, { color: colors.textTertiary }]}>
-                  {result.diseaseAlt}
-                </Text>
+
+              {/* Prevention Section */}
+              {result.prevention && result.prevention.length > 0 && (
+                <View style={styles.section}>
+                  <View style={styles.sectionHeader}>
+                    {/* <Ionicons name="shield-checkmark" size={20} color={colors.success} /> */}
+                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                      {t('result.prevention')}
+                    </Text>
+                  </View>
+                  <View style={styles.listContainer}>
+                    {result.prevention.map((tip, index) => (
+                      <View key={index} style={styles.listItem}>
+                        <Text style={{ color: colors.success }} >{index + 1}</Text>
+                        <Text style={[styles.listText, { color: colors.textSecondary }]}>
+                          {tip}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
               )}
-              <Text style={[styles.diseaseDesc, { color: colors.textSecondary }]}>
-                {result.description}
-              </Text>
-            </View>
-          </View>
+            </Animated.View>
 
-          {/* Confidence Meter */}
-          <View style={styles.confidenceSection}>
-            <View style={styles.confidenceHeader}>
-              <Text style={[styles.confidenceLabel, { color: colors.textSecondary }]}>
-                {t('result.confidence')}
-              </Text>
-              <Text style={[styles.confidenceValue, { color: colors.text }]}>
-                {result.confidence}%
-              </Text>
-            </View>
-            <View style={[styles.confidenceBar, { backgroundColor: colors.border }]}>
-              <View
-                style={[
-                  styles.confidenceFill,
-                  {
-                    width: `${result.confidence}%`,
-                    backgroundColor: getSeverityColor(result.severity)
-                  }
-                ]}
-              />
-            </View>
-          </View>
-
-          {/* Symptoms Section */}
-          {result.symptoms && result.symptoms.length > 0 && (
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                {/* <Ionicons name="alert-circle" size={20} color={colors.warning} /> */}
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                  {t('result.symptoms', { defaultValue: 'Symptoms' })}
-                </Text>
-              </View>
-              <View style={styles.listContainer}>
-                {result.symptoms.map((symptom, index) => (
-                  <View key={index} style={styles.listItem}>
-                    {/* <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} /> */}
-                    <Text style={{color: colors.warning}} >{index+1}</Text>
-                    <Text style={[styles.listText, { color: colors.textSecondary }]}>
-                      {symptom}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Treatment Section */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              {/* <Ionicons name="medical" size={20} color={colors.danger} /> */}
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                {t('result.treatment')}
-              </Text>
-            </View>
-            {result.treatmentImmediate && result.treatmentImmediate.length > 0 && (
-              <View style={styles.subsection}>
-                <Text style={[styles.subsectionTitle, { color: colors.text }]}>
-                  {t('result.immediateActions', { defaultValue: 'Immediate Actions' })}
-                </Text>
-                <View style={styles.listContainer}>
-                  {result.treatmentImmediate.map((action, index) => (
-                    <View key={index} style={styles.listItem}>
-                      {/* <View style={[styles.bulletPoint, { backgroundColor: colors.danger }]} /> */}
-                      <Text style={{color: colors.danger}} >{index+1}</Text>
-                      <Text style={[styles.listText, { color: colors.textSecondary }]}>
-                        {action}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            )}
-            {result.treatmentLongTerm && result.treatmentLongTerm.length > 0 && (
-              <View style={styles.subsection}>
-                <Text style={[styles.subsectionTitle, { color: colors.text }]}>
-                  {t('result.longTermActions', { defaultValue: 'Long-term Actions' })}
-                </Text>
-                <View style={styles.listContainer}>
-                  {result.treatmentLongTerm.map((action, index) => (
-                    <View key={index} style={styles.listItem}>
-                      {/* <View style={[styles.bulletPoint, { backgroundColor: colors.warning }]} /> */}
-                      <Text style={{color: colors.warning}} >{index+1}</Text>
-                      <Text style={[styles.listText, { color: colors.textSecondary }]}>
-                        {action}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            )}
-          </View>
-
-          {/* Prevention Section */}
-          {result.prevention && result.prevention.length > 0 && (
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                {/* <Ionicons name="shield-checkmark" size={20} color={colors.success} /> */}
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                  {t('result.prevention')}
-                </Text>
-              </View>
-              <View style={styles.listContainer}>
-                {result.prevention.map((tip, index) => (
-                  <View key={index} style={styles.listItem}>
-                    <Text style={{color: colors.success}} >{index+1}</Text>
-                    <Text style={[styles.listText, { color: colors.textSecondary }]}>
-                      {tip}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-        </Animated.View>
-
-        {/* Notes Section */}
-        {existingNotes && (
-          <Animated.View style={[
-            styles.notesSection,
-            {
-              backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark ,
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }]
-            }
-          ]}>
-            <View style={styles.notesSectionHeader}>
-              <View style={styles.notesHeaderLeft}>
-                <Ionicons name="document-text" size={20} color={colors.primary} />
-                <Text style={[styles.notesSectionTitle, { color: colors.text }]}>
-                  {t('result.notes', { defaultValue: 'Notes' })}
-                </Text>
-              </View>
-              <TouchableOpacity onPress={handleAddNotes}>
-                <Ionicons name="create-outline" size={20} color={colors.primary} />
-              </TouchableOpacity>
-            </View>
-            <Text style={[styles.notesText, { color: colors.textSecondary }]}>
-              {existingNotes}
-            </Text>
-          </Animated.View>
-        )}
-
-        {/* Quick Actions */}
-        <Animated.View style={[
-          styles.quickActions,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }]
-          }
-        ]}>
-          <Text style={[styles.actionsTitle, { color: colors.text }]}>
-            {t('result.quickActions')}
-          </Text>
-          <View style={styles.actionsRow}>
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
-              onPress={handleAddNotes}
-            >
-              <Ionicons
-                name="create-outline"
-                size={20}
-                color={colors.textSecondary}
-              />
-              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
-                {t('result.addNotes', { defaultValue: 'Add Notes' })}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
-              onPress={handleShare}
-            >
-              <Ionicons
-                name="share"
-                size={20}
-                color={colors.textSecondary}
-              />
-              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
-                {t('result.share')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.actionsRow}>
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
-              onPress={handleGoToHistory}
-            >
-              <Ionicons
-                name="time"
-                size={20}
-                color={colors.textSecondary}
-              />
-              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
-                {t('history.title')}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
-              onPress={handleGoToInsights}
-            >
-              <Ionicons
-                name="stats-chart"
-                size={20}
-                color={colors.textSecondary}
-              />
-              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
-                {t('home.insights')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-
-      </ScrollView>
-
-      {/* Fixed Action Button */}
-      <View style={styles.fixedActions}>
-        <TouchableOpacity
-          style={[styles.newScanButton]}
-          onPress={handleNewScan}
-        >
-          <LinearGradient
-            colors={[ `${colors.primary}CC`, `${colors.primaryDark}CC` ]}
-            style={styles.newScanGradient}
-          >
-            <Ionicons name="camera" size={20} color="#fff" />
-            <Text style={styles.newScanText}>{t('result.newScan')}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-
-      {/* Notes Modal */}
-      <Modal
-        visible={showNotesModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowNotesModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <Animated.View style={[
-            styles.modalContent,
-            {
-              backgroundColor: colors.card,
-              opacity: modalAnim,
-              transform: [
+            {/* Notes Section */}
+            {existingNotes && (
+              <Animated.View style={[
+                styles.notesSection,
                 {
-                  scale: modalAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.9, 1]
-                  })
+                  backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark,
+                  opacity: fadeAnim,
+                  transform: [{ translateY: slideAnim }]
                 }
-              ]
-            }
-          ]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
-              {t('result.addNotes', { defaultValue: 'Add Notes' })}
-            </Text>
-            <Text style={[styles.modalDesc, { color: colors.textSecondary }]}>
-              {t('result.addNotesDesc', { defaultValue: 'Add notes about this diagnosis' })}
-            </Text>
-            <TextInput
-              style={[styles.notesInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
-              placeholder={t('result.notesPlaceholder', { defaultValue: 'Enter your notes here...' })}
-              placeholderTextColor={colors.textTertiary}
-              value={noteText}
-              onChangeText={setNoteText}
-              multiline
-              numberOfLines={4}
-              autoFocus
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.modalButton,styles.modalButtonCancel ,{ backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark }]}
-                onPress={() => setShowNotesModal(false)}
-              >
-                <Text style={[styles.modalButtonText, { color: colors.textSecondary }]}>
-                  {t('common.cancel')}
+              ]}>
+                <View style={styles.notesSectionHeader}>
+                  <View style={styles.notesHeaderLeft}>
+                    <Ionicons name="document-text" size={20} color={colors.primary} />
+                    <Text style={[styles.notesSectionTitle, { color: colors.text }]}>
+                      {t('result.notes', { defaultValue: 'Notes' })}
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={handleAddNotes}>
+                    <Ionicons name="create-outline" size={20} color={colors.primary} />
+                  </TouchableOpacity>
+                </View>
+                <Text style={[styles.notesText, { color: colors.textSecondary }]}>
+                  {existingNotes}
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.modalButtonPrimary, { backgroundColor: colors.primary }]}
-                onPress={handleSaveNotes}
+              </Animated.View>
+            )}
+
+            {/* Quick Actions */}
+            <Animated.View style={[
+              styles.quickActions,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }]
+              }
+            ]}>
+              <Text style={[styles.actionsTitle, { color: colors.text }]}>
+                {t('result.quickActions')}
+              </Text>
+              <View style={styles.actionsRow}>
+                <TouchableOpacity
+                  style={[styles.actionButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                  onPress={handleAddNotes}
+                >
+                  <Ionicons
+                    name="create-outline"
+                    size={20}
+                    color={colors.textSecondary}
+                  />
+                  <Text style={[styles.actionText, { color: colors.textSecondary }]}>
+                    {t('result.addNotes', { defaultValue: 'Add Notes' })}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.actionButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                  onPress={handleShare}
+                >
+                  <Ionicons
+                    name="share"
+                    size={20}
+                    color={colors.textSecondary}
+                  />
+                  <Text style={[styles.actionText, { color: colors.textSecondary }]}>
+                    {t('result.share')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.actionsRow}>
+                <TouchableOpacity
+                  style={[styles.actionButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                  onPress={handleGoToHistory}
+                >
+                  <Ionicons
+                    name="time"
+                    size={20}
+                    color={colors.textSecondary}
+                  />
+                  <Text style={[styles.actionText, { color: colors.textSecondary }]}>
+                    {t('history.title')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.actionButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                  onPress={handleGoToInsights}
+                >
+                  <Ionicons
+                    name="stats-chart"
+                    size={20}
+                    color={colors.textSecondary}
+                  />
+                  <Text style={[styles.actionText, { color: colors.textSecondary }]}>
+                    {t('home.insights')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+
+          </ScrollView>
+
+          {/* Fixed Action Button */}
+          <View style={styles.fixedActions}>
+            <TouchableOpacity
+              style={[styles.newScanButton, theme !== 'dark' ? styles.cardShadow : undefined]}
+              onPress={handleNewScan}
+            >
+              <LinearGradient
+                colors={[`${colors.primary}CC`, `${colors.primaryDark}CC`]}
+                style={styles.newScanGradient}
               >
-                <Text style={[styles.modalButtonText, styles.modalButtonPrimaryText]}>
-                  {t('common.save')}
+                <Ionicons name="camera" size={20} color="#fff" />
+                <Text style={styles.newScanText}>{t('result.newScan')}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+
+          {/* Notes Modal */}
+          <Modal
+            visible={showNotesModal}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowNotesModal(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <Animated.View style={[
+                styles.modalContent,
+                {
+                  backgroundColor: colors.card,
+                  opacity: modalAnim,
+                  transform: [
+                    {
+                      scale: modalAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.9, 1]
+                      })
+                    }
+                  ]
+                }
+              ]}>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  {t('result.addNotes', { defaultValue: 'Add Notes' })}
                 </Text>
-              </TouchableOpacity>
+                <Text style={[styles.modalDesc, { color: colors.textSecondary }]}>
+                  {t('result.addNotesDesc', { defaultValue: 'Add notes about this diagnosis' })}
+                </Text>
+                <TextInput
+                  style={[styles.notesInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                  placeholder={t('result.notesPlaceholder', { defaultValue: 'Enter your notes here...' })}
+                  placeholderTextColor={colors.textTertiary}
+                  value={noteText}
+                  onChangeText={setNoteText}
+                  multiline
+                  numberOfLines={4}
+                  autoFocus
+                />
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                    onPress={() => setShowNotesModal(false)}
+                  >
+                    <Text style={[styles.modalButtonText, { color: colors.textSecondary }]}>
+                      {t('common.cancel')}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.modalButtonPrimary, { backgroundColor: colors.primary }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                    onPress={handleSaveNotes}
+                  >
+                    <Text style={[styles.modalButtonText, styles.modalButtonPrimaryText]}>
+                      {t('common.save')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </Animated.View>
             </View>
-          </Animated.View>
+          </Modal>
+          {/* Share Modal (Android) */}
+          <Modal
+            visible={showShareModal}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowShareModal(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <Animated.View style={[
+                styles.modalContent,
+                {
+                  backgroundColor: colors.card,
+                  opacity: modalAnim,
+                  transform: [
+                    {
+                      scale: modalAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.9, 1]
+                      })
+                    }
+                  ]
+                }
+              ]}>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  {t('result.shareTitle', { defaultValue: 'TomatoDx Diagnosis' })}
+                </Text>
+                <Text style={[styles.modalDesc, { color: colors.textSecondary }]}>
+                  {t('result.shareDesc', { defaultValue: 'Choose how you want to share this result' })}
+                </Text>
+
+                <View style={styles.shareOptionsContainer}>
+                  <TouchableOpacity
+                    style={[styles.shareOptionButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : colors.background, borderColor: colors.border }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                    onPress={shareImage}
+                  >
+                    <View style={[styles.shareIconContainer, { backgroundColor: `${colors.primary}20` }]}>
+                      <Ionicons name="image" size={32} color={colors.primary} />
+                    </View>
+                    <Text style={[styles.shareOptionTitle, { color: colors.text }]}>
+                      {t('result.shareImage', { defaultValue: 'Share Image' })}
+                    </Text>
+                    <Text style={[styles.shareOptionDesc, { color: colors.textSecondary }]}>
+                      {t('result.shareImageDesc', { defaultValue: 'Share the diagnosis image' })}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.shareOptionButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : colors.background, borderColor: colors.border }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                    onPress={shareText}
+                  >
+                    <View style={[styles.shareIconContainer, { backgroundColor: `${colors.textSecondary}20` }]}>
+                      <Ionicons name="document-text" size={32} color={colors.textSecondary} />
+                    </View>
+                    <Text style={[styles.shareOptionTitle, { color: colors.text }]}>
+                      {t('result.shareText', { defaultValue: 'Share Report' })}
+                    </Text>
+                    <Text style={[styles.shareOptionDesc, { color: colors.textSecondary }]}>
+                      {t('result.shareTextDesc', { defaultValue: 'Share the detailed report' })}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.modalButtonCancel, { flex: 0, width: '100%', backgroundColor: theme === 'dark' ? `${colors.card}00` : colors.background, borderColor: colors.border, marginTop: 20 }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                  onPress={() => setShowShareModal(false)}
+                >
+                  <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                    {t('common.cancel')}
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
+          </Modal>
         </View>
-      </Modal>
-    </View>
-    </View>
+      </View>
     </ImageBackground>
   );
 }
@@ -784,10 +926,20 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
   },
+  cardShadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
   container: {
     flex: 1,
   },
-  
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -812,15 +964,15 @@ const styles = StyleSheet.create({
   resultCard: {
     marginHorizontal: 16,
     borderRadius: 10,
-    padding: 16,  
-    paddingTop:10,
-    borderWidth:1,
+    padding: 16,
+    paddingTop: 10,
+    borderWidth: .5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
-    
+
   },
   diagnosisHeader: {
     alignItems: 'center',
@@ -837,13 +989,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    outlineWidth:.5,
-    outlineOffset:2
+    outlineWidth: .5,
+    outlineOffset: 2
   },
   diseaseImage: {
     width: 310,
     height: 280,
-    
+
   },
   diseaseEmoji: {
     fontSize: 48,
@@ -935,7 +1087,7 @@ const styles = StyleSheet.create({
   },
   subsection: {
     marginTop: 4,
-    marginLeft:3
+    marginLeft: 3
   },
   subsectionTitle: {
     fontSize: 15,
@@ -943,7 +1095,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   listContainer: {
-    marginLeft:10,
+    marginLeft: 10,
     gap: 8,
   },
   listItem: {
@@ -985,7 +1137,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     gap: 8,
-    borderWidth:.5,
+    borderWidth: .5,
   },
   darkActionButton: {
     backgroundColor: '#1a1a1a',
@@ -1019,7 +1171,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-   centered: {
+  centered: {
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1075,8 +1227,8 @@ const styles = StyleSheet.create({
   modalButtonPrimary: {
     // Primary button styles applied via backgroundColor prop
   },
-  modalButtonCancel:{
-    borderWidth:.5
+  modalButtonCancel: {
+    borderWidth: .5
   },
   modalButtonText: {
     fontSize: 16,
@@ -1090,7 +1242,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 10,
     padding: 12,
-    borderWidth:1,
+    borderWidth: .5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -1115,5 +1267,37 @@ const styles = StyleSheet.create({
   notesText: {
     fontSize: 14,
     lineHeight: 20,
+  },
+  shareOptionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+    gap: 15,
+  },
+  shareOptionButton: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  shareIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  shareOptionTitle: {
+    fontSize: 16,
+    fontFamily: 'Outfit-Bold',
+    marginBottom: 4,
+  },
+  shareOptionDesc: {
+    fontSize: 12,
+    fontFamily: 'Outfit-Regular',
+    textAlign: 'center',
   },
 });

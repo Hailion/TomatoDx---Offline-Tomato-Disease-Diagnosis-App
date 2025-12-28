@@ -5,6 +5,7 @@ import { formatEthiopianDate } from '@/src/utils/ethiopianCalendar';
 
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -126,44 +127,44 @@ export default function ScanScreen() {
                 } else {
                     setHasCameraPermission(null); // not decided yet
                 }
-                });
+            });
 
-                loadRecentScans();
+            loadRecentScans();
         }, [])
-        );    
+    );
 
-   
 
-const handleCameraWithCrop = async () => {
-  try {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
-    if (status !== 'granted') {
-      setHasCameraPermission(false);
-      Alert.alert(t('scan.permissionDenied'), t('scan.cameraPermissionDesc'));
-      return;
-    }
+    const handleCameraWithCrop = async () => {
+        try {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
-    setHasCameraPermission(true);
+            if (status !== 'granted') {
+                setHasCameraPermission(false);
+                Alert.alert(t('scan.permissionDenied'), t('scan.cameraPermissionDesc'));
+                return;
+            }
 
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+            setHasCameraPermission(true);
 
-    if (!result.canceled && result.assets[0]) {
-      router.push({
-        pathname: '/tomatodx/preview',
-        params: { uri: result.assets[0].uri },
-      });
-    }
-  } catch (error) {
-    console.error('Camera error:', error);
-    Alert.alert(t('scan.error'), t('scan.captureError'));
-  }
-};
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+            });
+
+            if (!result.canceled && result.assets[0]) {
+                router.push({
+                    pathname: '/tomatodx/preview',
+                    params: { uri: result.assets[0].uri },
+                });
+            }
+        } catch (error) {
+            console.error('Camera error:', error);
+            Alert.alert(t('scan.error'), t('scan.captureError'));
+        }
+    };
 
     const handleGallery = async () => {
         try {
@@ -180,10 +181,10 @@ const handleCameraWithCrop = async () => {
 
             // Launch image picker
             const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
             });
 
             if (!result.canceled && result.assets[0]) {
@@ -197,229 +198,236 @@ const handleCameraWithCrop = async () => {
             Alert.alert(t('scan.error'), t('scan.galleryError'));
         }
     };
-if (hasCameraPermission === false) {
-  return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.permissionContainer}>
-        <Ionicons name="camera-outline" size={64} color={colors.muted} />
-        <Text style={[styles.permissionTitle, { color: colors.text }]}>
-          {t('scan.cameraPermission')}
-        </Text>
-        <Text style={[styles.permissionText, { color: colors.textSecondary }]}>
-          {t('scan.cameraPermissionDesc')}
-        </Text>
-        <TouchableOpacity
-          style={[styles.permissionButton, { backgroundColor: colors.primary }]}
-          onPress={handleCameraWithCrop}
-        >
-          <Text style={styles.permissionButtonText}>
-            {t('scan.grantPermission')}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
-else{
-    return (
-        <ImageBackground
-  source={require('../../assets/images/screenBg/scan1.jpg')}
-  style={styles.backgroundImage}
-  imageStyle={{ resizeMode: 'cover' }}
->
-  <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
-   
-        <View style={[styles.container, { backgroundColor:  theme === 'dark'? `${colors.card}00`: `${colors.card}CC` }]}>
-            <ScrollView                    
-                    showsVerticalScrollIndicator={false}
-                >
-                <View style={styles.scanHome}>
-                    <View style={styles.scanHomeContent}>
-                    {/* Compact Header */}
-                    <Animated.View style={[styles.scanHeader, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                        <View style={[styles.logoContainer, { backgroundColor: theme === 'dark' ? colors.primaryOverlay : `${colors.primaryOverlay3}99` }]}>
-                            <Ionicons name="camera" size={30} color={colors.primary} />
-                        </View>
-                        <Text style={[styles.scanTitle, { color: colors.text }]}>
-                            {t('scan.title')}
+    if (hasCameraPermission === false) {
+        return (
+            <LinearGradient
+                colors={theme === 'dark'
+                    ? [`${colors.card}50`, `${colors.background}BB`]
+                    : [`${colors.primary}30`, `${colors.card}CC`]}
+                style={styles.container}
+            >
+                <View style={styles.permissionContainer}>
+                    <View style={[styles.permissionIcon, { backgroundColor: theme === 'dark' ? colors.primaryOverlay : `${colors.primaryOverlay3}` }]}>
+                        <Ionicons name="camera-sharp" size={60} color={colors.primary} />
+                    </View>
+                    <Text style={[styles.permissionTitle, { color: colors.text }]}>
+                        {t('scan.cameraPermission')}
+                    </Text>
+                    <Text style={[styles.permissionText, { color: colors.textSecondary }]}>
+                        {t('scan.cameraPermissionDesc')}
+                    </Text>
+                    <TouchableOpacity
+                        style={[styles.permissionButton, { backgroundColor: colors.primary }]}
+                        onPress={handleCameraWithCrop}
+                    >
+                        <Text style={styles.permissionButtonText}>
+                            {t('scan.grantPermission')}
                         </Text>
-                        <Text style={[styles.scanSubtitle, { color: colors.textSecondary }]}>
-                            {t('scan.subtitle')}
-                        </Text>
-                    </Animated.View>
+                    </TouchableOpacity>
+                </View>
+            </LinearGradient>
+        );
+    }
+    else {
+        return (
+            <ImageBackground
+                source={require('../../assets/images/screenBg/scan1.jpg')}
+                style={styles.backgroundImage}
+                imageStyle={{ resizeMode: 'cover' }}
+            >
+                <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
 
-                    {/* Compact Action Buttons - Side by Side */}
-                    <Animated.View style={[styles.actionButtons, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                        <TouchableOpacity
-                            style={styles.actionButton}
-                            onPress={handleCameraWithCrop}
+                    <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.card}50` : `${colors.card}CC` }]}>
+                        <ScrollView
+                            showsVerticalScrollIndicator={false}
                         >
-                            <ImageBackground
-                                source={require('../../assets/images/scan/takePhoto.jpg')}
-                                style={styles.actionButtonBackground}
-                                imageStyle={{ resizeMode: 'cover', borderRadius: 8 }}
-                            >
-                                {/* <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
+                            <View style={styles.scanHome}>
+                                <View style={styles.scanHomeContent}>
+                                    {/* Compact Header */}
+                                    <Animated.View style={[styles.scanHeader, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                                        <View style={[styles.logoContainer, { backgroundColor: theme === 'dark' ? colors.primaryOverlay : `${colors.primaryOverlay3}99` }]}>
+                                            <Ionicons name="camera" size={30} color={colors.primary} />
+                                        </View>
+                                        <Text style={[styles.scanTitle, { color: colors.text }]}>
+                                            {t('scan.title')}
+                                        </Text>
+                                        <Text style={[styles.scanSubtitle, { color: colors.textSecondary }]}>
+                                            {t('scan.subtitle')}
+                                        </Text>
+                                    </Animated.View>
+
+                                    {/* Compact Action Buttons - Side by Side */}
+                                    <Animated.View style={[styles.actionButtons, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                                        <TouchableOpacity
+                                            style={styles.actionButton}
+                                            onPress={handleCameraWithCrop}
+                                        >
+                                            <ImageBackground
+                                                source={require('../../assets/images/scan/takePhoto.jpg')}
+                                                style={styles.actionButtonBackground}
+                                                imageStyle={{ resizeMode: 'cover', borderRadius: 8 }}
+                                            >
+                                                {/* <View style={[styles.actionIcon, { backgroundColor: colors.primary }]}>
                                     <Ionicons name="camera" size={38} color="#fff" />
                                 </View> */}
-                                <View style={[styles.actionContentOverlay,{ backgroundColor: 'rgba(0,0,0,0.5)'}]}>
-                                <Text style={[styles.actionButtonTitle, { color: '#fff' }]}>
-                                    {t('scan.takePhoto')}
-                                </Text>
-                                <Text style={[styles.actionButtonDesc, { color: '#fff' }]}>
-                                    {t('scan.takePhotoDesc')}
-                                </Text>
-                                </View>
-                            </ImageBackground>
-                        </TouchableOpacity>
-                        
+                                                <View style={[styles.actionContentOverlay, { backgroundColor: 'rgba(0,0,0,0.3)' }]}>
+                                                    <Text style={[styles.actionButtonTitle, { color: '#fff' }]}>
+                                                        {t('scan.takePhoto')}
+                                                    </Text>
+                                                    <Text style={[styles.actionButtonDesc, { color: '#fff' }]}>
+                                                        {t('scan.takePhotoDesc')}
+                                                    </Text>
+                                                </View>
+                                            </ImageBackground>
+                                        </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.actionButton}
-                            onPress={handleGallery}
-                        >
-                            <ImageBackground
-                                source={require('../../assets/images/scan/fromGallery.jpg')}
-                                style={styles.actionButtonBackground}
-                                imageStyle={{ resizeMode: 'cover', borderRadius: 8 }}
-                            >
-                                {/* <View style={[styles.actionIcon, { backgroundColor: colors.primary ,opacity: 0.5}]}>
+
+                                        <TouchableOpacity
+                                            style={styles.actionButton}
+                                            onPress={handleGallery}
+                                        >
+                                            <ImageBackground
+                                                source={require('../../assets/images/scan/fromGallery.jpg')}
+                                                style={styles.actionButtonBackground}
+                                                imageStyle={{ resizeMode: 'cover', borderRadius: 8 }}
+                                            >
+                                                {/* <View style={[styles.actionIcon, { backgroundColor: colors.primary ,opacity: 0.5}]}>
                                     <Ionicons name="images" size={36} color="#fff" />
                                 </View> */}
-                                <View style={[styles.actionContentOverlay,{ backgroundColor: 'rgba(0,0,0,0.5)'}]}>
-                                <Text style={[styles.actionButtonTitle, { color: '#fff' }]}>
-                                    {t('scan.chooseGallery')}
-                                </Text>
-                                <Text style={[styles.actionButtonDesc, { color: '#fff' }]}>
-                                    {t('scan.chooseGalleryDesc')}
-                                </Text>
+                                                <View style={[styles.actionContentOverlay, { backgroundColor: 'rgba(0,0,0,0.5)' }]}>
+                                                    <Text style={[styles.actionButtonTitle, { color: '#fff' }]}>
+                                                        {t('scan.chooseGallery')}
+                                                    </Text>
+                                                    <Text style={[styles.actionButtonDesc, { color: '#fff' }]}>
+                                                        {t('scan.chooseGalleryDesc')}
+                                                    </Text>
+                                                </View>
+                                            </ImageBackground>
+                                        </TouchableOpacity>
+                                    </Animated.View>
+
+                                    {/* Quick Tips - More Compact */}
+                                    <Animated.View style={[styles.tips, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                                        <View style={styles.tipsHeader}>
+                                            {/* <Ionicons name="bulb-outline" size={18} color={colors.primary} /> */}
+                                            <Text style={[styles.tipsTitle, { color: colors.text }]}>
+                                                {t('scan.tips')}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.tipsList}>
+                                            <View style={styles.tipItem}>
+                                                {/* <Ionicons name="checkmark-circle" size={14} color={colors.primary} /> */}
+                                                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                                                    {t('scan.tip1')}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.tipItem}>
+                                                {/* <Ionicons name="checkmark-circle" size={14} color={colors.primary} /> */}
+                                                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                                                    {t('scan.tip2')}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.tipItem}>
+                                                {/* <Ionicons name="checkmark-circle" size={14} color={colors.primary} /> */}
+                                                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                                                    {t('scan.tip3')}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </Animated.View>
+                                    {/* Guide Section */}
+                                    <Animated.View style={[styles.guideSection, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                                        <View style={[styles.imageContainer]}>
+                                            {/* <Ionicons name="camera" size={64} color={colors.primary} /> */}
+                                            <Image
+                                                source={theme === 'dark' ? require('../../assets/images/screenBg/scan1.jpg') : require('../../assets/images/scan/sample-tomato-leaf.jpg')}
+                                                style={styles.image}
+                                                resizeMode="cover"
+                                                height={280}
+                                            />
+                                            {/* Scan frame overlay */}
+                                            <View style={styles.scanOverlay}>
+                                                <View style={styles.scanFrame}>
+                                                    {/* Corner brackets */}
+                                                    <View style={[styles.corner, styles.cornerTopLeft]} />
+                                                    <View style={[styles.corner, styles.cornerTopRight]} />
+                                                    <View style={[styles.corner, styles.cornerBottomLeft]} />
+                                                    <View style={[styles.corner, styles.cornerBottomRight]} />
+                                                    <View style={[styles.crossOverlay, { backgroundColor: `${colors.primary}60` }]}>
+                                                        <View style={[styles.centerCross]}>
+                                                            <View style={[styles.verticalBar]} />
+                                                            <View style={[styles.horizontalBar]} />
+                                                        </View>
+                                                    </View>
+                                                    {/* Animated scan line */}
+                                                    <Animated.View
+                                                        style={[
+                                                            styles.scanLine,
+                                                            {
+                                                                transform: [
+                                                                    {
+                                                                        translateY: scanLineAnim.interpolate({
+                                                                            inputRange: [0, 1],
+                                                                            outputRange: [0, 180], // adjust for frame height
+                                                                        }),
+                                                                    },
+                                                                ],
+                                                            },
+                                                        ]}
+                                                    />
+                                                </View>
+                                            </View>
+                                        </View>
+                                        <View style={[styles.guideTitleContainer, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC` }]}>
+                                            <Text style={[styles.guideTitle, { color: colors.text }]}>
+                                                {t('scan.alignGuide')}
+                                            </Text>
+                                        </View>
+                                    </Animated.View>
+
+                                    {/* Recent Activity Preview (Optional) */}
+                                    <Animated.View style={[styles.recentSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                                        <Text style={[styles.recentTitle, { color: colors.text }]}>
+                                            {t('scan.recentScan')}
+                                        </Text>
+                                        <Text style={[styles.recentText, { color: colors.textSecondary }]}>
+                                            {t('scan.recentScanDesc')}
+                                        </Text>
+
+                                        {recentScans.length > 0 ? (
+                                            recentScans.map((item) => (
+                                                <TouchableOpacity
+                                                    key={item.id}
+                                                    style={[styles.recentItem, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
+                                                    onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
+                                                >
+                                                    <View>
+                                                        <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
+                                                            {item.disease}
+                                                        </Text>
+                                                        <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+                                                            {item.date}
+                                                        </Text>
+                                                    </View>
+                                                    <Text style={{ fontSize: 14, fontWeight: '700', color: colors.primary }}>
+                                                        {item.confidence}%
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            ))
+                                        ) : (
+                                            <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 8 }}>
+                                                {t('scan.noRecentScans', { defaultValue: 'No recent scans yet.' })}
+                                            </Text>
+                                        )}
+                                    </Animated.View>
                                 </View>
-                            </ImageBackground>
-                        </TouchableOpacity>
-                    </Animated.View>
-
-                    {/* Quick Tips - More Compact */}
-                    <Animated.View style={[styles.tips, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                        <View style={styles.tipsHeader}>
-                            {/* <Ionicons name="bulb-outline" size={18} color={colors.primary} /> */}
-                            <Text style={[styles.tipsTitle, { color: colors.text }]}>
-                                {t('scan.tips')}
-                            </Text>
-                        </View>
-                        <View style={styles.tipsList}>
-                            <View style={styles.tipItem}>
-                                {/* <Ionicons name="checkmark-circle" size={14} color={colors.primary} /> */}
-                                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                                    {t('scan.tip1')}
-                                </Text>
                             </View>
-                            <View style={styles.tipItem}>
-                                {/* <Ionicons name="checkmark-circle" size={14} color={colors.primary} /> */}
-                                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                                    {t('scan.tip2')}
-                                </Text>
-                            </View>
-                            <View style={styles.tipItem}>
-                                {/* <Ionicons name="checkmark-circle" size={14} color={colors.primary} /> */}
-                                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                                    {t('scan.tip3')}
-                                </Text>
-                            </View>
-                        </View>
-                    </Animated.View>
-
-                    <Animated.View style={[styles.guideSection, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                       <View style={[styles.imageContainer]}>
-                            {/* <Ionicons name="camera" size={64} color={colors.primary} /> */}
-                            <Image
-                                source={theme === 'dark' ? require('../../assets/images/screenBg/scan1.jpg') : require('../../assets/images/scan/sample-tomato-leaf.jpg')}
-                                style={styles.image}
-                                resizeMode="cover"                              
-                                height={300}
-                            />      
-                            {/* Scan frame overlay */}
-                            <View style={styles.scanOverlay}>
-                            <View style={styles.scanFrame}>
-                                {/* Corner brackets */}
-                                <View style={[styles.corner, styles.cornerTopLeft]} />
-                                <View style={[styles.corner, styles.cornerTopRight]} />
-                                <View style={[styles.corner, styles.cornerBottomLeft]} />
-                                <View style={[styles.corner, styles.cornerBottomRight]} />
-                                <View style={[styles.crossOverlay, {backgroundColor: `${colors.primary}60`}]}>
-                                <View style={[styles.centerCross]}>
-                                    <View style={[ styles.verticalBar]}/>
-                                    <View style={[ styles.horizontalBar]}/>
-                                </View>
-                                </View>
-                                {/* Animated scan line */}
-                                <Animated.View
-                                style={[
-                                    styles.scanLine,
-                                    {
-                                    transform: [
-                                        {
-                                        translateY: scanLineAnim.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [0, 180], // adjust for frame height
-                                        }),
-                                        },
-                                    ],
-                                    },
-                                ]}
-                                />
-                            </View>
-                            </View>                      
-                        </View>
-                        <View style={[styles.guideTitleContainer,{backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`}]}>
-                        <Text style={[styles.guideTitle, { color: colors.text }]}>
-                                {t('scan.alignGuide')}
-                        </Text>
-                        </View>
-                    </Animated.View>
-
-                    {/* Recent Activity Preview (Optional) */}
-                    <Animated.View style={[styles.recentSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                    <Text style={[styles.recentTitle, { color: colors.text }]}>
-                        {t('scan.recentScan')}
-                    </Text>
-                    <Text style={[styles.recentText, { color: colors.textSecondary }]}>
-                        {t('scan.recentScanDesc')}
-                    </Text>
-
-                    {recentScans.length > 0 ? (
-                        recentScans.map((item) => (
-                        <TouchableOpacity
-                            key={item.id}
-                            style={[styles.recentItem, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
-                            onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
-                        >
-                            <View>
-                            <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
-                                {item.disease}
-                            </Text>
-                            <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-                                {item.date}
-                            </Text>
-                            </View>
-                            <Text style={{ fontSize: 14, fontWeight: '700', color: colors.primary }}>
-                            {item.confidence}%
-                            </Text>
-                        </TouchableOpacity>
-                        ))
-                    ) : (
-                        <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 8 }}>
-                        {t('scan.noRecentScans', { defaultValue: 'No recent scans yet.' })}
-                        </Text>
-                    )}
-                    </Animated.View>
+                        </ScrollView>
                     </View>
                 </View>
-                </ScrollView>
-            </View>
-            </View>
             </ImageBackground>
-    );
-}
+        );
+    }
 }
 
 const styles = StyleSheet.create({
@@ -429,11 +437,31 @@ const styles = StyleSheet.create({
     overlay: {
         flex: 1,
     },
+    cardShadow: {
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
     permissionContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
+    },
+    permissionIcon: {
+        // flex: 1,
+        padding: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 6,
+        borderWidth: .5,
+        borderColor: '#fff',
+        borderRadius: 50
     },
     permissionTitle: {
         fontSize: 22,
@@ -451,7 +479,8 @@ const styles = StyleSheet.create({
     permissionButton: {
         paddingHorizontal: 24,
         paddingVertical: 12,
-        borderRadius: 12,
+        borderRadius: 8,
+
     },
     permissionButtonText: {
         color: '#fff',
@@ -467,7 +496,7 @@ const styles = StyleSheet.create({
     scanHomeContent: {
         flex: 1,
         paddingTop: 60,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         paddingBottom: 20,
     },
     scanHeader: {
@@ -475,8 +504,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     logoContainer: {
-        flex:1,
-        padding:10,
+        flex: 1,
+        padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 6,
@@ -485,13 +514,13 @@ const styles = StyleSheet.create({
         borderRadius: 50
     },
     logo: {
-       borderRadius: 5,
-       outlineWidth: 1,
-       outlineColor: '#fff',
-       outlineOffset: 3,
-       outlineStyle: 'solid',
-    //    overflow: 'hidden',
-       width:"100%",
+        borderRadius: 5,
+        outlineWidth: 1,
+        outlineColor: '#fff',
+        outlineOffset: 3,
+        outlineStyle: 'solid',
+        //    overflow: 'hidden',
+        width: "100%",
     },
     scanTitle: {
         fontSize: 28,
@@ -509,15 +538,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 8,
         marginBottom: 10,
-        padding:3,
-        borderRadius:10,
-        borderWidth:.5
+        padding: 3,
+        borderRadius: 10,
+        borderWidth: .5
     },
     actionContentOverlay: {
-        flex:1,
-        justifyContent:'center',
-        height:"100%",
-        borderRadius: 10,       
+        flex: 1,
+        justifyContent: 'center',
+        height: "100%",
+        borderRadius: 8,
         alignItems: 'center',
     },
     actionButton: {
@@ -534,7 +563,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderWidth: .5,
         borderColor: '#ccccccc4',
-        borderRadius:8
+        borderRadius: 8
     },
     actionIcon: {
         width: 60,
@@ -555,19 +584,19 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         textAlign: 'center',
         lineHeight: 16,
-        padding:6
+        padding: 6
     },
     tips: {
         padding: 10,
         borderTopRightRadius: 10,
         borderTopLeftRadius: 10,
         marginBottom: 2,
-        borderWidth: .2,
-               
+        borderWidth: .5,
+
     },
     tipsHeader: {
         flexDirection: 'row',
-        justifyContent:'center',
+        justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 12,
         gap: 8,
@@ -588,35 +617,36 @@ const styles = StyleSheet.create({
         fontSize: 13,
         lineHeight: 18,
         flex: 1,
+        textAlign: 'justify',
     },
     guideSection: {
         alignItems: 'center',
-        borderBottomRightRadius:10,
-        borderBottomLeftRadius:10,
-        overflow:"hidden",
-        borderWidth: .2,
+        borderBottomRightRadius: 10,
+        borderBottomLeftRadius: 10,
+        overflow: "hidden",
+        borderWidth: .5,
         borderColor: '#ccccccc4',
-        padding:2
+        padding: 2
     },
-    imageContainer:{
-         flex:1,
+    imageContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        width:"100%",
+        width: "100%",
     },
-    image:{
-        width:"100%",
+    image: {
+        width: "100%",
         borderRadius: 0,
     },
 
-    guideTitleContainer:{
-        flex:1,
-        width:"100%",
+    guideTitleContainer: {
+        flex: 1,
+        width: "100%",
         paddingVertical: 10,
 
-    }    ,
+    },
     guideTitle: {
-       fontSize: 14,
+        fontSize: 14,
         textAlign: 'center',
         lineHeight: 16,
         paddingHorizontal: 20,
@@ -637,91 +667,91 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
-scanFrame: {
-  width: '75%',
-  aspectRatio: 1,
-//   borderRadius: 12,
-  borderColor: 'rgba(255,255,255,0.25)',
-  borderWidth: 1,
-  justifyContent: 'center',
-  overflow: 'hidden',
-},
+    scanFrame: {
+        width: '75%',
+        aspectRatio: 1,
+        //   borderRadius: 12,
+        borderColor: 'rgba(255,255,255,0.25)',
+        borderWidth: .5,
+        justifyContent: 'center',
+        overflow: 'hidden',
+    },
 
-corner: {
-  position: 'absolute',
-  width: 26,
-  height: 26,
-  borderColor: '#00ff88',
-  borderWidth: 3,
-},
+    corner: {
+        position: 'absolute',
+        width: 26,
+        height: 26,
+        borderColor: '#00ff88',
+        borderWidth: 2,
+    },
 
-cornerTopLeft: {
-  top: 0,
-  left: 0,
-  borderRightWidth: 0,
-  borderBottomWidth: 0,
-},
+    cornerTopLeft: {
+        top: 0,
+        left: 0,
+        borderRightWidth: 0,
+        borderBottomWidth: 0,
+    },
 
-cornerTopRight: {
-  top: 0,
-  right: 0,
-  borderLeftWidth: 0,
-  borderBottomWidth: 0,
-},
+    cornerTopRight: {
+        top: 0,
+        right: 0,
+        borderLeftWidth: 0,
+        borderBottomWidth: 0,
+    },
 
-cornerBottomLeft: {
-  bottom: 0,
-  left: 0,
-  borderRightWidth: 0,
-  borderTopWidth: 0,
-},
+    cornerBottomLeft: {
+        bottom: 0,
+        left: 0,
+        borderRightWidth: 0,
+        borderTopWidth: 0,
+    },
 
-cornerBottomRight: {
-  bottom: 0,
-  right: 0,
-  borderLeftWidth: 0,
-  borderTopWidth: 0,
-},
+    cornerBottomRight: {
+        bottom: 0,
+        right: 0,
+        borderLeftWidth: 0,
+        borderTopWidth: 0,
+    },
 
-crossOverlay: {
-    position: 'relative',
-    padding:40,
-    margin:'auto',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius:100,
-    borderColor: '#ffffff82',
-    borderWidth: 1,
-    opacity: 0.8,
+    crossOverlay: {
+        position: 'relative',
+        padding: 40,
+        margin: 'auto',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 100,
+        borderColor: '#ffffff82',
+        borderWidth: 1,
+        opacity: 0.8,
 
-},
-centerCross: {
-   flexDirection: 'row',
-   alignItems: 'center',
-   justifyContent: 'center',
-},
+    },
+    centerCross: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 
-verticalBar: {
-    position:'absolute',
-    width: 2,
-    height: 50,
-    backgroundColor: '#00ff88',
-},
+    verticalBar: {
+        position: 'absolute',
+        width: 2,
+        height: 50,
+        backgroundColor: '#00ff88',
+    },
 
-horizontalBar: {
-    position:'absolute',
-    width: 50,
-    height: 2,
-    backgroundColor: '#00ff88',
-},
-scanLine: {
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  height: 3,
-  backgroundColor: '#00ff88',
-  opacity: 0.9,
-},
+    horizontalBar: {
+        position: 'absolute',
+        width: 50,
+        height: 2,
+        backgroundColor: '#00ff88',
+    },
+    scanLine: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        height: 3,
+        backgroundColor: '#00ff88',
+        opacity: 0.9,
+    },
     recentSection: {
         alignItems: 'center',
         paddingVertical: 10,
@@ -739,12 +769,12 @@ scanLine: {
     },
     recentItem: {
         width: '100%',
-        marginTop: 12,
+        marginTop: 4,
         padding: 8,
         borderRadius: 8,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderWidth:.5
+        borderWidth: .5
     },
 });

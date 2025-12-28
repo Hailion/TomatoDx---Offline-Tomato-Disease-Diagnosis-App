@@ -320,208 +320,208 @@ export default function PreviewScreen() {
 
   return (
     <ImageBackground
-    source={require('../../assets/images/screenBg/preview.jpg')}
-    style={styles.backgroundImage}
-    imageStyle={{ resizeMode: 'cover' }}
-  >
-    <View style={[styles.overlay,{backgroundColor: 'rgba(0,0,0,0.9)'}]}>
-    
-    <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons
-            name="chevron-back"
-            size={24}
-            color={colors.text}
-          />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text }]}>
-          {t('preview.title')}
-        </Text>
-        <View style={styles.placeholder} />
-      </View>
+      source={require('../../assets/images/screenBg/preview.jpg')}
+      style={styles.backgroundImage}
+      imageStyle={{ resizeMode: 'cover' }}
+    >
+      <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
 
-      {/* Image Preview */}
-      <ScrollView
-        style={[styles.scrollView]}
-        contentContainerStyle={styles.imageContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        <Animated.View style={[
-          styles.imageWrapper,
-          {
-            backgroundColor: colors.card,
-            opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }]
-          }
-        ]}>
-          <Image
-            source={uri ? { uri: uri as string } : require('../../assets/images/sample-tomato-leaf.png')}
-            style={styles.image}
-            resizeMode="cover"
-          />
-
-          {/* Overlay Status */}
-          <View style={[styles.statusBadge, { backgroundColor: `${colors.success}99` }]}>
-            <Ionicons name="checkmark-circle" size={16} color="#fff" />
-            <Text style={styles.statusText}>{t('preview.ready')}</Text>
+        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color={colors.text}
+              />
+            </TouchableOpacity>
+            <Text style={[styles.title, { color: colors.text }]}>
+              {t('preview.title')}
+            </Text>
+            <View style={styles.placeholder} />
           </View>
 
-          {/* Image Quality Indicator */}
-          {/* <View style={[styles.qualityIndicator, { backgroundColor: colors.whiteOverlay }]}>
+          {/* Image Preview */}
+          <ScrollView
+            style={[styles.scrollView]}
+            contentContainerStyle={styles.imageContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            <Animated.View style={[
+              styles.imageWrapper,
+              {
+                backgroundColor: colors.card,
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }]
+              }, theme !== 'dark' ? styles.cardShadow : undefined
+            ]}>
+              <Image
+                source={uri ? { uri: uri as string } : require('../../assets/images/sample-tomato-leaf.png')}
+                style={styles.image}
+                resizeMode="cover"
+              />
+
+              {/* Overlay Status */}
+              <View style={[styles.statusBadge, { backgroundColor: `${colors.success}99` }]}>
+                <Ionicons name="checkmark-circle" size={16} color="#fff" />
+                <Text style={styles.statusText}>{t('preview.ready')}</Text>
+              </View>
+
+              {/* Image Quality Indicator */}
+              {/* <View style={[styles.qualityIndicator, { backgroundColor: colors.whiteOverlay }]}>
             <Ionicons name="aperture" size={16} color={colors.success} />
             <Text style={[styles.qualityText, { color: colors.text }]}>
               {t('preview.highQuality')}
             </Text>
           </View> */}
-        </Animated.View>
+            </Animated.View>
 
-        {/* Analysis Tips */}
-        <Animated.View style={[
-          styles.tipsCard,
-          {
-            backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark ,
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }]
-          }
-        ]}>
-          <Ionicons name="bulb" size={24} color={colors.warning} />
-          <View style={styles.tipsContent}>
-            <Text style={[styles.tipsTitle, { color: colors.text }]}>
-              {t('preview.tipsTitle')}
-            </Text>
-            <Text style={[styles.tipsText, { color: colors.textSecondary }]}>
-              {t('preview.tipsText')}
-            </Text>
+            {/* Analysis Tips */}
+            <Animated.View style={[
+              styles.tipsCard,
+              {
+                backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark,
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }]
+              }, theme !== 'dark' ? styles.cardShadow : undefined
+            ]}>
+              <Ionicons name="bulb" size={24} color={colors.warning} />
+              <View style={styles.tipsContent}>
+                <Text style={[styles.tipsTitle, { color: colors.text }]}>
+                  {t('preview.tipsTitle')}
+                </Text>
+                <Text style={[styles.tipsText, { color: colors.textSecondary }]}>
+                  {t('preview.tipsText')}
+                </Text>
+              </View>
+            </Animated.View>
+          </ScrollView>
+
+          {/* Action Buttons */}
+          <View style={styles.actions}>
+            <TouchableOpacity
+              style={[styles.analyzeButton, theme !== 'dark' ? styles.cardShadow : undefined]}
+              onPress={handleAnalyze}
+              disabled={analyzing}
+            >
+              <LinearGradient
+                colors={[colors.primary, colors.primaryDark]}
+                style={[styles.analyzeGradient]}
+              >
+                {analyzing ? (
+                  <>
+                    <ActivityIndicator color="#fff" size="small" />
+                    <Text style={styles.analyzeText}>{t('preview.analyzing')}</Text>
+                  </>
+                ) : (
+                  <>
+                    <Ionicons name="analytics" size={24} color="#fff" />
+                    <Text style={styles.analyzeText}>{t('preview.analyze')}</Text>
+                  </>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.retakeButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
+              onPress={handleRetake}
+            >
+              <Ionicons
+                name="camera-reverse"
+                size={20}
+                color={colors.textSecondary}
+              />
+              <Text style={[styles.retakeText, { color: colors.textSecondary }]}>
+                {t('preview.retake')}
+              </Text>
+            </TouchableOpacity>
           </View>
-        </Animated.View>
-      </ScrollView>
 
-      {/* Action Buttons */}
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={[styles.analyzeButton]}
-          onPress={handleAnalyze}
-          disabled={analyzing}
-        >
-          <LinearGradient
-            colors={[colors.primary, colors.primaryDark]}
-            style={[styles.analyzeGradient]}
+          {/* Low Confidence Modal */}
+          <Modal
+            visible={showLowConfidenceModal}
+            transparent
+            animationType="fade"
+            onRequestClose={handleLowConfidenceRetake}
           >
-            {analyzing ? (
-              <>
-                <ActivityIndicator color="#fff" size="small" />
-                <Text style={styles.analyzeText}>{t('preview.analyzing')}</Text>
-              </>
-            ) : (
-              <>
-                <Ionicons name="analytics" size={24} color="#fff" />
-                <Text style={styles.analyzeText}>{t('preview.analyze')}</Text>
-              </>
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
+            <View style={styles.modalOverlay}>
+              <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
+                {/* Warning Icon */}
+                <View style={[styles.iconContainer, { backgroundColor: colors.primaryOverlay2 }]}>
+                  <Ionicons name="warning" size={48} color={colors.warning} />
+                </View>
 
-        <TouchableOpacity
-          style={[styles.retakeButton, {backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]} 
-          onPress={handleRetake}
-        >
-          <Ionicons
-            name="camera-reverse"
-            size={20}
-            color={colors.textSecondary}
-          />
-          <Text style={[styles.retakeText, { color: colors.textSecondary }]}>
-            {t('preview.retake')}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Low Confidence Modal */}
-      <Modal
-        visible={showLowConfidenceModal}
-        transparent
-        animationType="fade"
-        onRequestClose={handleLowConfidenceRetake}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, { backgroundColor:colors.background }]}>
-            {/* Warning Icon */}
-            <View style={[styles.iconContainer, { backgroundColor: colors.primaryOverlay2 }]}>
-              <Ionicons name="warning" size={48} color={colors.warning} />
-            </View>
-
-            {/* Title */}
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
-              {t('preview.lowConfidence')}
-            </Text>
-
-            {/* Confidence Badge */}
-            {pendingResult && (
-              <View style={[styles.confidenceBadge, { backgroundColor: colors.successOverlay2 }]}>
-                <Ionicons name="analytics" size={20} color={colors.danger} />
-                <Text style={[styles.confidenceText, { color: colors.danger }]}>
-                  {Math.round(pendingResult.prediction.confidence * 100)}% {t('result.confidence')}
+                {/* Title */}
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  {t('preview.lowConfidence')}
                 </Text>
-              </View>
-            )}
 
-            {/* Message */}
-            <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
-              {t('preview.lowConfidenceMessage')}
-            </Text>
+                {/* Confidence Badge */}
+                {pendingResult && (
+                  <View style={[styles.confidenceBadge, { backgroundColor: colors.successOverlay2 }]}>
+                    <Ionicons name="analytics" size={20} color={colors.danger} />
+                    <Text style={[styles.confidenceText, { color: colors.danger }]}>
+                      {Math.round(pendingResult.prediction.confidence * 100)}% {t('result.confidence')}
+                    </Text>
+                  </View>
+                )}
 
-            {/* Tips */}
-            <View style={[styles.tipsContainer, { backgroundColor: colors.backgroundAlt }]}>
-              <View style={styles.tipRow}>
-                <Ionicons name="sunny" size={18} color={colors.primary} />
-                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                  {t('scan.tip1')}
+                {/* Message */}
+                <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+                  {t('preview.lowConfidenceMessage')}
                 </Text>
-              </View>
-              <View style={styles.tipRow}>
-                <Ionicons name="camera" size={18} color={colors.primary} />
-                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                  {t('scan.tip2')}
-                </Text>
-              </View>
-               <View style={styles.tipRow}>
-                <Ionicons name="camera" size={18} color={colors.primary} />
-                <Text style={[styles.tipText, { color: colors.textSecondary }]}>
-                  {t('scan.tip3')}
-                </Text>
+
+                {/* Tips */}
+                <View style={[styles.tipsContainer, { backgroundColor: colors.backgroundAlt }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                  <View style={styles.tipRow}>
+                    <Ionicons name="sunny" size={18} color={colors.primary} />
+                    <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                      {t('scan.tip1')}
+                    </Text>
+                  </View>
+                  <View style={styles.tipRow}>
+                    <Ionicons name="camera" size={18} color={colors.primary} />
+                    <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                      {t('scan.tip2')}
+                    </Text>
+                  </View>
+                  <View style={styles.tipRow}>
+                    <Ionicons name="camera" size={18} color={colors.primary} />
+                    <Text style={[styles.tipText, { color: colors.textSecondary }]}>
+                      {t('scan.tip3')}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Action Buttons */}
+                <View style={styles.modalButtonContainer}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.modalRetakeButton, { backgroundColor: colors.primary }]}
+                    onPress={handleLowConfidenceRetake}
+                  >
+                    <Ionicons name="camera-reverse" size={20} color="#fff" />
+                    <Text style={styles.modalButtonText}>{t('preview.retakeRecommended')}</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.modalProceedButton, { borderColor: colors.border }]}
+                    onPress={handleLowConfidenceProceed}
+                  >
+                    <Text style={[styles.modalProceedText, { color: colors.textSecondary }]}>
+                      {t('preview.proceedAnyway')}<Ionicons name="chevron-back" size={16} color={colors.background}></Ionicons>
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-
-            {/* Action Buttons */}
-            <View style={styles.modalButtonContainer}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.modalRetakeButton, { backgroundColor: colors.primary }]}
-                onPress={handleLowConfidenceRetake}
-              >
-                <Ionicons name="camera-reverse" size={20} color="#fff" />
-                <Text style={styles.modalButtonText}>{t('preview.retakeRecommended')}</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.modalButton, styles.modalProceedButton, { borderColor: colors.border }]}
-                onPress={handleLowConfidenceProceed}
-              >
-                <Text style={[styles.modalProceedText, { color: colors.textSecondary }]}>
-                  {t('preview.proceedAnyway')}<Ionicons name="chevron-back" size={16} color={colors.background}></Ionicons>
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          </Modal>
         </View>
-      </Modal>
-    </View>
-   
-    </View>
+
+      </View>
 
     </ImageBackground>
   );
@@ -530,9 +530,19 @@ export default function PreviewScreen() {
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
-      },
+  },
   overlay: {
     flex: 1,
+  },
+  cardShadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   container: {
     flex: 1,
@@ -573,7 +583,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: width -50,
+    height: width - 50,
   },
   statusBadge: {
     position: 'absolute',
@@ -610,11 +620,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    paddingVertical:20,
+    paddingVertical: 20,
     borderRadius: 10,
     marginTop: 20,
-    borderWidth:.5
-      },
+    borderWidth: .5
+  },
   tipsContent: {
     flex: 1,
     marginLeft: 12,
@@ -631,12 +641,12 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     paddingHorizontal: 16,
-    paddingVertical:16,
+    paddingVertical: 16,
     marginBottom: 40,
     gap: 10,
   },
   analyzeButton: {
-    flex:1,
+    flex: 1,
     borderRadius: 8,
     overflow: 'hidden',
   },
@@ -645,7 +655,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 18,
-    paddingHorizontal:18,
+    paddingHorizontal: 18,
     gap: 12,
   },
   analyzeText: {
@@ -668,7 +678,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  
+
   // Modal styles
   modalOverlay: {
     flex: 1,
@@ -683,7 +693,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 16,
     alignItems: 'center',
-    
+
   },
   iconContainer: {
     width: 80,

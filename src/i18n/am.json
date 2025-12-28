@@ -87,7 +87,17 @@
     "shareMessage": "ይህን ውጤት ሌሎች ያጋሩ",
     "newScan": "አዲስ ስካን",
     "noTreatment": "የሚመከር ሕክምና የለም",
-    "generalPrevention": "የመከላከል ምክሮች"
+    "generalPrevention": "የመከላከል ምክሮች",
+    "shareTitle": "የ TomatoDx ምርመራ ውጤት",
+    "disease": "በሽታ",
+    "severity": "ደረጃ",
+    "downloadApp": "ለበለጠ ትክክለኛ የቲማቲም በሽታ ምርመራ TomatoDxን ያውርዱ።",
+    "shareDesc": "ውጤቱን እንዴት ማጋራት እንደሚፈልጉ ይምረጡ",
+    "shareImage": "ምስሉን አጋራ",
+    "shareImageDesc": "የምርመራውን ምስል አጋራ",
+    "shareText": "ሪፖርቱን አጋራ",
+    "shareTextDesc": "ዝርዝር የምርመራ ሪፖርቱን አጋራ",
+    "noImageError": "ለማጋራት ምስል የለም"
   },
   "history": {
     "title": "ታሪክ",
@@ -793,7 +803,9 @@
   "diseaseEditor": {
     "title": "የበሽታ አስተካክል",
     "selectDisease": "በሽታ ይምረጡ",
+    "diseaseId": "በሽታ ግላዊ መለያ (ID)",
     "diseaseInfo": "የበሽታ መረጃ",
+    "editDiseaseInfo": "የበሽታ መረጃ አስተካክል",
     "nameEn": "ስም (እንግሊዝኛ)",
     "nameAm": "ስም (አማርኛ)",
     "nameEnPlaceholder": "የበሽታዉን የእንግሊዝኛ ስም ያስገቡ",

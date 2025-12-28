@@ -82,7 +82,7 @@ export default function AdminInfoScreen() {
     const [monthlyTrends, setMonthlyTrends] = useState<MonthlyTrend[]>([]);
     const [isAnalyticsLoading, setIsAnalyticsLoading] = useState<boolean>(false);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-    
+
     // New functionality states
     const [selectedTimeRange, setSelectedTimeRange] = useState<'7days' | '30days' | 'all'>('7days');
     const [showExportModal, setShowExportModal] = useState<boolean>(false);
@@ -97,7 +97,7 @@ export default function AdminInfoScreen() {
         try {
             setIsLoading(true);
             const adminUnlocked = await AsyncStorage.getItem('adminUnlocked');
-            
+
             if (adminUnlocked === 'true') {
                 setIsAuthorized(true);
             } else {
@@ -178,7 +178,7 @@ export default function AdminInfoScreen() {
         try {
             setIsAnalyticsLoading(true);
             const exportResult = await exportAnalyticsData(format, exportFileName);
-            
+
             if (exportResult.success) {
                 const filePath = exportResult.filePath || '';
                 const isDownloads = /download/i.test(filePath);
@@ -191,9 +191,9 @@ export default function AdminInfoScreen() {
                     `${t('admin.analytics.exportSuccess')}\n${locationMsg}`,
                     [
                         { text: 'OK', style: 'default' },
-                        { 
-                            text: 'Share', 
-                            onPress: () => handleShareExport(exportResult.filePath!) 
+                        {
+                            text: 'Share',
+                            onPress: () => handleShareExport(exportResult.filePath!)
                         }
                     ]
                 );
@@ -217,29 +217,29 @@ export default function AdminInfoScreen() {
      * Share exported file
      */
     const handleShareExport = async (filePath: string) => {
-    try {
-        const ext = filePath.split('.').pop()?.toLowerCase();
-        const mimeType = ext === 'csv' ? 'text/csv' : 'application/json';
+        try {
+            const ext = filePath.split('.').pop()?.toLowerCase();
+            const mimeType = ext === 'csv' ? 'text/csv' : 'application/json';
 
-        const sharingAvailable = await Sharing.isAvailableAsync();
+            const sharingAvailable = await Sharing.isAvailableAsync();
 
-        if (sharingAvailable) {
-            await Sharing.shareAsync(filePath, {
-                mimeType,
-                dialogTitle: 'Analytics Data Export',
+            if (sharingAvailable) {
+                await Sharing.shareAsync(filePath, {
+                    mimeType,
+                    dialogTitle: 'Analytics Data Export',
+                });
+                return;
+            }
+
+            await Share.share({
+                url: filePath,
+                message: filePath,
+                title: 'Analytics Data Export',
             });
-            return;
+        } catch (error) {
+            console.error('Share failed:', error);
         }
-
-        await Share.share({
-            url: filePath,
-            message: filePath,
-            title: 'Analytics Data Export',
-        });
-    } catch (error) {
-        console.error('Share failed:', error);
-    }
-};
+    };
 
     /**
      * Clear analytics data with confirmation
@@ -248,7 +248,7 @@ export default function AdminInfoScreen() {
         try {
             setIsAnalyticsLoading(true);
             const success = await clearAnalyticsData();
-            
+
             if (success) {
                 Alert.alert(
                     t('common.success'),
@@ -277,15 +277,15 @@ export default function AdminInfoScreen() {
         if (!analyticsSummary) return null;
 
         const totalScans = analyticsSummary.total;
-        const riskPercentage = totalScans > 0 ? 
+        const riskPercentage = totalScans > 0 ?
             ((analyticsSummary.high + analyticsSummary.medium) / totalScans) * 100 : 0;
-        const healthyPercentage = totalScans > 0 ? 
+        const healthyPercentage = totalScans > 0 ?
             (analyticsSummary.healthyCount / totalScans) * 100 : 0;
 
         return {
             riskPercentage: riskPercentage.toFixed(1),
             healthyPercentage: healthyPercentage.toFixed(1),
-            successRate: analyticsSummary.avgConfidence ? 
+            successRate: analyticsSummary.avgConfidence ?
                 (analyticsSummary.avgConfidence * 100).toFixed(1) : '0.0'
         };
     };
@@ -323,477 +323,480 @@ export default function AdminInfoScreen() {
     }
 
     return (
-         <ImageBackground
-    source={require('../assets/images/screenBg/adminInfo.jpg')}
-    style={styles.backgroundImage}
-    imageStyle={{ resizeMode: 'cover' }}
-  >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
-     
-        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
-            
-            {/* Enhanced Header Section */}
-            <View style={[styles.header]}>
-                <TouchableOpacity 
-                    style={styles.backButton} 
-                    onPress={() => router.back()}
-                    accessibilityLabel={t('common.back')}
-                >
-                    <Ionicons name="chevron-back" size={24} color={colors.text} />
-                </TouchableOpacity>
-                
-                <View style={styles.headerTitleContainer}>
-                    <Text style={[styles.title, { color: colors.text }]}>
-                        {t('admin.analytics.title')}
-                    </Text>
-                    
-                </View>
-                
-                <View style={styles.headerActions}>
-                    <TouchableOpacity 
-                        style={styles.headerButton}
-                        onPress={() => setShowExportModal(true)}
-                        disabled={isAnalyticsLoading}
-                    >
-                        <Ionicons 
-                            name="download-outline" 
-                            size={22} 
-                            color={isAnalyticsLoading ? colors.textTertiary : colors.primary} 
-                        />
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                        style={styles.headerButton}
-                        onPress={handleRefresh}
-                        disabled={isRefreshing}
-                    >
-                        <Ionicons 
-                            name="refresh" 
-                            size={22} 
-                            color={isRefreshing ? colors.textTertiary : colors.primary} 
-                        />
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View style={[styles.headerSubtitleContainer]}>
-                <Text style={[styles.subtitle, { color: theme === 'dark' ? colors.textSecondary : colors.text }]}>
-                    {t('admin.analytics.subtitle')}
-                </Text>
-            </View>
-            {/* Navigation Tabs */}
-            <View style={[styles.tabContainer, { backgroundColor: `${colors.card}BB` }]}>
-                {[
-                    { id: 'overview', label: t('admin.analytics.tabOverview'), icon: 'grid' },
-                    { id: 'diseases', label: t('admin.analytics.tabDiseases'), icon: 'medical' },
-                    { id: 'trends', label: t('admin.analytics.tabTrends'), icon: 'trending-up' }
-                ].map((tab) => (
-                    <TouchableOpacity
-                        key={tab.id}
-                        style={[
-                            styles.tab,{backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark},
-                            activeTab === tab.id && { 
-                                backgroundColor: colors.primary + '15',
-                                borderColor: colors.primary
-                            }
-                        ]}
-                        onPress={() => setActiveTab(tab.id as any)}
-                    >
-                        <Ionicons 
-                            name={tab.icon as IoniconName} 
-                            size={16} 
-                            color={activeTab === tab.id ? colors.primary : colors.textSecondary} 
-                        />
-                        <Text style={[
-                            styles.tabText,
-                            { color: activeTab === tab.id ? colors.primary : colors.textSecondary }
-                        ]}>
-                            {tab.label}
+        <ImageBackground
+            source={require('../assets/images/screenBg/adminInfo.jpg')}
+            style={styles.backgroundImage}
+            imageStyle={{ resizeMode: 'cover' }}
+        >
+            <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
+
+                <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
+
+                    {/* Enhanced Header Section */}
+                    <View style={[styles.header]}>
+                        <TouchableOpacity
+                            style={styles.backButton}
+                            onPress={() => router.back()}
+                            accessibilityLabel={t('common.back')}
+                        >
+                            <Ionicons name="chevron-back" size={24} color={colors.text} />
+                        </TouchableOpacity>
+
+                        <View style={styles.headerTitleContainer}>
+                            <Text style={[styles.title, { color: colors.text }]}>
+                                {t('admin.analytics.title')}
+                            </Text>
+
+                        </View>
+
+                        <View style={styles.headerActions}>
+                            <TouchableOpacity
+                                style={styles.headerButton}
+                                onPress={() => setShowExportModal(true)}
+                                disabled={isAnalyticsLoading}
+                            >
+                                <Ionicons
+                                    name="download-outline"
+                                    size={22}
+                                    color={isAnalyticsLoading ? colors.textTertiary : colors.primary}
+                                />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.headerButton}
+                                onPress={handleRefresh}
+                                disabled={isRefreshing}
+                            >
+                                <Ionicons
+                                    name="refresh"
+                                    size={22}
+                                    color={isRefreshing ? colors.textTertiary : colors.primary}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={[styles.headerSubtitleContainer]}>
+                        <Text style={[styles.subtitle, { color: theme === 'dark' ? colors.textSecondary : colors.text }]}>
+                            {t('admin.analytics.subtitle')}
                         </Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
+                    </View>
+                    {/* Navigation Tabs */}
+                    <View style={[styles.tabContainer, { backgroundColor: `${colors.card}BB` }]}>
+                        {[
+                            { id: 'overview', label: t('admin.analytics.tabOverview'), icon: 'grid' },
+                            { id: 'diseases', label: t('admin.analytics.tabDiseases'), icon: 'medical' },
+                            { id: 'trends', label: t('admin.analytics.tabTrends'), icon: 'trending-up' }
+                        ].map((tab) => (
+                            <TouchableOpacity
+                                key={tab.id}
+                                style={[
+                                    styles.tab, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark },
+                                    activeTab === tab.id && {
+                                        backgroundColor: colors.primary + '15',
+                                        borderColor: colors.primary
+                                    }
+                                ]}
+                                onPress={() => setActiveTab(tab.id as any)}
+                            >
+                                <Ionicons
+                                    name={tab.icon as IoniconName}
+                                    size={16}
+                                    color={activeTab === tab.id ? colors.primary : colors.textSecondary}
+                                />
+                                <Text style={[
+                                    styles.tabText,
+                                    { color: activeTab === tab.id ? colors.primary : colors.textSecondary }
+                                ]}>
+                                    {tab.label}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
 
-            {/* Main Content */}
-            <ScrollView 
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={isRefreshing}
-                        onRefresh={handleRefresh}
-                        colors={[colors.primary]}
-                        tintColor={colors.primary}
-                    />
-                }
-                showsVerticalScrollIndicator={false}
-            >
-                
-                {/* Overview Tab */}
-                {activeTab === 'overview' && (
-                    <>
-                        {/* Quick Stats Cards */}
-                        <View style={styles.statsGrid}>
-                            <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? colors.primary + '30' : colors.primary + '55' ,borderColor: colors.primary, borderWidth: theme === 'light' ? 1 : 0}]}> 
-                                <Ionicons name="scan" size={24} color={colors.primary} />
-                                <Text style={[styles.statValue, { color: colors.text }]}>
-                                    {analyticsSummary?.total || 0}
-                                </Text>
-                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                                    {t('admin.analytics.totalScansLabel')}
-                                </Text>
-                            </View>
-                            
-                            <View style={[styles.statCard, { backgroundColor:theme === 'dark' ? colors.success + '30' : colors.success + '55' ,borderColor: colors.success, borderWidth: theme === 'light' ? 1 : 0}]}>
-                                <Ionicons name="leaf" size={24} color={colors.success} />
-                                <Text style={[styles.statValue, { color: colors.text }]}>
-                                    {analyticsSummary?.healthyCount || 0}
-                                </Text>
-                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                                    {t('admin.analytics.healthyLabel')}
-                                </Text>
-                            </View>
-                            
-                            <View style={[styles.statCard, { backgroundColor:theme === 'dark' ? colors.warning + '30' : colors.warning + '55' ,borderColor: colors.warning, borderWidth: theme === 'light' ? 1 : 0}]}>
-                                <Ionicons name="alert-circle" size={24} color={colors.warning} />
-                                <Text style={[styles.statValue, { color: colors.text }]}>
-                                    {analyticsSummary ? analyticsSummary.medium + analyticsSummary.high : 0}
-                                </Text>
-                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                                    {t('admin.analytics.atRiskLabel')}
-                                </Text>
-                            </View>
-                            
-                            <View style={[styles.statCard, { backgroundColor:theme === 'dark' ? colors.primary + '30' : colors.primary + '55' ,borderColor: colors.primary, borderWidth: theme === 'light' ? 1 : 0 }]}>
-                                <Ionicons name="trending-up" size={24} color={colors.primary} />
-                                <Text style={[styles.statValue, { color: colors.text }]}>
-                                    {metrics?.successRate || '0'}%
-                                </Text>
-                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                                    {t('admin.analytics.successRateLabel')}
-                                </Text>
-                            </View>
-                        </View>
+                    {/* Main Content */}
+                    <ScrollView
+                        style={styles.scrollView}
+                        contentContainerStyle={styles.scrollContent}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={isRefreshing}
+                                onRefresh={handleRefresh}
+                                colors={[colors.primary]}
+                                tintColor={colors.primary}
+                            />
+                        }
+                        showsVerticalScrollIndicator={false}
+                    >
 
-                        {/* Risk Distribution Card */}
-                        <View style={[styles.card, { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
-                            <View style={styles.cardHeader}>
-                                <Text style={[styles.cardTitle, { color: colors.text }]}>
-                                    {t('admin.analytics.riskDistributionTitle')}
-                                </Text>
-                                <View style={styles.riskStats}>
-                                    <Text style={[styles.riskStat, { color: colors.textSecondary }]}>
-                                        {metrics?.riskPercentage}% {t('admin.analytics.riskLabel')}
-                                    </Text>
+                        {/* Overview Tab */}
+                        {activeTab === 'overview' && (
+                            <>
+                                {/* Quick Stats Cards */}
+                                <View style={styles.statsGrid}>
+                                    <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? colors.primary + '30' : colors.primary + '55', borderColor: colors.primary, borderWidth: theme === 'light' ? 1 : 0 }]}>
+                                        <Ionicons name="scan" size={24} color={colors.primary} />
+                                        <Text style={[styles.statValue, { color: colors.text }]}>
+                                            {analyticsSummary?.total || 0}
+                                        </Text>
+                                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                                            {t('admin.analytics.totalScansLabel')}
+                                        </Text>
+                                    </View>
+
+                                    <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? colors.success + '30' : colors.success + '55', borderColor: colors.success, borderWidth: theme === 'light' ? 1 : 0 }]}>
+                                        <Ionicons name="leaf" size={24} color={colors.success} />
+                                        <Text style={[styles.statValue, { color: colors.text }]}>
+                                            {analyticsSummary?.healthyCount || 0}
+                                        </Text>
+                                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                                            {t('admin.analytics.healthyLabel')}
+                                        </Text>
+                                    </View>
+
+                                    <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? colors.warning + '30' : colors.warning + '55', borderColor: colors.warning, borderWidth: theme === 'light' ? 1 : 0 }]}>
+                                        <Ionicons name="alert-circle" size={24} color={colors.warning} />
+                                        <Text style={[styles.statValue, { color: colors.text }]}>
+                                            {analyticsSummary ? analyticsSummary.medium + analyticsSummary.high : 0}
+                                        </Text>
+                                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                                            {t('admin.analytics.atRiskLabel')}
+                                        </Text>
+                                    </View>
+
+                                    <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? colors.primary + '30' : colors.primary + '55', borderColor: colors.primary, borderWidth: theme === 'light' ? 1 : 0 }]}>
+                                        <Ionicons name="trending-up" size={24} color={colors.primary} />
+                                        <Text style={[styles.statValue, { color: colors.text }]}>
+                                            {metrics?.successRate || '0'}%
+                                        </Text>
+                                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                                            {t('admin.analytics.successRateLabel')}
+                                        </Text>
+                                    </View>
                                 </View>
-                            </View>
-                            
-                            {analyticsSummary && (
-                                <View style={styles.riskDistribution}>
-                                    <View style={styles.riskBarContainer}>
-                                        {[
-                                            { value: analyticsSummary.low, color: colors.success, label: t('admin.analytics.lowRiskLabel') },
-                                            { value: analyticsSummary.medium, color: colors.warning, label: t('admin.analytics.mediumRiskLabel') },
-                                            { value: analyticsSummary.high, color: colors.danger, label: t('admin.analytics.highRiskLabel') }
-                                        ].map((risk, index) => (
-                                            <View key={risk.label} style={styles.riskBarSegment}>
-                                                <View 
-                                                    style={[
-                                                        styles.riskBarFill,
-                                                        { 
-                                                            backgroundColor: risk.color,
-                                                            width: `${(risk.value / analyticsSummary.total) * 100}%`
-                                                        }
-                                                    ]} 
-                                                />
-                                                <View style={styles.riskLabelContainer}>
-                                                    <View style={[styles.riskDot, { backgroundColor: risk.color }]} />
-                                                    <Text style={[styles.riskLabel, { color: colors.textSecondary }]}>
-                                                        {risk.label}: {risk.value}
-                                                    </Text>
-                                                </View>
+
+                                {/* Risk Distribution Card */}
+                                <View style={[styles.card, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                                    <View style={styles.cardHeader}>
+                                        <Text style={[styles.cardTitle, { color: colors.text }]}>
+                                            {t('admin.analytics.riskDistributionTitle')}
+                                        </Text>
+                                        <View style={styles.riskStats}>
+                                            <Text style={[styles.riskStat, { color: colors.textSecondary }]}>
+                                                {metrics?.riskPercentage}% {t('admin.analytics.riskLabel')}
+                                            </Text>
+                                        </View>
+                                    </View>
+
+                                    {analyticsSummary && (
+                                        <View style={styles.riskDistribution}>
+                                            <View style={styles.riskBarContainer}>
+                                                {[
+                                                    { value: analyticsSummary.low, color: colors.success, label: t('admin.analytics.lowRiskLabel') },
+                                                    { value: analyticsSummary.medium, color: colors.warning, label: t('admin.analytics.mediumRiskLabel') },
+                                                    { value: analyticsSummary.high, color: colors.danger, label: t('admin.analytics.highRiskLabel') }
+                                                ].map((risk, index) => (
+                                                    <View key={risk.label} style={styles.riskBarSegment}>
+                                                        <View
+                                                            style={[
+                                                                styles.riskBarFill,
+                                                                {
+                                                                    backgroundColor: risk.color,
+                                                                    width: `${(risk.value / analyticsSummary.total) * 100}%`
+                                                                }
+                                                            ]}
+                                                        />
+                                                        <View style={styles.riskLabelContainer}>
+                                                            <View style={[styles.riskDot, { backgroundColor: risk.color }]} />
+                                                            <Text style={[styles.riskLabel, { color: colors.textSecondary }]}>
+                                                                {risk.label}: {risk.value}
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+                                                ))}
                                             </View>
-                                        ))}
-                                    </View>
+                                        </View>
+                                    )}
                                 </View>
-                            )}
-                        </View>
 
-                        {/* Recent Activity Trend */}
-                        {last7DaysCounts.length > 0 && (
-                            <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
-                                <View style={styles.cardHeader}>
-                                    <Text style={[styles.cardTitle, { color: colors.text }]}>
-                                        {t('admin.analytics.sevenDayTrend')}
-                                    </Text>
-                                    <Ionicons name="calendar" size={18} color={colors.textSecondary} />
-                                </View>
-                                
-                                <View style={styles.trendChart}>
-                                    <View style={styles.trendBars}>
-                                        {last7DaysCounts.map((day, index) => {
-                                            const maxCount = Math.max(...last7DaysCounts.map(d => d.count));
-                                            const height = maxCount > 0 ? (day.count / maxCount) * 120 : 0;
-                                            
-                                            return (
-                                                <View key={day.day} style={styles.trendBarContainer}>
-                                                    <View 
-                                                        style={[
-                                                            styles.trendBar,
-                                                            { 
-                                                                height,
-                                                                backgroundColor: colors.primary
-                                                            }
-                                                        ]} 
-                                                    />
-                                                    <Text style={[styles.trendLabel, { color: colors.textSecondary }]}>
-                                                        {day.day.slice(5)}
-                                                    </Text>
-                                                    <Text style={[styles.trendCount, { color: colors.text }]}>
-                                                        {day.count}
-                                                    </Text>
-                                                </View>
-                                            );
-                                        })}
+                                {/* Recent Activity Trend */}
+                                {last7DaysCounts.length > 0 && (
+                                    <View style={[styles.card, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                                        <View style={styles.cardHeader}>
+                                            <Text style={[styles.cardTitle, { color: colors.text }]}>
+                                                {t('admin.analytics.sevenDayTrend')}
+                                            </Text>
+                                            <Ionicons name="calendar" size={18} color={colors.textSecondary} />
+                                        </View>
+
+                                        <View style={styles.trendChart}>
+                                            <View style={styles.trendBars}>
+                                                {last7DaysCounts.map((day, index) => {
+                                                    const maxCount = Math.max(...last7DaysCounts.map(d => d.count));
+                                                    const height = maxCount > 0 ? (day.count / maxCount) * 120 : 0;
+
+                                                    return (
+                                                        <View key={day.day} style={styles.trendBarContainer}>
+                                                            <View
+                                                                style={[
+                                                                    styles.trendBar,
+                                                                    {
+                                                                        height,
+                                                                        backgroundColor: colors.primary
+                                                                    }
+                                                                ]}
+                                                            />
+                                                            <Text style={[styles.trendLabel, { color: colors.textSecondary }]}>
+                                                                {day.day.slice(5)}
+                                                            </Text>
+                                                            <Text style={[styles.trendCount, { color: colors.text }]}>
+                                                                {day.count}
+                                                            </Text>
+                                                        </View>
+                                                    );
+                                                })}
+                                            </View>
+                                        </View>
                                     </View>
+                                )}
+                            </>
+                        )}
+
+                        {/* Diseases Tab */}
+                        {activeTab === 'diseases' && topDiseases.length > 0 && (
+                            <View style={[styles.card, { padding: 8, backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                                <View style={[styles.cardHeader, { flexDirection: 'column' }]}>
+                                    <Text style={[styles.cardTitle, { color: colors.text }]}>
+                                        {t('admin.analytics.topDiseasesTitle')}
+                                    </Text>
+                                    <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
+                                        {t('admin.analytics.topDiseasesSubtitle')}
+                                    </Text>
+                                </View>
+
+                                <View style={styles.diseasesList}>
+                                    {topDiseases.map((disease, index) => (
+                                        <View key={disease.diseaseId} style={[styles.diseaseItem, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}BB`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                                            <View style={styles.diseaseRank}>
+                                                <Text style={[styles.rankText, { color: colors.text }]}>
+                                                    #{index + 1}
+                                                </Text>
+                                            </View>
+
+                                            <View style={styles.diseaseInfo}>
+                                                <Text style={[styles.diseaseName, { color: colors.text }]}>
+                                                    {disease.nameEn || disease.nameAm || disease.diseaseId}
+                                                </Text>
+                                                <Text style={[styles.diseaseCount, { color: colors.textSecondary }]}>
+                                                    {disease.count} detections
+                                                </Text>
+                                            </View>
+
+                                            <View style={styles.diseasePercentage}>
+                                                <Text style={[styles.percentageText, { color: colors.primary }]}>
+                                                    {disease.percentage}%
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    ))}
                                 </View>
                             </View>
                         )}
-                    </>
-                )}
 
-                {/* Diseases Tab */}
-                {activeTab === 'diseases' && topDiseases.length > 0 && (
-                    <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
-                        <View style={[styles.cardHeader, {flexDirection: 'column'}]}>
-                            <Text style={[styles.cardTitle, { color: colors.text }]}>
-                                {t('admin.analytics.topDiseasesTitle')}
-                            </Text>
-                            <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
-                                {t('admin.analytics.topDiseasesSubtitle')}
-                            </Text>
-                        </View>
-                        
-                        <View style={styles.diseasesList}>
-                            {topDiseases.map((disease, index) => (
-                                <View key={disease.diseaseId} style={styles.diseaseItem}>
-                                    <View style={styles.diseaseRank}>
-                                        <Text style={[styles.rankText, { color: colors.text }]}>
-                                            #{index + 1}
-                                        </Text>
-                                    </View>
-                                    
-                                    <View style={styles.diseaseInfo}>
-                                        <Text style={[styles.diseaseName, { color: colors.text }]}>
-                                            {disease.nameEn || disease.nameAm || disease.diseaseId}
-                                        </Text>
-                                        <Text style={[styles.diseaseCount, { color: colors.textSecondary }]}>
-                                            {disease.count} detections
-                                        </Text>
-                                    </View>
-                                    
-                                    <View style={styles.diseasePercentage}>
-                                        <Text style={[styles.percentageText, { color: colors.primary }]}>
-                                            {disease.percentage}%
-                                        </Text>
-                                    </View>
-                                </View>
-                            ))}
-                        </View>
-                    </View>
-                )}
-
-                {/* Trends Tab */}
-                {activeTab === 'trends' && monthlyTrends.length > 0 && (
-                    <View style={[styles.card, { backgroundColor: `${colors.card}BB` }]}>
-                        <View style={styles.cardHeader}>
-                            <Text style={[styles.cardTitle, { color: colors.text }]}>
-                                {t('admin.analytics.monthlyTrendsTitle')}
-                            </Text>
-                            <Ionicons name="stats-chart" size={18} color={colors.textSecondary} />
-                        </View>
-                        
-                        <View style={styles.monthlyTrends}>
-                            {monthlyTrends.map((month, index) => (
-                                <View key={month.month} style={styles.trendItem}>
-                                    <Text style={[styles.trendMonth, { color: colors.text }]}>
-                                        {month.month}
+                        {/* Trends Tab */}
+                        {activeTab === 'trends' && monthlyTrends.length > 0 && (
+                            <View style={[styles.card, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                                <View style={styles.cardHeader}>
+                                    <Text style={[styles.cardTitle, { color: colors.text }]}>
+                                        {t('admin.analytics.monthlyTrendsTitle')}
                                     </Text>
-                                    
-                                    <View style={styles.trendBars}>
-                                        <View 
-                                            style={[
-                                                styles.trendBarSmall,
-                                                { 
-                                                    flex: month.healthy,
-                                                    backgroundColor: colors.success
-                                                }
-                                            ]} 
-                                        />
-                                        <View 
-                                            style={[
-                                                styles.trendBarSmall,
-                                                { 
-                                                    flex: month.risk,
-                                                    backgroundColor: colors.warning
-                                                }
-                                            ]} 
-                                        />
-                                    </View>
-                                    
-                                    <Text style={[styles.trendTotal, { color: colors.textSecondary }]}>
-                                        {month.count}
-                                    </Text>
+                                    <Ionicons name="stats-chart" size={18} color={colors.textSecondary} />
                                 </View>
-                            ))}
-                        </View>
-                    </View>
-                )}
 
-                {/* Data Management Card */}
-                <View style={[styles.card, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
-                    <Text style={[styles.cardTitle, { color: colors.text }]}>
-                        {t('admin.analytics.dataManagementTitle')}
-                    </Text>
-                    
-                    <View style={styles.dataActions}>
-                        <TouchableOpacity 
-                            style={[styles.dataButton, { backgroundColor: colors.primary + '15' }]}
-                            onPress={() => setShowExportModal(true)}
-                        >
-                            <Ionicons name="download" size={20} color={colors.primary} />
-                            <Text style={[styles.dataButtonText, { color: colors.primary }]}>
-                                {t('admin.analytics.exportData')}
+                                <View style={styles.monthlyTrends}>
+                                    {monthlyTrends.map((month, index) => (
+                                        <View key={month.month} style={styles.trendItem}>
+                                            <Text style={[styles.trendMonth, { color: colors.text }]}>
+                                                {month.month}
+                                            </Text>
+
+                                            <View style={styles.trendBars}>
+                                                <View
+                                                    style={[
+                                                        styles.trendBarSmall,
+                                                        {
+                                                            flex: month.healthy,
+                                                            backgroundColor: colors.success
+                                                        }
+                                                    ]}
+                                                />
+                                                <View
+                                                    style={[
+                                                        styles.trendBarSmall,
+                                                        {
+                                                            flex: month.risk,
+                                                            backgroundColor: colors.warning
+                                                        }
+                                                    ]}
+                                                />
+                                            </View>
+
+                                            <Text style={[styles.trendTotal, { color: colors.textSecondary }]}>
+                                                {month.count}
+                                            </Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </View>
+                        )}
+
+                        {/* Data Management Card */}
+                        <View style={[styles.card, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                            <Text style={[styles.cardTitle, { color: colors.text }]}>
+                                {t('admin.analytics.dataManagementTitle')}
                             </Text>
-                        </TouchableOpacity>
-                        
-                        <TouchableOpacity 
-                            style={[styles.dataButton, { backgroundColor: colors.danger + '15' }]}
-                            onPress={() => setShowClearDataModal(true)}
-                        >
-                            <Ionicons name="trash" size={20} color={colors.danger} />
-                            <Text style={[styles.dataButtonText, { color: colors.danger }]}>
-                                {t('admin.analytics.clearDataButton')}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </ScrollView>
 
-            {/* Export Modal */}
-            <Modal
-                visible={showExportModal}
-                transparent
-                animationType="slide"
-                onRequestClose={() => setShowExportModal(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: theme === 'dark' ? `${colors.card}EE` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark}]}>
-                        <Text style={[styles.modalTitle, { color: colors.text }]}>
-                            {t('admin.analytics.exportModal.title')}
-                        </Text>
-                        
-                        <TextInput
-                            style={[styles.textInput, { 
-                                borderColor: colors.border, 
-                                color: colors.text,
-                                backgroundColor: colors.background
-                            }]}
-                            value={exportFileName}
-                            onChangeText={setExportFileName}
-                            placeholder={t('admin.analytics.exportModal.fileNamePlaceholder')}
-                            placeholderTextColor={colors.textTertiary}
-                        />
-                        
-                        <View style={styles.exportOptions}>
-                            <TouchableOpacity 
-                                style={[styles.exportOption, { backgroundColor: colors.primary + '15' ,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}
-                                onPress={() => handleExportData('json')}
-                            >
-                                <Ionicons name="document-text" size={24} color={colors.primary} />
-                                <Text style={[styles.exportOptionText, { color: colors.primary }]}>
-                                    {t('admin.analytics.exportModal.json')}
-                                </Text>
-                            </TouchableOpacity>
-                            
-                            <TouchableOpacity 
-                                style={[styles.exportOption, { backgroundColor: colors.success + '15',borderColor: theme === 'dark' ? colors.border : colors.borderDark  }]}
-                                onPress={() => handleExportData('csv')}
-                            >
-                                <Ionicons name="document" size={24} color={colors.success} />
-                                <Text style={[styles.exportOptionText, { color: colors.success }]}>
-                                    {t('admin.analytics.exportModal.csv')}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                        
-                        <View style={styles.modalActions}>
-                            <TouchableOpacity 
-                                style={[styles.modalButton, { backgroundColor: colors.border }]}
-                                onPress={() => setShowExportModal(false)}
-                            >
-                                <Text style={[styles.modalButtonText, { color: colors.text }]}>
-                                    {t('common.cancel')}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
+                            <View style={styles.dataActions}>
+                                <TouchableOpacity
+                                    style={[styles.dataButton, { backgroundColor: colors.primary + '15', borderColor: colors.primary }]}
+                                    onPress={() => setShowExportModal(true)}
+                                >
+                                    <Ionicons name="download" size={20} color={colors.primary} />
+                                    <Text style={[styles.dataButtonText, { color: colors.primary }]}>
+                                        {t('admin.analytics.exportData')}
+                                    </Text>
+                                </TouchableOpacity>
 
-            {/* Clear Data Confirmation Modal */}
-            <Modal
-                visible={showClearDataModal}
-                transparent
-                animationType="slide"
-                onRequestClose={() => setShowClearDataModal(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: `${colors.card}ED` }]}>
-                        <View style={styles.warningIcon}>
-                            <Ionicons name="warning" size={48} color={colors.danger} />
+                                <TouchableOpacity
+                                    style={[styles.dataButton, { backgroundColor: colors.danger + '15', borderColor: colors.danger }]}
+                                    onPress={() => setShowClearDataModal(true)}
+                                >
+                                    <Ionicons name="trash" size={20} color={colors.danger} />
+                                    <Text style={[styles.dataButtonText, { color: colors.danger }]}>
+                                        {t('admin.analytics.clearDataButton')}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        
-                        <Text style={[styles.modalTitle, { color: colors.text }]}>
-                             {t('admin.analytics.clearModal.title')}
-                        </Text>
-                        
-                        <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
-                            {t('admin.analytics.clearModal.message')}
-                        </Text>
-                        
-                        <View style={styles.modalActions}>
-                            <TouchableOpacity 
-                                style={[styles.modalButton, { backgroundColor: colors.border }]}
-                                onPress={() => setShowClearDataModal(false)}
-                            >
-                                <Text style={[styles.modalButtonText, { color: colors.text }]}>
-                                    {t('common.cancel')}
+                    </ScrollView>
+
+                    {/* Export Modal */}
+                    <Modal
+                        visible={showExportModal}
+                        transparent
+                        animationType="slide"
+                        onRequestClose={() => setShowExportModal(false)}
+                    >
+                        <View style={styles.modalOverlay}>
+                            <View style={[styles.modalContent, { backgroundColor: theme === 'dark' ? `${colors.card}EE` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                                    {t('admin.analytics.exportModal.title')}
                                 </Text>
-                            </TouchableOpacity>
-                            
-                            <TouchableOpacity 
-                                style={[styles.modalButton, { backgroundColor: `${colors.danger}DD` }]}
-                                onPress={handleClearData}
-                            >
-                                <Text style={[styles.modalButtonText, { color: '#fff' }]}>
-                                    {t('common.confirm')}
-                                </Text>
-                            </TouchableOpacity>
+
+                                <TextInput
+                                    style={[styles.textInput, {
+                                        borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark,
+                                        color: colors.text,
+                                        backgroundColor: theme === 'dark' ? `${colors.whiteOverlay}50` : `${colors.card}EE`,
+
+                                    }]}
+                                    value={exportFileName}
+                                    onChangeText={setExportFileName}
+                                    placeholder={t('admin.analytics.exportModal.fileNamePlaceholder')}
+                                    placeholderTextColor={colors.textTertiary}
+                                    autoFocus
+                                />
+
+                                <View style={styles.exportOptions}>
+                                    <TouchableOpacity
+                                        style={[styles.exportOption, { backgroundColor: colors.primary + '15', borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+                                        onPress={() => handleExportData('json')}
+                                    >
+                                        <Ionicons name="document-text" size={24} color={colors.primary} />
+                                        <Text style={[styles.exportOptionText, { color: colors.primary }]}>
+                                            {t('admin.analytics.exportModal.json')}
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[styles.exportOption, { backgroundColor: colors.success + '15', borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+                                        onPress={() => handleExportData('csv')}
+                                    >
+                                        <Ionicons name="document" size={24} color={colors.success} />
+                                        <Text style={[styles.exportOptionText, { color: colors.success }]}>
+                                            {t('admin.analytics.exportModal.csv')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                <View style={styles.modalActions}>
+                                    <TouchableOpacity
+                                        style={[styles.modalButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+                                        onPress={() => setShowExportModal(false)}
+                                    >
+                                        <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                                            {t('common.cancel')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
-                    </View>
+                    </Modal>
+
+                    {/* Clear Data Confirmation Modal */}
+                    <Modal
+                        visible={showClearDataModal}
+                        transparent
+                        animationType="slide"
+                        onRequestClose={() => setShowClearDataModal(false)}
+                    >
+                        <View style={styles.modalOverlay}>
+                            <View style={[styles.modalContent, { backgroundColor: `${colors.card}ED` }]}>
+                                <View style={styles.warningIcon}>
+                                    <Ionicons name="warning" size={48} color={colors.danger} />
+                                </View>
+
+                                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                                    {t('admin.analytics.clearModal.title')}
+                                </Text>
+
+                                <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+                                    {t('admin.analytics.clearModal.message')}
+                                </Text>
+
+                                <View style={styles.modalActions}>
+                                    <TouchableOpacity
+                                        style={[styles.modalButton, styles.modalButtonSecondary, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+                                        onPress={() => setShowClearDataModal(false)}
+                                    >
+                                        <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                                            {t('common.cancel')}
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[styles.modalButton, { backgroundColor: theme === 'dark' ? `${colors.danger}DD` : `${colors.danger}DD` }]}
+                                        onPress={handleClearData}
+                                    >
+                                        <Text style={[styles.modalButtonText, { color: '#fff' }]}>
+                                            {t('common.confirm')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
-            </Modal>
-        </View>
-        </View>
+            </View>
         </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
     backgroundImage: { flex: 1 },
-overlay: { flex: 1 },
+    overlay: { flex: 1 },
     container: {
         flex: 1,
+        paddingBottom: 40,
     },
     loadingContainer: {
         flex: 1,
@@ -814,7 +817,7 @@ overlay: { flex: 1 },
         paddingHorizontal: 20,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-       
+
     },
     headerTitleContainer: {
         flex: 1,
@@ -826,7 +829,7 @@ overlay: { flex: 1 },
         letterSpacing: -0.5,
     },
     headerSubtitleContainer: {
-        alignItems: 'center',       
+        alignItems: 'center',
         justifyContent: 'center',
     },
     subtitle: {
@@ -854,6 +857,14 @@ overlay: { flex: 1 },
         marginVertical: 8,
         borderRadius: 8,
         gap: 4,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     tab: {
         flex: 1,
@@ -876,6 +887,7 @@ overlay: { flex: 1 },
     },
     scrollContent: {
         paddingVertical: 8,
+
     },
     statsGrid: {
         flexDirection: 'row',
@@ -891,6 +903,7 @@ overlay: { flex: 1 },
         padding: 10,
         borderRadius: 8,
         gap: 8,
+
     },
     statValue: {
         fontSize: 20,
@@ -904,9 +917,17 @@ overlay: { flex: 1 },
     card: {
         marginHorizontal: 20,
         marginBottom: 10,
-        borderRadius: 10,
-        padding: 14,
-        borderWidth:.5        
+        borderRadius: 8,
+        padding: 12,
+        borderWidth: .5,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     cardHeader: {
         flexDirection: 'row',
@@ -987,13 +1008,15 @@ overlay: { flex: 1 },
         fontWeight: '600',
     },
     diseasesList: {
-        gap: 12,
+        gap: 8,
     },
     diseaseItem: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
-        paddingVertical: 8,
+        padding: 8,
+        borderWidth: .5,
+        borderRadius: 8
     },
     diseaseRank: {
         width: 32,
@@ -1021,6 +1044,7 @@ overlay: { flex: 1 },
     },
     diseasePercentage: {
         alignItems: 'flex-end',
+        marginRight: 12
     },
     percentageText: {
         fontSize: 14,
@@ -1043,7 +1067,7 @@ overlay: { flex: 1 },
         flex: 1,
         flexDirection: 'row',
         height: 8,
-        borderRadius: 4,
+        borderRadius: 2,
         overflow: 'hidden',
     },
     trendBarSmall: {
@@ -1069,6 +1093,7 @@ overlay: { flex: 1 },
         paddingHorizontal: 16,
         borderRadius: 8,
         gap: 8,
+        borderWidth: .5,
     },
     dataButtonText: {
         fontSize: 14,
@@ -1114,7 +1139,7 @@ overlay: { flex: 1 },
         alignItems: 'center',
         padding: 16,
         borderRadius: 10,
-        borderWidth:.5,
+        borderWidth: .5,
         gap: 8,
     },
     exportOptionText: {
@@ -1130,6 +1155,10 @@ overlay: { flex: 1 },
         paddingVertical: 14,
         borderRadius: 8,
         alignItems: 'center',
+        borderWidth: .5,
+    },
+    modalButtonSecondary: {
+        borderWidth: .5,
     },
     modalButtonText: {
         fontSize: 16,

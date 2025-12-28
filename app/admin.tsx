@@ -55,7 +55,7 @@ export default function AdminScreen() {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const colors = Colors[theme];
-    
+
     // Authentication State
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [password, setPassword] = useState('');
@@ -68,21 +68,21 @@ export default function AdminScreen() {
     const [visibleEdit, setVisibleEdit] = useState(false);
     const [visibleReset, setVisibleReset] = useState(false);
     const [visibleChangePassword, setVisibleChangePassword] = useState(false);
-    
+
     // Operation States
     const [isUploading, setIsUploading] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-   // Password Change State
-const [currentPassword, setCurrentPassword] = useState('');
-const [newPassword, setNewPassword] = useState('');
-const [confirmPassword, setConfirmPassword] = useState('');
-const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-const [showNewPassword, setShowNewPassword] = useState(false);
-const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-const [isChangingPassword, setIsChangingPassword] = useState(false);
-const [changePasswordError, setChangePasswordError] = useState<string | null>(null);
-const [isPasswordChanged, setIsPasswordChanged] = useState(false);
+    // Password Change State
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [changePasswordError, setChangePasswordError] = useState<string | null>(null);
+    const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 
     // Analytics State
     const [analyticsSummary, setAnalyticsSummary] = useState<ReturnType<typeof getAnalyticsSummary> | null>(null);
@@ -152,11 +152,11 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
             return;
         }
 
-                
+
         if (newPassword.trim().length < 8) {
             // If you add a key like admin.password.errorTooShort use that, otherwise fallback text:
             setChangePasswordError(
-            t('admin.password.errorTooShort', 'Password must be at least 8 characters long.')
+                t('admin.password.errorTooShort', 'Password must be at least 8 characters long.')
             );
             return;
         }
@@ -248,7 +248,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
     useEffect(() => {
         if (isAuthorized) {
             loadAnalytics();
-            
+
         }
     }, [isAuthorized, loadAnalytics]);
 
@@ -299,7 +299,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
                 {
                     id: 'view-analytics',
                     title: t('admin.analytics.summaryTitle', { count: analyticsSummary?.total ?? 0 }),
-                    description: analyticsSummary ? 
+                    description: analyticsSummary ?
                         `${t('admin.analytics.avgConfidence', { value: (analyticsSummary.avgConfidence ?? 0).toFixed(2) })} • ${t('admin.analytics.healthyCount', { count: analyticsSummary.healthyCount })}` :
                         t('admin.analytics.loading'),
                     icon: 'stats-chart',
@@ -351,117 +351,117 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
     if (!isAuthorized) {
         return (
             <ImageBackground
-     source={require('../assets/images/screenBg/admin.jpg')}  
-    style={styles.backgroundImage}
-    imageStyle={{ resizeMode: 'cover' }}
-  >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
-      
-            <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor:theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-                {/* Header */}
-                <View style={styles.header}>
-                    <TouchableOpacity 
-                        style={styles.backButton} 
-                        onPress={() => router.back()}
-                        accessibilityLabel={t('common.back')}
+                source={require('../assets/images/screenBg/admin.jpg')}
+                style={styles.backgroundImage}
+                imageStyle={{ resizeMode: 'cover' }}
+            >
+                <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
+
+                    <KeyboardAvoidingView
+                        style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     >
-                        <Ionicons name="chevron-back" size={24} color={colors.text} />
-                    </TouchableOpacity>
-                    <Text style={[styles.title, { color: colors.text }]}>{t('admin.title')}</Text>
-                    <View style={styles.placeholder} />
-                </View>
-
-                {/* Authentication Card */}
-                <View style={styles.authContainer}>
-                    <View style={[styles.authCard, { backgroundColor: theme === 'dark' ? `${colors.card}` : `${colors.card}CC` ,borderColor: theme === 'dark' ? colors.border : ''}]}>
-                        <View style={[styles.authIconContainer, { backgroundColor: colors.primaryOverlay }]}>
-                            <Ionicons name="shield-checkmark" size={32} color={colors.primary} />
-                        </View>
-                        
-                        <Text style={[styles.authTitle, { color: colors.text }]}>
-                            {t('admin.auth.title')}
-                        </Text>
-                        
-                        <Text style={[styles.authSubtitle, { color: colors.textSecondary }]}>
-                            {t('admin.auth.subtitle')}
-                        </Text>
-
-                        <View style={styles.inputContainer}>
-                            <View
-                                style={[
-                                    styles.passwordInputWrapper,
-                                    {
-                                        borderColor: authError ? '#FF3B30' : colors.border,
-                                        backgroundColor: colors.background,
-                                    },
-                                ]}
+                        {/* Header */}
+                        <View style={styles.header}>
+                            <TouchableOpacity
+                                style={styles.backButton}
+                                onPress={() => router.back()}
+                                accessibilityLabel={t('common.back')}
                             >
-                                <TextInput
-                                    style={[
-                                        styles.passwordInput,
-                                        {
-                                            color: colors.text,
-                                        },
-                                    ]}
-                                    secureTextEntry={!showPassword}
-                                    placeholder={t('admin.auth.passwordPlaceholder')}
-                                    placeholderTextColor={colors.textTertiary}
-                                    value={password}
-                                    onChangeText={(text) => {
-                                        setPassword(text);
-                                        if (authError) setAuthError(null);
-                                    }}
-                                    onSubmitEditing={handleVerifyPassword}
-                                    autoCapitalize="none"
-                                    autoCorrect={false}
-                                />
+                                <Ionicons name="chevron-back" size={24} color={colors.text} />
+                            </TouchableOpacity>
+                            <Text style={[styles.title, { color: colors.text }]}>{t('admin.title')}</Text>
+                            <View style={styles.placeholder} />
+                        </View>
+
+                        {/* Authentication Card */}
+                        <View style={styles.authContainer}>
+                            <View style={[styles.authCard, { backgroundColor: theme === 'dark' ? `${colors.card}` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.border : '' }]}>
+                                <View style={[styles.authIconContainer, { backgroundColor: colors.primaryOverlay }]}>
+                                    <Ionicons name="shield-checkmark" size={32} color={colors.primary} />
+                                </View>
+
+                                <Text style={[styles.authTitle, { color: colors.text }]}>
+                                    {t('admin.auth.title')}
+                                </Text>
+
+                                <Text style={[styles.authSubtitle, { color: colors.textSecondary }]}>
+                                    {t('admin.auth.subtitle')}
+                                </Text>
+
+                                <View style={styles.inputContainer}>
+                                    <View
+                                        style={[
+                                            styles.passwordInputWrapper,
+                                            {
+                                                borderColor: authError ? '#FF3B30' : colors.border,
+                                                backgroundColor: colors.background,
+                                            },
+                                        ]}
+                                    >
+                                        <TextInput
+                                            style={[
+                                                styles.passwordInput,
+                                                {
+                                                    color: colors.text,
+                                                },
+                                            ]}
+                                            secureTextEntry={!showPassword}
+                                            placeholder={t('admin.auth.passwordPlaceholder')}
+                                            placeholderTextColor={colors.textTertiary}
+                                            value={password}
+                                            onChangeText={(text) => {
+                                                setPassword(text);
+                                                if (authError) setAuthError(null);
+                                            }}
+                                            onSubmitEditing={handleVerifyPassword}
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                        />
+                                        <TouchableOpacity
+                                            style={styles.passwordToggle}
+                                            onPress={() => setShowPassword((prev) => !prev)}
+                                        >
+                                            <Ionicons
+                                                name={showPassword ? 'eye-off' : 'eye'}
+                                                size={20}
+                                                color={colors.textTertiary}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    {authError && (
+                                        <View style={styles.errorContainer}>
+                                            <Ionicons name="warning" size={16} color="#FF3B30" />
+                                            <Text style={styles.errorText}>{authError}</Text>
+                                        </View>
+                                    )}
+                                </View>
+
                                 <TouchableOpacity
-                                    style={styles.passwordToggle}
-                                    onPress={() => setShowPassword((prev) => !prev)}
+                                    style={[
+                                        styles.authButton,
+                                        {
+                                            backgroundColor: isVerifying ? colors.textTertiary : colors.primary,
+                                            opacity: isVerifying ? 0.7 : 1
+                                        }
+                                    ]}
+                                    onPress={handleVerifyPassword}
+                                    disabled={isVerifying}
                                 >
-                                    <Ionicons
-                                        name={showPassword ? 'eye-off' : 'eye'}
-                                        size={20}
-                                        color={colors.textTertiary}
-                                    />
+                                    {isVerifying ? (
+                                        <ActivityIndicator size="small" color="#fff" />
+                                    ) : (
+                                        <>
+                                            <Ionicons name="lock-open" size={20} color="#fff" />
+                                            <Text style={styles.authButtonText}>{t('admin.auth.unlockButton')}</Text>
+                                        </>
+                                    )}
                                 </TouchableOpacity>
                             </View>
-                            
-                            {authError && (
-                                <View style={styles.errorContainer}>
-                                    <Ionicons name="warning" size={16} color="#FF3B30" />
-                                    <Text style={styles.errorText}>{authError}</Text>
-                                </View>
-                            )}
                         </View>
-
-                        <TouchableOpacity
-                            style={[
-                                styles.authButton,
-                                { 
-                                    backgroundColor: isVerifying ? colors.textTertiary : colors.primary,
-                                    opacity: isVerifying ? 0.7 : 1
-                                }
-                            ]}
-                            onPress={handleVerifyPassword}
-                            disabled={isVerifying}
-                        >
-                            {isVerifying ? (
-                                <ActivityIndicator size="small" color="#fff" />
-                            ) : (
-                                <>
-                                    <Ionicons name="lock-open" size={20} color="#fff" />
-                                    <Text style={styles.authButtonText}>{t('admin.auth.unlockButton')}</Text>
-                                </>
-                            )}
-                        </TouchableOpacity>
-                    </View>
+                    </KeyboardAvoidingView>
                 </View>
-            </KeyboardAvoidingView>
-            </View>
             </ImageBackground>
         );
     }
@@ -469,179 +469,189 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
     // Render main admin panel
     return (
         <ImageBackground
-    source={require('../assets/images/screenBg/admin.jpg')}   
-    style={styles.backgroundImage}
-    imageStyle={{ resizeMode: 'cover' }}
-  >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
-      
-        <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
-            {/* Header */}
-            <View style={[styles.header]}>
-                <TouchableOpacity 
-                    style={styles.backButton} 
-                    onPress={() => router.back()}
-                    accessibilityLabel={t('common.back')}
-                >
-                    <Ionicons name="chevron-back" size={24} color={colors.text} />
-                </TouchableOpacity>
-                
-                <View style={styles.headerTitleContainer}>
-                    <Text style={[styles.title, { color: colors.text }]}>{t('admin.title')}</Text>
-                    <Text style={[styles.subtitle, { color: theme === 'dark' ? colors.textSecondary : colors.text }]}>
-                        {t('admin.system.systemAdministration')}
-                    </Text>
-                </View>
-                
-                <TouchableOpacity 
-                    style={styles.refreshButton}
-                    onPress={() => loadAnalytics(true)}
-                    disabled={isRefreshing}
-                >
-                    <Ionicons 
-                        name="refresh" 
-                        size={20} 
-                        color={isRefreshing ? colors.textTertiary : colors.primary} 
-                    />
-                </TouchableOpacity>
-            </View>
+            source={require('../assets/images/screenBg/admin.jpg')}
+            style={styles.backgroundImage}
+            imageStyle={{ resizeMode: 'cover' }}
+        >
+            <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
 
-            {/* Warning Banner */}
-            <View style={[styles.warningBanner, { backgroundColor: `${colors.warning}BB` }]}>
-                <Ionicons name="warning" size={20} color="#fff" />
-                <Text style={styles.warningText}>{t('admin.caution')}</Text>
-            </View>
+                <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
+                    {/* Header */}
+                    <View style={[styles.header]}>
+                        <TouchableOpacity
+                            style={styles.backButton}
+                            onPress={() => router.back()}
+                            accessibilityLabel={t('common.back')}
+                        >
+                            <Ionicons name="chevron-back" size={24} color={colors.text} />
+                        </TouchableOpacity>
 
-            {/* Main Content */}
-            <ScrollView 
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={isRefreshing}
-                        onRefresh={() => loadAnalytics(true)}
-                        colors={[colors.primary]}
-                        tintColor={colors.primary}
-                    />
-                }
-                showsVerticalScrollIndicator={false}
-            >
-                {/* Admin Sections */}
-                {adminSections.map((section) => (
-                    <View key={section.id} style={styles.section}>
-                        <View style={styles.sectionHeader}>
-                            <View style={[styles.sectionIcon, { backgroundColor: section.color + '20' }]}>
-                                <Ionicons name={section.icon} size={18} color={section.color} />
-                            </View>
-                            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                                {section.title}
+                        <View style={styles.headerTitleContainer}>
+                            <Text style={[styles.title, { color: colors.text }]}>{t('admin.title')}</Text>
+                            <Text style={[styles.subtitle, { color: theme === 'dark' ? colors.textSecondary : colors.text }]}>
+                                {t('admin.system.systemAdministration')}
                             </Text>
                         </View>
-                        
-                        <View style={styles.sectionContent}>
-                            {section.items.map((item) => (
-                                <TouchableOpacity
-                                    key={item.id}
-                                    style={[
-                                        styles.actionCard,
-                                        { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }
-                                    ]}
-                                    onPress={item.action}
-                                    activeOpacity={0.7}
-                                >
-                                    <View style={[
-                                        styles.actionIcon,
-                                        { backgroundColor: item.iconColor + '15' }
-                                    ]}>
-                                        <Ionicons 
-                                            name={item.icon} 
-                                            size={22} 
-                                            color={item.iconColor} 
-                                        />
-                                    </View>
-                                    
-                                    <View style={styles.actionContent}>
-                                        <Text style={[
-                                            styles.actionTitle, 
-                                            { color: colors.text }
-                                        ]}>
-                                            {item.title}
-                                        </Text>
-                                        <Text style={[
-                                            styles.actionDesc, 
-                                            { color: colors.textSecondary }
-                                        ]}>
-                                            {item.description}
-                                        </Text>
-                                    </View>
-                                    
-                                    {item.showChevron && (
-                                        <Ionicons 
-                                            name="chevron-forward" 
-                                            size={20} 
-                                            color={colors.textTertiary} 
-                                        />
-                                    )}
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </View>
-                ))}
 
-                {/* 7-Day Analytics Summary */}
-                {last7DaysCounts.length > 0 && (
-                    <View style={styles.section}>
-                        <View style={styles.sectionHeader}>
-                            <View style={[styles.sectionIcon, { backgroundColor: colors.success + '50' }]}>
-                                <Ionicons name="calendar" size={18} color={colors.success} />
+                        <TouchableOpacity
+                            style={styles.refreshButton}
+                            onPress={() => loadAnalytics(true)}
+                            disabled={isRefreshing}
+                        >
+                            <Ionicons
+                                name="refresh"
+                                size={20}
+                                color={isRefreshing ? colors.textTertiary : colors.primary}
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Warning Banner */}
+                    <View style={[styles.warningBanner, { backgroundColor: `${colors.warning}EE` }]}>
+                        <Ionicons name="warning" size={20} color="#fff" />
+                        <Text style={styles.warningText}>{t('admin.caution')}</Text>
+                    </View>
+
+                    {/* Main Content */}
+                    <ScrollView
+                        style={styles.scrollView}
+                        contentContainerStyle={styles.scrollContent}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={isRefreshing}
+                                onRefresh={() => loadAnalytics(true)}
+                                colors={[colors.primary]}
+                                tintColor={colors.primary}
+                            />
+                        }
+                        showsVerticalScrollIndicator={false}
+                    >
+                        {/* Admin Sections */}
+                        {adminSections.map((section) => (
+                            <View key={section.id} style={styles.section}>
+                                <View style={styles.sectionHeader}>
+                                    <View style={[styles.sectionIcon, { backgroundColor: section.color + '20' }]}>
+                                        <Ionicons name={section.icon} size={18} color={section.color} />
+                                    </View>
+                                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                                        {section.title}
+                                    </Text>
+                                </View>
+
+                                <View style={styles.sectionContent}>
+                                    {section.items.map((item) => (
+                                        <TouchableOpacity
+                                            key={item.id}
+                                            style={[
+                                                styles.actionCard,
+                                                { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }
+                                            ]}
+                                            onPress={item.action}
+                                            activeOpacity={0.7}
+                                        >
+                                            <View style={[
+                                                styles.actionIcon,
+                                                { backgroundColor: item.iconColor + '15' }
+                                            ]}>
+                                                <Ionicons
+                                                    name={item.icon}
+                                                    size={22}
+                                                    color={item.iconColor}
+                                                />
+                                            </View>
+
+                                            <View style={styles.actionContent}>
+                                                <Text style={[
+                                                    styles.actionTitle,
+                                                    { color: colors.text }
+                                                ]}>
+                                                    {item.title}
+                                                </Text>
+                                                <Text style={[
+                                                    styles.actionDesc,
+                                                    { color: colors.textSecondary }
+                                                ]}>
+                                                    {item.description}
+                                                </Text>
+                                            </View>
+
+                                            {item.showChevron && (
+                                                <Ionicons
+                                                    name="chevron-forward"
+                                                    size={20}
+                                                    color={colors.textTertiary}
+                                                />
+                                            )}
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
                             </View>
-                            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                                {t('admin.recentActivity')}
+                        ))}
+
+                        {/* 7-Day Analytics Summary */}
+                        {last7DaysCounts.length > 0 && (
+                            <View style={styles.section}>
+                                <View style={styles.sectionHeader}>
+                                    <View style={[styles.sectionIcon, { backgroundColor: colors.success + '50' }]}>
+                                        <Ionicons name="calendar" size={18} color={colors.success} />
+                                    </View>
+                                    <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                                        {t('admin.recentActivity')}
+                                    </Text>
+                                </View>
+
+                                <View style={[styles.trendCard, {
+                                    backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark,
+                                    shadowColor: '#000',
+                                    shadowOffset: {
+                                        width: 0,
+                                        height: 2,
+                                    },
+                                    shadowOpacity: .8,
+                                    shadowRadius: 3.84,
+                                    elevation: 5,
+                                }]}>
+                                    <View style={styles.trendGrid}>
+                                        {last7DaysCounts.slice(0, 7).map((item, index) => (
+                                            <View key={item.day} style={styles.trendItem}>
+                                                <Text style={[styles.trendDay, { color: colors.textSecondary }]}>
+                                                    {item.day.slice(0, 3)}
+                                                </Text>
+                                                <View style={[
+                                                    styles.trendBar,
+                                                    { backgroundColor: colors.primary + '40' }
+                                                ]}>
+                                                    <View
+                                                        style={[
+                                                            styles.trendBarFill,
+                                                            {
+                                                                backgroundColor: colors.primary,
+                                                                height: `${Math.min(100, (item.count / Math.max(...last7DaysCounts.map(d => d.count))) * 100)}%`
+                                                            }
+                                                        ]}
+                                                    />
+                                                </View>
+                                                <Text style={[styles.trendCount, { color: colors.text }]}>
+                                                    {item.count}
+                                                </Text>
+                                            </View>
+                                        ))}
+                                    </View>
+                                </View>
+                            </View>
+                        )}
+
+                        {/* Information Card */}
+                        <View style={[styles.infoCard]}>
+                            <Ionicons name="information-circle" size={20} color={colors.primary} />
+                            <Text style={[styles.infoText, { color: colors.text }]}>
+                                {t('admin.info')}
                             </Text>
                         </View>
-                        
-                        <View style={[styles.trendCard, { backgroundColor: `${colors.card}BB` }]}>
-                            <View style={styles.trendGrid}>
-                                {last7DaysCounts.slice(0, 7).map((item, index) => (
-                                    <View key={item.day} style={styles.trendItem}>
-                                        <Text style={[styles.trendDay, { color: colors.textSecondary }]}>
-                                            {item.day.slice(0, 3)}
-                                        </Text>
-                                        <View style={[
-                                            styles.trendBar,
-                                            { backgroundColor: colors.primary + '40' }
-                                        ]}>
-                                            <View 
-                                                style={[
-                                                    styles.trendBarFill,
-                                                    { 
-                                                        backgroundColor: colors.primary,
-                                                        height: `${Math.min(100, (item.count / Math.max(...last7DaysCounts.map(d => d.count))) * 100)}%`
-                                                    }
-                                                ]} 
-                                            />
-                                        </View>
-                                        <Text style={[styles.trendCount, { color: colors.text }]}>
-                                            {item.count}
-                                        </Text>
-                                    </View>
-                                ))}
-                            </View>
-                        </View>
-                    </View>
-                )}
+                    </ScrollView>
 
-                {/* Information Card */}
-                <View style={[styles.infoCard]}>
-                    <Ionicons name="information-circle" size={20} color={colors.primary} />
-                    <Text style={[styles.infoText, { color: colors.text }]}>
-                        {t('admin.info')}
-                    </Text>
-                </View>
-            </ScrollView>
-
-            {/* Modals */}
-            {/* <AdminModal
+                    {/* Modals */}
+                    {/* <AdminModal
                 visible={visibleUpdate}
                 onClose={() => setVisibleUpdate(false)}
                 icon="cloud-upload"
@@ -670,7 +680,7 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
                 )}
             </AdminModal> */}
 
-            {/* <AdminModal
+                    {/* <AdminModal
                 visible={visibleReset}
                 onClose={() => setVisibleReset(false)}
                 icon="lock-closed"
@@ -690,203 +700,209 @@ const [isPasswordChanged, setIsPasswordChanged] = useState(false);
                 ]}
             /> */}
 
-            <Modal
-                visible={visibleChangePassword}
-                transparent
-                animationType="fade"
-                onRequestClose={() => setVisibleChangePassword(false)}
-            >
-                <KeyboardAvoidingView
-                    style={styles.modalOverlay}
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    enabled
-                >
-                    <View style={[styles.modalContent, { backgroundColor:  colors.background,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
-                        <View style={[styles.modalIcon, { backgroundColor: colors.background + '80' }]}>
-                            <Ionicons name="key" size={40} color={colors.primary} />
-                        </View>
-                        <Text style={[styles.modalTitle, { color: colors.text }]}>
-                            {t('admin.password.changeTitle')}
-                        </Text>
-                        <Text style={[styles.modalMessage,   { color: changePasswordError ? '#FF3B30' : (isPasswordChanged ? colors.success : colors.textSecondary) },]}>
-                           {changePasswordError
-                            ? changePasswordError
-                            : isPasswordChanged
-                            ? t('admin.password.changeSuccess')
-                            : t('admin.password.changeMessage')}
-                        </Text>
-
-                        <ScrollView
-                            contentContainerStyle={styles.changePasswordContainer}
-                            keyboardShouldPersistTaps="handled"
+                    <Modal
+                        visible={visibleChangePassword}
+                        transparent
+                        animationType="fade"
+                        onRequestClose={() => setVisibleChangePassword(false)}
+                    >
+                        <KeyboardAvoidingView
+                            style={styles.modalOverlay}
+                            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                            enabled
                         >
-                            {/* Current password */}
-                            <View
-                                style={[
-                                    styles.passwordInputWrapper,
-                                    {
-                                        borderColor: changePasswordError ? '#FF3B30' : colors.border,
-                                        backgroundColor: colors.background,
-                                    },
-                                ]}
-                            >
-                                <TextInput
-                                    style={[
-                                        styles.changePasswordInput,
-                                        { color: colors.text },
-                                    ]}
-                                    secureTextEntry={!showCurrentPassword}
-                                    placeholder={t('admin.password.currentPlaceholder')}
-                                    placeholderTextColor={colors.textTertiary}
-                                    value={currentPassword}
-                                    onChangeText={(text) => {
-                                        setCurrentPassword(text);
-                                        if (changePasswordError) setChangePasswordError(null);
-                                        if (isPasswordChanged) setIsPasswordChanged(false);
-                                    }}
-                                />
-                                <TouchableOpacity
-                                    style={styles.passwordToggle}
-                                    onPress={() => setShowCurrentPassword((prev) => !prev)}
-                                >
-                                    <Ionicons
-                                        name={showCurrentPassword ? 'eye-off' : 'eye'}
-                                        size={20}
-                                        color={colors.textTertiary}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-
-                            {/* New password */}
-                            <View
-                                style={[
-                                    styles.passwordInputWrapper,
-                                    {
-                                        borderColor: changePasswordError ? '#FF3B30' : colors.border,
-                                        backgroundColor: colors.background,
-                                    },
-                                ]}
-                            >
-                                <TextInput
-                                    style={[
-                                        styles.changePasswordInput,
-                                        { color: colors.text },
-                                    ]}
-                                    secureTextEntry={!showNewPassword}
-                                    placeholder={t('admin.password.newPlaceholder')}
-                                    placeholderTextColor={colors.textTertiary}
-                                    value={newPassword}
-                                    onChangeText={(text) => {
-                                        setNewPassword(text);
-                                        if (changePasswordError) setChangePasswordError(null);
-                                        if (isPasswordChanged) setIsPasswordChanged(false);
-                                    }}
-                                />
-                                <TouchableOpacity
-                                    style={styles.passwordToggle}
-                                    onPress={() => setShowNewPassword((prev) => !prev)}
-                                >
-                                    <Ionicons
-                                        name={showNewPassword ? 'eye-off' : 'eye'}
-                                        size={20}
-                                        color={colors.textTertiary}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-
-                            {/* Confirm password */}
-                            <View
-                                style={[
-                                    styles.passwordInputWrapper,
-                                    {
-                                        borderColor: changePasswordError ? '#FF3B30' : colors.border,
-                                        backgroundColor: colors.background,
-                                    },
-                                ]}
-                            >
-                                <TextInput
-                                    style={[
-                                        styles.changePasswordInput,
-                                        { color: colors.text },
-                                    ]}
-                                    secureTextEntry={!showConfirmPassword}
-                                    placeholder={t('admin.password.confirmPlaceholder')}
-                                    placeholderTextColor={colors.textTertiary}
-                                    value={confirmPassword}
-                                    onChangeText={(text) => {
-                                        setConfirmPassword(text);
-                                        if (changePasswordError) setChangePasswordError(null);
-                                        if (isPasswordChanged) setIsPasswordChanged(false);
-                                    }}
-                                />
-                                <TouchableOpacity
-                                    style={styles.passwordToggle}
-                                    onPress={() => setShowConfirmPassword((prev) => !prev)}
-                                >
-                                    <Ionicons
-                                        name={showConfirmPassword ? 'eye-off' : 'eye'}
-                                        size={20}
-                                        color={colors.textTertiary}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        </ScrollView>
-
-                        <View style={styles.modalButtons}>
-                            <TouchableOpacity
-                                style={[
-                                    styles.modalButton,
-                                    { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark,borderWidth:.5 },
-                                    styles.modalButtonSingle,
-                                ]}
-                                onPress={() => setVisibleChangePassword(false)}
-                            >
-                                <Text
-                                    style={[
-                                        styles.modalButtonText,
-                                        { color: colors.text },
-                                    ]}
-                                >
-                                    {t('common.cancel')}
+                            <View style={[styles.modalContent, { backgroundColor: colors.background, borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
+                                <View style={[styles.modalIcon, { backgroundColor: colors.background + '80' }]}>
+                                    <Ionicons name="key" size={40} color={colors.primary} />
+                                </View>
+                                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                                    {t('admin.password.changeTitle')}
                                 </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.modalButton,
-                                    { backgroundColor: colors.primary },
-                                    styles.modalButtonSingle,
-                                ]}
-                                onPress={() => {
-                                    if (isPasswordChanged) {
-                                        setVisibleChangePassword(false);
-                                        return;
-                                    }
-                                    if (!isChangingPassword) {
-                                        handleSubmitChangePassword();
-                                    }
-                                }}
-                            >
-                                <Text
-                                    style={[
-                                        styles.modalButtonText,
-                                        { color: '#fff' },
-                                    ]}
-                                >
-                                    {isChangingPassword
-                                        ? t('common.loading')
+                                <Text style={[styles.modalMessage, { color: changePasswordError ? '#FF3B30' : (isPasswordChanged ? colors.success : colors.textSecondary) },]}>
+                                    {changePasswordError
+                                        ? changePasswordError
                                         : isPasswordChanged
-                                        ? t('common.ok')
-                                        : t('common.confirm')}
+                                            ? t('admin.password.changeSuccess')
+                                            : t('admin.password.changeMessage')}
                                 </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </KeyboardAvoidingView>
-            </Modal>
 
-            <DiseaseEditor visible={visibleEdit} onClose={() => setVisibleEdit(false)} />
-        </View>
-        </View>
+                                <ScrollView
+                                    contentContainerStyle={styles.changePasswordContainer}
+                                    keyboardShouldPersistTaps="handled"
+                                >
+                                    {/* Current password */}
+                                    <View
+                                        style={[
+                                            styles.passwordInputWrapper,
+                                            {
+                                                borderColor: changePasswordError ? '#FF3B30' : colors.border,
+                                                backgroundColor: colors.background,
+                                            },
+                                        ]}
+                                    >
+                                        <TextInput
+                                            style={[
+                                                styles.changePasswordInput,
+                                                { color: colors.text },
+                                            ]}
+                                            secureTextEntry={!showCurrentPassword}
+                                            placeholder={t('admin.password.currentPlaceholder')}
+                                            placeholderTextColor={colors.textTertiary}
+                                            value={currentPassword}
+                                            onChangeText={(text) => {
+                                                setCurrentPassword(text);
+                                                if (changePasswordError) setChangePasswordError(null);
+                                                if (isPasswordChanged) setIsPasswordChanged(false);
+                                            }}
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                        />
+                                        <TouchableOpacity
+                                            style={styles.passwordToggle}
+                                            onPress={() => setShowCurrentPassword((prev) => !prev)}
+                                        >
+                                            <Ionicons
+                                                name={showCurrentPassword ? 'eye-off' : 'eye'}
+                                                size={20}
+                                                color={colors.textTertiary}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    {/* New password */}
+                                    <View
+                                        style={[
+                                            styles.passwordInputWrapper,
+                                            {
+                                                borderColor: changePasswordError ? '#FF3B30' : colors.border,
+                                                backgroundColor: colors.background,
+                                            },
+                                        ]}
+                                    >
+                                        <TextInput
+                                            style={[
+                                                styles.changePasswordInput,
+                                                { color: colors.text },
+                                            ]}
+                                            secureTextEntry={!showNewPassword}
+                                            placeholder={t('admin.password.newPlaceholder')}
+                                            placeholderTextColor={colors.textTertiary}
+                                            value={newPassword}
+                                            onChangeText={(text) => {
+                                                setNewPassword(text);
+                                                if (changePasswordError) setChangePasswordError(null);
+                                                if (isPasswordChanged) setIsPasswordChanged(false);
+                                            }}
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                        />
+                                        <TouchableOpacity
+                                            style={styles.passwordToggle}
+                                            onPress={() => setShowNewPassword((prev) => !prev)}
+                                        >
+                                            <Ionicons
+                                                name={showNewPassword ? 'eye-off' : 'eye'}
+                                                size={20}
+                                                color={colors.textTertiary}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    {/* Confirm password */}
+                                    <View
+                                        style={[
+                                            styles.passwordInputWrapper,
+                                            {
+                                                borderColor: changePasswordError ? '#FF3B30' : colors.border,
+                                                backgroundColor: colors.background,
+                                            },
+                                        ]}
+                                    >
+                                        <TextInput
+                                            style={[
+                                                styles.changePasswordInput,
+                                                { color: colors.text },
+                                            ]}
+                                            secureTextEntry={!showConfirmPassword}
+                                            placeholder={t('admin.password.confirmPlaceholder')}
+                                            placeholderTextColor={colors.textTertiary}
+                                            value={confirmPassword}
+                                            onChangeText={(text) => {
+                                                setConfirmPassword(text);
+                                                if (changePasswordError) setChangePasswordError(null);
+                                                if (isPasswordChanged) setIsPasswordChanged(false);
+                                            }}
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                        />
+                                        <TouchableOpacity
+                                            style={styles.passwordToggle}
+                                            onPress={() => setShowConfirmPassword((prev) => !prev)}
+                                        >
+                                            <Ionicons
+                                                name={showConfirmPassword ? 'eye-off' : 'eye'}
+                                                size={20}
+                                                color={colors.textTertiary}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                </ScrollView>
+
+                                <View style={styles.modalButtons}>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.modalButton,
+                                            { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.border : colors.borderDark, borderWidth: .5 },
+                                            styles.modalButtonSingle,
+                                        ]}
+                                        onPress={() => setVisibleChangePassword(false)}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.modalButtonText,
+                                                { color: colors.text },
+                                            ]}
+                                        >
+                                            {t('common.cancel')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.modalButton,
+                                            { backgroundColor: colors.primary },
+                                            styles.modalButtonSingle,
+                                        ]}
+                                        onPress={() => {
+                                            if (isPasswordChanged) {
+                                                setVisibleChangePassword(false);
+                                                return;
+                                            }
+                                            if (!isChangingPassword) {
+                                                handleSubmitChangePassword();
+                                            }
+                                        }}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.modalButtonText,
+                                                { color: '#fff' },
+                                            ]}
+                                        >
+                                            {isChangingPassword
+                                                ? t('common.loading')
+                                                : isPasswordChanged
+                                                    ? t('common.ok')
+                                                    : t('common.confirm')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </KeyboardAvoidingView>
+                    </Modal>
+
+                    <DiseaseEditor visible={visibleEdit} onClose={() => setVisibleEdit(false)} />
+                </View>
+            </View>
         </ImageBackground>
     );
 }
@@ -900,26 +916,26 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-  },
+    },
     // Header Styles
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: 60,
-        paddingBottom: 20,
+        paddingBottom: 10,
         marginBottom: 10,
         paddingHorizontal: 20,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        
+
     },
     headerTitleContainer: {
         flex: 1,
         alignItems: 'center',
     },
-    title: { 
-        fontSize: 20, 
+    title: {
+        fontSize: 20,
         fontWeight: '700',
         letterSpacing: -0.5,
     },
@@ -929,7 +945,7 @@ const styles = StyleSheet.create({
         marginTop: 2,
         opacity: 0.7,
     },
-    backButton: { 
+    backButton: {
         padding: 8,
         borderRadius: 10,
     },
@@ -937,10 +953,10 @@ const styles = StyleSheet.create({
         padding: 8,
         borderRadius: 10,
     },
-    placeholder: { 
-        width: 40 
+    placeholder: {
+        width: 40
     },
-    
+
     // Authentication Styles
     authContainer: {
         flex: 1,
@@ -953,10 +969,10 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 400,
         borderRadius: 10,
-        borderWidth:1,
+        borderWidth: 1,
         padding: 10,
         alignItems: 'center',
-       
+
     },
     authIconContainer: {
         width: 80,
@@ -1030,39 +1046,40 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
-    
+
     // Main Content Styles
-    scrollView: { 
-        flex: 1 
+    scrollView: {
+        flex: 1
     },
     scrollContent: {
-        paddingVertical: 16,
+        // paddingVertical: 10,
+        paddingBottom: 30,
     },
     warningBanner: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         padding: 8,
-        marginHorizontal: 20,
-        marginBottom: 10,
-        borderRadius: 8,
+        // marginHorizontal: 20,
+        marginBottom: 4,
+        borderRadius: 4,
         gap: 10,
     },
-    warningText: { 
-        color: '#fff', 
-        fontSize: 14, 
-        fontWeight: '600' 
+    warningText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: '600'
     },
-    
+
     // Section Styles
     section: {
-        marginBottom: 10,
+        marginBottom: 4,
     },
     sectionHeader: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
-        marginBottom: 12,
+        marginBottom: 2,
         gap: 10,
     },
     sectionIcon: {
@@ -1072,8 +1089,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    sectionTitle: { 
-        fontSize: 18, 
+    sectionTitle: {
+        fontSize: 18,
         fontWeight: '700',
         letterSpacing: -0.3,
     },
@@ -1082,14 +1099,22 @@ const styles = StyleSheet.create({
         gap: 8,
     },
 
-    
+
     // Action Card Styles
     actionCard: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 8,
         borderRadius: 8,
-        borderWidth:.5
+        borderWidth: .5,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: .6,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     actionIcon: {
         width: 48,
@@ -1099,26 +1124,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginRight: 12,
     },
-    actionContent: { 
-        flex: 1 
+    actionContent: {
+        flex: 1
     },
-    actionTitle: { 
-        fontSize: 16, 
-        fontWeight: '600', 
+    actionTitle: {
+        fontSize: 16,
+        fontWeight: '600',
         marginBottom: 4,
         letterSpacing: -0.2,
     },
-    actionDesc: { 
-        fontSize: 12, 
+    actionDesc: {
+        fontSize: 12,
         lineHeight: 18,
         opacity: 0.8,
     },
-    
+
     // Trend Card Styles
     trendCard: {
-        padding: 16,
-        borderRadius: 16,
+        padding: 10,
+        borderRadius: 8,
         marginHorizontal: 20,
+        borderWidth: .5,
     },
     trendGrid: {
         flexDirection: 'row',
@@ -1138,20 +1164,20 @@ const styles = StyleSheet.create({
     trendBar: {
         width: 20,
         height: 40,
-        borderRadius: 10,
+        borderRadius: 6,
         justifyContent: 'flex-end',
         overflow: 'hidden',
     },
     trendBarFill: {
         width: '100%',
-        borderRadius: 10,
+        borderRadius: 6,
         minHeight: 4,
     },
     trendCount: {
         fontSize: 12,
         fontWeight: '600',
     },
-    
+
     // Info Card Styles
     infoCard: {
         flexDirection: 'row',
@@ -1163,12 +1189,12 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         gap: 12,
     },
-    infoText: { 
-        flex: 1, 
-        fontSize: 13, 
+    infoText: {
+        flex: 1,
+        fontSize: 13,
         lineHeight: 18,
-           },
-    
+    },
+
     // Modal Content Styles
     changePasswordContainer: {
         width: '100%',
@@ -1181,7 +1207,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         fontSize: 15,
         fontWeight: '500',
-        },
+    },
     uploadButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -1198,18 +1224,18 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     // change password modal styles
-     modalOverlay: {
+    modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.9)',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        paddingTop: 60, 
+        paddingTop: 60,
         paddingBottom: 0,
     },
     modalContent: {
         borderRadius: 10,
-        borderWidth:.5,
+        borderWidth: .5,
         padding: 10,
         width: '100%',
         maxWidth: 400,
@@ -1243,7 +1269,7 @@ const styles = StyleSheet.create({
     },
     modalButton: {
         flex: 1,
-        paddingVertical: 10,
+        paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
         alignItems: 'center',

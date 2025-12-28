@@ -11,7 +11,7 @@ import { getAnalyticsSummary, getRecentDiagnoses } from '../../src/db/repository
 export default function HomeScreen() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { t} = useTranslation();
+  const { t } = useTranslation();
   const colors = Colors[theme];
   const [stats, setStats] = useState({
     totalScans: 0,
@@ -145,119 +145,119 @@ export default function HomeScreen() {
   ];
 
   return (
-      <ImageBackground
-    source={require('../../assets/images/screenBg/home4.jpg')}
-    style={styles.backgroundImage}
-    imageStyle={{ resizeMode: 'cover' }}
-  >
-    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
-      {/* Fixed Header */}
-    <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-      <ImageBackground
-        source={theme === 'dark' ? require('../../assets/images/background/wellcome_bg.jpg') : require('../../assets/images/screenBg/homeHeader.png')}
-        style={styles.header}
-        imageStyle={{ resizeMode: 'cover' }}
-      >
-        <View style={styles.headerContent}>
-          <View style={[styles.logo, { backgroundColor: colors.successBg }]}>
-            {/* <Ionicons name="leaf" size={32} color={colors.success} /> */}
-            <Image source={ require('../../assets/images/app/3.png')} style={{...styles.logoImage,borderRadius: 60}} />
-          </View>
-          <Text style={[styles.title, { color: '#fff' }]}>
-            TomatoDx
-          </Text>
-          <Text style={[styles.subtitle, { color: '#fff' }]}>
-            {t('home.tagline')}
-          </Text>
-        </View>
-      </ImageBackground>
-    </Animated.View>
-    <ScrollView style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
-     
-      {/* Stats Overview */}
-      <Animated.View style={[styles.statsCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}BB`, opacity: statsAnim, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark}]}>
-        <View style={styles.statItem}>
-          <Text style={[styles.statNumber, { color: colors.text }]}>
-            {stats.totalScans}
-          </Text>
-          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
-            {t('home.totalScans')}
-          </Text>
-        </View>
-        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-        <View style={styles.statItem}>
-          <Text style={[styles.statNumber, { color: colors.text }]}>
-            {stats.avgConfidence}%
-          </Text>
-          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
-            {t('home.accuracy')}
-          </Text>
-        </View>
-        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-        <View style={styles.statItem}>
-          <Text style={[styles.statNumber, { color: colors.text }]}>
-            {stats.healthyCount}
-          </Text>
-          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
-            {t('home.healthy')}
-          </Text>
-        </View>
-      </Animated.View>
-
-      {/* Quick Actions */}
-      <Animated.View style={[styles.section, { opacity: actionsAnim, transform: [{ translateY: Animated.multiply(actionsAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }]}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          {t('home.quickActions')}
-        </Text>
-        {features.map((feature, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.featureCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark}]}
-            onPress={() => router.push(feature.route as any)}
+    <ImageBackground
+      source={require('../../assets/images/screenBg/home4.jpg')}
+      style={styles.backgroundImage}
+      imageStyle={{ resizeMode: 'cover' }}
+    >
+      <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
+        {/* Fixed Header */}
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          <ImageBackground
+            source={theme === 'dark' ? require('../../assets/images/background/wellcome_bg.jpg') : require('../../assets/images/screenBg/homeHeader.png')}
+            style={styles.header}
+            imageStyle={{ resizeMode: 'cover' }}
           >
-            <View style={[styles.featureIcon, { backgroundColor: feature.color }]}>
-              <Ionicons name={feature.icon as any} size={24} color="#fff" />
-            </View>
-            <View style={styles.featureContent}>
-              <Text style={[styles.featureTitle, { color: colors.text }]}>
-                {feature.title}
+            <View style={styles.headerContent}>
+              <View style={[styles.logo, { backgroundColor: colors.successBg }]}>
+                {/* <Ionicons name="leaf" size={32} color={colors.success} /> */}
+                <Image source={require('../../assets/images/app/3.png')} style={{ ...styles.logoImage, borderRadius: 60 }} />
+              </View>
+              <Text style={[styles.title, { color: '#fff' }]}>
+                TomatoDx
               </Text>
-              <Text style={[styles.featureDesc, { color: colors.textTertiary }]}>
-                {feature.description}
+              <Text style={[styles.subtitle, { color: '#fff' }]}>
+                {t('home.tagline')}
               </Text>
             </View>
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color={colors.textTertiary}
-            />
-          </TouchableOpacity>
-        ))}
-      </Animated.View>
+          </ImageBackground>
+        </Animated.View>
+        <ScrollView style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
 
-      {/* Recent Activity */}
-      <Animated.View style={[styles.section, {marginBottom:24, opacity: recentAnim, transform: [{ translateY: Animated.multiply(recentAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }]}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          {t('home.recentActivity')}
-        </Text>
-        <TouchableOpacity
-          disabled={!lastScan}
-          onPress={() => lastScan && router.push({ pathname: '/tomatodx/result', params: { id: lastScan.id } } as any)}
-          style={[styles.activityCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}BB`,borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
-        >
-          <Ionicons name="time-outline" size={24} color={colors.success} />
-          <View style={styles.activityContent}>
-            <Text style={[styles.activityText, { color: colors.text }]}>
-              {t('home.lastScan')}
+          {/* Stats Overview */}
+          <Animated.View style={[styles.statsCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}BB`, opacity: statsAnim, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                {stats.totalScans}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
+                {t('home.totalScans')}
+              </Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                {stats.avgConfidence}%
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
+                {t('home.accuracy')}
+              </Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                {stats.healthyCount}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
+                {t('home.healthy')}
+              </Text>
+            </View>
+          </Animated.View>
+
+          {/* Quick Actions */}
+          <Animated.View style={[styles.section, { opacity: actionsAnim, transform: [{ translateY: Animated.multiply(actionsAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {t('home.quickActions')}
             </Text>
-            <Text style={[styles.activityTime, { color: colors.textTertiary }]}>
-              {lastScan ? lastScan.time : t('history.noScans')}
+            {features.map((feature, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.featureCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+                onPress={() => router.push(feature.route as any)}
+              >
+                <View style={[styles.featureIcon, { backgroundColor: feature.color }]}>
+                  <Ionicons name={feature.icon as any} size={24} color="#fff" />
+                </View>
+                <View style={styles.featureContent}>
+                  <Text style={[styles.featureTitle, { color: colors.text }]}>
+                    {feature.title}
+                  </Text>
+                  <Text style={[styles.featureDesc, { color: colors.textTertiary }]}>
+                    {feature.description}
+                  </Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colors.textTertiary}
+                />
+              </TouchableOpacity>
+            ))}
+          </Animated.View>
+
+          {/* Recent Activity */}
+          <Animated.View style={[styles.section, { marginBottom: 24, opacity: recentAnim, transform: [{ translateY: Animated.multiply(recentAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }), 1) }] }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {t('home.recentActivity')}
             </Text>
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
-    </ScrollView>
-    </View>
+            <TouchableOpacity
+              disabled={!lastScan}
+              onPress={() => lastScan && router.push({ pathname: '/tomatodx/result', params: { id: lastScan.id } } as any)}
+              style={[styles.activityCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}BB`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+            >
+              <Ionicons name="time-outline" size={24} color={colors.success} />
+              <View style={styles.activityContent}>
+                <Text style={[styles.activityText, { color: colors.text }]}>
+                  {t('home.lastScan')}
+                </Text>
+                <Text style={[styles.activityTime, { color: colors.textTertiary }]}>
+                  {lastScan ? lastScan.time : t('history.noScans')}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+        </ScrollView>
+      </View>
     </ImageBackground>
   );
 }
@@ -265,10 +265,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
-     },
+  },
   overlay: {
     flex: 1,
-     },
+  },
   container: {
     flex: 1,
   },
@@ -279,12 +279,12 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     // flex: 1,
-      paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.65)', // much lighter
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.65)', // much lighter
   },
   logo: {
     width: 60,
@@ -294,12 +294,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  logoImage:{
-        width:60,
-        height:60,
-        borderRadius:60,
-        borderColor: '#fff'
-    },
+  logoImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 60,
+    borderColor: '#fff'
+  },
   title: {
     fontSize: 32,
     fontWeight: '800',
@@ -312,10 +312,11 @@ const styles = StyleSheet.create({
   statsCard: {
     flexDirection: 'row',
     margin: 20,
+    marginBottom: 10,
     borderRadius: 10,
     padding: 10,
-    borderWidth:.5,  
-   
+    borderWidth: .5,
+
   },
   statItem: {
     flex: 1,
@@ -339,15 +340,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    marginBottom: 16,
+    marginBottom: 10,
   },
   featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
+    padding: 10,
     borderRadius: 8,
-    marginBottom: 12,   
-    borderWidth:.5,
+    marginBottom: 6,
+    borderWidth: .5,
   },
   featureIcon: {
     width: 48,
@@ -372,8 +373,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    borderRadius: 8,   
-    borderWidth:.5,
+    borderRadius: 8,
+    borderWidth: .5,
   },
   activityContent: {
     flex: 1,

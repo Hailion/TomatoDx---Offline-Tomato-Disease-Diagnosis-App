@@ -109,8 +109,8 @@ export default function HelpScreen() {
             style={styles.backgroundImage}
             imageStyle={{ resizeMode: 'cover' }}
         >
-            <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }] }>
-                <View style={[styles.container,{ backgroundColor:  theme === 'dark' ? `${colors.background}80` : `${colors.background}79`}]}>
+            <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
+                <View style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
                     {/* Header */}
                     <View style={styles.header}>
                         <TouchableOpacity
@@ -132,18 +132,18 @@ export default function HelpScreen() {
                     <ScrollView style={[styles.scrollView]} showsVerticalScrollIndicator={false}>
                         {/* Welcome Section */}
                         <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                            <View style={[styles.wellcomeCardContainer,{ backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)' ,marginHorizontal: 16,borderRadius: 8}]}>
+                            <View style={[styles.wellcomeCardContainer, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)', marginHorizontal: 16, borderRadius: 8 }]}>
                                 <ImageBackground
                                     source={require('../../assets/images/screenBg/about.jpg')}
                                     style={styles.backgroundImage}
                                     imageStyle={{ resizeMode: 'cover' }}
                                 >
-                                    <View style={[styles.overlay, {backgroundColor:'rgba(0,0,0,0.7)'}]}>
+                                    <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.7)' }]}>
                                         <View style={[styles.welcomeCard]}>
                                             <View style={[styles.iconContainer]}>
                                                 <Ionicons name="help-circle" size={48} color={colors.primary} />
                                             </View>
-                                            <Text style={[styles.welcomeTitle, { color:  '#fff' }]}>
+                                            <Text style={[styles.welcomeTitle, { color: '#fff' }]}>
                                                 {t('help.welcomeTitle')}
                                             </Text>
                                             <Text style={[styles.welcomeText, { color: '#fff' }]}>
@@ -157,14 +157,14 @@ export default function HelpScreen() {
 
                         {/* FAQ Section */}
                         <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                            <View style={[styles.section,{paddingTop: 10}]}>
+                            <View style={[styles.section, { paddingTop: 10 }]}>
                                 <Text style={[styles.sectionTitle, { color: colors.text }]}>
                                     {t('help.faq')}
                                 </Text>
                                 {faqs.map((faq, index) => (
                                     <TouchableOpacity
                                         key={index}
-                                        style={[styles.faqCard, { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}
+                                        style={[styles.faqCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}
                                         onPress={() => toggleFaq(index)}
                                     >
                                         <View style={styles.faqHeader}>
@@ -196,7 +196,7 @@ export default function HelpScreen() {
                                 {contactMethods.map((method, index) => (
                                     <TouchableOpacity
                                         key={index}
-                                        style={[styles.contactCard, { backgroundColor:  theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}
+                                        style={[styles.contactCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}
                                         onPress={method.action}
                                     >
                                         <View style={styles.contactLeft}>
@@ -224,7 +224,7 @@ export default function HelpScreen() {
 
                         {/* Quick Tips */}
                         <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                            <View style={[styles.tipsCard, { backgroundColor: theme === 'dark' ? `${colors.card}50` : `${colors.card}EE`,borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
+                            <View style={[styles.tipsCard, { backgroundColor: theme === 'dark' ? `${colors.card}50` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.border : colors.borderDark }]}>
                                 {/* <Ionicons name="bulb" size={24} color={colors.warning} /> */}
                                 <View style={styles.tipsContent}>
                                     <Text style={[styles.tipsTitle, { color: colors.text }]}>
@@ -251,9 +251,9 @@ export default function HelpScreen() {
                                 </View>
                             </View>
                         </Animated.View>
-            </ScrollView>
-        </View>
-        </View>
+                    </ScrollView>
+                </View>
+            </View>
         </ImageBackground>
     );
 }
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        paddingBottom:0
+        paddingBottom: 0
     },
     header: {
         flexDirection: 'row',
@@ -298,12 +298,12 @@ const styles = StyleSheet.create({
     welcomeCard: {
         // margin: 20,
         // borderRadius: 20,
-        marginBottom: 20,        
+        marginBottom: 20,
         padding: 10,
         alignItems: 'center'
     },
     iconContainer: {
-       borderRadius: 100,   
+        borderRadius: 100,
     },
     welcomeTitle: {
         fontSize: 24,
@@ -329,10 +329,10 @@ const styles = StyleSheet.create({
     },
     faqCard: {
         padding: 8,
-        paddingHorizontal:10,
+        paddingHorizontal: 10,
         borderRadius: 8,
-        marginBottom: 10,
-        borderWidth:.5
+        marginBottom: 6,
+        borderWidth: .5
     },
     faqHeader: {
         flexDirection: 'row',
@@ -354,10 +354,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 8,
+        padding: 6,
         borderRadius: 8,
-        marginBottom: 8,
-        borderWidth:.5
+        marginBottom: 6,
+        borderWidth: .5
     },
     contactLeft: {
         flexDirection: 'row',
@@ -385,9 +385,9 @@ const styles = StyleSheet.create({
     },
     tipsCard: {
         flexDirection: 'row',
-        marginTop:10,
-        padding: 20,     
-        borderTopWidth:.5 
+        marginTop: 10,
+        padding: 20,
+        borderTopWidth: .5
     },
     tipsContent: {
         flex: 1,
@@ -397,13 +397,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         marginBottom: 12,
-        textAlign:'center'
+        textAlign: 'center'
     },
     tipItem: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 8,
-        marginLeft:16,
+        marginLeft: 16,
         gap: 8,
     },
     tipText: {

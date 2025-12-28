@@ -164,8 +164,8 @@ export default function HistoryScreen() {
     { key: 'healthy', label: t('history.filters.healthy'), icon: 'checkmark-circle', color: colors.success },
     { key: 'diseased', label: t('history.filters.diseased'), icon: 'warning', color: colors.danger },
     { key: 'high-risk', label: t('history.filters.highRisk'), icon: 'alert-circle', color: colors.warning },
-    { key: 'treated', label: t('history.filters.treated'), icon: 'medical', color: colors.primary },
-    { key: 'pending', label: t('history.filters.pending'), icon: 'time', color: colors.muted },
+    // { key: 'treated', label: t('history.filters.treated'), icon: 'medical', color: colors.primary },
+    // { key: 'pending', label: t('history.filters.pending'), icon: 'time', color: colors.muted },
   ];
 
   const sortOptions: { key: SortType; label: string; icon: string }[] = [
@@ -602,7 +602,7 @@ export default function HistoryScreen() {
                   )}
                   <View style={styles.modalButtons}>
                     <TouchableOpacity
-                      style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: colors.backgroundAlt }]}
+                      style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: `${colors.background}`, borderColor: colors.borderDark }]}
                       onPress={handleDeleteCancel}
                     >
                       <Text style={[styles.modalButtonText, { color: colors.text }]}>
@@ -698,10 +698,11 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 12,
     fontWeight: '500',
+    textAlign:'center'
   },
   filtersPanel: {
     marginHorizontal: 20,
-    marginBottom: 0,
+    marginBottom: 10,
     borderRadius: 10,
     padding: 16,
     borderWidth: .5
@@ -717,17 +718,17 @@ const styles = StyleSheet.create({
   },
   filtersRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 5,
   },
   filterChip: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
     borderRadius: 20,
     borderWidth: 1,
-    gap: 6,
+    gap: 2,
   },
   filterChipActive: {
     borderColor: 'transparent',
@@ -739,16 +740,16 @@ const styles = StyleSheet.create({
   sortOptions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 3,
     paddingBottom: 6
   },
   sortOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 6,
-    borderRadius: 8,
-    gap: 6,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    borderRadius: 3,
+    gap: 2,
   },
   sortOptionActive: {
     borderColor: '#10b981',
@@ -774,7 +775,7 @@ const styles = StyleSheet.create({
   scanCard: {
     padding: 10,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 4,
     borderWidth: .5
   },
   scanHeader: {
@@ -889,7 +890,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: 80,
-    marginBottom: 12,
+    marginBottom: 6,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10
   },
@@ -901,7 +902,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 24,
     width: '100%',
     maxWidth: 400,
@@ -945,11 +946,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 12,
+    borderRadius: 8,
     alignItems: 'center',
   },
   modalButtonCancel: {
-    backgroundColor: '#f3f4f6',
+    // backgroundColor: '#f3f4f6',
+    borderWidth: .5
   },
   modalButtonDelete: {
     backgroundColor: '#ef4444',

@@ -4,11 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Animated, ImageBackground, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { getCurrentUser, upsertUser } from '../../src/db/repository';
+import { cancelNotifications, getNotificationStatus, registerForPushNotificationsAsync, scheduleDailyReminder } from '../../src/utils/notifications';
 
 export default function ProfileScreen() {
     const router = useRouter();
@@ -29,10 +31,47 @@ export default function ProfileScreen() {
     const scaleAnim = useRef(new Animated.Value(0.95)).current;
     const staggerAnim = useRef(new Animated.Value(0)).current;
 
-    // Load user data from database
+    // Load user data and settings
     useEffect(() => {
         loadUserData();
+        loadSettings();
     }, []);
+
+    const loadSettings = async () => {
+        try {
+            // Check actual system status vs stored preference
+            const isEnabled = await getNotificationStatus();
+            setNotifications(isEnabled);
+            await AsyncStorage.setItem('notifications', JSON.stringify(isEnabled));
+        } catch (e) {
+            console.error('Failed to load settings', e);
+        }
+    };
+
+    const toggleNotifications = async (value: boolean) => {
+        try {
+            setNotifications(value);
+            await AsyncStorage.setItem('notifications', JSON.stringify(value));
+
+            if (value) {
+                const granted = await registerForPushNotificationsAsync();
+                if (granted) {
+                    await scheduleDailyReminder();
+                    Alert.alert(t('profile.success'), t('profile.dailyReminderEnabled'));
+                } else {
+                    // Revert if permission denied
+                    setNotifications(false);
+                    await AsyncStorage.setItem('notifications', JSON.stringify(false));
+                    Alert.alert(t('profile.error'), "Permission denied. Please enable notifications in settings.");
+                }
+            } else {
+                await cancelNotifications();
+            }
+        } catch (e: any) {
+            console.error('Error toggling notifications:', e);
+            Alert.alert(t('profile.error'), `Failed to update settings: ${e.message || e}`);
+        }
+    };
 
     // Enhanced animation function
     const startAnimations = useCallback(() => {
@@ -75,6 +114,7 @@ export default function ProfileScreen() {
     useFocusEffect(
         useCallback(() => {
             startAnimations();
+            loadSettings(); // Re-check notifications when screen comes into focus
         }, [startAnimations])
     );
 
@@ -130,7 +170,7 @@ export default function ProfileScreen() {
             component: (
                 <Switch
                     value={notifications}
-                    onValueChange={setNotifications}
+                    onValueChange={toggleNotifications}
                     trackColor={{ false: colors.muted, true: colors.primary }}
                 />
             ),
@@ -160,223 +200,224 @@ export default function ProfileScreen() {
 
     return (
         <ImageBackground
-        source={require('../../assets/images/screenBg/about.jpg')}
-        style={styles.backgroundImage}
-        imageStyle={{ resizeMode: 'cover' }}
+            source={require('../../assets/images/screenBg/about.jpg')}
+            style={styles.backgroundImage}
+            imageStyle={{ resizeMode: 'cover' }}
         >
-        <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>    
+            <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
 
-         {/* Header */}
+                {/* Header */}
                 <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                      <ImageBackground
+                    <ImageBackground
                         source={require('../../assets/images/screenBg/profile3.jpg')}
                         imageStyle={{ resizeMode: 'cover' }}
+                    >
+                        {/* Softer overlay only where the content is */}
+                        <View
+                            style={[styles.headerContent, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.25)' }]}
                         >
-                      {/* Softer overlay only where the content is */}
-                      <View
-                        style={[styles.headerContent, { backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.25)' }]}
-                      >
-                    <TouchableOpacity
-                        style={[styles.avatar, { backgroundColor: `${colors.primary}60` }]}
-                        onPress={handleEditProfile}
-                    >
-                        <Text style={styles.avatarText}>
-                            {userName.charAt(0).toUpperCase()}
-                            {/* <Ionicons name="person" size={40} color="#fff" /> */}
-                        </Text>
-                        <View style={[styles.editBadge, { backgroundColor: colors.primary }]}>
-                            <Ionicons name="pencil" size={12} color="#fff" />
+                            <TouchableOpacity
+                                style={[styles.avatar, { backgroundColor: `${colors.primary}60` }]}
+                                onPress={handleEditProfile}
+                            >
+                                <Text style={styles.avatarText}>
+                                    {userName.charAt(0).toUpperCase()}
+                                    {/* <Ionicons name="person" size={40} color="#fff" /> */}
+                                </Text>
+                                <View style={[styles.editBadge, { backgroundColor: colors.primary }]}>
+                                    <Ionicons name="pencil" size={12} color="#fff" />
+                                </View>
+                            </TouchableOpacity>
+                            <Text style={[styles.userName, { color: '#fff' }]}>
+                                {userName}
+                            </Text>
+                            {userNickname ? (
+                                <Text style={[styles.userNickname, { color: '#fff' }]}>
+                                    @{userNickname}
+                                </Text>
+                            ) : null}
+                            <TouchableOpacity
+                                style={[styles.editButton, { backgroundColor: `${colors.successBg}CC` }]}
+                                onPress={handleEditProfile}
+                            >
+                                <Ionicons name="create-outline" size={16} color={colors.primary} />
+                                <Text style={[styles.editButtonText, { color: colors.primary }]}>{t('profile.editProfile')}</Text>
+                            </TouchableOpacity>
                         </View>
-                    </TouchableOpacity>
-                    <Text style={[styles.userName, { color: '#fff' }]}>
-                        {userName}
-                    </Text>
-                    {userNickname ? (
-                        <Text style={[styles.userNickname, { color: '#fff'}]}>
-                            @{userNickname}
-                        </Text>
-                    ) : null}
-                    <TouchableOpacity
-                        style={[styles.editButton, { backgroundColor: `${colors.successBg}CC` }]}
-                        onPress={handleEditProfile}
-                    >
-                        <Ionicons name="create-outline" size={16} color={colors.primary} />
-                        <Text style={[styles.editButtonText, { color: colors.primary }]}>{t('profile.editProfile')}</Text>
-                    </TouchableOpacity>
-                     </View>
                     </ImageBackground>
                 </Animated.View>
-            <ScrollView style={[styles.container, { backgroundColor:theme === 'dark' ? `${colors.background}80` : `${colors.background}79`}]}>
-               
-                {/* Theme Selector */}
-                <Animated.View style={[styles.card, { backgroundColor:theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                    <Text style={[styles.cardTitle, { color: colors.text }]}>
-                        {t('profile.theme')}
-                    </Text>
-                    <View style={styles.themeOptions}>
-                        {['light', 'dark', 'system'].map((mode) => (
+                <ScrollView style={[styles.container, { backgroundColor: theme === 'dark' ? `${colors.background}80` : `${colors.background}79` }]}>
+
+                    {/* Theme Selector */}
+                    <Animated.View style={[styles.card, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                        <Text style={[styles.cardTitle, { color: colors.text }]}>
+                            {t('profile.theme')}
+                        </Text>
+                        <View style={styles.themeOptions}>
+                            {['light', 'dark', 'system'].map((mode) => (
+                                <TouchableOpacity
+                                    key={mode}
+                                    style={[
+                                        styles.themeOption,
+                                        { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark },
+                                        themeMode === mode && [styles.themeOptionActive, { backgroundColor: `${colors.successBg}BB` }],
+                                    ]}
+                                    onPress={() => setThemeMode(mode as any)}
+                                >
+                                    <Ionicons
+                                        name={
+                                            mode === 'light' ? 'sunny' :
+                                                mode === 'dark' ? 'moon' : 'phone-portrait'
+                                        }
+                                        size={20}
+                                        color={themeMode === mode ? colors.primary : colors.textSecondary}
+                                    />
+                                    <Text style={[
+                                        styles.themeText,
+                                        { color: colors.textSecondary },
+                                        themeMode === mode && [styles.themeTextActive, { color: colors.primary }]
+                                    ]}>
+                                        {t(`profile.${mode}`)}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </Animated.View>
+
+                    {/* Settings */}
+                    <Animated.View style={[styles.card, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                        <Text style={[styles.cardTitle, { color: colors.text }]}>
+                            {t('profile.settings')}
+                        </Text>
+                        {settings.map((item, index) => (
                             <TouchableOpacity
-                                key={mode}
+                                key={index}
                                 style={[
-                                    styles.themeOption,
-                                    { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  },
-                                    themeMode === mode && [styles.themeOptionActive, { backgroundColor: `${colors.successBg}BB` }],
+                                    styles.settingItem,
+                                    index < settings.length - 1 && [styles.settingItemBorder, { borderBottomColor: colors.border }],
                                 ]}
-                                onPress={() => setThemeMode(mode as any)}
+                                onPress={item.onPress}
+                                disabled={!item.onPress}
                             >
-                                <Ionicons
-                                    name={
-                                        mode === 'light' ? 'sunny' :
-                                            mode === 'dark' ? 'moon' : 'phone-portrait'
-                                    }
-                                    size={20}
-                                    color={themeMode === mode ? colors.primary : colors.textSecondary}
-                                />
-                                <Text style={[
-                                    styles.themeText,
-                                    { color: colors.textSecondary },
-                                    themeMode === mode && [styles.themeTextActive, { color: colors.primary }]
-                                ]}>
-                                    {t(`profile.${mode}`)}
-                                </Text>
+                                <View style={styles.settingLeft}>
+                                    <Ionicons
+                                        name={item.icon as any}
+                                        size={24}
+                                        color={colors.textSecondary}
+                                    />
+                                    <Text style={[styles.settingText, { color: colors.text }]}>
+                                        {item.title}
+                                    </Text>
+                                </View>
+                                <View style={styles.settingRight}>
+                                    {item.value && (
+                                        <Text style={[styles.settingValue, { color: colors.textSecondary }]}>
+                                            {item.value}
+                                        </Text>
+                                    )}
+                                    {item.component ? item.component : (
+                                        <Ionicons
+                                            name="chevron-forward"
+                                            size={20}
+                                            color={colors.textTertiary}
+                                        />
+                                    )}
+                                </View>
                             </TouchableOpacity>
                         ))}
-                    </View>
-                </Animated.View>
+                    </Animated.View>
 
-                {/* Settings */}
-                <Animated.View style={[styles.card, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark , opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                    <Text style={[styles.cardTitle, { color: colors.text }]}>
-                        {t('profile.settings')}
-                    </Text>
-                    {settings.map((item, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={[
-                                styles.settingItem,
-                                index < settings.length - 1 && [styles.settingItemBorder, { borderBottomColor: colors.border }],
-                            ]}
-                            onPress={item.onPress}
-                            disabled={!item.onPress}
-                        >
-                            <View style={styles.settingLeft}>
-                                <Ionicons
-                                    name={item.icon as any}
-                                    size={24}
-                                    color={colors.textSecondary}
-                                />
-                                <Text style={[styles.settingText, { color: colors.text }]}>
-                                    {item.title}
+                    {/* App Info */}
+                    <Animated.View style={[styles.footer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                        <View style={styles.appInfo}>
+                            {/* <Ionicons name="leaf" size={32} color={colors.primary} /> */}
+                            <Text style={[styles.appName, { color: colors.text }]}>
+                                TomatoDx
+                            </Text>
+                            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                            <Text style={[styles.appVersion, { color: colors.textSecondary }]}>
+                                {t("common.version")} {Constants.expoConfig?.version || '1.0.0'}
+                            </Text>
+                        </View>
+                    </Animated.View>
+                </ScrollView>
+
+                {/* Edit Profile Modal */}
+                <Modal
+                    visible={editModalVisible}
+                    transparent
+                    animationType="slide"
+                    onRequestClose={() => setEditModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={[styles.modalContent, { backgroundColor: theme === 'dark' ? `${colors.card}CC` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                            <View style={[styles.modalHeader, { borderBottomColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                                    {t('profile.editProfile')}
                                 </Text>
+                                <TouchableOpacity onPress={() => setEditModalVisible(false)}>
+                                    <Ionicons name="close" size={24} color={colors.text} />
+                                </TouchableOpacity>
                             </View>
-                            <View style={styles.settingRight}>
-                                {item.value && (
-                                    <Text style={[styles.settingValue, { color: colors.textSecondary }]}>
-                                        {item.value}
-                                    </Text>
-                                )}
-                                {/* {item.component} */}
-                                <Ionicons
-                                    name="chevron-forward"
-                                    size={20}
-                                    color={colors.textTertiary}
+
+                            <View style={styles.modalBody}>
+                                <Text style={[styles.inputLabel, { color: colors.text }]}>
+                                    {t('profile.name')}
+                                </Text>
+                                <TextInput
+                                    style={[
+                                        styles.input,
+                                        {
+                                            backgroundColor: `${colors.backgroundAlt}BB`,
+                                            borderColor: colors.border,
+                                            color: colors.text
+                                        }
+                                    ]}
+                                    value={editName}
+                                    onChangeText={setEditName}
+                                    placeholder={t('profile.namePlaceholder')}
+                                    placeholderTextColor={colors.textTertiary}
+                                />
+
+                                <Text style={[styles.inputLabel, { color: colors.text }]}>
+                                    {t('profile.nickname')}
+                                </Text>
+                                <TextInput
+                                    style={[
+                                        styles.input,
+                                        {
+                                            backgroundColor: `${colors.backgroundAlt}BB`,
+                                            borderColor: colors.border,
+                                            color: colors.text
+                                        }
+                                    ]}
+                                    value={editNickname}
+                                    onChangeText={setEditNickname}
+                                    placeholder={t('profile.nicknamePlaceholder')}
+                                    placeholderTextColor={colors.textTertiary}
                                 />
                             </View>
-                        </TouchableOpacity>
-                    ))}
-                </Animated.View>
 
-                {/* App Info */}
-                <Animated.View style={[styles.footer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                    <View style={styles.appInfo}>
-                        {/* <Ionicons name="leaf" size={32} color={colors.primary} /> */}
-                        <Text style={[styles.appName, { color: colors.text }]}>
-                            TomatoDx
-                        </Text>
-                        <View style={[styles.divider, { backgroundColor: colors.border }]} />
-                        <Text style={[styles.appVersion, { color: colors.textSecondary }]}>
-                            {t("common.version")} {Constants.expoConfig?.version || '1.0.0'}
-                        </Text>
-                    </View>
-                </Animated.View>
-            </ScrollView>
-
-            {/* Edit Profile Modal */}
-            <Modal
-                visible={editModalVisible}
-                transparent
-                animationType="slide"
-                onRequestClose={() => setEditModalVisible(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { backgroundColor: theme === 'dark'? `${colors.card}CC`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}>
-                        <View style={[styles.modalHeader, { borderBottomColor: theme === 'dark'? colors.borderLight : colors.borderDark }]}>
-                            <Text style={[styles.modalTitle, { color: colors.text }]}>
-                                {t('profile.editProfile')}
-                            </Text>
-                            <TouchableOpacity onPress={() => setEditModalVisible(false)}>
-                                <Ionicons name="close" size={24} color={colors.text} />
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={styles.modalBody}>
-                            <Text style={[styles.inputLabel, { color: colors.text }]}>
-                                {t('profile.name')}
-                            </Text>
-                            <TextInput
-                                style={[
-                                    styles.input,
-                                    {
-                                        backgroundColor: `${colors.backgroundAlt}BB`,
-                                        borderColor: colors.border,
-                                        color: colors.text
-                                    }
-                                ]}
-                                value={editName}
-                                onChangeText={setEditName}
-                                placeholder={t('profile.namePlaceholder')}
-                                placeholderTextColor={colors.textTertiary}
-                            />
-
-                            <Text style={[styles.inputLabel, { color: colors.text }]}>
-                                {t('profile.nickname')}
-                            </Text>
-                            <TextInput
-                                style={[
-                                    styles.input,
-                                    {
-                                        backgroundColor: `${colors.backgroundAlt}BB`,
-                                        borderColor: colors.border,
-                                        color: colors.text
-                                    }
-                                ]}
-                                value={editNickname}
-                                onChangeText={setEditNickname}
-                                placeholder={t('profile.nicknamePlaceholder')}
-                                placeholderTextColor={colors.textTertiary}
-                            />
-                        </View>
-
-                        <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
-                            <TouchableOpacity
-                                style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme === 'dark'? `${colors.card}00`: `${colors.card}CC`, borderColor:theme === 'dark'? colors.borderLight : colors.borderDark  }]}
-                                onPress={() => setEditModalVisible(false)}
-                            >
-                                <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.modalButton, styles.saveButton, { backgroundColor: `${colors.primary}` }]}
-                                onPress={handleSaveProfile}
-                            >
-                                <Text style={styles.saveButtonText}>{t('common.save')}</Text>
-                            </TouchableOpacity>
+                            <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
+                                <TouchableOpacity
+                                    style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+                                    onPress={() => setEditModalVisible(false)}
+                                >
+                                    <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.modalButton, styles.saveButton, { backgroundColor: `${colors.primary}` }]}
+                                    onPress={handleSaveProfile}
+                                >
+                                    <Text style={styles.saveButtonText}>{t('common.save')}</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </Modal>
+                </Modal>
             </View>
         </ImageBackground>
-    
+
     );
 }
 
@@ -389,27 +430,27 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding:9,
-        paddingVertical:16
+        padding: 9,
+        paddingVertical: 16
     },
     headerContent: {
-      paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 10,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.75)', // much lighter
+        paddingHorizontal: 20,
+        paddingTop: 60,
+        paddingBottom: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.75)', // much lighter
     },
     avatar: {
         width: 80,
         height: 80,
-        borderWidth:1,
-        borderColor:'#fff',
+        borderWidth: 1,
+        borderColor: '#fff',
         borderRadius: 40,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 6,
-        opacity:0.75
+        opacity: 0.75
     },
     avatarText: {
         color: '#fff',
@@ -450,12 +491,12 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     card: {
-        margin:10,
+        margin: 10,
         marginVertical: 14,
         marginTop: 0,
         borderRadius: 8,
         padding: 16,
-        borderWidth:.5    
+        borderWidth: .5
     },
     cardTitle: {
         fontSize: 18,
@@ -474,7 +515,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 6,
         gap: 8,
-        borderWidth:.5
+        borderWidth: .5
     },
     themeOptionActive: {
         borderWidth: 1,
@@ -513,11 +554,11 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     appInfo: {
-        flex:1,
-        flexDirection:'row',
-        justifyContent:'center',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
-        gap:16
+        gap: 16
     },
     appName: {
         fontSize: 18,
@@ -532,12 +573,12 @@ const styles = StyleSheet.create({
         marginTop: 0,
         borderRadius: 16,
         padding: 16,
-        marginBottom:40     
+        marginBottom: 40
     },
-    divider: {        
-          width:2,
-          height:'100%',
-     },
+    divider: {
+        width: 2,
+        height: '100%',
+    },
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.9)',
@@ -549,7 +590,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         width: '100%',
         maxWidth: 400,
-        padding:14,
+        padding: 14,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -560,7 +601,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingBottom:10,
+        paddingBottom: 10,
         borderBottomWidth: .5,
     },
     modalTitle: {

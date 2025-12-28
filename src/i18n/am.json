@@ -152,7 +152,13 @@
     "about": "ስለ እኛ",
     "success": "ተቀምጧል",
     "profileUpdated": "መገለጫዎ በተሳካ ሁኔታ ታድሷል",
-    "error": "ስህተት"
+    "error": "ስህተት",
+    "dailyReminderEnabled": "ዕለታዊ ማስታዎሻ በርቷል",
+    "dailyReminderDisabled": "ዕለታዊ ማስታዎሻ ጠፍቷል",
+    "notification": {
+      "title": "TomatoDx ምርመራ 🍅",
+      "body": "ቲማቲሞዎን ለመመርመር ይህ ትክክለኛ ሰዓት ነው። በጊዜው መመርመር ምርትዎን ይታደጋል።"
+    }
   },
   "privacy": {
     "title": "ግላዊነት እና ውሂብ",
@@ -765,7 +771,7 @@
       ]
     },
     "unknown": {
-      "name": "ያልታወቀ / እርግጠኛ ያልሆነ",
+      "name": "የማይታወቅ / እርግጠኛ ያልሆነ",
       "description": "በሽታው በእርግጠኝነት መለየት አልተቻለም።",
       "symptoms": [
         "የበሽታው ምልክቶች መለየት አልተቻለም"

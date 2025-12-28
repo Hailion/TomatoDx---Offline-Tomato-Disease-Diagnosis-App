@@ -164,7 +164,13 @@
     "about": "About",
     "success": "Success",
     "profileUpdated": "Profile updated successfully",
-    "error": "Error"
+    "error": "Error",
+    "dailyReminderEnabled": "Daily reminders enabled!",
+    "dailyReminderDisabled": "Daily reminders disabled!",
+    "notification": {
+      "title": "TomatoDx Checkup 🍅",
+      "body": "Time to check your tomatoes! Early detection saves your crop."
+    }
   },
   "onboarding": {
     "getStarted": "Get Started",

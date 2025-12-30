@@ -771,7 +771,7 @@ ${t('result.downloadApp', { defaultValue: 'Download TomatoDx for accurate tomato
               onPress={handleNewScan}
             >
               <LinearGradient
-                colors={[`${colors.primary}CC`, `${colors.primaryDark}CC`]}
+                colors={[`${colors.primary}`, `${colors.primaryDark}`]}
                 style={styles.newScanGradient}
               >
                 <Ionicons name="camera" size={20} color="#fff" />

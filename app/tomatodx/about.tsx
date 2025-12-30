@@ -1,20 +1,28 @@
 // app/tomatodx/about.tsx - About Screen
 import Colors from '@/constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Dimensions, FlatList, Image, ImageBackground, Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, FlatList, Image, ImageBackground, LayoutAnimation, Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function AboutScreen() {
     const router = useRouter();
     const { theme } = useTheme();
+
+
     const { t } = useTranslation();
     const colors = Colors[theme];
     const [visible, setVisible] = useState(false);
     const { width: SCREEN_WIDTH } = Dimensions.get('window');
+    const CARD_WIDTH = SCREEN_WIDTH * 0.8;
+    const CARD_HEIGHT = CARD_WIDTH * 1.2; // Portrait aspect ratio
+    const SPACING = 24;
+    const SNAP_INTERVAL = CARD_WIDTH + SPACING;
+
     const [currentDevIndex, setCurrentDevIndex] = useState(0);
     const devListRef = useRef<FlatList<any> | null>(null);
 
@@ -151,10 +159,14 @@ export default function AboutScreen() {
         const interval = setInterval(() => {
             setCurrentDevIndex((prev) => {
                 const next = (prev + 1) % devTeam.length;
-                devListRef.current?.scrollToIndex({ index: next, animated: true });
+                devListRef.current?.scrollToIndex({
+                    index: next,
+                    animated: true,
+                    viewPosition: 0.5
+                });
                 return next;
             });
-        }, 4000);
+        }, 5000); // Slower interval for posters
 
         return () => clearInterval(interval);
     }, [devTeam.length]);
@@ -284,7 +296,7 @@ export default function AboutScreen() {
 
                             {/* Team */}
                             <View style={styles.teamSection}>
-                                <Text style={[styles.sectionTitle, { color: colors.text, textAlign: 'center' }]}>
+                                <Text style={[styles.sectionTitle, { color: colors.text }]}>
                                     {t('about.team')}
                                 </Text>
 
@@ -296,55 +308,87 @@ export default function AboutScreen() {
                                             data={devTeam}
                                             keyExtractor={(_, index) => `dev-${index}`}
                                             horizontal
-                                            pagingEnabled
                                             showsHorizontalScrollIndicator={false}
+                                            pagingEnabled={false}
+                                            snapToInterval={SNAP_INTERVAL}
+                                            decelerationRate="fast"
+                                            snapToAlignment="center"
+                                            contentContainerStyle={{
+                                                paddingHorizontal: (SCREEN_WIDTH - SNAP_INTERVAL) / 2 + SPACING / 2,
+                                                paddingVertical: 10
+                                            }}
                                             onMomentumScrollEnd={(event) => {
-                                                const index = Math.round(
-                                                    event.nativeEvent.contentOffset.x / SCREEN_WIDTH
-                                                );
+                                                const offsetX = event.nativeEvent.contentOffset.x;
+                                                const index = Math.round(offsetX / SNAP_INTERVAL);
+                                                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                                                 setCurrentDevIndex(index);
                                             }}
                                             renderItem={({ item }) => (
-                                                <View
+                                                <TouchableOpacity
+                                                    activeOpacity={0.9}
                                                     style={[
-                                                        styles.teamCardHorizontal,
-                                                        { width: SCREEN_WIDTH - 42, backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark },
+                                                        styles.posterCard,
+                                                        {
+                                                            width: CARD_WIDTH,
+                                                            height: CARD_HEIGHT,
+                                                            backgroundColor: colors.card,
+                                                            shadowColor: '#000',
+                                                        },
                                                         theme !== 'dark' ? styles.cardShadow : undefined
                                                     ]}
                                                 >
-
-                                                    <Image source={item.photo} style={styles.teamAvatar} />
-                                                    <View style={styles.teamContent}>
-                                                        <Text style={[styles.teamName, { color: colors.text }]}>
-                                                            {item.name}
-                                                        </Text>
-                                                        <Text style={[styles.teamRole, { color: colors.primary }]}>
-                                                            {item.role}
-                                                        </Text>
-                                                        <Text style={[styles.teamDesc, { color: colors.textSecondary }]}>
-                                                            {item.description}
-                                                        </Text>
-                                                    </View>
-                                                </View>
+                                                    <Image
+                                                        source={item.photo}
+                                                        style={styles.posterImage}
+                                                        resizeMode="cover"
+                                                    />
+                                                    <LinearGradient
+                                                        colors={['transparent', 'rgba(0,0,0,0.8)']}
+                                                        style={styles.posterOverlay}
+                                                    >
+                                                        <View style={styles.posterContent}>
+                                                            <Text style={styles.posterName}>
+                                                                {item.name}
+                                                            </Text>
+                                                            <Text style={[styles.posterRole, { color: colors.primary }]}>
+                                                                {item.role}
+                                                            </Text>
+                                                            <Text
+                                                                style={styles.posterDesc}
+                                                                numberOfLines={2}
+                                                            >
+                                                                {item.description}
+                                                            </Text>
+                                                        </View>
+                                                    </LinearGradient>
+                                                </TouchableOpacity>
 
                                             )}
-                                            contentContainerStyle={{ paddingHorizontal: 0 }}
-                                            ItemSeparatorComponent={() => <View style={{ width: 10 }} />}  // <-- gap
+                                            ItemSeparatorComponent={() => <View style={{ width: SPACING }} />}
                                         />
 
                                         {/* Indicator dots under the carousel */}
-                                        <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10, gap: 8 }}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 16, gap: 8, alignItems: 'center' }}>
                                             {devTeam.map((_, idx) => (
-                                                <View
+                                                <TouchableOpacity
                                                     key={idx}
-                                                    style={{
-                                                        width: idx === currentDevIndex ? 24 : 14,
-                                                        height: 8,
-                                                        borderRadius: 3,
-                                                        backgroundColor:
-                                                            idx === currentDevIndex ? colors.primary : colors.border,
+                                                    onPress={() => {
+                                                        devListRef.current?.scrollToIndex({
+                                                            index: idx,
+                                                            animated: true,
+                                                            viewPosition: 0.5
+                                                        });
+                                                        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                                                        setCurrentDevIndex(idx);
                                                     }}
-                                                />
+                                                >
+                                                    <MaterialCommunityIcons
+                                                        name="leaf"
+                                                        size={idx === currentDevIndex ? 24 : 18}
+                                                        color={idx === currentDevIndex ? colors.primary : colors.textSecondary}
+                                                        style={{ opacity: idx === currentDevIndex ? 1 : 0.4 }}
+                                                    />
+                                                </TouchableOpacity>
                                             ))}
                                         </View>
                                     </>
@@ -755,12 +799,9 @@ const styles = StyleSheet.create({
     },
     versionTap: {
         margin: 10,
-        textDecorationLine: 'underline',
-
     },
     version: {
         fontSize: 14,
-        textDecorationLine: 'underline'
     },
     teamCarousel: {
         paddingVertical: 4,
@@ -773,6 +814,41 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16
     },
 
+    posterCard: {
+        borderRadius: 20,
+        overflow: 'hidden',
+        // elevation: 5,
+    },
+    posterImage: {
+        width: '100%',
+        height: '100%',
+    },
+    posterOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '50%',
+        justifyContent: 'flex-end',
+        padding: 16,
+    },
+    posterContent: {
+        gap: 4,
+    },
+    posterName: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '700',
+    },
+    posterRole: {
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    posterDesc: {
+        color: '#e0e0e0',
+        fontSize: 12,
+        marginTop: 4,
+    },
     teamCardHorizontal: {
         //   padding: 10,
         paddingBottom: 20,

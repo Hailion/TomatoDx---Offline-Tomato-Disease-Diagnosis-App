@@ -149,7 +149,7 @@ export default function PreviewScreen() {
   const router = useRouter();
   const { uri } = useLocalSearchParams();
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const colors = Colors[theme];
   const [analyzing, setAnalyzing] = useState(false);
   const [showLowConfidenceModal, setShowLowConfidenceModal] = useState(false);
@@ -288,7 +288,7 @@ export default function PreviewScreen() {
       setAnalyzing(false);
       Alert.alert(
         t('preview.error'),
-        t('preview.analysisError') + ': ' + (error as Error).message
+        t('preview.analysisError') + (i18n.language === 'en' ? ': ' + (error as Error).message : '')
       );
     }
   };

@@ -161,8 +161,11 @@ export default function ProfileScreen() {
         {
             icon: 'language',
             title: t('profile.language'),
-            value: i18n.language === 'en' ? 'English' : 'Amharic',
-            onPress: () => i18n.changeLanguage(i18n.language === 'en' ? 'am' : 'en'),
+            value: i18n.language === 'en' ? 'English' : (i18n.language === 'am' ? 'Amharic' : 'French'),
+            onPress: () => {
+                const nextLang = i18n.language === 'en' ? 'am' : (i18n.language === 'am' ? 'oro' : 'en');
+                i18n.changeLanguage(nextLang);
+            },
         },
         {
             icon: 'notifications',

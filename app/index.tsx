@@ -9,6 +9,7 @@ const RESEARCH_OPT_IN_KEY = '@tomatodx_research_opt_in';
 
 export default function Index() {
     const router = useRouter();
+    const [hasSelectedLanguage, setHasSelectedLanguage] = useState<boolean | null>(null);
     const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean | null>(null);
     const [hasGivenPrivacyConsent, setHasGivenPrivacyConsent] = useState<boolean | null>(null);
     const [showPrivacyModal, setShowPrivacyModal] = useState(false);
@@ -21,17 +22,20 @@ export default function Index() {
 
     const checkAppStatus = async () => {
         try {
-            const [onboardingCompleted, privacyConsent, researchOptInValue] = await Promise.all([
+            const [languageSelected, onboardingCompleted, privacyConsent, researchOptInValue] = await Promise.all([
+                AsyncStorage.getItem('hasSelectedLanguage'),
                 AsyncStorage.getItem('hasCompletedOnboarding'),
                 AsyncStorage.getItem(PRIVACY_CONSENT_KEY),
                 AsyncStorage.getItem(RESEARCH_OPT_IN_KEY)
             ]);
 
+            setHasSelectedLanguage(languageSelected === 'true');
             setHasCompletedOnboarding(onboardingCompleted === 'true');
             setHasGivenPrivacyConsent(privacyConsent !== null);
             setResearchOptIn(researchOptInValue === 'true');
         } catch (error) {
             console.error('Error checking app status:', error);
+            setHasSelectedLanguage(false);
             setHasCompletedOnboarding(false);
             setHasGivenPrivacyConsent(false);
         } finally {
@@ -40,12 +44,15 @@ export default function Index() {
     };
 
     useEffect(() => {
-        if (isLoading || hasCompletedOnboarding === null || hasGivenPrivacyConsent === null) {
+        if (isLoading || hasSelectedLanguage === null || hasCompletedOnboarding === null || hasGivenPrivacyConsent === null) {
             return;
         }
 
         const timer = setTimeout(() => {
-            if (!hasCompletedOnboarding) {
+            if (!hasSelectedLanguage) {
+                // No language selected - go to selection screen
+                router.replace('/language-selection');
+            } else if (!hasCompletedOnboarding) {
                 // First time user - go to onboarding
                 router.replace('/onboarding');
             } else if (!hasGivenPrivacyConsent) {
@@ -58,7 +65,7 @@ export default function Index() {
         }, 100);
 
         return () => clearTimeout(timer);
-    }, [hasCompletedOnboarding, hasGivenPrivacyConsent, isLoading, router]);
+    }, [hasSelectedLanguage, hasCompletedOnboarding, hasGivenPrivacyConsent, isLoading, router]);
 
     const handlePrivacyModalClose = async (accepted: boolean) => {
         try {

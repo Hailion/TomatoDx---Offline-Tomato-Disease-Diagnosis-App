@@ -6,6 +6,8 @@ import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 import { ThemeProvider as CustomThemeProvider, useTheme } from '../src/contexts/ThemeContext';
 import { initDb } from '../src/db/schema';
 import '../src/i18n/i18n';
@@ -14,7 +16,21 @@ function AppContent() {
   const { theme } = useTheme();
   const colorScheme = useColorScheme();
 
+  const { i18n } = useTranslation();
+
   useEffect(() => {
+    const loadLanguage = async () => {
+      try {
+        const savedLang = await AsyncStorage.getItem('user-language');
+        if (savedLang) {
+          await i18n.changeLanguage(savedLang);
+        }
+      } catch (error) {
+        console.error('Failed to load language:', error);
+      }
+    };
+    loadLanguage();
+
     // Initialize database
     try {
       initDb();
@@ -28,6 +44,7 @@ function AppContent() {
     <ThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="language-selection" options={{ headerShown: false }} />
         <Stack.Screen name="tomatodx" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="admin" options={{ headerShown: false }} />

@@ -4,8 +4,11 @@
     "strict": true,
     "target": "esnext",
     "module": "esnext",
-    "lib": ["esnext", "dom"],
-    "moduleResolution": "node",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "moduleResolution": "bundler",
     "paths": {
       "@/*": [
         "./*"

@@ -5,7 +5,7 @@ import en from './en.json';
 import oro from './oro.json';
 
 i18n.use(initReactI18next).init({
-  lng: 'am', // Default to Amharic
+  lng: 'oro', // Default to Amharic
   fallbackLng: 'en',
   resources: { en: { translation: en }, am: { translation: am }, oro: { translation: oro } },
   interpolation: { escapeValue: false }

@@ -1,842 +1,842 @@
 {
     "home": {
-        "title": "Home",
-        "subtitle": "Offline tomato disease diagnosis for smallholder farmers",
-        "capture": "Capture",
-        "history": "History",
-        "settings": "Settings",
-        "tagline": "AI-powered tomato disease detection",
-        "quickScan": "Quick Scan",
-        "quickScanDesc": "Scan tomato leaves for instant diagnosis",
-        "scanHistory": "Scan History",
-        "scanHistoryDesc": "View your previous scan results",
-        "insights": "Insights",
-        "insightsDesc": "Get farming tips and recommendations",
-        "quickActions": "Quick Actions",
-        "recentActivity": "Recent Activity",
-        "lastScan": "Last scan completed",
-        "totalScans": "Total Scans",
-        "accuracy": "Accuracy",
-        "healthy": "Healthy",
-        "last7Days": "Last 7 days",
-        "noData": "No data"
+        "title": "Baafata",
+        "subtitle": "Qorannoo dhibee timaatimaa interneetii malee qotee bulaaf",
+        "capture": "Waraabi",
+        "history": "Seenaa",
+        "settings": "Qindiiwwan",
+        "tagline": "Dhibee timaatimaa AI dhaan adda baasu",
+        "quickScan": "Sakatta'iinsa Saffisaa",
+        "quickScanDesc": "Baala timaatimaa saffisaan sakatta'i",
+        "scanHistory": "Seenaa Sakatta'iinsaa",
+        "scanHistoryDesc": "Bu'aawwan sakatta'iinsa darban ilaali",
+        "insights": "Hubannoo",
+        "insightsDesc": "Gorsaa fi yaada qonnaa argadhu",
+        "quickActions": "Tarkaanfii Saffisaa",
+        "recentActivity": "Sochii Dhihoo",
+        "lastScan": "Sakatta'iinsa dhumaa",
+        "totalScans": "Ida'ama Sakatta'iinsaa",
+        "accuracy": "Sirummaa",
+        "healthy": "Fayyaa",
+        "last7Days": "Guyyoota 7 darban",
+        "noData": "Daataan hin jiru"
     },
     "scan": {
-        "title": "Scan Leaf",
-        "navtitle": "Scan Leaf",
-        "subtitle": "Take or upload a photo of a tomato leaf",
-        "takePhoto": "Take Photo",
-        "takePhotoDesc": "Use your camera to capture a leaf",
-        "chooseGallery": "Choose from Gallery",
-        "chooseGalleryDesc": "Select an existing photo",
-        "tips": "How to take a good scan",
-        "tip1": "Hold the camera 20–30 cm away and fill most of the frame with a single tomato leaf.",
-        "tip2": "Keep your phone steady for 2–3 seconds so the leaf is sharp and not blurry.",
-        "tip3": "Use bright natural light and avoid strong shadows or very dark backgrounds.",
-        "recentScan": "Recent scans",
-        "recentScanDesc": "Review your last tomato leaf scans and quickly reopen their results",
-        "cameraPermission": "Camera Permission Required",
-        "cameraPermissionDesc": "Please grant camera access to scan leaves",
-        "grantPermission": "Grant Permission",
-        "alignGuide": "Align one tomato leaf inside the square frame below, then tap 'Take Photo'.",
-        "error": "Error",
-        "captureError": "Failed to capture photo",
-        "permissionDenied": "Permission Denied",
-        "galleryPermissionDesc": "Please grant gallery access to select photos",
-        "galleryError": "Failed to open gallery"
+        "title": "Baala Sakatta'i",
+        "navtitle": "Sakatta'i",
+        "subtitle": "Suuraa baala timaatimaa kaasi ykn galchi",
+        "takePhoto": "Suuraa Kaasi",
+        "takePhotoDesc": "Baala waraabuuf kaameeraa fayyadami",
+        "chooseGallery": "Kuusaa Keessaa Filadhu",
+        "chooseGalleryDesc": "Suuraa duraan jiru filadhu",
+        "tips": "Akkaataa sakatta'iinsa gaariin itti taasisu",
+        "tip1": "Kaameeraa sen.meetira 20–30 fageessii qabi, baalli guutuu iskiriinii haguuguu isaa mirkaneeffadhu.",
+        "tip2": "Bilbila kee sakondii 2-3f hin sochoosin, suuraan qulqulluu ta'uu qaba.",
+        "tip3": "Ifa uumamaa gaarii fayyadami, gaaddidduu cimaa fi duuba dukkanaa'aa irraa fagaadhu.",
+        "recentScan": "Sakatta'iinsa dhihoo",
+        "recentScanDesc": "Sakatta'iinsa baala timaatimaa darban ilaali fi bu'aa isaanii banti",
+        "cameraPermission": "Eeyyama Kaameraa Barbaachisa",
+        "cameraPermissionDesc": "Maaloo baala sakatta'uuf eeyyama kaameraa kenni",
+        "grantPermission": "Eeyyama Kenni",
+        "alignGuide": "Baala timaatimaa tokko sanduuqa armaan gadii keessatti qixxeeessi, sana booda 'Suuraa Kaasi' tuqi.",
+        "error": "Dogoggora",
+        "captureError": "Suuraa kaasuun hin danda'amne",
+        "permissionDenied": "Eeyyamni Hin Kennamne",
+        "galleryPermissionDesc": "Maaloo suuraa filachuuf eeyyama daawwitii kenni",
+        "galleryError": "Daawwitii banuun hin danda'amne"
     },
     "preview": {
-        "title": "Preview",
-        "ready": "Ready for Analysis",
-        "highQuality": "High Quality",
-        "tipsTitle": "Analysis Ready",
-        "tipsText": "This image is perfect for analysis. Make sure the leaf is clearly visible and well-lit.",
-        "analyze": "Analyze Image",
-        "retake": "Retake Photo",
-        "analyzing": "Analyzing...",
-        "analyzeSuccess": "Analysis completed",
-        "analyzeFailed": "Analysis failed",
-        "error": "Error",
-        "analysisError": "Analysis failed",
-        "lowConfidence": "Low Confidence Result",
-        "lowConfidenceMessage": "The analysis confidence is below 60%. This may be due to poor lighting, unclear image, or unusual symptoms. We recommend retaking the photo for better accuracy.",
-        "retakeRecommended": "Retake Photo",
-        "proceedAnyway": "Proceed Anyway"
+        "title": "Dur-argii",
+        "ready": "Qorannoof Qophaa'e",
+        "highQuality": "Qulqullina Olaanaa",
+        "tipsTitle": "Qorannoof Qophaa'e",
+        "tipsText": "Suuraan kun qorannoof baay'ee gaariidha. Baalli sirriitti mul'achuu fi ifa gaarii qabaachuu isaa mirkaneeffadhu.",
+        "analyze": "Suuraa Qoradhu",
+        "retake": "Irra Deebi'ii Kaasi",
+        "analyzing": "Qorachaa jira...",
+        "analyzeSuccess": "Qorannoon xumurameera",
+        "analyzeFailed": "Qorannoon hin milkoofne",
+        "error": "Dogoggora",
+        "analysisError": "Qorannoon hin milkoofne",
+        "lowConfidence": "Bu'aa Sirummaa Gad-aanaa",
+        "lowConfidenceMessage": "Sirummaan qorannoo 60% gadi. Kunis ifa gahaa dhabuu, suuraa ifa mitii, ykn mallattoo hin baramne irraa ta'uu danda'a. Irra deebitanii kaasuun gorfama.",
+        "retakeRecommended": "Irra Deebi'ii Kaasi",
+        "proceedAnyway": "Ittuma Fufi"
     },
     "result": {
-        "title": "Results",
-        "confidence": "Confidence Level",
-        "symptoms": "Symptoms",
-        "treatment": "Recommended Treatment",
-        "immediateActions": "Immediate Actions",
-        "longTermActions": "Long-term Actions",
-        "prevention": "Prevention Tips",
-        "quickActions": "Quick Actions",
-        "addNotes": "Add Notes",
-        "addNotesDesc": "Add notes about this diagnosis",
-        "notesPlaceholder": "Enter your notes here...",
-        "save": "Save Result",
-        "saved": "Saved",
-        "savedMessage": "Result saved to your history",
-        "share": "Share",
-        "shareMessage": "Share this result with others",
-        "newScan": "New Scan",
-        "noDescription": "No description available",
-        "noTreatment": "No treatment available",
-        "generalPrevention": "General Prevention",
-        "loading": "Loading...",
-        "error": "Error",
-        "notFound": "Diagnosis not found",
-        "loadError": "Failed to load diagnosis",
-        "shareTitle": "TomatoDx Diagnosis",
-        "disease": "Disease",
-        "severity": "Severity",
-        "downloadApp": "Download TomatoDx for accurate tomato disease diagnosis.",
-        "shareDesc": "Choose how you want to share this result",
-        "shareImage": "Share Image",
-        "shareImageDesc": "Share the diagnosis image",
-        "shareText": "Share Report",
-        "shareTextDesc": "Share the detailed diagnosis report",
-        "noImageError": "Image not available for sharing"
+        "title": "Bu'aawwan",
+        "confidence": "Sadarkaa Sirummaa",
+        "symptoms": "Mallattoolee",
+        "treatment": "Yaala Gorsaa",
+        "immediateActions": "Tarkaanfiiwwan Hatattamaa",
+        "longTermActions": "Tarkaanfiiwwan Yeroo Dheeraa",
+        "prevention": "Gorsaa Ittisaa",
+        "quickActions": "Tarkaanfii Saffisaa",
+        "addNotes": "Yaada",
+        "addNotesDesc": "Waa'ee qorannoo kanaa yaada kenni",
+        "notesPlaceholder": "Yaada kee asitti galchi...",
+        "save": "Bu'aa Olkaa'i",
+        "saved": "Olkaa'ameera",
+        "savedMessage": "Bu'aan seenaa kee keessatti olkaa'ameera",
+        "share": "Qoodi",
+        "shareMessage": "Bu'aa kana namoota biroof qoodi",
+        "newScan": "Sakatta'iinsa Haaraa",
+        "noDescription": "Ibsi hin jiru",
+        "noTreatment": "Yaalli hin jiru",
+        "generalPrevention": "Ittisa Waliigalaa",
+        "loading": "Fe'aa jira...",
+        "error": "Dogoggora",
+        "notFound": "Dhibeen hin argamne",
+        "loadError": "Dhibee fe'uun hin danda'amne",
+        "shareTitle": "Qorannoo TomatoDx",
+        "disease": "Dhibee",
+        "severity": "Cimina",
+        "downloadApp": "Dhibee timaatimaa sirriitti adda baasuuf TomatoDx buufadhaa.",
+        "shareDesc": "Akkaataa bu'aa kana itti qooddu filadhu",
+        "shareImage": "Suuraa Qoodi",
+        "shareImageDesc": "Suuraa dhibee qoodi",
+        "shareText": "Gabaasa Qoodi",
+        "shareTextDesc": "Gabaasa qorannoo bal'aa qoodi",
+        "noImageError": "Suuraan qooduuf hin jiru"
     },
     "history": {
-        "title": "History",
-        "subtitle": "{{count}} scans completed",
-        "totalScans": "Total Scans",
-        "accuracy": "Accuracy",
-        "recentScans": "Recent Scans",
-        "noScans": "No scans yet",
-        "noScansDesc": "Start by scanning your first tomato leaf to see results here",
-        "avgConfidence": "Average Confidence",
-        "healthy": "Healthy",
-        "noResults": "No results found",
-        "noResultsDesc": "No results found for this date range",
-        "resetFilters": "Reset Filters",
+        "title": "Seenaa",
+        "subtitle": "Sakatta'iinsa {{count}} xumurame",
+        "totalScans": "Qoranno Waliigalaa",
+        "accuracy": "Sirummaa",
+        "recentScans": "Sakatta'iinsa Dhihoo",
+        "noScans": "Sakatta'iinsi hin jiru",
+        "noScansDesc": "Bu'aa asitti arguuf baala timaatimaa jalqabaa sakatta'i",
+        "avgConfidence": "Giddu-galeessa Sirummaa",
+        "healthy": "Fayyaa",
+        "noResults": "Bu'aan hin argamne",
+        "noResultsDesc": "Guyyaa murtaa'aa kanaaf bu'aan hin argamne",
+        "resetFilters": "Filtarii Haqi",
         "status": {
-            "title": "Status",
-            "healthy": "Healthy",
-            "diseased": "Diseased",
-            "all": "All",
-            "highRisk": "High Risk",
-            "treated": "Treated",
-            "pending": "Pending"
+            "title": "Haala",
+            "healthy": "Fayyaa",
+            "diseased": "Dhukkubsataa",
+            "all": "Hunda",
+            "highRisk": "Balaa Olaanaa",
+            "treated": "Yaalame",
+            "pending": "Eegaa Jira"
         },
         "filters": {
-            "title": "Filters",
-            "healthy": "Healthy",
-            "diseased": "Diseased",
-            "all": "All",
-            "highRisk": "High Risk",
-            "treated": "Treated",
-            "pending": "Pending"
+            "title": "Filtarii",
+            "healthy": "Fayyaa",
+            "diseased": "Dhukkubsataa",
+            "all": "Hunda",
+            "highRisk": "Balaa Olaanaa",
+            "treated": "Yaalame",
+            "pending": "Eegaa Jira"
         },
         "sort": {
-            "title": "Sort",
-            "date": "Date",
-            "confidence": "Confidence",
-            "newest": "Newest",
-            "oldest": "Oldest",
-            "highConfidence": "High Confidence",
-            "lowConfidence": "Low Confidence"
+            "title": "Tartiibessuu",
+            "date": "Guyyaa",
+            "confidence": "Sirummaa",
+            "newest": "Haaraa",
+            "oldest": "Dulloomaa",
+            "highConfidence": "Sirummaa Olaanaa",
+            "lowConfidence": "Sirummaa Gad-aanaa"
         },
-        "deleteConfirmTitle": "Delete Diagnosis?",
-        "deleteConfirmMessage": "This will permanently delete this diagnosis from your history.",
-        "deleteError": "Failed to delete diagnosis"
+        "deleteConfirmTitle": "Qorannoo Haquu?",
+        "deleteConfirmMessage": "Kun qorannoo kana seenaa kee irraa guutummaatti ni haqa.",
+        "deleteError": "Qorannoo haquun hin danda'amne"
     },
     "privacy": {
-        "title": "Privacy & Data",
-        "description": "TomatoDx processes all images locally on your device using AI. Your photos never leave your phone unless you explicitly choose to share them for research.",
-        "localProcessing": "All image analysis happens on your device",
-        "noDataCollection": "No personal data is collected or stored remotely",
-        "secureStorage": "Your scan history is stored securely on your device",
-        "researchTitle": "Help Improve TomatoDx",
-        "researchDescription": "Optionally share anonymized images to help us improve disease detection accuracy for all farmers.",
-        "researchOptIn": "Share anonymized images for research (optional)",
-        "acceptAndContinue": "Agree & Continue",
-        "decline": "Decline"
+        "title": "Iccitii & Daataa",
+        "description": "TomatoDx suuraa hunda bilbila kee irratti AI fayyadamuun qorata. Suuraan kee yoo ati qorannoof qooduuf filatte malee bilbila kee keessaa hin bahu.",
+        "localProcessing": "Qorannoon suuraa hundi bilbila kee irratti raawwatama",
+        "noDataCollection": "Daataan dhuunfaa kamiyyuu hin sassaabamu ykn hin kuufamu",
+        "secureStorage": "Seenaan sakatta'iinsa kee bilbila kee irratti sirriitti kuufameera",
+        "researchTitle": "TomatoDx Fooyyessuuf Gargaari",
+        "researchDescription": "Sirummaa adda baasuu dhibee qotee bultoota hundaaf fooyyessuuf suuraalee maqaa hin qabne qooduun gargaari.",
+        "researchOptIn": "Suuraalee maqaa hin qabne qorannoof qoodi (filannoo)",
+        "acceptAndContinue": "Waliigali & Itti Fufi",
+        "decline": "Didi"
     },
     "profile": {
-        "title": "Profile",
-        "theme": "Theme",
-        "light": "Light",
-        "dark": "Dark",
-        "editProfile": "Edit Profile",
-        "name": "Name",
-        "namePlaceholder": "Enter name",
-        "nickname": "Nickname",
-        "nicknamePlaceholder": "Enter nickname",
-        "system": "System",
-        "settings": "Settings",
-        "language": "Languagee",
-        "notifications": "Notifications",
-        "analytics": "Analytics",
-        "help": "Help & Support",
-        "about": "About",
-        "success": "Success",
-        "profileUpdated": "Profile updated successfully",
-        "error": "Error",
-        "dailyReminderEnabled": "Daily reminders enabled!",
-        "dailyReminderDisabled": "Daily reminders disabled!",
+        "title": "Piroofayilii",
+        "theme": "Teema",
+        "light": "Ifaa",
+        "dark": "Dukkana",
+        "editProfile": "Piroofayilii Gulaali",
+        "name": "Maqaa",
+        "namePlaceholder": "Maqaa galchi",
+        "nickname": "Maqaa Masoo",
+        "nicknamePlaceholder": "Maqaa masoo galchi",
+        "system": "Sirna",
+        "settings": "Sirreesaa",
+        "language": "Afaan",
+        "notifications": "Beeksisa",
+        "analytics": "Ibsa",
+        "help": "Gargaarsa & Deeggarsa",
+        "about": "Waa'ee",
+        "success": "Milkaa'e",
+        "profileUpdated": "Piroofayiliin milkaa'inaan haarome",
+        "error": "Dogoggora",
+        "dailyReminderEnabled": "Yaadachiisni guyyaa eeyyamameera!",
+        "dailyReminderDisabled": "Yaadachiisni guyyaa dhorkameera!",
         "notification": {
-            "title": "TomatoDx Checkup 🍅",
-            "body": "Time to check your tomatoes! Early detection saves your crop."
+            "title": "Sakatta'iinsa TomatoDx 🍅",
+            "body": "Yeroon timaatima kee sakatta'uu gaheera! Dhibee dafanii adda baasuun oomisha kee baraara."
         }
     },
     "onboarding": {
-        "getStarted": "Get Started",
+        "getStarted": "Jalqabi",
         "steps": {
             "welcome": {
                 "icon": "🍅",
-                "title": "Welcome to TomatoDx",
-                "description": "AI-powered tomato disease detection at your fingertips"
+                "title": "Baga gara TomatoDx Dhuftan",
+                "description": "Adda baasu dhibee timaatimaa AI dhaan harkaan qabdu"
             },
             "capture": {
                 "icon": "📸",
-                "title": "Capture & Scan",
-                "description": "Take a photo or upload from gallery to analyze tomato health"
+                "title": "Waraabi & Sakatta'i",
+                "description": "Fayyaa timaatimaa qorachuuf suuraa kaasi ykn daawwitii irraa olkaa'i"
             },
             "analysis": {
                 "icon": "🤖",
-                "title": "AI Analysis",
-                "description": "Get instant, accurate diagnosis powered by machine learning"
+                "title": "Qorannoo AI",
+                "description": "Bu'aa qorannoo sirrii fi saffisaa maashin leerniingii fayyadamuun argadhu"
             },
             "history": {
                 "icon": "📊",
-                "title": "Track History",
-                "description": "Save and review your past diagnoses for better crop management"
+                "title": "Seenaa Hordofi",
+                "description": "Bulchiinsa qonnaa fooyyessuuf bu'aawwan darban olkaa'i fi ilaali"
             }
         }
     },
     "help": {
-        "title": "Help & Support",
-        "navtitle": "Help/Support",
-        "welcomeTitle": "How can we help you?",
-        "welcomeText": "Find answers to common questions or get in touch with our support team.",
-        "faq": "Frequently Asked Questions",
-        "contact": "Get in Touch",
-        "tips": "Quick Tips for Better Results",
+        "title": "Gargaarsa & Deeggarsa",
+        "navtitle": "Gargaarsa/Deeggarsa",
+        "welcomeTitle": "Maal isin gargaarru?",
+        "welcomeText": "Deebii gaaffilee yeroo baay'ee gaafataman argadhu ykn garee deeggarsa keenya qunnami.",
+        "faq": "Gaaffilee Yeroo Baay'ee Gaafataman",
+        "contact": "Nu Qunnamaa",
+        "tips": "Gorsa Saffisaa Bu'aa Gaariif",
         "faqs": {
             "accuracy": {
-                "question": "How accurate is the disease detection?",
-                "answer": "Our AI model achieves 92% accuracy in detecting common tomato diseases under optimal conditions."
+                "question": "Sirummaan adda baasuu dhibee hammamii?",
+                "answer": "Moodelli AI keenya haala mijataa keessatti dhibeewwan timaatimaa beekamoo adda baasuu irratti sirummaa 92% qaba."
             },
             "diseases": {
-                "question": "What types of diseases can be detected?",
-                "answer": "We detect Early Blight, Late Blight, Bacterial Spot, Leaf Mold, and healthy plant status."
+                "question": "Gosa dhibeewwan kam fa'a adda baasuu danda'a?",
+                "answer": "Nuti Early Blight, Late Blight, Bacterial Spot, Leaf Mold fi haala biqiltuu fayyaa adda baasuu dandeenya."
             },
             "photo": {
-                "question": "How do I take the best photo for scanning?",
-                "answer": "Ensure good lighting, focus on affected leaves, and keep the camera steady for clear images."
+                "question": "Suuraa sakatta'iinsaaf gaarii ta'e akkamittan kaasa?",
+                "answer": "Ifa gaarii, baala dhibee qabu irratti xiyyeeffachuu fi kaameeraa sochii malee qabuun suuraa qulqulluu argachuuf barbaachisaadha."
             },
             "unclear": {
-                "question": "What should I do if the results are unclear?",
-                "answer": "Retake the photo with better lighting or consult with agricultural experts for confirmation."
+                "question": "Bu'aan ifa yoo hin taane maal gochuu qaba?",
+                "answer": "Suuraa irra deebi'ii ifa gaariin kaasi ykn ogeessa qonnaa mariisisi."
             }
         },
         "contactMethods": {
             "email": {
-                "title": "Email Support",
-                "description": "Get help via email"
+                "title": "Deeggarsa Imeelii",
+                "description": "Imeeliin gargaarsa argadhu"
             },
             "website": {
-                "title": "Website",
-                "description": "Visit our knowledge base"
+                "title": "Weebsaayitii",
+                "description": "Beekkumsa keenya daawwadhu"
             },
             "chat": {
-                "title": "Live Chat",
-                "description": "Chat with our experts"
+                "title": "Chat Kallattii",
+                "description": "Ogeessota keenya waliin haasa'i"
             }
         },
         "quickTips": {
-            "tip1": "Use natural daylight for photos",
-            "tip2": "Capture multiple angles of affected leaves",
-            "tip3": "Include both healthy and affected areas"
+            "tip1": "Suuraaf ifa uumamaa fayyadami",
+            "tip2": "Kallattii adda addaatiin baala dhibee qabu waraabi",
+            "tip3": "Kutaalee fayyaa fi dhibee qaban hammachiisi"
         }
     },
     "about": {
-        "title": "About TomatoDx",
-        "subtitle": "AI-Powered Tomato Disease Detection",
-        "version": "Version",
-        "mission": "Our Mission",
-        "missiondesc": "TomatoDx empowers farmers and gardeners with instant, accurate tomato disease detection using artificial intelligence. Our goal is to make plant healthcare accessible to everyone, helping to increase crop yields and reduce pesticide misuse.",
-        "features": "Features",
+        "title": "Waa'ee TomatoDx",
+        "subtitle": "Adda Baasuu Dhibee Timaatimaa AI-Geggeeffamu",
+        "version": "Varshinii",
+        "mission": "Ergama Keenya",
+        "missiondesc": "TomatoDx qotee bultoota fi oomishtoota timaatimaa dhibee sirrii fi hatattamaan adda baasuu AI fayyadamuun gargaara. Kaayyoon keenya yaala biqiltuu hundaaf akka dhihaatu taasisuun oomisha guddisuu fi itti fayyadama kemikaalaa hir'isuudha.",
+        "features": "Amaloota",
         "featuresList": {
             "aiDetection": {
-                "title": "AI-Powered Detection",
-                "description": "Advanced machine learning for accurate disease identification"
+                "title": "Adda Baasuu AI",
+                "description": "Maashin leerniingii olaanaa dhibee sirriitti adda baasuuf"
             },
             "instantResults": {
-                "title": "Instant Results",
-                "description": "Get diagnosis in seconds with detailed treatment recommendations"
+                "title": "Bu'aa Hatattamaa",
+                "description": "Bu'aa qorannoo sekondii muraasa keessatti gorsa yaalaa waliin argadhu"
             },
             "scanHistory": {
-                "title": "Scan History",
-                "description": "Track your plant health over time with comprehensive history"
+                "title": "Seenaa Sakatta'iinsaa",
+                "description": "Fayyaa biqiltuu kee yeroo dheeraaf seenaa guutuu waliin hordofi"
             },
             "multiLanguage": {
-                "title": "Multi-Language",
-                "description": "Available in English and Amharic for wider accessibility"
+                "title": "Afaan",
+                "description": "Ingiliffaa fi Amaariffaan/Afaan Oromootiin argama"
             }
         },
-        "technology": "Technology",
+        "technology": "Teekninoolojii",
         "techStack": {
             "tensorFlow": "TensorFlow Lite",
             "reactNative": "React Native",
             "computerVision": "Computer Vision",
-            "privacyFirst": "Privacy-First"
+            "privacyFirst": "Dursi Iccitiif"
         },
-        "team": "Our Team",
+        "team": "Garee Keenya",
         "teamMembers": {
             "mobileDevelopers": {
-                "title": "Mobile Developers",
+                "title": "Oomishtoota Moobaayilii",
                 "name": "Haileamlak Gashaw",
-                "role": "App Development",
-                "description": "Creating intuitive and user-friendly mobile experiences"
+                "role": "Ijaarsa Appii",
+                "description": "Muuxannoo fayyadamaa salphaa fi hubatamaa uumuu"
             },
             "agricultureExperts": {
-                "title": "Agriculture Experts",
+                "title": "Ogeessota Qonnaa",
                 "name": "Admassu Ejigu",
                 "role": "Plant Pathology",
-                "description": "Ensuring accurate disease identification and treatment recommendations"
+                "description": "Adda baasuu dhibee sirrii fi gorsa yaalaa mirkaneessuu"
             },
             "aiEngineers": {
-                "title": "AI Engineers",
+                "title": "Injinieroora AI",
                 "name": "Habtamu Mulusew",
                 "name2": "Kemal Seid",
                 "role": "Machine Learning",
-                "description": "Developing and training advanced computer vision models"
+                "description": "Moodela kompiitar viizhinii olaanaa oomishuu fi leenjisuu"
             },
             "dataAnalyst": {
-                "title": "Data Analyst",
+                "title": "Daataa Analistii",
                 "name": "Derara Waktola",
-                "role": "Data Analysis",
-                "description": "Analyzing and interpreting data to provide insights and recommendations"
+                "role": "Qorannoo Daataa",
+                "description": "Daataa qorachuu fi hiikuun hubannoo fi gorsa kennuu"
             }
         },
         "footer": {
-            "madeWith": "Specifically made for farmers and gardeners of Ethiopia",
-            "copyright": "2025 TomatoDx. All rights reserved.",
-            "privacyPolicy": "Privacy Policy",
-            "termsOfService": "Terms of Service"
+            "madeWith": "Addatti qotee bultoota Itoophiyaaf kan hojjetame",
+            "copyright": "2025 TomatoDx. Mirgi eegamaadha.",
+            "privacyPolicy": "Imaammata Iccitii",
+            "termsOfService": "Haalawwan Tajaajilaa"
         },
         "modal": {
-            "title": "Admin Mode Unlocked",
-            "subtitle": "You now have access to the Admin panel.",
-            "goToAdmin": "Go  to Admin"
+            "title": "Admin Mode Baname",
+            "subtitle": "Amma admin paaneliif eeyyama argatteetta.",
+            "goToAdmin": "Gara Admin"
         }
     },
     "admin": {
-        "title": "Admin Panel",
-        "caution": "Admin Mode - Use with caution",
-        "online": "Online",
-        "updateInstructions": "Model update instructions",
-        "systemInformation": "System Information",
-        "appVersion": "App Version",
-        "modelVersion": "Model Version",
-        "lastUpdated": "Last Updated",
-        "totalScans": "Total Scans",
+        "title": "Admin Paanelii",
+        "caution": "Admin Mode - Of eeggannoon fayyadami",
+        "online": "Onlaayinii",
+        "updateInstructions": "Qajeelfama haaromsa moodelaa",
+        "systemInformation": "Odeeffannoo Sirnaa",
+        "appVersion": "Varshinii Appii",
+        "modelVersion": "Varshinii Moodelaa",
+        "lastUpdated": "Yeroo dhuma haarome",
+        "totalScans": "Ida'ama Sakatta'iinsaa",
         "modelManagement": {
-            "title": "Model Management",
+            "title": "Bulchiinsa Moodelaa",
             "updateModel": {
-                "title": "Model Metadata (Local)",
-                "uploadModel": "Select Model Metadata",
-                "uploadModelDesc": "This tool only reads and registers model metadata locally on this device. It does not upload or replace the AI model used by TomatoDx. Official model updates are bundled with new app releases.",
-                "selectModelFile": "Select Model Metadata"
+                "title": "Moodela Metadata (Lukaalii)",
+                "uploadModel": "Moodela Metadata Filadhu",
+                "uploadModelDesc": "Meeshaan kun moodela metadata lukaalii qofa dubbisa fi galmeessa. Moodela AI TomatoDx fayyadamu hin bakka buusu. Haaromsi moodelaa ofii isaa appii haaraa waliin dhufa.",
+                "selectModelFile": "Moodela Metadata Filadhu"
             },
-            "updateInstructions": "Inspect or register local TensorFlow.js model metadata",
-            "runSystemCheck": "Run System Check",
-            "currentModel": "Current Model",
-            "checkUpdates": "Check for Updates",
-            "lastChecked": "Last Checked",
-            "noUpdates": "No updates available",
-            "updateAvailable": "Updates Available",
-            "updating": "Processing metadata...",
-            "updateSuccess": "Model metadata updated successfully.",
-            "updateFailed": "Failed to update model metadata."
+            "updateInstructions": "Moodela TensorFlow.js lukaalii qoradhu ykn galmeessi",
+            "runSystemCheck": "Qorannoo Sirnaa Raawwadhu",
+            "currentModel": "Moodela Ammaa",
+            "checkUpdates": "Haaromsa Ilaali",
+            "lastChecked": "Yeroo dhuma ilaalame",
+            "noUpdates": "Haaromsi hin jiru",
+            "updateAvailable": "Haaromsi Jira",
+            "updating": "Metadata hojjechaa jira...",
+            "updateSuccess": "Moodela metadata milkaa'inaan haarome.",
+            "updateFailed": "Moodela metadata haaromsuun hin danda'amne."
         },
         "databaseManagement": {
-            "title": "Database Management",
+            "title": "Bulchiinsa Daatabaasee",
             "edit": {
-                "title": "Edit Database",
-                "titleDesc": "Database editor functionality. Edit disease information here.",
-                "editDisease": "Edit disease DB",
-                "editDiseaseDesc": "Modify diseases information"
+                "title": "Daatabeese Gulaali",
+                "titleDesc": "Tajaajila gulaalaa daatabeese. Odeeffannoo dhibee asitti gulaali.",
+                "editDisease": "DB Gulaali Dhibee",
+                "editDiseaseDesc": "Odeeffannoo dhibee fooyyessi"
             }
         },
         "analytics": {
-            "title": "Analytics",
-            "overviewTitle": "Overview",
-            "loading": "Loading analytics…",
-            "summaryTitle": "Total diagnoses: {{count}}",
-            "avgConfidence": "Average confidence: {{value}}",
-            "healthyCount": "Healthy leaves: {{count}}",
-            "successRateLabel": "Success rate",
-            "topDisease": "Most common: {{name}} ({{count}} cases)",
-            "last7Days": "Scans in the last 7 days",
-            "levels": "Confidence levels - Low: {{low}}, Medium: {{medium}}, High: {{high}}",
-            "lowRisk": "Low risk",
-            "mediumRisk": "Medium risk",
-            "highRisk": "High risk",
-            "verifyingAccess": "Verifying admin access…",
-            "authError": "Unable to verify admin access.",
-            "loadError": "Failed to load analytics data.",
-            "exportData": "Export Data",
-            "exportSuccess": "Analytics data exported successfully.",
-            "exportError": "Failed to export analytics data.",
+            "title": "Ibsa (Analytics)",
+            "overviewTitle": "Waliigala",
+            "loading": "Ibsa fe'aa jira...",
+            "summaryTitle": "Ida'ama qorannoo: {{count}}",
+            "avgConfidence": "Giddu-galeessa sirummaa: {{value}}",
+            "healthyCount": "Baala fayyaa: {{count}}",
+            "successRateLabel": "Sadarkaa milkaa'inaa",
+            "topDisease": "Baay'inaan kan argame: {{name}} ({{count}})",
+            "last7Days": "Sakatta'iinsa guyyoota 7 darban",
+            "levels": "Sadarkaa Sirummaa - Gad-aanaa: {{low}}, Giddu-galeessa: {{medium}}, Olaanaa: {{high}}",
+            "lowRisk": "Balaa Gad-aanaa",
+            "mediumRisk": "Balaa Giddu-galeessa",
+            "highRisk": "Balaa Olaanaa",
+            "verifyingAccess": "Eeyyama admin mirkaneessaa jira...",
+            "authError": "Eeyyama admin mirkaneessuun hin danda'amne.",
+            "loadError": "Daataa ibsa fe'uun hin danda'amne.",
+            "exportData": "Daataa Ergi",
+            "exportSuccess": "Daataan ibsaa milkaa'inaan ergame.",
+            "exportError": "Daataa ibsaa erguun hin danda'amne.",
             "exportLocation": {
-                "downloads": "Saved to Downloads folder.",
-                "internal": "Saved to internal app storage."
+                "downloads": "Fookdarii Downloads keessatti olkaa'ame.",
+                "internal": "Kuusaa keessoo appii keessatti olkaa'ame."
             },
-            "subtitle": "Comprehensive Analysis & Insights",
-            "tabOverview": "Overview",
-            "tabDiseases": "Diseases",
-            "tabTrends": "Trends",
-            "totalScansLabel": "Total scans",
-            "healthyLabel": "Healthy leaves",
-            "atRiskLabel": "At-risk leaves",
-            "riskLabel": "Risk",
-            "lowRiskLabel": "Low",
-            "mediumRiskLabel": "Medium",
-            "highRiskLabel": "High",
-            "riskDistributionTitle": "Risk Distribution",
-            "sevenDayTrend": "7-Day Activity Trend",
-            "topDiseasesTitle": "Top Detected Diseases",
-            "topDiseasesSubtitle": "Most frequently identified conditions",
-            "monthlyTrendsTitle": "Monthly Trends",
-            "dataManagementTitle": "Data Management",
-            "exportDataButton": "Export Data",
-            "clearDataButton": "Clear Data",
+            "subtitle": "Qorannoo Bal'aa & Hubannoo",
+            "tabOverview": "Waliigala",
+            "tabDiseases": "Dhibeewwan",
+            "tabTrends": "Adeemsa",
+            "totalScansLabel": "Ida'ama sakatta'iinsaa",
+            "healthyLabel": "Baala fayyaa",
+            "atRiskLabel": "Baala balaa irra jiru",
+            "riskLabel": "Balaa",
+            "lowRiskLabel": "Gad-aanaa",
+            "mediumRiskLabel": "Giddu-galeessa",
+            "highRiskLabel": "Olaanaa",
+            "riskDistributionTitle": "Qoodiinsa Balaa",
+            "sevenDayTrend": "Adeemsa Guyyaa 7",
+            "topDiseasesTitle": "Dhibeewwan Baay'inaan Ar gaman",
+            "topDiseasesSubtitle": "Haalawwan yeroo baay'ee adda baafaman",
+            "monthlyTrendsTitle": "Adeemsa Ji'aa",
+            "dataManagementTitle": "Bulchiinsa Daataa",
+            "exportDataButton": "Daataa Ergi",
+            "clearDataButton": "Daataa Haqi",
             "exportModal": {
-                "title": "Export",
-                "fileNamePlaceholder": "File name",
+                "title": "Ergi",
+                "fileNamePlaceholder": "Maqaa faayilii",
                 "json": "JSON",
                 "csv": "CSV",
-                "cancel": "Cancel"
+                "cancel": "Balleessi"
             },
             "clearModal": {
-                "title": "Clear All Analytics Data?",
-                "message": "This will delete all stored analytics records. This cannot be undone."
+                "title": "Daataa Hunda Haquu?",
+                "message": "Kun galmee hunda ni haqa. Kun hin deebi'u."
             },
-            "clearSuccess": "All analytics data has been cleared successfully.",
-            "clearError": "Failed to clear analytics data."
+            "clearSuccess": "Daataan ibsaa hundi milkaa'inaan haqameera.",
+            "clearError": "Daataa ibsaa haquun hin danda'amne."
         },
         "system": {
-            "title": "Security",
-            "systemAdministration": "System Administration",
+            "title": "Nageenya",
+            "systemAdministration": "Bulchiinsa Sirnaa",
             "lockAdmin": {
-                "title": "Lock Admin Mode",
-                "resetAdminAccess": "Reset Admin Access",
-                "resetQuestion": "Are you sure you want to lock admin mode?",
-                "description": "Locking admin mode will prevent unauthorized access to the admin panel."
+                "title": "Admin Mode Cufi",
+                "resetAdminAccess": "Eeyyama Admin Haaromsa",
+                "resetQuestion": "Admin mode cufuu barbaadduu?",
+                "description": "Admin mode cufuun heeyyama malee seensaa admin paaneliitti taasifamu ni dhorka."
             },
-            "removeAdminAccess": "Remove Admin access"
+            "removeAdminAccess": "Eeyyama Admin Balleessi"
         },
         "auth": {
-            "title": "Admin Authentication",
-            "subtitle": "Enter your admin password to unlock admin mode.",
-            "passwordPlaceholder": "Enter Password",
-            "unlockButton": "Unlock Admin Mode",
-            "errorAllRequired": "All fields are required",
-            "errorMismatch": "Passwords do not match",
-            "errorIncorrect": "Incorrect password",
-            "errorCurrentIncorrect": "Current password is incorrect",
-            "updateSuccess": "Password updated successfully.",
-            "updateError": "Failed to update password.",
-            "verifyError": "Unable to verify admin access."
+            "title": "Mirkaneessa Admin",
+            "subtitle": "Admin mode banuuf jecha darbii admin galchi.",
+            "passwordPlaceholder": "Jecha Darbii Galchi",
+            "unlockButton": "Admin Mode Bani",
+            "errorAllRequired": "Dirqama hunda guutuu qabda",
+            "errorMismatch": "Jechi darbii wal hin simne",
+            "errorIncorrect": "Jechi darbii dogoggora",
+            "errorCurrentIncorrect": "Jechi darbii ammaa dogoggora",
+            "updateSuccess": "Jechi darbii milkaa'inaan haarome.",
+            "updateError": "Jecha darbii haaromsuun hin danda'amne.",
+            "verifyError": "Eeyyama admin mirkaneessuun hin danda'amne."
         },
         "password": {
-            "changeTitle": "Change Password",
-            "changeDescription": "Enter your admin password to unlock admin mode.",
-            "changeMessage": "Enter your admin password to unlock admin mode.",
-            "currentPlaceholder": "Enter Current Password",
-            "newPlaceholder": "Enter New Password",
-            "confirmPlaceholder": "Confirm New Password",
-            "errorAllRequired": "All fields are required",
-            "errorMismatch": "Passwords do not match",
-            "errorCurrentIncorrect": "Current password is incorrect",
-            "errorTooShort": "Password must be at least 8 characters long.",
-            "changeButton": "Change Password",
-            "changeSuccess": "Password changed successfully.",
-            "changeError": "Failed to change password.",
-            "updateError": "Failed to update password."
+            "changeTitle": "Jecha Darbii Jijjiiri",
+            "changeDescription": "Admin mode banuuf jecha darbii admin galchi.",
+            "changeMessage": "Admin mode banuuf jecha darbii admin galchi.",
+            "currentPlaceholder": "Jecha Darbii Ammaa Galchi",
+            "newPlaceholder": "Jecha Darbii Haaraa Galchi",
+            "confirmPlaceholder": "Jecha Darbii Haaraa Mirkaneessi",
+            "errorAllRequired": "Dirqama hunda guutuu qabda",
+            "errorMismatch": "Jechi darbii wal hin simne",
+            "errorCurrentIncorrect": "Jechi darbii ammaa dogoggora",
+            "errorTooShort": "Jechi darbii yoo xiqqaate qubee 8 qabaachuu qaba.",
+            "changeButton": "Jecha Darbii Jijjiiri",
+            "changeSuccess": "Jechi darbii milkaa'inaan jijjiirame.",
+            "changeError": "Jecha darbii jijjiiruun hin danda'amne.",
+            "updateError": "Jecha darbii haaromsuun hin danda'amne."
         },
-        "recentActivity": "Recent Activity",
-        "info": "Development admin panel. Production needs proper authentication."
+        "recentActivity": "Sochii Dhihoo",
+        "info": "Admin paanelii misoomaa. Oomishni mirkaneessa sirrii barbaada."
     },
     "common": {
-        "ok": "OK",
-        "cancel": "Cancel",
-        "delete": "Delete",
-        "save": "Save",
-        "share": "Share",
-        "confirm": "Confirm",
-        "edit": "Edit",
-        "loading": "Loading...",
-        "error": "Error",
-        "success": "Success",
-        "skip": "Skip",
-        "continue": "Continue",
-        "back": "Back",
-        "getStarted": "Get Started",
-        "retry": "Retry",
-        "close": "Close",
-        "later": "Later",
-        "version": "Version"
+        "ok": "TOLE",
+        "cancel": "Balleessi",
+        "delete": "Haqi",
+        "save": "Olkaa'i",
+        "share": "Qoodi",
+        "confirm": "Mirkaneessi",
+        "edit": "Gulaali",
+        "loading": "Fe'aa jira...",
+        "error": "Dogoggora",
+        "success": "Milkaa'e",
+        "skip": "Biras Darbi",
+        "continue": "Itti Fufi",
+        "back": "Duuba",
+        "getStarted": "Jalqabi",
+        "retry": "Irra Deebi'ii Yaali",
+        "close": "Cufi",
+        "later": "Booda",
+        "version": "Varshinii"
     },
     "diseases": {
         "early_blight": {
-            "name": "Early Blight",
-            "description": "A fungal disease that affects leaves, stems, and fruits of tomato plants",
+            "name": "Blightii Ganamaa",
+            "description": "Dhibee fangasii baala, jirma, fi firii timaatimaa miidhu",
             "symptoms": [
-                "Dark brown spots on older leaves",
-                "Yellowing and browning of leaf edges",
-                "Concentric rings in lesions",
-                "Premature leaf drop"
+                "Tuffee gurraacha baala dulloomaa irratti",
+                "Keelloo fi gurraacha qarqara baalaa",
+                "Xiyya geengoo madaa keessatti",
+                "Baalli yeroo malee harca'uu"
             ],
             "treatment": {
                 "immediate": [
-                    "Remove affected leaves immediately",
-                    "Apply copper-based fungicide",
-                    "Improve air circulation",
-                    "Avoid overhead watering"
+                    "Baala miidhame hatattamaan balleessi",
+                    "Funjisayidii kopperii qabu biifi",
+                    "Sochii qilleensaa fooyyessi",
+                    "Bishaan gubbaa irraan jallisuu dhiisi"
                 ],
                 "longTerm": [
-                    "Rotate crops yearly",
-                    "Use disease-resistant varieties",
-                    "Practice proper plant spacing",
-                    "Remove plant debris at season end"
+                    "Waggaa waggaan bakka biqiltuu jijjiiri",
+                    "Sanyii dhibee dandamatu fayyadami",
+                    "Biqiltuuwwan gidduutti fageenya sirrii eegi",
+                    "Haftee biqiltuu dhuma waqtii irratti balleessi"
                 ]
             },
             "prevention": [
-                "Water at the base of plants",
-                "Space plants 24-36 inches apart",
-                "Mulch around plants",
-                "Monitor plants weekly"
+                "Bishaan, jala biqiltuu jallisi",
+                "Biqiltuuwwan gidduutti fageenya 24-36 inch eegi",
+                "Biqiltuuwwan jala haadumi ykn mulch godhi",
+                "Torban torbaniin biqiltuu hordofi"
             ]
         },
         "late_blight": {
-            "name": "Late Blight",
-            "description": "A destructive fungal disease affecting leaves, stems, and fruits",
+            "name": "Blightii Galgalaa (Late Blight)",
+            "description": "Dhibee fangasii cimaa baala, jirma, fi firii miidhu",
             "symptoms": [
-                "Greasy-looking dark green or gray lesions",
-                "White fungal growth on underside of leaves",
-                "Rapid plant collapse",
-                "Browning and rotting of fruits"
+                "Madaa bifa zayitaa ykn daalacha qabu",
+                "Guddina fangasii adi jala baalaatti",
+                "Biqiltuun saffisaan baduu",
+                "Firii gurraacha'uu fi tortoruu"
             ],
             "treatment": {
                 "immediate": [
-                    "Remove all affected plants immediately",
-                    "Apply chlorothalonil or mancozeb",
-                    "Ensure proper drainage",
-                    "Destroy infected plant material"
+                    "Biqiltuuwwan miidhaman hunda hatattamaan balleessi",
+                    "Chlorothalonil ykn mancozeb fayyadami",
+                    "Dhangala'uu bishaanii mirkaneessi",
+                    "Biqiltuu dhibamaa balleessi"
                 ],
                 "longTerm": [
-                    "Plant resistant varieties",
-                    "Practice crop rotation",
-                    "Improve garden drainage",
-                    "Remove volunteer plants"
+                    "Sanyii dhibee dandamatu dhaabi",
+                    "Bakka biqiltuu jijjiiri",
+                    "Dhangala'uu bishaanii fooyyessi",
+                    "Biqiltuuwwan ofiin biqilan balleessi"
                 ]
             },
             "prevention": [
-                "Avoid overhead irrigation",
-                "Provide adequate plant spacing",
-                "Use drip irrigation",
-                "Select resistant varieties"
+                "Jallisi gubbaa irraa dhiisi",
+                "Fageenya biqiltuu gahaa eegi",
+                "Jallisi drip fayyadami",
+                "Sanyii dandamatu filadhu"
             ]
         },
         "healthy": {
-            "name": "Healthy",
-            "description": "Your tomato plant shows no signs of disease",
+            "name": "Fayyaa",
+            "description": "Biqiltuun timaatimaa kee mallattoo dhibee tokkollee hin agarsiisu",
             "symptoms": [
-                "Green, vibrant leaves",
-                "Strong stem growth",
-                "Normal fruit development"
+                "Baala magariisa, kan ifu",
+                "Misooma jirmaa cimaa",
+                "Guddina firii idilee"
             ],
             "treatment": {
                 "immediate": [
-                    "Continue current care routine",
-                    "Monitor for any changes",
-                    "Maintain regular watering schedule"
+                    "Kunubsa ammaa itti fufi",
+                    "Jijjiirama kamiyyuu hordofi",
+                    "Sagantaa jallisii idilee eegi"
                 ],
                 "longTerm": [
-                    "Continue preventive measures",
-                    "Maintain soil health",
-                    "Provide consistent nutrition"
+                    "Tarkaanfii ittisaa itti fufi",
+                    "Oomisha biyyee eegi",
+                    "Nyaata biqiltuu walirra hin cinne kenni"
                 ]
             },
             "prevention": [
-                "Maintain current good practices",
-                "Regular monitoring",
-                "Proper watering schedule",
-                "Balanced fertilization"
+                "Gochaalee gaggaarii ammaa itti fufi",
+                "Hordoffii idilee",
+                "Sagantaa jallisii sirrii",
+                "Ferdilizeeshinii wal-madaalaa"
             ]
         },
         "leaf_mold": {
-            "name": "Leaf Mold",
-            "description": "A fungal disease that thrives in humid conditions",
+            "name": "Mooldii Baalaa (Leaf Mold)",
+            "description": "Dhibee fangasii haala jiidha qabu keessatti babal'atu",
             "symptoms": [
-                "Pale green spots on upper leaf surface",
-                "Gray-brown velvety growth on underside",
-                "Leaf curling and yellowing",
-                "Defoliation in severe cases"
+                "Tuffee magariisa ifaa gubbaa baala irratti",
+                "Guddina daalacha-buuni jala baala irratti",
+                "Baalli maramuu fi keelloo ta'uu",
+                "Baalli harca'uu (haala cimaa keessatti)"
             ],
             "treatment": {
                 "immediate": [
-                    "Remove affected leaves",
-                    "Improve ventilation",
-                    "Apply copper fungicide",
-                    "Reduce humidity around plants"
+                    "Baala miidhame balleessi",
+                    "Qilleensa fooyyessi",
+                    "Funjisayidii kopperii fayyadami",
+                    "Jiidha naannoo biqiltuu hir'isi"
                 ],
                 "longTerm": [
-                    "Use fungicide sprays preventively",
-                    "Control greenhouse humidity",
-                    "Plant resistant varieties",
-                    "Improve air circulation"
+                    "Ittisuuf biifuu funjisayidii fayyadami",
+                    "Jiidha griinishouse to'adhu",
+                    "Sanyii dandamatu dhaabi",
+                    "Sochii qilleensaa fooyyessi"
                 ]
             },
             "prevention": [
-                "Maintain humidity below 90%",
-                "Provide good air circulation",
-                "Space plants properly",
-                "Avoid wetting leaves"
+                "Jiidha 90% gadii eegi",
+                "Sochii qilleensaa gaarii uumi",
+                "Fageenya biqiltuu sirreessi",
+                "Baala jiisuun irraa fagaadhu"
             ]
         },
         "septoria_leaf_spot": {
-            "name": "Septoria Leaf Spot",
-            "description": "Fungal disease causing small dark spots on leaves",
+            "name": "Septooriyaa (Septoria Leaf Spot)",
+            "description": "Dhibee fangasii tuffee xixiqqoo gurraacha baala irratti uumu",
             "symptoms": [
-                "Small dark brown spots on leaves",
-                "Yellow halos around spots",
-                "Black fruiting bodies in center",
-                "Progressive leaf yellowing"
+                "Tuffee xixiqqoo buuni baala irratti",
+                "Geengoo keelloo tuffee naannoo",
+                "Firiin gurraacha gidduutti mul'achuu",
+                "Baalli suuta suuta gara keellootti jijjiiramuu"
             ],
             "treatment": {
                 "immediate": [
-                    "Remove affected leaves",
-                    "Apply chlorothalonil",
-                    "Improve air circulation",
-                    "Water at base only"
+                    "Baala miidhame balleessi",
+                    "Chlorothalonil fayyadami",
+                    "Sochii qilleensaa fooyyessi",
+                    "Bishaan jala qofa jallisi"
                 ],
                 "longTerm": [
-                    "Remove plant debris",
-                    "Rotate crops",
-                    "Use resistant varieties",
-                    "Sanitize garden tools"
+                    "Haftee biqiltuu balleessi",
+                    "Bakka biqiltuu jijjiiri",
+                    "Sanyii dandamatu fayyadami",
+                    "Meeshaalee qonnaa qulqulleessi"
                 ]
             },
             "prevention": [
-                "Water early in the day",
-                "Avoid overhead watering",
-                "Keep leaves dry",
-                "Remove lower leaves that touch soil"
+                "Ganama obboroo bishaan jallisi",
+                "Jallisi gubbaa irraa dhiisi",
+                "Baala gogaa taasisi",
+                "Baala jalaa biyyee tuqu balleessi"
             ]
         },
         "tomato_mosaic_virus": {
-            "name": "Tomato Mosaic Virus",
-            "description": "Viral disease causing mottling and leaf distortion in tomatoes",
+            "name": "Vaayirasii Moozaayikii Timaatimaa",
+            "description": "Dhibee vaayirasii baala timaatimaa bifa dhabsiisu fi xaxu",
             "symptoms": [
-                "Mottled light and dark green patterns on leaves",
-                "Leaf distortion and reduced leaf size",
-                "Stunted plant growth",
-                "Reduced fruit size and yield"
+                "Bifa garaa garaa magariisa ifaa fi dukkanaa'aa baala irratti",
+                "Baalli bifa dhabuu fi xiqqaachuu",
+                "Guddinni biqiltuu dhaabbachuu",
+                "Guddinni firii fi oomisha hir'achuu"
             ],
             "treatment": {
                 "immediate": [
-                    "Remove and destroy infected plants",
-                    "Disinfect tools after use",
-                    "Control aphids and other vectors",
-                    "Avoid working with plants when wet"
+                    "Biqiltuu faalame balleessi",
+                    "Meeshaalee erga fayyadamtee booda qulqulleessi",
+                    "Aphids fi vectors biroo to'adhu",
+                    "Yeroo biqiltuun jiidhaa ta'e hin tuqin"
                 ],
                 "longTerm": [
-                    "Use virus-free certified seeds",
-                    "Plant resistant varieties",
-                    "Rotate crops to non-hosts",
-                    "Implement strict sanitation practices"
+                    "Sanyii vaayirasii irraa bilisa ta'e fayyadami",
+                    "Sanyii dandamatu dhaabi",
+                    "Bakka biqiltuu jijjiiri",
+                    "Qulqullina naannoo eegi"
                 ]
             },
             "prevention": [
-                "Wash hands and tools before handling plants",
-                "Control insect vectors",
-                "Avoid tobacco use near plants",
-                "Maintain field hygiene"
+                "Harka fi meeshaalee dhiqadhu",
+                "Ilbiisota dhibee dabarsan to'adhu",
+                "Tamboo fayyadamuu biqiltuu irraa fagaadhu",
+                "Qulqullina oyiruu eegi"
             ]
         },
         "tomato_yellow_leaf_curl": {
-            "name": "Tomato Yellow Leaf Curl Virus",
-            "description": "Whitefly-transmitted virus causing leaf curling and yellowing",
+            "name": "Vaayirasii Baala Timaatimaa Keelloo fi Maramaa",
+            "description": "Vaayirasii Whitefly dhaan darbu fi baala maramuu fi keelloo taasisu",
             "symptoms": [
-                "Upward leaf curling",
-                "Yellowing between veins",
-                "Stunted growth and reduced vigor",
-                "Poor fruit set"
+                "Baalli gara oliitti maramuu",
+                "Gidduu veenii baalaatti keelloo ta'uu",
+                "Guddinni dhaabbachuu",
+                "Firii gahaa dhabuu"
             ],
             "treatment": {
                 "immediate": [
-                    "Remove infected plants",
-                    "Control whiteflies with appropriate measures",
-                    "Use physical barriers (row covers)",
-                    "Eliminate nearby weed hosts"
+                    "Biqiltuu faalame balleessi",
+                    "Whitefly mala barbaachisaan to'adhu",
+                    "Haguuggii fiisiikaalaa fayyadami",
+                    "Aramaa naannoo sanaa balleessi"
                 ],
                 "longTerm": [
-                    "Grow resistant/tolerant varieties",
-                    "Implement integrated pest management",
-                    "Rotate with non-host crops",
-                    "Use yellow sticky traps to monitor"
+                    "Sanyii dandamatu dhaabi",
+                    "To'annoo ilbiisotaa wal-makaa fayyadami",
+                    "Bakka biqiltuu jijjiiri",
+                    "Hordoffiif 'yellow sticky traps' fayyadami"
                 ]
             },
             "prevention": [
-                "Manage whitefly populations",
-                "Use reflective mulches",
-                "Plant virus-free transplants",
-                "Maintain field sanitation"
+                "Baay'ina whitefly to'adhu",
+                "Mulch calaqqisu fayyadami",
+                "Biqiltuuwwan vaayirasii irraa bilisa ta'an dhaabi",
+                "Qulqullina oyiruu eegi"
             ]
         },
         "target_spot": {
-            "name": "Target Spot",
-            "description": "Fungal disease causing concentric ring lesions on leaves and fruit",
+            "name": "Tuqaa Geengoo (Target Spot)",
+            "description": "Dhibee fangasii tuffee geengoo baala fi firii irratti uumu",
             "symptoms": [
-                "Circular spots with target-like rings",
-                "Leaf yellowing and drop",
-                "Stem and fruit lesions",
-                "Reduced plant vigor"
+                "Tuffee geengoo akka taargetii",
+                "Baalli keelloo ta'uu fi harca'uu",
+                "Madaa jirma fi firii",
+                "Ciminni biqiltuu hir'achuu"
             ],
             "treatment": {
                 "immediate": [
-                    "Remove affected leaves and fruits",
-                    "Apply recommended fungicides",
-                    "Improve air circulation",
-                    "Avoid overhead irrigation"
+                    "Baala fi firii miidhame balleessi",
+                    "Funjisayidii gorfame fayyadami",
+                    "Sochii qilleensaa fooyyessi",
+                    "Jallisi gubbaa irraa dhiisi"
                 ],
                 "longTerm": [
-                    "Rotate with non-host crops",
-                    "Use resistant varieties if available",
-                    "Maintain proper plant spacing",
-                    "Remove crop debris after harvest"
+                    "Bakka biqiltuu jijjiiri",
+                    "Sanyii dandamatu fayyadami",
+                    "Fageenya biqiltuu eegi",
+                    "Haftee oomishaa balleessi"
                 ]
             },
             "prevention": [
-                "Water at the base of plants",
-                "Ensure good drainage",
-                "Mulch to reduce soil splash",
-                "Monitor regularly for early signs"
+                "Bishaan jala jallisi",
+                "Dhangala'uu bishaanii mirkaneessi",
+                "Mulch fayyadami",
+                "Mallattoo jalqabaa yeroon hordofi"
             ]
         },
         "spider_mites_two_spotted_spider_mites": {
-            "name": "Two-spotted Spider Mites",
-            "description": "Pest infestation causing stippling and webbing on leaves",
+            "name": "Mites (Spider Mites)",
+            "description": "Ilbiisota xixiqqoo baala irratti xaxaa fi tuqaa uuman",
             "symptoms": [
-                "Fine yellow stippling on leaves",
-                "Silky webbing on undersides",
-                "Leaf bronzing and drop",
-                "Overall plant stress"
+                "Tuqaa keelloo baala irratti",
+                "Xaxaa silkii jala baalaatti",
+                "Baalli diimachuu fi harca'uu",
+                "Dhiphina biqiltuu waliigalaa"
             ],
             "treatment": {
                 "immediate": [
-                    "Spray water to dislodge mites",
-                    "Use insecticidal soap or miticide",
-                    "Isolate heavily infested plants",
-                    "Increase humidity if possible"
+                    "Bishaan biifuu dhaan mites balleessi",
+                    "Saamuunaa ilbiisaa ykn miticide fayyadami",
+                    "Biqiltuuwwan daran miidhaman adda baasi",
+                    "Jiidha dabali"
                 ],
                 "longTerm": [
-                    "Encourage natural predators",
-                    "Avoid broad-spectrum insecticides",
-                    "Maintain plant health to reduce stress",
-                    "Monitor with regular inspections"
+                    "Diina uumamaa jajjabeessi",
+                    "Farra ilbiisaa bal'aa fayyadamuu of qusadhu",
+                    "Fayyaa biqiltuu eegi",
+                    "Yeroo yeroon hordofi"
                 ]
             },
             "prevention": [
-                "Keep plants well-watered",
-                "Reduce dusty, dry conditions",
-                "Quarantine new plants",
-                "Clean tools and benches"
+                "Biqiltuu bishaan obaas",
+                "Haala gogaa fi awwaara qabu hir'isi",
+                "Biqiltuu haaraa adda baasi",
+                "Meeshaalee qulqulleessi"
             ]
         },
         "bacterial_spot": {
-            "name": "Bacterial Spot",
-            "description": "Bacterial disease causing leaf spots and fruit blemishes",
+            "name": "Xannacha Baakteriyaa (Bacterial Spot)",
+            "description": "Dhibee baakteriyaa tuffee baalaa fi mudaa firii fidu",
             "symptoms": [
-                "Small water-soaked leaf spots",
-                "Darkening and tearing of leaf tissue",
-                "Raised scabby spots on fruit",
-                "Premature defoliation"
+                "Tuffee xixiqqoo bishaan fakkaatu baala irratti",
+                "Baalli gurraacha'uu fi tarsa'uu",
+                "Tuffee ol-ka'aa firii irratti",
+                "Yeroo malee baalli harca'uu"
             ],
             "treatment": {
                 "immediate": [
-                    "Remove infected plant material",
-                    "Apply copper-based bactericides",
-                    "Avoid working plants when wet",
-                    "Improve airflow around plants"
+                    "Biqiltuu faalame balleessi",
+                    "Bakterisayidii kopperii fayyadami",
+                    "Biqiltuu jiidhaa tuquu dhiisi",
+                    "Sochii qilleensaa fooyyessi"
                 ],
                 "longTerm": [
-                    "Rotate to non-host crops",
-                    "Use certified disease-free seed",
-                    "Plant resistant varieties",
-                    "Implement strict sanitation"
+                    "Bakka biqiltuu jijjiiri",
+                    "Sanyii dhibee irraa bilisa ta'e fayyadami",
+                    "Sanyii dandamatu dhaabi",
+                    "Qulqullina cimaa eegi"
                 ]
             },
             "prevention": [
-                "Avoid overhead watering",
-                "Disinfect tools and stakes",
-                "Control splashing with mulch",
-                "Space plants appropriately"
+                "Jallisi gubbaa irraa dhiisi",
+                "Meeshaalee qulqulleessi",
+                "Mulch fayyadamuun bishaan faca'u hir'isi",
+                "Fageenya biqiltuu eegi"
             ]
         },
         "unknown": {
-            "name": "Unknown / Uncertain",
-            "description": "The disease could not be confidently identified.",
+            "name": "Hin Beekamne",
+            "description": "Dhibeen kun sirriitti adda bahuu hin dandeenye.",
             "symptoms": [
-                "Cannot identify specific symptoms"
+                "Mallattoo addaa adda baasuu hin dandeenye"
             ],
             "treatment": {
                 "immediate": [
-                    "Do not apply treatment without confirmation",
-                    "Consult an agricultural expert"
+                    "Osoo hin mirkaneeffatin yaala hin kennin",
+                    "Ogeessa qonnaa mariisisi"
                 ],
                 "longTerm": [
-                    "Monitor plant progress"
+                    "Guddina biqiltuu hordofi"
                 ]
             },
             "prevention": [
-                "Regular monitoring"
+                "Hordoffii idilee"
             ]
         }
     },
     "diseaseEditor": {
-        "title": "Edit Diseases",
-        "selectDisease": "Select Disease",
-        "diseaseId": "Disease ID",
-        "diseaseInfo": "Disease Information",
-        "editDiseaseInfo": "Edit Disease Information",
-        "nameEn": "Name (English)",
-        "nameAm": "Name (Amharic)",
-        "nameEnPlaceholder": "Enter disease name in English",
-        "nameAmPlaceholder": "Enter disease name in Amharic",
-        "symptoms": "Symptoms",
-        "symptomsEn": "Symptoms (English)",
-        "symptomsAm": "Symptoms (Amharic)",
-        "symptomsEnPlaceholder": "Enter symptoms in English (one per line or comma-separated)",
-        "symptomsAmPlaceholder": "Enter symptoms in Amharic (one per line or comma-separated)",
-        "treatmentImmediate": "Immediate Treatment",
-        "treatmentImmediateEn": "Immediate Treatment (English)",
-        "treatmentImmediateAm": "Immediate Treatment (Amharic)",
-        "treatmentImmediateEnPlaceholder": "Enter immediate treatment actions in English (one per line or comma-separated)",
-        "treatmentImmediateAmPlaceholder": "Enter immediate treatment actions in Amharic (one per line or comma-separated)",
-        "treatmentLongTerm": "Long-term Treatment",
-        "treatmentLongTermEn": "Long-term Treatment (English)",
-        "treatmentLongTermAm": "Long-term Treatment (Amharic)",
-        "treatmentLongTermEnPlaceholder": "Enter long-term treatment actions in English (one per line or comma-separated)",
-        "treatmentLongTermAmPlaceholder": "Enter long-term treatment actions in Amharic (one per line or comma-separated)",
-        "prevention": "Prevention",
-        "preventionEn": "Prevention (English)",
-        "preventionAm": "Prevention (Amharic)",
-        "preventionEnPlaceholder": "Enter prevention tips in English (one per line or comma-separated)",
-        "preventionAmPlaceholder": "Enter prevention tips in Amharic (one per line or comma-separated)",
-        "saveButton": "Save Changes",
-        "cancelButton": "Cancel",
-        "saveSuccess": "Disease updated successfully",
-        "saveError": "Failed to save disease",
-        "selectDiseasePrompt": "Please select a disease first",
-        "loadingDiseases": "Loading diseases...",
-        "loadingDiseasesError": "Failed to load diseases"
+        "title": "Dhibee Gulaali",
+        "selectDisease": "Dhibee Filadhu",
+        "diseaseId": "ID Dhibee",
+        "diseaseInfo": "Odeeffannoo Dhibee",
+        "editDiseaseInfo": "Odeeffannoo Dhibee Gulaali",
+        "nameEn": "Maqaa (Ingiliffa)",
+        "nameAm": "Maqaa (Amaariffa)",
+        "nameEnPlaceholder": "Maqaa dhibee Ingiliffaan galchi",
+        "nameAmPlaceholder": "Maqaa dhibee Amaariffaan galchi",
+        "symptoms": "Mallattoolee",
+        "symptomsEn": "Mallattoolee (Ingiliffa)",
+        "symptomsAm": "Mallattoolee (Amaariffa)",
+        "symptomsEnPlaceholder": "Mallattoolee Ingiliffaan galchi (tokko tokkoon ykn comma dhaan)",
+        "symptomsAmPlaceholder": "Mallattoolee Amaariffaan galchi (tokko tokkoon ykn comma dhaan)",
+        "treatmentImmediate": "Yaala Hatattamaa",
+        "treatmentImmediateEn": "Yaala Hatattamaa (Ingiliffa)",
+        "treatmentImmediateAm": "Yaala Hatattamaa (Amaariffa)",
+        "treatmentImmediateEnPlaceholder": "Tarkaanfii yaala hatattamaa Ingiliffaan galchi",
+        "treatmentImmediateAmPlaceholder": "Tarkaanfii yaala hatattamaa Amaariffaan galchi",
+        "treatmentLongTerm": "Yaala Yeroo Dheeraa",
+        "treatmentLongTermEn": "Yaala Yeroo Dheeraa (Ingiliffa)",
+        "treatmentLongTermAm": "Yaala Yeroo Dheeraa (Amaariffa)",
+        "treatmentLongTermEnPlaceholder": "Tarkaanfii yaala yeroo dheeraa Ingiliffaan galchi",
+        "treatmentLongTermAmPlaceholder": "Tarkaanfii yaala yeroo dheeraa Amaariffaan galchi",
+        "prevention": "Ittisa",
+        "preventionEn": "Ittisa (Ingiliffa)",
+        "preventionAm": "Ittisa (Amaariffa)",
+        "preventionEnPlaceholder": "Gorsa ittisaa Ingiliffaan galchi",
+        "preventionAmPlaceholder": "Gorsa ittisaa Amaariffaan galchi",
+        "saveButton": "Jijjiirama Olkaa'i",
+        "cancelButton": "Balleessi",
+        "saveSuccess": "Dhibeen milkaa'inaan haarome",
+        "saveError": "Dhibee olkaa'uun hin danda'amne",
+        "selectDiseasePrompt": "Maaloo dura dhibee filadhu",
+        "loadingDiseases": "Dhibeewwan fe'aa jira...",
+        "loadingDiseasesError": "Dhibeewwan fe'uun hin danda'amne"
     }
 }

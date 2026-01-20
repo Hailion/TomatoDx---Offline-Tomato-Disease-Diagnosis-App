@@ -20,14 +20,19 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
     const [selectedDisease, setSelectedDisease] = useState<string | null>(null);
     const [nameEn, setNameEn] = useState('');
     const [nameAm, setNameAm] = useState('');
+    const [nameOro, setNameOro] = useState('');
     const [symptomsEn, setSymptomsEn] = useState('');
     const [symptomsAm, setSymptomsAm] = useState('');
+    const [symptomsOro, setSymptomsOro] = useState('');
     const [treatmentImmediateEn, setTreatmentImmediateEn] = useState('');
     const [treatmentImmediateAm, setTreatmentImmediateAm] = useState('');
+    const [treatmentImmediateOro, setTreatmentImmediateOro] = useState('');
     const [treatmentLongTermEn, setTreatmentLongTermEn] = useState('');
     const [treatmentLongTermAm, setTreatmentLongTermAm] = useState('');
+    const [treatmentLongTermOro, setTreatmentLongTermOro] = useState('');
     const [preventionEn, setPreventionEn] = useState('');
     const [preventionAm, setPreventionAm] = useState('');
+    const [preventionOro, setPreventionOro] = useState('');
     const [loading, setLoading] = useState(false);
     const [keyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -65,12 +70,12 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
     };
 
     // Helper function to extract language-specific content from JSON or plain text
-    const getLocalizedValue = (content: string | null | undefined, lang: 'en' | 'am'): string => {
+    const getLocalizedValue = (content: string | null | undefined, lang: 'en' | 'am' | 'oro'): string => {
         if (!content || !content.trim()) return '';
         try {
             const parsed = JSON.parse(content);
             if (typeof parsed === 'object' && !Array.isArray(parsed)) {
-                return parsed[lang] || parsed.en || parsed.am || '';
+                return parsed[lang] || parsed.en || parsed.am || parsed.oro || '';
             }
         } catch {
             // Not JSON, return as plain text (backward compatibility)
@@ -82,7 +87,7 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
     };
 
     // Helper function to extract structured advice data
-    const getStructuredAdvice = (content: string | null | undefined, lang: 'en' | 'am', field: 'treatmentImmediate' | 'treatmentLongTerm' | 'prevention'): string => {
+    const getStructuredAdvice = (content: string | null | undefined, lang: 'en' | 'am' | 'oro', field: 'treatmentImmediate' | 'treatmentLongTerm' | 'prevention'): string => {
         if (!content || !content.trim()) return '';
         try {
             const parsed = JSON.parse(content);
@@ -109,14 +114,19 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
             setSelectedDisease(diseaseId);
             setNameEn(disease.nameEn || '');
             setNameAm(disease.nameAm || '');
+            setNameOro(disease.nameOro || ''); // @ts-ignore
             setSymptomsEn(getLocalizedValue(disease.symptoms, 'en'));
             setSymptomsAm(getLocalizedValue(disease.symptoms, 'am'));
+            setSymptomsOro(getLocalizedValue(disease.symptoms, 'oro'));
             setTreatmentImmediateEn(getStructuredAdvice(disease.advice, 'en', 'treatmentImmediate'));
             setTreatmentImmediateAm(getStructuredAdvice(disease.advice, 'am', 'treatmentImmediate'));
+            setTreatmentImmediateOro(getStructuredAdvice(disease.advice, 'oro', 'treatmentImmediate'));
             setTreatmentLongTermEn(getStructuredAdvice(disease.advice, 'en', 'treatmentLongTerm'));
             setTreatmentLongTermAm(getStructuredAdvice(disease.advice, 'am', 'treatmentLongTerm'));
+            setTreatmentLongTermOro(getStructuredAdvice(disease.advice, 'oro', 'treatmentLongTerm'));
             setPreventionEn(getStructuredAdvice(disease.advice, 'en', 'prevention'));
             setPreventionAm(getStructuredAdvice(disease.advice, 'am', 'prevention'));
+            setPreventionOro(getStructuredAdvice(disease.advice, 'oro', 'prevention'));
         }
     };
 
@@ -129,14 +139,15 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
         setLoading(true);
         try {
             // Build JSON objects for symptoms with language support
-            const symptomsData: { en?: string; am?: string } = {};
+            const symptomsData: { en?: string; am?: string; oro?: string } = {};
             if (symptomsEn.trim()) symptomsData.en = symptomsEn.trim();
             if (symptomsAm.trim()) symptomsData.am = symptomsAm.trim();
+            if (symptomsOro.trim()) symptomsData.oro = symptomsOro.trim();
             const symptomsJson = Object.keys(symptomsData).length > 0 ? JSON.stringify(symptomsData) : undefined;
 
             // Build structured JSON for advice with language support
             // Format: {"en": {"treatmentImmediate": "...", "treatmentLongTerm": "...", "prevention": "..."}, "am": {...}}
-            const adviceData: { en?: { treatmentImmediate?: string; treatmentLongTerm?: string; prevention?: string }; am?: { treatmentImmediate?: string; treatmentLongTerm?: string; prevention?: string } } = {};
+            const adviceData: { en?: any; am?: any; oro?: any } = {};
 
             if (treatmentImmediateEn.trim() || treatmentLongTermEn.trim() || preventionEn.trim()) {
                 adviceData.en = {};
@@ -152,14 +163,26 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                 if (preventionAm.trim()) adviceData.am.prevention = preventionAm.trim();
             }
 
+            if (treatmentImmediateOro.trim() || treatmentLongTermOro.trim() || preventionOro.trim()) {
+                adviceData.oro = {};
+                if (treatmentImmediateOro.trim()) adviceData.oro.treatmentImmediate = treatmentImmediateOro.trim();
+                if (treatmentLongTermOro.trim()) adviceData.oro.treatmentLongTerm = treatmentLongTermOro.trim();
+                if (preventionOro.trim()) adviceData.oro.prevention = preventionOro.trim();
+            }
+
             const adviceJson = Object.keys(adviceData).length > 0 ? JSON.stringify(adviceData) : undefined;
+            const adviceAmJson = adviceData.am ? JSON.stringify(adviceData.am) : undefined;
+            const adviceOroJson = adviceData.oro ? JSON.stringify(adviceData.oro) : undefined;
 
             upsertDisease(
                 selectedDisease,
                 nameEn || undefined,
                 nameAm || undefined,
+                nameOro || undefined,
                 symptomsJson,
-                adviceJson
+                adviceJson,
+                adviceAmJson,
+                adviceOroJson
             );
             Alert.alert(t('common.success'), t('diseaseEditor.saveSuccess'));
             loadDiseases();
@@ -176,14 +199,19 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
         setSelectedDisease(null);
         setNameEn('');
         setNameAm('');
+        setNameOro('');
         setSymptomsEn('');
         setSymptomsAm('');
+        setSymptomsOro('');
         setTreatmentImmediateEn('');
         setTreatmentImmediateAm('');
+        setTreatmentImmediateOro('');
         setTreatmentLongTermEn('');
         setTreatmentLongTermAm('');
+        setTreatmentLongTermOro('');
         setPreventionEn('');
         setPreventionAm('');
+        setPreventionOro('');
     };
 
     if (!visible) return null;
@@ -285,6 +313,17 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                     </View>
 
                                     <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                        <Text style={[styles.label, { color: colors.text }]}>Name (Oro)</Text>
+                                        <TextInput
+                                            style={[styles.input, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                            value={nameOro}
+                                            onChangeText={setNameOro}
+                                            placeholder="Enter Oromo Name"
+                                            placeholderTextColor={colors.textTertiary + '85'}
+                                        />
+                                    </View>
+
+                                    <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
                                         <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.symptomsEn')}</Text>
                                         <TextInput
                                             style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
@@ -304,6 +343,19 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                             value={symptomsAm}
                                             onChangeText={setSymptomsAm}
                                             placeholder={t('diseaseEditor.symptomsAmPlaceholder')}
+                                            placeholderTextColor={colors.textTertiary + '85'}
+                                            multiline
+                                            numberOfLines={4}
+                                        />
+                                    </View>
+
+                                    <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                        <Text style={[styles.label, { color: colors.text }]}>Symptoms (Oro)</Text>
+                                        <TextInput
+                                            style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                            value={symptomsOro}
+                                            onChangeText={setSymptomsOro}
+                                            placeholder="Enter Oromo Symptoms"
                                             placeholderTextColor={colors.textTertiary + '85'}
                                             multiline
                                             numberOfLines={4}
@@ -337,6 +389,19 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                     </View>
 
                                     <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                        <Text style={[styles.label, { color: colors.text }]}>Immediate Treatment (Oro)</Text>
+                                        <TextInput
+                                            style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                            value={treatmentImmediateOro}
+                                            onChangeText={setTreatmentImmediateOro}
+                                            placeholder="Enter Oromo Immediate Treatment"
+                                            placeholderTextColor={colors.textTertiary + '85'}
+                                            multiline
+                                            numberOfLines={4}
+                                        />
+                                    </View>
+
+                                    <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
                                         <Text style={[styles.label, { color: colors.text }]}>{t('diseaseEditor.treatmentLongTermEn')}</Text>
                                         <TextInput
                                             style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
@@ -356,6 +421,20 @@ export default function DiseaseEditor({ visible, onClose }: DiseaseEditorProps) 
                                             value={treatmentLongTermAm}
                                             onChangeText={setTreatmentLongTermAm}
                                             placeholder={t('diseaseEditor.treatmentLongTermAmPlaceholder')}
+                                            placeholderTextColor={colors.textTertiary + '85'}
+                                            multiline
+                                            numberOfLines={4}
+                                        />
+                                    </View>
+
+                                    {/* Treatment in Oromo */}
+                                    <View style={[styles.formGroup, { backgroundColor: colors.card }]}>
+                                        <Text style={[styles.label, { color: colors.text }]}>Long Term Treatment (Oro)</Text>
+                                        <TextInput
+                                            style={[styles.textArea, { color: colors.text, backgroundColor: colors.backgroundAlt }]}
+                                            value={treatmentLongTermOro}
+                                            onChangeText={setTreatmentLongTermOro}
+                                            placeholder="Enter Oromo Long Term Treatment"
                                             placeholderTextColor={colors.textTertiary + '85'}
                                             multiline
                                             numberOfLines={4}

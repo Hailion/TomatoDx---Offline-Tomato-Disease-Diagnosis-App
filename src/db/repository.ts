@@ -164,27 +164,30 @@ export function insertImage(imageId: string, filePath: string, capturedAtISO: st
     );
 }
 
-export function upsertDisease(diseaseId: string, nameEn?: string, nameAm?: string, symptoms?: string, advice?: string) {
+export function upsertDisease(diseaseId: string, nameEn?: string, nameAm?: string, nameOro?: string, symptoms?: string, advice?: string, adviceAm?: string, adviceOro?: string) {
     run(
-        `INSERT INTO Disease (diseaseId, nameEn, nameAm, symptoms, advice) VALUES (?, ?, ?, ?, ?)
+        `INSERT INTO Disease (diseaseId, nameEn, nameAm, nameOro, symptoms, advice, adviceAm, adviceOro) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(diseaseId) DO UPDATE SET
        nameEn=COALESCE(excluded.nameEn, Disease.nameEn),
        nameAm=COALESCE(excluded.nameAm, Disease.nameAm),
+       nameOro=COALESCE(excluded.nameOro, Disease.nameOro),
        symptoms=COALESCE(excluded.symptoms, Disease.symptoms),
-       advice=COALESCE(excluded.advice, Disease.advice)`,
-        [diseaseId, nameEn ?? null, nameAm ?? null, symptoms ?? null, advice ?? null]
+       advice=COALESCE(excluded.advice, Disease.advice),
+       adviceAm=COALESCE(excluded.adviceAm, Disease.adviceAm),
+       adviceOro=COALESCE(excluded.adviceOro, Disease.adviceOro)`,
+        [diseaseId, nameEn ?? null, nameAm ?? null, nameOro ?? null, symptoms ?? null, advice ?? null, adviceAm ?? null, adviceOro ?? null]
     );
 }
 
 export function getAllDiseases() {
-    return getAll<{ diseaseId: string; nameEn?: string; nameAm?: string; symptoms?: string; advice?: string }>(
-        `SELECT diseaseId, nameEn, nameAm, symptoms, advice FROM Disease ORDER BY diseaseId`
+    return getAll<{ diseaseId: string; nameEn?: string; nameAm?: string; nameOro?: string; symptoms?: string; advice?: string; adviceAm?: string; adviceOro?: string }>(
+        `SELECT diseaseId, nameEn, nameAm, nameOro, symptoms, advice, adviceAm, adviceOro FROM Disease ORDER BY diseaseId`
     );
 }
 
 export function getDiseaseById(diseaseId: string) {
-    const rows = getAll<{ diseaseId: string; nameEn?: string; nameAm?: string; symptoms?: string; advice?: string }>(
-        `SELECT diseaseId, nameEn, nameAm, symptoms, advice FROM Disease WHERE diseaseId = ? LIMIT 1`,
+    const rows = getAll<{ diseaseId: string; nameEn?: string; nameAm?: string; nameOro?: string; symptoms?: string; advice?: string; adviceAm?: string; adviceOro?: string }>(
+        `SELECT diseaseId, nameEn, nameAm, nameOro, symptoms, advice, adviceAm, adviceOro FROM Disease WHERE diseaseId = ? LIMIT 1`,
         [diseaseId]
     );
     return rows[0] ?? null;
@@ -202,7 +205,7 @@ export function getRecentDiagnoses(limit = 20) {
     return getAll(
         `SELECT d.diagnosisId, d.confidence, d.diagnosedAt,
             i.imageId, i.filePath, i.capturedAt,
-            ds.diseaseId, ds.nameEn, ds.nameAm
+            ds.diseaseId, ds.nameEn, ds.nameAm, ds.nameOro
      FROM Diagnosis d
      JOIN Image i ON i.imageId = d.imageId
      LEFT JOIN Disease ds ON ds.diseaseId = d.diseaseId
@@ -221,7 +224,7 @@ export function getDiagnosisById(diagnosisId: string) {
     const rows = getAll(
         `SELECT d.diagnosisId, d.confidence, d.diagnosedAt, d.notes,
             i.imageId, i.filePath, i.capturedAt,
-            ds.diseaseId, ds.nameEn, ds.nameAm, ds.symptoms, ds.advice
+            ds.diseaseId, ds.nameEn, ds.nameAm, ds.nameOro, ds.symptoms, ds.advice, ds.adviceAm, ds.adviceOro
          FROM Diagnosis d
          JOIN Image i ON d.imageId = i.imageId
          LEFT JOIN Disease ds ON d.diseaseId = ds.diseaseId
@@ -242,8 +245,8 @@ export function getDiagnosesPage(
 
     if (opts?.search) {
         const q = `%${opts.search}%`;
-        where.push('(ds.nameEn LIKE ? OR ds.nameAm LIKE ? OR ds.diseaseId LIKE ? OR i.filePath LIKE ?)');
-        params.push(q, q, q, q);
+        where.push('(ds.nameEn LIKE ? OR ds.nameAm LIKE ? OR ds.nameOro LIKE ? OR ds.diseaseId LIKE ? OR i.filePath LIKE ?)');
+        params.push(q, q, q, q, q);
     }
 
     if (opts?.severity === 'Low') {
@@ -258,7 +261,7 @@ export function getDiagnosesPage(
 
     const sql = `SELECT d.diagnosisId, d.confidence, d.diagnosedAt,
             i.imageId, i.filePath, i.capturedAt,
-            ds.diseaseId, ds.nameEn, ds.nameAm
+            ds.diseaseId, ds.nameEn, ds.nameAm, ds.nameOro
      FROM Diagnosis d
      JOIN Image i ON i.imageId = d.imageId
      LEFT JOIN Disease ds ON ds.diseaseId = d.diseaseId
@@ -321,7 +324,7 @@ export function updateDiagnosisNotes(diagnosisId: string, notes: string) {
 export function getAllDiagnosesExport() {
     const sql = `SELECT d.diagnosisId, d.confidence, d.diagnosedAt, d.notes,
             i.imageId, i.filePath, i.capturedAt,
-            ds.diseaseId, ds.nameEn, ds.nameAm
+            ds.diseaseId, ds.nameEn, ds.nameAm, ds.nameOro
      FROM Diagnosis d
      JOIN Image i ON i.imageId = d.imageId
      LEFT JOIN Disease ds ON ds.diseaseId = d.diseaseId
@@ -403,8 +406,8 @@ export function getAnalyticsSummary() {
          FROM Diagnosis d
          LEFT JOIN Disease ds ON ds.diseaseId = d.diseaseId`
     );
-    const top = getAll<{ diseaseId: string; nameEn?: string; nameAm?: string; c: number }>(
-        `SELECT d.diseaseId, ds.nameEn, ds.nameAm, COUNT(*) as c
+    const top = getAll<{ diseaseId: string; nameEn?: string; nameAm?: string; nameOro?: string; c: number }>(
+        `SELECT d.diseaseId, ds.nameEn, ds.nameAm, ds.nameOro, COUNT(*) as c
          FROM Diagnosis d
          LEFT JOIN Disease ds ON ds.diseaseId = d.diseaseId
          GROUP BY d.diseaseId
@@ -438,9 +441,10 @@ export function getTopDiseases(limit = 5) {
         diseaseId: string;
         nameEn?: string;
         nameAm?: string;
+        nameOro?: string;
         count: number;
     }>(
-        `SELECT d.diseaseId, ds.nameEn, ds.nameAm, COUNT(*) as count
+        `SELECT d.diseaseId, ds.nameEn, ds.nameAm, ds.nameOro, COUNT(*) as count
          FROM Diagnosis d
          LEFT JOIN Disease ds ON ds.diseaseId = d.diseaseId
          GROUP BY d.diseaseId

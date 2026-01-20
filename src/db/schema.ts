@@ -24,9 +24,17 @@ export function initDb() {
     diseaseId TEXT PRIMARY KEY,
     nameEn TEXT,
     nameAm TEXT,
+    nameOro TEXT,
     symptoms TEXT,
-    advice TEXT
+    advice TEXT,
+    adviceAm TEXT,
+    adviceOro TEXT
   );`);
+
+  // Migration: Add new columns if they don't exist (for existing installs)
+  try { db.execute('ALTER TABLE Disease ADD COLUMN nameOro TEXT'); } catch (e) { }
+  try { db.execute('ALTER TABLE Disease ADD COLUMN adviceAm TEXT'); } catch (e) { }
+  try { db.execute('ALTER TABLE Disease ADD COLUMN adviceOro TEXT'); } catch (e) { }
 
   db.execute(`CREATE TABLE IF NOT EXISTS Diagnosis (
     diagnosisId TEXT PRIMARY KEY,

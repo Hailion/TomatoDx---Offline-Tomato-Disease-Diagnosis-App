@@ -81,8 +81,21 @@ export default function ResultScreen() {
       // Get disease name from database, fallback to translations
       const diseaseNameEn = diagnosis.nameEn || t(`diseases.${diseaseId}.name`, { lng: 'en', defaultValue: 'Unknown' });
       const diseaseNameAm = diagnosis.nameAm || t(`diseases.${diseaseId}.name`, { lng: 'am', defaultValue: diseaseNameEn });
-      const diseaseName = i18n.language === 'am' ? diseaseNameAm : diseaseNameEn;
-      const diseaseNameAlt = i18n.language === 'am' ? diseaseNameEn : diseaseNameAm;
+      const diseaseNameOro = diagnosis.nameOro || t(`diseases.${diseaseId}.name`, { lng: 'oro', defaultValue: diseaseNameEn });
+
+      let diseaseName = diseaseNameEn;
+      let diseaseNameAlt = diseaseNameAm;
+
+      if (i18n.language === 'am') {
+        diseaseName = diseaseNameAm;
+        diseaseNameAlt = diseaseNameEn;
+      } else if (i18n.language === 'oro') {
+        diseaseName = diseaseNameOro;
+        diseaseNameAlt = diseaseNameEn;
+      } else {
+        diseaseName = diseaseNameEn;
+        diseaseNameAlt = diseaseNameAm;
+      }
 
       // Determine severity from disease info or confidence
       // Determine severity based on disease and confidence (same as history)

@@ -358,6 +358,7 @@ const styles = StyleSheet.create({
   statItem: {
     flex: 1,
     alignItems: 'center',
+
   },
   statNumber: {
     fontSize: 24,
@@ -367,6 +368,7 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 12,
     fontWeight: '500',
+    textAlign: 'center',
   },
   statDivider: {
     width: 1,

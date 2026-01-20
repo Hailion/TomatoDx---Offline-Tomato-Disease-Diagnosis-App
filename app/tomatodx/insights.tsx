@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
         borderWidth: .5
     },
     cardValue: { fontSize: 20, fontWeight: '700' },
-    cardLabel: { fontSize: 12 },
+    cardLabel: { fontSize: 12, textAlign: 'center' },
 
     topDiseaseCard: {
         marginHorizontal: 20,

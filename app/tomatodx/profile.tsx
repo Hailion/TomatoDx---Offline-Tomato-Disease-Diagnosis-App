@@ -12,6 +12,27 @@ import { useTheme } from '../../src/contexts/ThemeContext';
 import { getCurrentUser, upsertUser } from '../../src/db/repository';
 import { cancelNotifications, getNotificationStatus, registerForPushNotificationsAsync, scheduleDailyReminder } from '../../src/utils/notifications';
 
+const LANGUAGES = [
+    {
+        code: 'en',
+        name: 'English',
+        nativeName: 'English',
+        flag: '🇺🇸',
+    },
+    {
+        code: 'am',
+        name: 'Amharic',
+        nativeName: 'አማርኛ',
+        flag: '🇪🇹',
+    },
+    {
+        code: 'oro',
+        name: 'Afan Oromo',
+        nativeName: 'Afaan Oromoo',
+        flag: '🇪🇹',
+    }
+];
+
 export default function ProfileScreen() {
     const router = useRouter();
     const { theme, themeMode, setThemeMode } = useTheme();
@@ -22,6 +43,7 @@ export default function ProfileScreen() {
     const [userName, setUserName] = useState('User');
     const [userNickname, setUserNickname] = useState('');
     const [editModalVisible, setEditModalVisible] = useState(false);
+    const [languageModalVisible, setLanguageModalVisible] = useState(false);
     const [editName, setEditName] = useState('');
     const [editNickname, setEditNickname] = useState('');
 
@@ -161,10 +183,9 @@ export default function ProfileScreen() {
         {
             icon: 'language',
             title: t('profile.language'),
-            value: i18n.language === 'en' ? 'English' : (i18n.language === 'am' ? 'Amharic' : 'French'),
+            value: i18n.language === 'en' ? 'English' : (i18n.language === 'am' ? 'Amharic' : 'Affan Oromo'),
             onPress: () => {
-                const nextLang = i18n.language === 'en' ? 'am' : (i18n.language === 'am' ? 'oro' : 'en');
-                i18n.changeLanguage(nextLang);
+                setLanguageModalVisible(true);
             },
         },
         {
@@ -418,6 +439,69 @@ export default function ProfileScreen() {
                         </View>
                     </View>
                 </Modal>
+
+                {/* Language Selection Modal */}
+                <Modal
+                    visible={languageModalVisible}
+                    transparent
+                    animationType="slide"
+                    onRequestClose={() => setLanguageModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={[styles.modalContent, { backgroundColor: theme === 'dark' ? `${colors.card}F0` : `${colors.card}F0`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                            <View style={[styles.modalHeader, { borderBottomColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                                    {t('profile.language')}
+                                </Text>
+                                <TouchableOpacity onPress={() => setLanguageModalVisible(false)}>
+                                    <Ionicons name="close" size={24} color={colors.text} />
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={styles.languageList}>
+                                {LANGUAGES.map((lang) => (
+                                    <TouchableOpacity
+                                        key={lang.code}
+                                        style={[
+                                            styles.languageOption,
+                                            i18n.language === lang.code && styles.languageOptionActive,
+                                            {
+                                                borderColor: i18n.language === lang.code ? colors.primary : 'transparent',
+                                                backgroundColor: i18n.language === lang.code ? `${colors.primary}15` : 'transparent'
+                                            }
+                                        ]}
+                                        onPress={async () => {
+                                            await i18n.changeLanguage(lang.code);
+                                            await AsyncStorage.setItem('user-language', lang.code);
+                                            setLanguageModalVisible(false);
+                                        }}
+                                    >
+                                        <View style={styles.languageInfo}>
+                                            <Text style={styles.languageFlag}>{lang.flag}</Text>
+                                            <View>
+                                                <Text style={[styles.languageName, { color: colors.text }]}>
+                                                    {lang.name}
+                                                </Text>
+                                                <Text style={[styles.languageNative, { color: colors.textSecondary }]}>
+                                                    {lang.nativeName}
+                                                </Text>
+                                            </View>
+                                        </View>
+
+                                        <View style={[
+                                            styles.radioButton,
+                                            { borderColor: i18n.language === lang.code ? colors.primary : colors.textTertiary }
+                                        ]}>
+                                            {i18n.language === lang.code && (
+                                                <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />
+                                            )}
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             </View>
         </ImageBackground>
 
@@ -652,5 +736,49 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: '600',
+    },
+    languageList: {
+        gap: 8,
+        paddingVertical: 12,
+    },
+    languageOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 12,
+        borderRadius: 10,
+        borderWidth: 1,
+    },
+    languageOptionActive: {
+        // Active styles driven by inline styles for dynamic colors
+    },
+    languageInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    languageFlag: {
+        fontSize: 24,
+    },
+    languageName: {
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    languageNative: {
+        fontSize: 13,
+    },
+    radioButton: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 2,
+    },
+    radioInner: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 6,
     },
 });

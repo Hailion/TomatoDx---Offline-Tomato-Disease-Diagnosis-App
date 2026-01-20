@@ -98,8 +98,22 @@ export default function HistoryScreen() {
         // Get disease name from translations
         const diseaseNameEn = t(`diseases.${diseaseId}.name`, { lng: 'en', defaultValue: d.nameEn || 'Unknown' });
         const diseaseNameAm = t(`diseases.${diseaseId}.name`, { lng: 'am', defaultValue: d.nameAm || diseaseNameEn });
-        const diseaseName = i18n.language === 'am' ? diseaseNameAm : diseaseNameEn;
-        const diseaseNameAlt = i18n.language === 'am' ? diseaseNameEn : diseaseNameAm;
+        const diseaseNameOro = t(`diseases.${diseaseId}.name`, { lng: 'oro', defaultValue: d.nameOro || diseaseNameEn });
+
+        let diseaseName = diseaseNameEn;
+        let diseaseNameAlt = diseaseNameAm; // Default alt to Amharic if English is primary? Or English if Amharic is primary?
+        // Existing logic was: if Am -> show Am (pri), En (alt). If En -> show En (pri), Am (alt).
+
+        if (i18n.language === 'am') {
+          diseaseName = diseaseNameAm;
+          diseaseNameAlt = diseaseNameEn;
+        } else if (i18n.language === 'oro') {
+          diseaseName = diseaseNameOro;
+          diseaseNameAlt = diseaseNameEn;
+        } else {
+          diseaseName = diseaseNameEn;
+          diseaseNameAlt = diseaseNameAm;
+        }
 
         const date = new Date(d.diagnosedAt);
         const timestamp = date.getTime();

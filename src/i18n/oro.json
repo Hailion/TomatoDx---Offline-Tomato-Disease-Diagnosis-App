@@ -1,0 +1,842 @@
+{
+    "home": {
+        "title": "Baafata",
+        "subtitle": "Qorannoo dhibee timaatimaa interneetii malee qotee bulaaf",
+        "capture": "Waraabi",
+        "history": "Seenaa",
+        "settings": "Qindiiwwan",
+        "tagline": "Dhibee timaatimaa AI dhaan adda baasu",
+        "quickScan": "Sakatta'iinsa Saffisaa",
+        "quickScanDesc": "Baala timaatimaa saffisaan sakatta'i",
+        "scanHistory": "Seenaa Sakatta'iinsaa",
+        "scanHistoryDesc": "Bu'aawwan sakatta'iinsa darban ilaali",
+        "insights": "Hubannoo",
+        "insightsDesc": "Gorsaa fi yaada qonnaa argadhu",
+        "quickActions": "Tarkaanfii Saffisaa",
+        "recentActivity": "Sochii Dhihoo",
+        "lastScan": "Sakatta'iinsa dhumaa",
+        "totalScans": "Ida'ama Sakatta'iinsaa",
+        "accuracy": "Sirummaa",
+        "healthy": "Fayyaa",
+        "last7Days": "Guyyoota 7 darban",
+        "noData": "Daataan hin jiru"
+    },
+    "scan": {
+        "title": "Baala Sakatta'i",
+        "navtitle": "Sakatta'i",
+        "subtitle": "Suuraa baala timaatimaa kaasi ykn galchi",
+        "takePhoto": "Suuraa Kaasi",
+        "takePhotoDesc": "Baala waraabuuf kaameeraa fayyadami",
+        "chooseGallery": "Kuusaa Keessaa Filadhu",
+        "chooseGalleryDesc": "Suuraa duraan jiru filadhu",
+        "tips": "Akkaataa sakatta'iinsa gaariin itti taasisu",
+        "tip1": "Kaameeraa sen.meetira 20–30 fageessii qabi, baalli guutuu iskiriinii haguuguu isaa mirkaneeffadhu.",
+        "tip2": "Bilbila kee sakondii 2-3f hin sochoosin, suuraan qulqulluu ta'uu qaba.",
+        "tip3": "Ifa uumamaa gaarii fayyadami, gaaddidduu cimaa fi duuba dukkanaa'aa irraa fagaadhu.",
+        "recentScan": "Sakatta'iinsa dhihoo",
+        "recentScanDesc": "Sakatta'iinsa baala timaatimaa darban ilaali fi bu'aa isaanii banti",
+        "cameraPermission": "Eeyyama Kaameraa Barbaachisa",
+        "cameraPermissionDesc": "Maaloo baala sakatta'uuf eeyyama kaameraa kenni",
+        "grantPermission": "Eeyyama Kenni",
+        "alignGuide": "Baala timaatimaa tokko sanduuqa armaan gadii keessatti qixxeeessi, sana booda 'Suuraa Kaasi' tuqi.",
+        "error": "Dogoggora",
+        "captureError": "Suuraa kaasuun hin danda'amne",
+        "permissionDenied": "Eeyyamni Hin Kennamne",
+        "galleryPermissionDesc": "Maaloo suuraa filachuuf eeyyama daawwitii kenni",
+        "galleryError": "Daawwitii banuun hin danda'amne"
+    },
+    "preview": {
+        "title": "Dur-argii",
+        "ready": "Qorannoof Qophaa'e",
+        "highQuality": "Qulqullina Olaanaa",
+        "tipsTitle": "Qorannoof Qophaa'e",
+        "tipsText": "Suuraan kun qorannoof baay'ee gaariidha. Baalli sirriitti mul'achuu fi ifa gaarii qabaachuu isaa mirkaneeffadhu.",
+        "analyze": "Suuraa Qoradhu",
+        "retake": "Irra Deebi'ii Kaasi",
+        "analyzing": "Qorachaa jira...",
+        "analyzeSuccess": "Qorannoon xumurameera",
+        "analyzeFailed": "Qorannoon hin milkoofne",
+        "error": "Dogoggora",
+        "analysisError": "Qorannoon hin milkoofne",
+        "lowConfidence": "Bu'aa Sirummaa Gad-aanaa",
+        "lowConfidenceMessage": "Sirummaan qorannoo 60% gadi. Kunis ifa gahaa dhabuu, suuraa ifa mitii, ykn mallattoo hin baramne irraa ta'uu danda'a. Irra deebitanii kaasuun gorfama.",
+        "retakeRecommended": "Irra Deebi'ii Kaasi",
+        "proceedAnyway": "Ittuma Fufi"
+    },
+    "result": {
+        "title": "Bu'aawwan",
+        "confidence": "Sadarkaa Sirummaa",
+        "symptoms": "Mallattoolee",
+        "treatment": "Yaala Gorsaa",
+        "immediateActions": "Tarkaanfiiwwan Hatattamaa",
+        "longTermActions": "Tarkaanfiiwwan Yeroo Dheeraa",
+        "prevention": "Gorsaa Ittisaa",
+        "quickActions": "Tarkaanfii Saffisaa",
+        "addNotes": "Yaada",
+        "addNotesDesc": "Waa'ee qorannoo kanaa yaada kenni",
+        "notesPlaceholder": "Yaada kee asitti galchi...",
+        "save": "Bu'aa Olkaa'i",
+        "saved": "Olkaa'ameera",
+        "savedMessage": "Bu'aan seenaa kee keessatti olkaa'ameera",
+        "share": "Qoodi",
+        "shareMessage": "Bu'aa kana namoota biroof qoodi",
+        "newScan": "Sakatta'iinsa Haaraa",
+        "noDescription": "Ibsi hin jiru",
+        "noTreatment": "Yaalli hin jiru",
+        "generalPrevention": "Ittisa Waliigalaa",
+        "loading": "Fe'aa jira...",
+        "error": "Dogoggora",
+        "notFound": "Dhibeen hin argamne",
+        "loadError": "Dhibee fe'uun hin danda'amne",
+        "shareTitle": "Qorannoo TomatoDx",
+        "disease": "Dhibee",
+        "severity": "Cimina",
+        "downloadApp": "Dhibee timaatimaa sirriitti adda baasuuf TomatoDx buufadhaa.",
+        "shareDesc": "Akkaataa bu'aa kana itti qooddu filadhu",
+        "shareImage": "Suuraa Qoodi",
+        "shareImageDesc": "Suuraa dhibee qoodi",
+        "shareText": "Gabaasa Qoodi",
+        "shareTextDesc": "Gabaasa qorannoo bal'aa qoodi",
+        "noImageError": "Suuraan qooduuf hin jiru"
+    },
+    "history": {
+        "title": "Seenaa",
+        "subtitle": "Sakatta'iinsa {{count}} xumurame",
+        "totalScans": "Qoranno Waliigalaa",
+        "accuracy": "Sirummaa",
+        "recentScans": "Sakatta'iinsa Dhihoo",
+        "noScans": "Sakatta'iinsi hin jiru",
+        "noScansDesc": "Bu'aa asitti arguuf baala timaatimaa jalqabaa sakatta'i",
+        "avgConfidence": "Giddu-galeessa Sirummaa",
+        "healthy": "Fayyaa",
+        "noResults": "Bu'aan hin argamne",
+        "noResultsDesc": "Guyyaa murtaa'aa kanaaf bu'aan hin argamne",
+        "resetFilters": "Filtarii Haqi",
+        "status": {
+            "title": "Haala",
+            "healthy": "Fayyaa",
+            "diseased": "Dhukkubsataa",
+            "all": "Hunda",
+            "highRisk": "Balaa Olaanaa",
+            "treated": "Yaalame",
+            "pending": "Eegaa Jira"
+        },
+        "filters": {
+            "title": "Filtarii",
+            "healthy": "Fayyaa",
+            "diseased": "Dhukkubsataa",
+            "all": "Hunda",
+            "highRisk": "Balaa Olaanaa",
+            "treated": "Yaalame",
+            "pending": "Eegaa Jira"
+        },
+        "sort": {
+            "title": "Tartiibessuu",
+            "date": "Guyyaa",
+            "confidence": "Sirummaa",
+            "newest": "Haaraa",
+            "oldest": "Dulloomaa",
+            "highConfidence": "Sirummaa Olaanaa",
+            "lowConfidence": "Sirummaa Gad-aanaa"
+        },
+        "deleteConfirmTitle": "Qorannoo Haquu?",
+        "deleteConfirmMessage": "Kun qorannoo kana seenaa kee irraa guutummaatti ni haqa.",
+        "deleteError": "Qorannoo haquun hin danda'amne"
+    },
+    "privacy": {
+        "title": "Iccitii & Daataa",
+        "description": "TomatoDx suuraa hunda bilbila kee irratti AI fayyadamuun qorata. Suuraan kee yoo ati qorannoof qooduuf filatte malee bilbila kee keessaa hin bahu.",
+        "localProcessing": "Qorannoon suuraa hundi bilbila kee irratti raawwatama",
+        "noDataCollection": "Daataan dhuunfaa kamiyyuu hin sassaabamu ykn hin kuufamu",
+        "secureStorage": "Seenaan sakatta'iinsa kee bilbila kee irratti sirriitti kuufameera",
+        "researchTitle": "TomatoDx Fooyyessuuf Gargaari",
+        "researchDescription": "Sirummaa adda baasuu dhibee qotee bultoota hundaaf fooyyessuuf suuraalee maqaa hin qabne qooduun gargaari.",
+        "researchOptIn": "Suuraalee maqaa hin qabne qorannoof qoodi (filannoo)",
+        "acceptAndContinue": "Waliigali & Itti Fufi",
+        "decline": "Didi"
+    },
+    "profile": {
+        "title": "Piroofayilii",
+        "theme": "Teema",
+        "light": "Ifaa",
+        "dark": "Dukkana",
+        "editProfile": "Piroofayilii Gulaali",
+        "name": "Maqaa",
+        "namePlaceholder": "Maqaa galchi",
+        "nickname": "Maqaa Masoo",
+        "nicknamePlaceholder": "Maqaa masoo galchi",
+        "system": "Sirna",
+        "settings": "Sirreesaa",
+        "language": "Afaan",
+        "notifications": "Beeksisa",
+        "analytics": "Ibsa",
+        "help": "Gargaarsa & Deeggarsa",
+        "about": "Waa'ee",
+        "success": "Milkaa'e",
+        "profileUpdated": "Piroofayiliin milkaa'inaan haarome",
+        "error": "Dogoggora",
+        "dailyReminderEnabled": "Yaadachiisni guyyaa eeyyamameera!",
+        "dailyReminderDisabled": "Yaadachiisni guyyaa dhorkameera!",
+        "notification": {
+            "title": "Sakatta'iinsa TomatoDx 🍅",
+            "body": "Yeroon timaatima kee sakatta'uu gaheera! Dhibee dafanii adda baasuun oomisha kee baraara."
+        }
+    },
+    "onboarding": {
+        "getStarted": "Jalqabi",
+        "steps": {
+            "welcome": {
+                "icon": "🍅",
+                "title": "Baga gara TomatoDx Dhuftan",
+                "description": "Adda baasu dhibee timaatimaa AI dhaan harkaan qabdu"
+            },
+            "capture": {
+                "icon": "📸",
+                "title": "Waraabi & Sakatta'i",
+                "description": "Fayyaa timaatimaa qorachuuf suuraa kaasi ykn daawwitii irraa olkaa'i"
+            },
+            "analysis": {
+                "icon": "🤖",
+                "title": "Qorannoo AI",
+                "description": "Bu'aa qorannoo sirrii fi saffisaa maashin leerniingii fayyadamuun argadhu"
+            },
+            "history": {
+                "icon": "📊",
+                "title": "Seenaa Hordofi",
+                "description": "Bulchiinsa qonnaa fooyyessuuf bu'aawwan darban olkaa'i fi ilaali"
+            }
+        }
+    },
+    "help": {
+        "title": "Gargaarsa & Deeggarsa",
+        "navtitle": "Gargaarsa/Deeggarsa",
+        "welcomeTitle": "Maal isin gargaarru?",
+        "welcomeText": "Deebii gaaffilee yeroo baay'ee gaafataman argadhu ykn garee deeggarsa keenya qunnami.",
+        "faq": "Gaaffilee Yeroo Baay'ee Gaafataman",
+        "contact": "Nu Qunnamaa",
+        "tips": "Gorsa Saffisaa Bu'aa Gaariif",
+        "faqs": {
+            "accuracy": {
+                "question": "Sirummaan adda baasuu dhibee hammamii?",
+                "answer": "Moodelli AI keenya haala mijataa keessatti dhibeewwan timaatimaa beekamoo adda baasuu irratti sirummaa 92% qaba."
+            },
+            "diseases": {
+                "question": "Gosa dhibeewwan kam fa'a adda baasuu danda'a?",
+                "answer": "Nuti Early Blight, Late Blight, Bacterial Spot, Leaf Mold fi haala biqiltuu fayyaa adda baasuu dandeenya."
+            },
+            "photo": {
+                "question": "Suuraa sakatta'iinsaaf gaarii ta'e akkamittan kaasa?",
+                "answer": "Ifa gaarii, baala dhibee qabu irratti xiyyeeffachuu fi kaameeraa sochii malee qabuun suuraa qulqulluu argachuuf barbaachisaadha."
+            },
+            "unclear": {
+                "question": "Bu'aan ifa yoo hin taane maal gochuu qaba?",
+                "answer": "Suuraa irra deebi'ii ifa gaariin kaasi ykn ogeessa qonnaa mariisisi."
+            }
+        },
+        "contactMethods": {
+            "email": {
+                "title": "Deeggarsa Imeelii",
+                "description": "Imeeliin gargaarsa argadhu"
+            },
+            "website": {
+                "title": "Weebsaayitii",
+                "description": "Beekkumsa keenya daawwadhu"
+            },
+            "chat": {
+                "title": "Chat Kallattii",
+                "description": "Ogeessota keenya waliin haasa'i"
+            }
+        },
+        "quickTips": {
+            "tip1": "Suuraaf ifa uumamaa fayyadami",
+            "tip2": "Kallattii adda addaatiin baala dhibee qabu waraabi",
+            "tip3": "Kutaalee fayyaa fi dhibee qaban hammachiisi"
+        }
+    },
+    "about": {
+        "title": "Waa'ee TomatoDx",
+        "subtitle": "Adda Baasuu Dhibee Timaatimaa AI-Geggeeffamu",
+        "version": "Varshinii",
+        "mission": "Ergama Keenya",
+        "missiondesc": "TomatoDx qotee bultoota fi oomishtoota timaatimaa dhibee sirrii fi hatattamaan adda baasuu AI fayyadamuun gargaara. Kaayyoon keenya yaala biqiltuu hundaaf akka dhihaatu taasisuun oomisha guddisuu fi itti fayyadama kemikaalaa hir'isuudha.",
+        "features": "Amaloota",
+        "featuresList": {
+            "aiDetection": {
+                "title": "Adda Baasuu AI",
+                "description": "Maashin leerniingii olaanaa dhibee sirriitti adda baasuuf"
+            },
+            "instantResults": {
+                "title": "Bu'aa Hatattamaa",
+                "description": "Bu'aa qorannoo sekondii muraasa keessatti gorsa yaalaa waliin argadhu"
+            },
+            "scanHistory": {
+                "title": "Seenaa Sakatta'iinsaa",
+                "description": "Fayyaa biqiltuu kee yeroo dheeraaf seenaa guutuu waliin hordofi"
+            },
+            "multiLanguage": {
+                "title": "Afaan",
+                "description": "Ingiliffaa fi Amaariffaan/Afaan Oromootiin argama"
+            }
+        },
+        "technology": "Teekninoolojii",
+        "techStack": {
+            "tensorFlow": "TensorFlow Lite",
+            "reactNative": "React Native",
+            "computerVision": "Computer Vision",
+            "privacyFirst": "Dursi Iccitiif"
+        },
+        "team": "Garee Keenya",
+        "teamMembers": {
+            "mobileDevelopers": {
+                "title": "Oomishtoota Moobaayilii",
+                "name": "Haileamlak Gashaw",
+                "role": "Ijaarsa Appii",
+                "description": "Muuxannoo fayyadamaa salphaa fi hubatamaa uumuu"
+            },
+            "agricultureExperts": {
+                "title": "Ogeessota Qonnaa",
+                "name": "Admassu Ejigu",
+                "role": "Plant Pathology",
+                "description": "Adda baasuu dhibee sirrii fi gorsa yaalaa mirkaneessuu"
+            },
+            "aiEngineers": {
+                "title": "Injinieroora AI",
+                "name": "Habtamu Mulusew",
+                "name2": "Kemal Seid",
+                "role": "Machine Learning",
+                "description": "Moodela kompiitar viizhinii olaanaa oomishuu fi leenjisuu"
+            },
+            "dataAnalyst": {
+                "title": "Daataa Analistii",
+                "name": "Derara Waktola",
+                "role": "Qorannoo Daataa",
+                "description": "Daataa qorachuu fi hiikuun hubannoo fi gorsa kennuu"
+            }
+        },
+        "footer": {
+            "madeWith": "Addatti qotee bultoota Itoophiyaaf kan hojjetame",
+            "copyright": "2025 TomatoDx. Mirgi eegamaadha.",
+            "privacyPolicy": "Imaammata Iccitii",
+            "termsOfService": "Haalawwan Tajaajilaa"
+        },
+        "modal": {
+            "title": "Admin Mode Baname",
+            "subtitle": "Amma admin paaneliif eeyyama argatteetta.",
+            "goToAdmin": "Gara Admin"
+        }
+    },
+    "admin": {
+        "title": "Admin Paanelii",
+        "caution": "Admin Mode - Of eeggannoon fayyadami",
+        "online": "Onlaayinii",
+        "updateInstructions": "Qajeelfama haaromsa moodelaa",
+        "systemInformation": "Odeeffannoo Sirnaa",
+        "appVersion": "Varshinii Appii",
+        "modelVersion": "Varshinii Moodelaa",
+        "lastUpdated": "Yeroo dhuma haarome",
+        "totalScans": "Ida'ama Sakatta'iinsaa",
+        "modelManagement": {
+            "title": "Bulchiinsa Moodelaa",
+            "updateModel": {
+                "title": "Moodela Metadata (Lukaalii)",
+                "uploadModel": "Moodela Metadata Filadhu",
+                "uploadModelDesc": "Meeshaan kun moodela metadata lukaalii qofa dubbisa fi galmeessa. Moodela AI TomatoDx fayyadamu hin bakka buusu. Haaromsi moodelaa ofii isaa appii haaraa waliin dhufa.",
+                "selectModelFile": "Moodela Metadata Filadhu"
+            },
+            "updateInstructions": "Moodela TensorFlow.js lukaalii qoradhu ykn galmeessi",
+            "runSystemCheck": "Qorannoo Sirnaa Raawwadhu",
+            "currentModel": "Moodela Ammaa",
+            "checkUpdates": "Haaromsa Ilaali",
+            "lastChecked": "Yeroo dhuma ilaalame",
+            "noUpdates": "Haaromsi hin jiru",
+            "updateAvailable": "Haaromsi Jira",
+            "updating": "Metadata hojjechaa jira...",
+            "updateSuccess": "Moodela metadata milkaa'inaan haarome.",
+            "updateFailed": "Moodela metadata haaromsuun hin danda'amne."
+        },
+        "databaseManagement": {
+            "title": "Bulchiinsa Daatabaasee",
+            "edit": {
+                "title": "Daatabeese Gulaali",
+                "titleDesc": "Tajaajila gulaalaa daatabeese. Odeeffannoo dhibee asitti gulaali.",
+                "editDisease": "DB Gulaali Dhibee",
+                "editDiseaseDesc": "Odeeffannoo dhibee fooyyessi"
+            }
+        },
+        "analytics": {
+            "title": "Ibsa (Analytics)",
+            "overviewTitle": "Waliigala",
+            "loading": "Ibsa fe'aa jira...",
+            "summaryTitle": "Ida'ama qorannoo: {{count}}",
+            "avgConfidence": "Giddu-galeessa sirummaa: {{value}}",
+            "healthyCount": "Baala fayyaa: {{count}}",
+            "successRateLabel": "Sadarkaa milkaa'inaa",
+            "topDisease": "Baay'inaan kan argame: {{name}} ({{count}})",
+            "last7Days": "Sakatta'iinsa guyyoota 7 darban",
+            "levels": "Sadarkaa Sirummaa - Gad-aanaa: {{low}}, Giddu-galeessa: {{medium}}, Olaanaa: {{high}}",
+            "lowRisk": "Balaa Gad-aanaa",
+            "mediumRisk": "Balaa Giddu-galeessa",
+            "highRisk": "Balaa Olaanaa",
+            "verifyingAccess": "Eeyyama admin mirkaneessaa jira...",
+            "authError": "Eeyyama admin mirkaneessuun hin danda'amne.",
+            "loadError": "Daataa ibsa fe'uun hin danda'amne.",
+            "exportData": "Daataa Ergi",
+            "exportSuccess": "Daataan ibsaa milkaa'inaan ergame.",
+            "exportError": "Daataa ibsaa erguun hin danda'amne.",
+            "exportLocation": {
+                "downloads": "Fookdarii Downloads keessatti olkaa'ame.",
+                "internal": "Kuusaa keessoo appii keessatti olkaa'ame."
+            },
+            "subtitle": "Qorannoo Bal'aa & Hubannoo",
+            "tabOverview": "Waliigala",
+            "tabDiseases": "Dhibeewwan",
+            "tabTrends": "Adeemsa",
+            "totalScansLabel": "Ida'ama sakatta'iinsaa",
+            "healthyLabel": "Baala fayyaa",
+            "atRiskLabel": "Baala balaa irra jiru",
+            "riskLabel": "Balaa",
+            "lowRiskLabel": "Gad-aanaa",
+            "mediumRiskLabel": "Giddu-galeessa",
+            "highRiskLabel": "Olaanaa",
+            "riskDistributionTitle": "Qoodiinsa Balaa",
+            "sevenDayTrend": "Adeemsa Guyyaa 7",
+            "topDiseasesTitle": "Dhibeewwan Baay'inaan Ar gaman",
+            "topDiseasesSubtitle": "Haalawwan yeroo baay'ee adda baafaman",
+            "monthlyTrendsTitle": "Adeemsa Ji'aa",
+            "dataManagementTitle": "Bulchiinsa Daataa",
+            "exportDataButton": "Daataa Ergi",
+            "clearDataButton": "Daataa Haqi",
+            "exportModal": {
+                "title": "Ergi",
+                "fileNamePlaceholder": "Maqaa faayilii",
+                "json": "JSON",
+                "csv": "CSV",
+                "cancel": "Balleessi"
+            },
+            "clearModal": {
+                "title": "Daataa Hunda Haquu?",
+                "message": "Kun galmee hunda ni haqa. Kun hin deebi'u."
+            },
+            "clearSuccess": "Daataan ibsaa hundi milkaa'inaan haqameera.",
+            "clearError": "Daataa ibsaa haquun hin danda'amne."
+        },
+        "system": {
+            "title": "Nageenya",
+            "systemAdministration": "Bulchiinsa Sirnaa",
+            "lockAdmin": {
+                "title": "Admin Mode Cufi",
+                "resetAdminAccess": "Eeyyama Admin Haaromsa",
+                "resetQuestion": "Admin mode cufuu barbaadduu?",
+                "description": "Admin mode cufuun heeyyama malee seensaa admin paaneliitti taasifamu ni dhorka."
+            },
+            "removeAdminAccess": "Eeyyama Admin Balleessi"
+        },
+        "auth": {
+            "title": "Mirkaneessa Admin",
+            "subtitle": "Admin mode banuuf jecha darbii admin galchi.",
+            "passwordPlaceholder": "Jecha Darbii Galchi",
+            "unlockButton": "Admin Mode Bani",
+            "errorAllRequired": "Dirqama hunda guutuu qabda",
+            "errorMismatch": "Jechi darbii wal hin simne",
+            "errorIncorrect": "Jechi darbii dogoggora",
+            "errorCurrentIncorrect": "Jechi darbii ammaa dogoggora",
+            "updateSuccess": "Jechi darbii milkaa'inaan haarome.",
+            "updateError": "Jecha darbii haaromsuun hin danda'amne.",
+            "verifyError": "Eeyyama admin mirkaneessuun hin danda'amne."
+        },
+        "password": {
+            "changeTitle": "Jecha Darbii Jijjiiri",
+            "changeDescription": "Admin mode banuuf jecha darbii admin galchi.",
+            "changeMessage": "Admin mode banuuf jecha darbii admin galchi.",
+            "currentPlaceholder": "Jecha Darbii Ammaa Galchi",
+            "newPlaceholder": "Jecha Darbii Haaraa Galchi",
+            "confirmPlaceholder": "Jecha Darbii Haaraa Mirkaneessi",
+            "errorAllRequired": "Dirqama hunda guutuu qabda",
+            "errorMismatch": "Jechi darbii wal hin simne",
+            "errorCurrentIncorrect": "Jechi darbii ammaa dogoggora",
+            "errorTooShort": "Jechi darbii yoo xiqqaate qubee 8 qabaachuu qaba.",
+            "changeButton": "Jecha Darbii Jijjiiri",
+            "changeSuccess": "Jechi darbii milkaa'inaan jijjiirame.",
+            "changeError": "Jecha darbii jijjiiruun hin danda'amne.",
+            "updateError": "Jecha darbii haaromsuun hin danda'amne."
+        },
+        "recentActivity": "Sochii Dhihoo",
+        "info": "Admin paanelii misoomaa. Oomishni mirkaneessa sirrii barbaada."
+    },
+    "common": {
+        "ok": "TOLE",
+        "cancel": "Balleessi",
+        "delete": "Haqi",
+        "save": "Olkaa'i",
+        "share": "Qoodi",
+        "confirm": "Mirkaneessi",
+        "edit": "Gulaali",
+        "loading": "Fe'aa jira...",
+        "error": "Dogoggora",
+        "success": "Milkaa'e",
+        "skip": "Biras Darbi",
+        "continue": "Itti Fufi",
+        "back": "Duuba",
+        "getStarted": "Jalqabi",
+        "retry": "Irra Deebi'ii Yaali",
+        "close": "Cufi",
+        "later": "Booda",
+        "version": "Varshinii"
+    },
+    "diseases": {
+        "early_blight": {
+            "name": "Blightii Ganamaa",
+            "description": "Dhibee fangasii baala, jirma, fi firii timaatimaa miidhu",
+            "symptoms": [
+                "Tuffee gurraacha baala dulloomaa irratti",
+                "Keelloo fi gurraacha qarqara baalaa",
+                "Xiyya geengoo madaa keessatti",
+                "Baalli yeroo malee harca'uu"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Baala miidhame hatattamaan balleessi",
+                    "Funjisayidii kopperii qabu biifi",
+                    "Sochii qilleensaa fooyyessi",
+                    "Bishaan gubbaa irraan jallisuu dhiisi"
+                ],
+                "longTerm": [
+                    "Waggaa waggaan bakka biqiltuu jijjiiri",
+                    "Sanyii dhibee dandamatu fayyadami",
+                    "Biqiltuuwwan gidduutti fageenya sirrii eegi",
+                    "Haftee biqiltuu dhuma waqtii irratti balleessi"
+                ]
+            },
+            "prevention": [
+                "Bishaan, jala biqiltuu jallisi",
+                "Biqiltuuwwan gidduutti fageenya 24-36 inch eegi",
+                "Biqiltuuwwan jala haadumi ykn mulch godhi",
+                "Torban torbaniin biqiltuu hordofi"
+            ]
+        },
+        "late_blight": {
+            "name": "Blightii Galgalaa (Late Blight)",
+            "description": "Dhibee fangasii cimaa baala, jirma, fi firii miidhu",
+            "symptoms": [
+                "Madaa bifa zayitaa ykn daalacha qabu",
+                "Guddina fangasii adi jala baalaatti",
+                "Biqiltuun saffisaan baduu",
+                "Firii gurraacha'uu fi tortoruu"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Biqiltuuwwan miidhaman hunda hatattamaan balleessi",
+                    "Chlorothalonil ykn mancozeb fayyadami",
+                    "Dhangala'uu bishaanii mirkaneessi",
+                    "Biqiltuu dhibamaa balleessi"
+                ],
+                "longTerm": [
+                    "Sanyii dhibee dandamatu dhaabi",
+                    "Bakka biqiltuu jijjiiri",
+                    "Dhangala'uu bishaanii fooyyessi",
+                    "Biqiltuuwwan ofiin biqilan balleessi"
+                ]
+            },
+            "prevention": [
+                "Jallisi gubbaa irraa dhiisi",
+                "Fageenya biqiltuu gahaa eegi",
+                "Jallisi drip fayyadami",
+                "Sanyii dandamatu filadhu"
+            ]
+        },
+        "healthy": {
+            "name": "Fayyaa",
+            "description": "Biqiltuun timaatimaa kee mallattoo dhibee tokkollee hin agarsiisu",
+            "symptoms": [
+                "Baala magariisa, kan ifu",
+                "Misooma jirmaa cimaa",
+                "Guddina firii idilee"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Kunubsa ammaa itti fufi",
+                    "Jijjiirama kamiyyuu hordofi",
+                    "Sagantaa jallisii idilee eegi"
+                ],
+                "longTerm": [
+                    "Tarkaanfii ittisaa itti fufi",
+                    "Oomisha biyyee eegi",
+                    "Nyaata biqiltuu walirra hin cinne kenni"
+                ]
+            },
+            "prevention": [
+                "Gochaalee gaggaarii ammaa itti fufi",
+                "Hordoffii idilee",
+                "Sagantaa jallisii sirrii",
+                "Ferdilizeeshinii wal-madaalaa"
+            ]
+        },
+        "leaf_mold": {
+            "name": "Mooldii Baalaa (Leaf Mold)",
+            "description": "Dhibee fangasii haala jiidha qabu keessatti babal'atu",
+            "symptoms": [
+                "Tuffee magariisa ifaa gubbaa baala irratti",
+                "Guddina daalacha-buuni jala baala irratti",
+                "Baalli maramuu fi keelloo ta'uu",
+                "Baalli harca'uu (haala cimaa keessatti)"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Baala miidhame balleessi",
+                    "Qilleensa fooyyessi",
+                    "Funjisayidii kopperii fayyadami",
+                    "Jiidha naannoo biqiltuu hir'isi"
+                ],
+                "longTerm": [
+                    "Ittisuuf biifuu funjisayidii fayyadami",
+                    "Jiidha griinishouse to'adhu",
+                    "Sanyii dandamatu dhaabi",
+                    "Sochii qilleensaa fooyyessi"
+                ]
+            },
+            "prevention": [
+                "Jiidha 90% gadii eegi",
+                "Sochii qilleensaa gaarii uumi",
+                "Fageenya biqiltuu sirreessi",
+                "Baala jiisuun irraa fagaadhu"
+            ]
+        },
+        "septoria_leaf_spot": {
+            "name": "Septooriyaa (Septoria Leaf Spot)",
+            "description": "Dhibee fangasii tuffee xixiqqoo gurraacha baala irratti uumu",
+            "symptoms": [
+                "Tuffee xixiqqoo buuni baala irratti",
+                "Geengoo keelloo tuffee naannoo",
+                "Firiin gurraacha gidduutti mul'achuu",
+                "Baalli suuta suuta gara keellootti jijjiiramuu"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Baala miidhame balleessi",
+                    "Chlorothalonil fayyadami",
+                    "Sochii qilleensaa fooyyessi",
+                    "Bishaan jala qofa jallisi"
+                ],
+                "longTerm": [
+                    "Haftee biqiltuu balleessi",
+                    "Bakka biqiltuu jijjiiri",
+                    "Sanyii dandamatu fayyadami",
+                    "Meeshaalee qonnaa qulqulleessi"
+                ]
+            },
+            "prevention": [
+                "Ganama obboroo bishaan jallisi",
+                "Jallisi gubbaa irraa dhiisi",
+                "Baala gogaa taasisi",
+                "Baala jalaa biyyee tuqu balleessi"
+            ]
+        },
+        "tomato_mosaic_virus": {
+            "name": "Vaayirasii Moozaayikii Timaatimaa",
+            "description": "Dhibee vaayirasii baala timaatimaa bifa dhabsiisu fi xaxu",
+            "symptoms": [
+                "Bifa garaa garaa magariisa ifaa fi dukkanaa'aa baala irratti",
+                "Baalli bifa dhabuu fi xiqqaachuu",
+                "Guddinni biqiltuu dhaabbachuu",
+                "Guddinni firii fi oomisha hir'achuu"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Biqiltuu faalame balleessi",
+                    "Meeshaalee erga fayyadamtee booda qulqulleessi",
+                    "Aphids fi vectors biroo to'adhu",
+                    "Yeroo biqiltuun jiidhaa ta'e hin tuqin"
+                ],
+                "longTerm": [
+                    "Sanyii vaayirasii irraa bilisa ta'e fayyadami",
+                    "Sanyii dandamatu dhaabi",
+                    "Bakka biqiltuu jijjiiri",
+                    "Qulqullina naannoo eegi"
+                ]
+            },
+            "prevention": [
+                "Harka fi meeshaalee dhiqadhu",
+                "Ilbiisota dhibee dabarsan to'adhu",
+                "Tamboo fayyadamuu biqiltuu irraa fagaadhu",
+                "Qulqullina oyiruu eegi"
+            ]
+        },
+        "tomato_yellow_leaf_curl": {
+            "name": "Vaayirasii Baala Timaatimaa Keelloo fi Maramaa",
+            "description": "Vaayirasii Whitefly dhaan darbu fi baala maramuu fi keelloo taasisu",
+            "symptoms": [
+                "Baalli gara oliitti maramuu",
+                "Gidduu veenii baalaatti keelloo ta'uu",
+                "Guddinni dhaabbachuu",
+                "Firii gahaa dhabuu"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Biqiltuu faalame balleessi",
+                    "Whitefly mala barbaachisaan to'adhu",
+                    "Haguuggii fiisiikaalaa fayyadami",
+                    "Aramaa naannoo sanaa balleessi"
+                ],
+                "longTerm": [
+                    "Sanyii dandamatu dhaabi",
+                    "To'annoo ilbiisotaa wal-makaa fayyadami",
+                    "Bakka biqiltuu jijjiiri",
+                    "Hordoffiif 'yellow sticky traps' fayyadami"
+                ]
+            },
+            "prevention": [
+                "Baay'ina whitefly to'adhu",
+                "Mulch calaqqisu fayyadami",
+                "Biqiltuuwwan vaayirasii irraa bilisa ta'an dhaabi",
+                "Qulqullina oyiruu eegi"
+            ]
+        },
+        "target_spot": {
+            "name": "Tuqaa Geengoo (Target Spot)",
+            "description": "Dhibee fangasii tuffee geengoo baala fi firii irratti uumu",
+            "symptoms": [
+                "Tuffee geengoo akka taargetii",
+                "Baalli keelloo ta'uu fi harca'uu",
+                "Madaa jirma fi firii",
+                "Ciminni biqiltuu hir'achuu"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Baala fi firii miidhame balleessi",
+                    "Funjisayidii gorfame fayyadami",
+                    "Sochii qilleensaa fooyyessi",
+                    "Jallisi gubbaa irraa dhiisi"
+                ],
+                "longTerm": [
+                    "Bakka biqiltuu jijjiiri",
+                    "Sanyii dandamatu fayyadami",
+                    "Fageenya biqiltuu eegi",
+                    "Haftee oomishaa balleessi"
+                ]
+            },
+            "prevention": [
+                "Bishaan jala jallisi",
+                "Dhangala'uu bishaanii mirkaneessi",
+                "Mulch fayyadami",
+                "Mallattoo jalqabaa yeroon hordofi"
+            ]
+        },
+        "spider_mites_two_spotted_spider_mites": {
+            "name": "Mites (Spider Mites)",
+            "description": "Ilbiisota xixiqqoo baala irratti xaxaa fi tuqaa uuman",
+            "symptoms": [
+                "Tuqaa keelloo baala irratti",
+                "Xaxaa silkii jala baalaatti",
+                "Baalli diimachuu fi harca'uu",
+                "Dhiphina biqiltuu waliigalaa"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Bishaan biifuu dhaan mites balleessi",
+                    "Saamuunaa ilbiisaa ykn miticide fayyadami",
+                    "Biqiltuuwwan daran miidhaman adda baasi",
+                    "Jiidha dabali"
+                ],
+                "longTerm": [
+                    "Diina uumamaa jajjabeessi",
+                    "Farra ilbiisaa bal'aa fayyadamuu of qusadhu",
+                    "Fayyaa biqiltuu eegi",
+                    "Yeroo yeroon hordofi"
+                ]
+            },
+            "prevention": [
+                "Biqiltuu bishaan obaas",
+                "Haala gogaa fi awwaara qabu hir'isi",
+                "Biqiltuu haaraa adda baasi",
+                "Meeshaalee qulqulleessi"
+            ]
+        },
+        "bacterial_spot": {
+            "name": "Xannacha Baakteriyaa (Bacterial Spot)",
+            "description": "Dhibee baakteriyaa tuffee baalaa fi mudaa firii fidu",
+            "symptoms": [
+                "Tuffee xixiqqoo bishaan fakkaatu baala irratti",
+                "Baalli gurraacha'uu fi tarsa'uu",
+                "Tuffee ol-ka'aa firii irratti",
+                "Yeroo malee baalli harca'uu"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Biqiltuu faalame balleessi",
+                    "Bakterisayidii kopperii fayyadami",
+                    "Biqiltuu jiidhaa tuquu dhiisi",
+                    "Sochii qilleensaa fooyyessi"
+                ],
+                "longTerm": [
+                    "Bakka biqiltuu jijjiiri",
+                    "Sanyii dhibee irraa bilisa ta'e fayyadami",
+                    "Sanyii dandamatu dhaabi",
+                    "Qulqullina cimaa eegi"
+                ]
+            },
+            "prevention": [
+                "Jallisi gubbaa irraa dhiisi",
+                "Meeshaalee qulqulleessi",
+                "Mulch fayyadamuun bishaan faca'u hir'isi",
+                "Fageenya biqiltuu eegi"
+            ]
+        },
+        "unknown": {
+            "name": "Hin Beekamne",
+            "description": "Dhibeen kun sirriitti adda bahuu hin dandeenye.",
+            "symptoms": [
+                "Mallattoo addaa adda baasuu hin dandeenye"
+            ],
+            "treatment": {
+                "immediate": [
+                    "Osoo hin mirkaneeffatin yaala hin kennin",
+                    "Ogeessa qonnaa mariisisi"
+                ],
+                "longTerm": [
+                    "Guddina biqiltuu hordofi"
+                ]
+            },
+            "prevention": [
+                "Hordoffii idilee"
+            ]
+        }
+    },
+    "diseaseEditor": {
+        "title": "Dhibee Gulaali",
+        "selectDisease": "Dhibee Filadhu",
+        "diseaseId": "ID Dhibee",
+        "diseaseInfo": "Odeeffannoo Dhibee",
+        "editDiseaseInfo": "Odeeffannoo Dhibee Gulaali",
+        "nameEn": "Maqaa (Ingiliffa)",
+        "nameAm": "Maqaa (Amaariffa)",
+        "nameEnPlaceholder": "Maqaa dhibee Ingiliffaan galchi",
+        "nameAmPlaceholder": "Maqaa dhibee Amaariffaan galchi",
+        "symptoms": "Mallattoolee",
+        "symptomsEn": "Mallattoolee (Ingiliffa)",
+        "symptomsAm": "Mallattoolee (Amaariffa)",
+        "symptomsEnPlaceholder": "Mallattoolee Ingiliffaan galchi (tokko tokkoon ykn comma dhaan)",
+        "symptomsAmPlaceholder": "Mallattoolee Amaariffaan galchi (tokko tokkoon ykn comma dhaan)",
+        "treatmentImmediate": "Yaala Hatattamaa",
+        "treatmentImmediateEn": "Yaala Hatattamaa (Ingiliffa)",
+        "treatmentImmediateAm": "Yaala Hatattamaa (Amaariffa)",
+        "treatmentImmediateEnPlaceholder": "Tarkaanfii yaala hatattamaa Ingiliffaan galchi",
+        "treatmentImmediateAmPlaceholder": "Tarkaanfii yaala hatattamaa Amaariffaan galchi",
+        "treatmentLongTerm": "Yaala Yeroo Dheeraa",
+        "treatmentLongTermEn": "Yaala Yeroo Dheeraa (Ingiliffa)",
+        "treatmentLongTermAm": "Yaala Yeroo Dheeraa (Amaariffa)",
+        "treatmentLongTermEnPlaceholder": "Tarkaanfii yaala yeroo dheeraa Ingiliffaan galchi",
+        "treatmentLongTermAmPlaceholder": "Tarkaanfii yaala yeroo dheeraa Amaariffaan galchi",
+        "prevention": "Ittisa",
+        "preventionEn": "Ittisa (Ingiliffa)",
+        "preventionAm": "Ittisa (Amaariffa)",
+        "preventionEnPlaceholder": "Gorsa ittisaa Ingiliffaan galchi",
+        "preventionAmPlaceholder": "Gorsa ittisaa Amaariffaan galchi",
+        "saveButton": "Jijjiirama Olkaa'i",
+        "cancelButton": "Balleessi",
+        "saveSuccess": "Dhibeen milkaa'inaan haarome",
+        "saveError": "Dhibee olkaa'uun hin danda'amne",
+        "selectDiseasePrompt": "Maaloo dura dhibee filadhu",
+        "loadingDiseases": "Dhibeewwan fe'aa jira...",
+        "loadingDiseasesError": "Dhibeewwan fe'uun hin danda'amne"
+    }
+}

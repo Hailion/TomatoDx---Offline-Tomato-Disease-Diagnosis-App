@@ -1,198 +1,389 @@
-// history.tsx
+// app/tomatodx/history.tsx - History Screen with Filters
+import Colors from '@/constants/Colors';
+import { formatEthiopianDate } from '@/src/utils/ethiopianCalendar';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
+import { Image } from 'expo-image';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Animated,
-  Easing,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import Colors from '../../constants/Colors';
+import { Alert, Animated, ImageBackground, Modal, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { deleteDiagnosis, getRecentDiagnoses } from '../../src/db/repository';
 
-const mock = [
-  {
-    id: '1',
-    disease: 'Early Blight',
-    date: '2025-10-01',
-    confidence: 0.92,
-    severity: 'High',
-    image: '🌱'
-  },
-  {
-    id: '2',
-    disease: 'Healthy',
-    date: '2025-10-10',
-    confidence: 0.88,
-    severity: 'None',
-    image: '✅'
-  },
-  {
-    id: '3',
-    disease: 'Late Blight',
-    date: '2025-10-15',
-    confidence: 0.95,
-    severity: 'Critical',
-    image: '⚠️'
-  },
-  {
-    id: '4',
-    disease: 'Bacterial Spot',
-    date: '2025-10-20',
-    confidence: 0.78,
-    severity: 'Medium',
-    image: '🦠'
-  }
-];
+interface DiagnosisItem {
+  id: string;
+  disease: string;
+  diseaseAlt?: string;
+  confidence: number;
+  date: string;        // date + time (for the row)
+  timestamp: number;
+  severity: string;
+  status: string;
+  image: string;
+  emoji: string;
+  imageUri?: string;
+  groupDate: string;   // NEW: date-only (for section header)
+}
+
+type FilterType = 'all' | 'healthy' | 'diseased' | 'high-risk' | 'treated' | 'pending';
+type SortType = 'date-desc' | 'date-asc' | 'confidence-desc' | 'confidence-asc';
 
 export default function HistoryScreen() {
-    const { t } = useTranslation();
+  const router = useRouter();
   const { theme } = useTheme();
-  const tokens = Colors[theme];
+  const { t, i18n } = useTranslation();
+  const colors = Colors[theme];
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [activeSort, setActiveSort] = useState<SortType>('date-desc');
+  const [showFilters, setShowFilters] = useState(false);
+  const [diagnoses, setDiagnoses] = useState<DiagnosisItem[]>([]);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<DiagnosisItem | null>(null);
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideUpHeader = useRef(new Animated.Value(30)).current;
-  const slideUpList = useRef(new Animated.Value(50)).current;
-  const scaleAnim = useRef(new Animated.Value(0.98)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
 
-  useEffect(() => {
-    Animated.sequence([
-      // Fade in background
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      // Header animation
-      Animated.parallel([
-        Animated.timing(slideUpHeader, {
-          toValue: 0,
-          duration: 500,
-          easing: Easing.out(Easing.back(1)),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 600,
-          easing: Easing.elastic(1),
-          useNativeDriver: true,
-        })
-      ]),
-      // List animation
-      Animated.timing(slideUpList, {
-        toValue: 0,
-        duration: 600,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      })
-    ]).start();
-  }, [fadeAnim, scaleAnim, slideUpHeader, slideUpList]);
-
-  const handleItemPress = (itemId: string) => {
-    // Button press animation feedback
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.99,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      router.push(`/tomatodx/result?id=${itemId}`);
-    });
+  const mapDiseaseNameToId = (name: string): string => {
+    const nameLower = name.toLowerCase();
+    if (nameLower.includes('early') && nameLower.includes('blight')) return 'early_blight';
+    if (nameLower.includes('late') && nameLower.includes('blight')) return 'late_blight';
+    if (nameLower.includes('healthy')) return 'healthy';
+    if (nameLower.includes('leaf') && nameLower.includes('mold')) return 'leaf_mold';
+    if (nameLower.includes('septoria')) return 'septoria_leaf_spot';
+    if (nameLower.includes('yellow') && nameLower.includes('curl')) return 'tomato_yellow_leaf_curl';
+    if (nameLower.includes('target') && nameLower.includes('spot')) return 'target_spot';
+    if (nameLower.includes('spider') && nameLower.includes('mite')) return 'spider_mites_two_spotted_spider_mites';
+    if (nameLower.includes('mosaic')) return 'tomato_mosaic_virus';
+    if (nameLower.includes('bacterial') && nameLower.includes('spot')) return 'bacterial_spot';
+    if (nameLower.includes('unknown')) return 'unknown'; // Explicitly handle unknown
+    return 'unknown'; // Default fallback should be unknown, not healthy
   };
 
+  // Load diagnoses from database
+  useFocusEffect(
+    useCallback(() => {
+      loadDiagnoses();
+      startAnimations();
+    }, [])
+  );
+
+  const startAnimations = () => {
+    fadeAnim.setValue(0);
+    slideAnim.setValue(30);
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const loadDiagnoses = () => {
+    try {
+      const dbDiagnoses = getRecentDiagnoses(100);
+      const formatted = dbDiagnoses.map((d: any) => {
+        const confidence = Math.round((d.confidence || 0) * 100);
+
+        // Map disease name to disease ID for translation lookup
+        const diseaseId = mapDiseaseNameToId(d.nameEn || 'Unknown');
+
+        // Get disease name from translations
+        const diseaseNameEn = t(`diseases.${diseaseId}.name`, { lng: 'en', defaultValue: d.nameEn || 'Unknown' });
+        const diseaseNameAm = t(`diseases.${diseaseId}.name`, { lng: 'am', defaultValue: d.nameAm || diseaseNameEn });
+        const diseaseNameOro = t(`diseases.${diseaseId}.name`, { lng: 'oro', defaultValue: d.nameOro || diseaseNameEn });
+
+        let diseaseName = diseaseNameEn;
+        let diseaseNameAlt = diseaseNameAm; // Default alt to Amharic if English is primary? Or English if Amharic is primary?
+        // Existing logic was: if Am -> show Am (pri), En (alt). If En -> show En (pri), Am (alt).
+
+        if (i18n.language === 'am') {
+          diseaseName = diseaseNameAm;
+          diseaseNameAlt = diseaseNameEn;
+        } else if (i18n.language === 'oro') {
+          diseaseName = diseaseNameOro;
+          diseaseNameAlt = diseaseNameEn;
+        } else {
+          diseaseName = diseaseNameEn;
+          diseaseNameAlt = diseaseNameAm;
+        }
+
+        const date = new Date(d.diagnosedAt);
+        const timestamp = date.getTime();
+
+        // Determine severity based on confidence
+        let severity = 'none';
+        if (diseaseId.toLowerCase().includes('healthy')) {
+          severity = 'none';
+        } else if (confidence >= 90) {
+          severity = 'high';
+        } else if (confidence >= 70) {
+          severity = 'medium';
+        } else {
+          severity = 'low';
+        }
+
+        // Determine status (you can add a status field to DB later)
+        const status = diseaseId === 'healthy' ? 'healthy' : 'pending';
+
+        // Get emoji based on disease
+        let emoji = '🌱';
+        if (diseaseId.toLowerCase().includes('healthy')) emoji = '✅';
+        else if (diseaseName.toLowerCase().includes('blight')) emoji = '⚠️';
+        else if (diseaseName.toLowerCase().includes('spot')) emoji = '🦠';
+        else if (diseaseName.toLowerCase().includes('mildew')) emoji = '🍂';
+
+
+        // Date + time for the row
+        const displayDate = i18n.language === 'am'
+          ? formatEthiopianDate(date)           // your Ethiopian formatter WITH time
+          : date.toLocaleString();              // includes time in English
+
+        // Date-only for grouping / section headers
+        const groupDate = i18n.language === 'am'
+          ? formatEthiopianDate(date).split('፣')[0]  // take only "day month year"
+          : date.toLocaleDateString();               // date only in English
+
+        return {
+          id: d.diagnosisId,
+          disease: diseaseName,
+          diseaseAlt: diseaseNameAlt,
+          confidence,
+          date: displayDate,     // used in <Text>{item.date}</Text> (with time)
+          timestamp,
+          severity,
+          status,
+          image: d.filePath,
+          emoji,
+          imageUri: d.filePath,
+          groupDate,             // used only for grouping / section titles
+        };
+      });
+      setDiagnoses(formatted);
+    } catch (error) {
+      console.error('Error loading diagnoses:', error);
+      setDiagnoses([]);
+    }
+  };
+
+  const filters: { key: FilterType; label: string; icon: string; color: string }[] = [
+    { key: 'all', label: t('history.filters.all'), icon: 'apps', color: colors.muted },
+    { key: 'healthy', label: t('history.filters.healthy'), icon: 'checkmark-circle', color: colors.success },
+    { key: 'diseased', label: t('history.filters.diseased'), icon: 'warning', color: colors.danger },
+    { key: 'high-risk', label: t('history.filters.highRisk'), icon: 'alert-circle', color: colors.warning },
+    // { key: 'treated', label: t('history.filters.treated'), icon: 'medical', color: colors.primary },
+    // { key: 'pending', label: t('history.filters.pending'), icon: 'time', color: colors.muted },
+  ];
+
+  const sortOptions: { key: SortType; label: string; icon: string }[] = [
+    { key: 'date-desc', label: t('history.sort.newest'), icon: 'arrow-down' },
+    { key: 'date-asc', label: t('history.sort.oldest'), icon: 'arrow-up' },
+    { key: 'confidence-desc', label: t('history.sort.highConfidence'), icon: 'trending-up' },
+    { key: 'confidence-asc', label: t('history.sort.lowConfidence'), icon: 'trending-down' },
+  ];
+
+  const filteredAndSortedScans = useMemo(() => {
+    let filtered = [...diagnoses];
+
+    // Apply filters
+    switch (activeFilter) {
+      case 'healthy':
+        filtered = filtered.filter(scan => scan.severity === 'none');
+        break;
+      case 'diseased':
+        filtered = filtered.filter(scan => scan.severity !== 'none');
+        break;
+      case 'high-risk':
+        filtered = filtered.filter(scan => scan.severity === 'high');
+        break;
+      case 'treated':
+        filtered = filtered.filter(scan => scan.status === 'treated');
+        break;
+      case 'pending':
+        filtered = filtered.filter(scan => scan.status === 'pending');
+        break;
+      default:
+        filtered = [...diagnoses];
+    }
+
+    // Apply sorting
+    switch (activeSort) {
+      case 'date-desc':
+        filtered.sort((a, b) => b.timestamp - a.timestamp);
+        break;
+      case 'date-asc':
+        filtered.sort((a, b) => a.timestamp - b.timestamp);
+        break;
+      case 'confidence-desc':
+        filtered.sort((a, b) => b.confidence - a.confidence);
+        break;
+      case 'confidence-asc':
+        filtered.sort((a, b) => a.confidence - b.confidence);
+        break;
+    }
+
+    return filtered;
+  }, [diagnoses, activeFilter, activeSort]);
+
   const getSeverityColor = (severity: string) => {
-    switch (severity.toLowerCase()) {
-      case 'critical': return tokens.danger;
-      case 'high': return tokens.warning;
-      case 'medium': return tokens.warningDark;
-      case 'low': return tokens.primaryDarker;
-      default: return tokens.primaryDark;
+    switch (severity) {
+      case 'high': return colors.danger;
+      case 'medium': return colors.warning;
+      case 'low': return colors.success;
+      default: return colors.success;
     }
   };
 
   const getSeverityIcon = (severity: string) => {
-    switch (severity.toLowerCase()) {
-      case 'critical': return 'warning';
-      case 'high': return 'alert-circle';
-      case 'medium': return 'information-circle';
+    switch (severity) {
+      case 'high': return 'warning';
+      case 'medium': return 'alert-circle';
       case 'low': return 'checkmark-circle';
       default: return 'leaf';
     }
   };
 
-  // Extracted list item into a proper component so hooks are used in a component
-  const HistoryListItem = ({ item, index }: { item: any; index: number }) => {
-    // keep ref object stable to avoid hook dependency issues
-    const itemAnimRef = useRef(new Animated.Value(0));
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'healthy': return colors.success;
+      case 'treated': return colors.primary;
+      case 'pending': return colors.warning;
+      default: return colors.muted;
+    }
+  };
 
-    useEffect(() => {
-      Animated.timing(itemAnimRef.current, {
-        toValue: 1,
-        duration: 400,
-        delay: index * 100,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }).start();
-    }, [index]);
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'healthy':
+        return t('history.status.healthy', { defaultValue: 'Healthy' });
+      case 'treated':
+        return t('history.status.treated', { defaultValue: 'Treated' });
+      case 'pending':
+        return t('history.status.pending', { defaultValue: 'Pending' });
+      default:
+        return t('history.status.unknown', { defaultValue: 'Unknown' });
+    }
+  };
+
+  // Group scans by date for section list
+  const groupedScans = useMemo(() => {
+    const groups: { [key: string]: DiagnosisItem[] } = {};
+
+    filteredAndSortedScans.forEach(scan => {
+      if (!groups[scan.groupDate]) {
+        groups[scan.groupDate] = [];
+      }
+      groups[scan.groupDate].push(scan);
+    });
+
+    return Object.entries(groups).map(([date, scans]) => ({
+      title: date,
+      data: scans,
+    }));
+  }, [filteredAndSortedScans]);
+
+  const handleDeletePress = (item: DiagnosisItem) => {
+    setItemToDelete(item);
+    setDeleteModalVisible(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (itemToDelete) {
+      try {
+        deleteDiagnosis(itemToDelete.id);
+        setDiagnoses(prev => prev.filter(d => d.id !== itemToDelete.id));
+        setDeleteModalVisible(false);
+        setItemToDelete(null);
+      } catch (error) {
+        console.error('Error deleting diagnosis:', error);
+        Alert.alert(t('common.error'), t('history.deleteError'));
+      }
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalVisible(false);
+    setItemToDelete(null);
+  };
+
+  const renderRightActions = (
+    item: DiagnosisItem,
+    progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>
+  ) => {
+    const scale = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    });
 
     return (
-      <Animated.View
-        style={{
-          opacity: itemAnimRef.current,
-          transform: [
-            {
-              translateY: itemAnimRef.current.interpolate({
-                inputRange: [0, 1],
-                outputRange: [30, 0],
-              }),
-            },
-          ],
-        }}
+      <TouchableOpacity
+        style={[styles.deleteButton, { backgroundColor: colors.danger }]}
+        onPress={() => handleDeletePress(item)}
       >
-        <TouchableOpacity
-          style={[styles.historyItem, { backgroundColor: tokens.backgroundAlt }]}
-          onPress={() => handleItemPress(item.id)}
-          activeOpacity={0.7}
-        >
-          <View style={styles.itemLeft}>
-            <View style={styles.imageContainer}>
-              <Text style={styles.itemImage}>{item.image}</Text>
-            </View>
-            <View style={styles.itemInfo}>
-              <Text style={[styles.diseaseName, { color: tokens.primaryDark }]}>{item.disease}</Text>
-              <Text style={[styles.date, { color: tokens.muted }]}>{item.date}</Text>
-              <View style={styles.confidenceContainer}>
-                <View style={styles.confidenceBar}>
-                  <View
-                    style={[
-                      styles.confidenceFill,
-                      {
-                        width: `${item.confidence * 100}%`,
-                        backgroundColor: getSeverityColor(item.severity)
-                      }
-                    ]}
-                  />
-                </View>
-                <Text style={[styles.confidenceText, { color: tokens.muted }]}>
-                  {Math.round(item.confidence * 100)}%
-                </Text>
+        <Animated.View style={{ transform: [{ scale }] }}>
+          <Ionicons name="trash" size={24} color="#fff" />
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  };
+
+  const ScanItem = ({ item }: { item: DiagnosisItem }) => (
+    <Swipeable
+      renderRightActions={(progress, dragX) => renderRightActions(item, progress, dragX)}
+      overshootRight={false}
+    >
+      <TouchableOpacity
+        style={[styles.scanCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}
+        onPress={() => router.push(`/tomatodx/result?id=${item.id}`)}
+      >
+        <View style={styles.scanHeader}>
+          <View style={[styles.scanImage, { backgroundColor: colors.primaryOverlay }]}>
+            {item.imageUri ? (
+              <Image
+                source={{ uri: item.imageUri }}
+                style={styles.scanImagePhoto}
+                contentFit="cover"
+              />
+            ) : (
+              <Text style={styles.scanEmoji}>{item.emoji}</Text>
+            )}
+          </View>
+          <View style={styles.scanInfo}>
+            <Text style={[styles.diseaseName, { color: colors.text }]}>
+              {item.disease}
+            </Text>
+            {item.diseaseAlt && (
+              <Text style={[styles.diseaseNameAlt, { color: colors.textTertiary }]}>
+                {item.diseaseAlt}
+              </Text>
+            )}
+            <View style={styles.scanMetaRow}>
+              <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>
+                <Ionicons name="ellipse" size={8} color={getStatusColor(item.status)} />
+                {/* <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+                  {getStatusText(item.status)}
+                </Text> */}
               </View>
+              <Text style={[styles.scanDate, { color: colors.textSecondary }]}>
+                {item.date}
+              </Text>
             </View>
           </View>
-
-          <View style={styles.itemRight}>
+          <View style={styles.scanMeta}>
+            <View style={[styles.confidenceBadge, { backgroundColor: colors.primary }]}>
+              <Text style={styles.confidenceText}>
+                {item.confidence}%
+              </Text>
+            </View>
             <View
               style={[
                 styles.severityBadge,
@@ -204,126 +395,288 @@ export default function HistoryScreen() {
                 size={16}
                 color={getSeverityColor(item.severity)}
               />
-              <Text
-                style={[
-                  styles.severityText,
-                  { color: getSeverityColor(item.severity) }
-                ]}
-              >
-                {item.severity}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
-    );
-  };
-
-  return (
-    <View style={[styles.container, { backgroundColor: tokens.background }]}>
-      {/* Background Elements */}
-      <Animated.View style={[styles.backgroundCircle, styles.circle1, { opacity: fadeAnim, backgroundColor: tokens.primaryOverlay }]} />
-      <Animated.View style={[styles.backgroundCircle, styles.circle2, { opacity: fadeAnim, backgroundColor: tokens.successOverlay }]} />
-
-      {/* Header */}
-      <Animated.View
-        style={[
-          styles.header,
-          {
-            opacity: fadeAnim,
-            transform: [
-              { translateY: slideUpHeader },
-              { scale: scaleAnim }
-            ]
-          }
-        ]}
-      >
-        <View style={styles.headerContent}>
-          <View style={styles.titleContainer}>
-            <Text style={[styles.title, { color: tokens.primaryDark }]}>📋 {t("history.title")}</Text>
-            <Text style={[styles.subtitle, { color: tokens.muted }]}>
-              {mock.length} {t("history.subtitle")}
-            </Text>
-          </View>
-          <View style={styles.statsContainer}>
-            <View style={styles.stat}>
-              <Text style={[styles.statNumber, { color: tokens.primaryDark }]}>{mock.length}</Text>
-              <Text style={[styles.statLabel, { color: tokens.muted } ]}>{t('history.total')}</Text>
             </View>
           </View>
         </View>
-      </Animated.View>
 
-      {/* History List */}
-      <Animated.View
-        style={[
-          styles.listContainer,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideUpList }]
-          }
-        ]}
-      >
-        {mock.length > 0 ? (
-          <FlatList
-            data={mock}
-            keyExtractor={i => i.id}
-            renderItem={({ item, index }) => (
-              <HistoryListItem item={item} index={index} />
-            )}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
-            ItemSeparatorComponent={() => <View style={[styles.separator, { backgroundColor: tokens.backgroundAlt }]} />}
+        <View style={[styles.confidenceBar, { backgroundColor: colors.border }]}>
+          <View
+            style={[
+              styles.confidenceFill,
+              {
+                width: `${item.confidence}%`,
+                backgroundColor: getSeverityColor(item.severity)
+              }
+            ]}
           />
-        ) : (
-          <View style={styles.emptyState}>
-            <Ionicons name="time-outline" size={64} color="#9ca3af" />
-            <Text style={styles.emptyTitle}>No Scan History</Text>
-            <Text style={styles.emptyText}>
-              Your tomato disease detection history will appear here
-            </Text>
+        </View>
+      </TouchableOpacity>
+    </Swipeable>
+  );
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ImageBackground
+        source={theme === 'dark' ? require('../../assets/images/screenBg/history.jpg') : require('../../assets/images/screenBg/history1.jpg')}
+        style={styles.backgroundImage}
+        imageStyle={{ resizeMode: 'cover' }}
+      >
+        <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.9)' }]}>
+          <View style={[styles.container, { backgroundColor: `${colors.background}85` }]}>
+            {/* Header */}
+            <View style={styles.headerTop}>
+              <View style={styles.titleContainer}>
+                <Text style={[styles.title, { color: colors.text }]}>
+                  {t('history.title')}
+                </Text>
+                <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                  {t('history.subtitle', { count: filteredAndSortedScans.length })}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={[styles.filterButton, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}CC`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}
+                onPress={() => setShowFilters(!showFilters)}
+              >
+                <Ionicons
+                  name="filter"
+                  size={20}
+                  color={colors.textSecondary}
+                />
+                <Text style={[styles.filterButtonText, { color: colors.textSecondary }]}>
+                  {t('history.filters.title')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+
+              <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+
+
+                {/* Quick Stats */}
+                <View style={styles.statsRow}>
+                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                    <Ionicons name="scan" size={20} color={colors.primary} />
+                    <Text style={[styles.statNumber, { color: colors.text }]}>
+                      {filteredAndSortedScans.length}
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                      {t('history.totalScans')}
+                    </Text>
+                  </View>
+                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                    <Ionicons name="trending-up" size={20} color={colors.primary} />
+                    <Text style={[styles.statNumber, { color: colors.text }]}>
+                      {Math.round(filteredAndSortedScans.reduce((acc, scan) => acc + scan.confidence, 0) / filteredAndSortedScans.length) || 0}%
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                      {t('history.avgConfidence')}
+                    </Text>
+                  </View>
+                  <View style={[styles.statCard, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}EE`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }]}>
+                    <Ionicons name="heart" size={20} color={colors.primary} />
+                    <Text style={[styles.statNumber, { color: colors.text }]}>
+                      {filteredAndSortedScans.filter(scan => scan.severity === 'none').length}
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                      {t('history.healthy')}
+                    </Text>
+                  </View>
+                </View>
+              </Animated.View>
+
+              {/* Filters Panel */}
+              {showFilters && (
+                <View style={[styles.filtersPanel, { backgroundColor: theme === 'dark' ? `${colors.card}00` : `${colors.card}`, borderColor: theme === 'dark' ? colors.borderLight : colors.borderDark }, theme !== 'dark' ? styles.cardShadow : undefined]}>
+                  {/* Filter Types */}
+                  <Text style={[styles.filtersTitle, { color: colors.text }]}>
+                    {t('history.filters.title')}
+                  </Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.filtersScroll}>
+                    <View style={styles.filtersRow}>
+                      {filters.map((filter) => (
+                        <TouchableOpacity
+                          key={filter.key}
+                          style={[
+                            styles.filterChip,
+                            activeFilter === filter.key && [styles.filterChipActive, { backgroundColor: colors.primary }],
+                            { borderColor: filter.color }
+                          ]}
+                          onPress={() => setActiveFilter(filter.key)}
+                        >
+                          <Ionicons
+                            name={filter.icon as any}
+                            size={16}
+                            color={activeFilter === filter.key ? '#fff' : filter.color}
+                          />
+                          <Text style={[
+                            styles.filterChipText,
+                            { color: activeFilter === filter.key ? '#fff' : filter.color }
+                          ]}>
+                            {filter.label}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </ScrollView>
+
+                  {/* Sort Options */}
+                  <Text style={[styles.filtersTitle, { color: colors.text }]}>
+                    {t('history.sort.title')}
+                  </Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+                    <View style={styles.sortOptions}>
+                      {sortOptions.map((sort) => (
+                        <TouchableOpacity
+                          key={sort.key}
+                          style={[
+                            styles.sortOption,
+                            { backgroundColor: colors.backgroundAlt },
+                            activeSort === sort.key && [styles.sortOptionActive, { backgroundColor: colors.successBg }],
+                          ]}
+                          onPress={() => setActiveSort(sort.key)}
+                        >
+                          <Ionicons
+                            name={sort.icon as any}
+                            size={16}
+                            color={activeSort === sort.key ? colors.primary : colors.textSecondary}
+                          />
+                          <Text style={[
+                            styles.sortOptionText,
+                            { color: colors.textSecondary },
+                            activeSort === sort.key && { color: colors.primary }
+                          ]}>
+                            {sort.label}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </ScrollView>
+                </View>
+              )}
+
+              {/* Scan History */}
+              <View style={styles.section}>
+                {filteredAndSortedScans.length > 0 ? (
+                  <SectionList
+                    sections={groupedScans}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => <ScanItem item={item} />}
+                    renderSectionHeader={({ section: { title } }) => (
+                      <Text style={[styles.sectionHeader, { color: colors.textSecondary }]}>
+                        {title}
+                      </Text>
+                    )}
+                    scrollEnabled={false}
+                    contentContainerStyle={styles.listContent}
+                  />
+                ) : (
+                  <View style={styles.emptyState}>
+                    <Ionicons name="search" size={64} color={colors.whiteMuted} />
+                    <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                      {t('history.noResults')}
+                    </Text>
+                    <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                      {t('history.noResultsDesc')}
+                    </Text>
+                    <TouchableOpacity
+                      style={[styles.resetFiltersButton, { backgroundColor: colors.primary }]}
+                      onPress={() => setActiveFilter('all')}
+                    >
+                      <Text style={styles.resetFiltersText}>
+                        {t('history.resetFilters')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            </ScrollView>
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+              visible={deleteModalVisible}
+              transparent
+              animationType="fade"
+              onRequestClose={handleDeleteCancel}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                  <View style={[styles.modalIcon, { backgroundColor: colors.danger + '20' }]}>
+                    <Text style={styles.modalEmoji}>{itemToDelete?.emoji || '⚠️'}</Text>
+                  </View>
+                  <Text style={[styles.modalTitle, { color: colors.text }]}>
+                    {t('history.deleteConfirmTitle')}
+                  </Text>
+                  <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+                    {t('history.deleteConfirmMessage')}
+                  </Text>
+                  {itemToDelete && (
+                    <Text style={[styles.modalDiseaseName, { color: colors.text }]}>
+                      {itemToDelete.disease}
+                    </Text>
+                  )}
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity
+                      style={[styles.modalButton, styles.modalButtonCancel, { backgroundColor: `${colors.background}`, borderColor: colors.borderDark }]}
+                      onPress={handleDeleteCancel}
+                    >
+                      <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                        {t('common.cancel')}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.modalButton, styles.modalButtonDelete, { backgroundColor: colors.danger }]}
+                      onPress={handleDeleteConfirm}
+                    >
+                      <Text style={styles.modalButtonTextDelete}>
+                        {t('common.delete')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
           </View>
-        )}
-      </Animated.View>
-    </View>
+        </View>
+      </ImageBackground>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+  },
+  cardShadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f8fffc',
   },
-  // Background elements
-  backgroundCircle: {
-    position: 'absolute',
-    borderRadius: 500,
+  scrollView: {
+    flex: 1,
   },
-  circle1: {
-    width: 200,
-    height: 200,
-    top: -80,
-    right: -80,
-    backgroundColor: 'rgba(34, 197, 94, 0.08)',
-  },
-  circle2: {
-    width: 150,
-    height: 150,
-    bottom: -50,
-    left: -50,
-    backgroundColor: 'rgba(134, 239, 172, 0.05)',
-  },
-  // Header
   header: {
-    paddingHorizontal: 24,
-    paddingTop: 60,
+    paddingHorizontal: 20,
     paddingBottom: 20,
   },
-  headerContent: {
+  headerTop: {
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    // marginBottom: 20,
   },
   titleContainer: {
     flex: 1,
@@ -331,148 +684,309 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#166534',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6b7280',
-    fontWeight: '500',
   },
-  statsContainer: {
+  filterButton: {
+    flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 6,
+    borderWidth: .5
+
   },
-  stat: {
+  filterButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  statCard: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
     alignItems: 'center',
+    borderWidth: .5
   },
   statNumber: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '700',
-    color: '#166534',
+    marginVertical: 8,
   },
   statLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    fontWeight: '500',
+    textAlign: 'center'
+  },
+  filtersPanel: {
+    marginHorizontal: 20,
+    marginBottom: 10,
+    borderRadius: 10,
+    padding: 16,
+    borderWidth: .5
+  },
+  filtersTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  filtersScroll: {
+    marginBottom: 16,
+    paddingBottom: 10
+  },
+  filtersRow: {
+    flexDirection: 'row',
+    gap: 5,
+  },
+  filterChip: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    borderRadius: 20,
+    borderWidth: 1,
+    gap: 2,
+  },
+  filterChipActive: {
+    borderColor: 'transparent',
+  },
+  filterChipText: {
+    fontSize: 12,
     fontWeight: '600',
   },
-  // List
-  listContainer: {
+  sortOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 3,
+    paddingBottom: 6
+  },
+  sortOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    borderRadius: 3,
+    gap: 2,
+  },
+  sortOptionActive: {
+    borderColor: '#10b981',
+    borderWidth: 1,
+  },
+  sortOptionText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  section: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: '700',
+    // marginTop: 20,
+    marginBottom: 12,
   },
   listContent: {
     paddingBottom: 20,
   },
-  separator: {
-    height: 1,
-    backgroundColor: '#f3f4f6',
-    marginVertical: 8,
+  scanCard: {
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 5,
+    borderWidth: .5
   },
-  // History Item
-  historyItem: {
+  scanHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 16,
-    marginVertical: 4,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    marginBottom: 12,
   },
-  itemLeft: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  imageContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 12,
-    backgroundColor: '#f0fdf4',
+  scanImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
-    borderWidth: 2,
-    borderColor: '#dcfce7',
+    overflow: 'hidden',
   },
-  itemImage: {
+  scanImagePhoto: {
+    width: 40,
+    height: 40,
+  },
+  scanEmoji: {
     fontSize: 20,
   },
-  itemInfo: {
+  scanInfo: {
     flex: 1,
   },
   diseaseName: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#1f2937',
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  diseaseNameAlt: {
+    fontSize: 11,
+    fontStyle: 'italic',
     marginBottom: 4,
   },
-  date: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 8,
-  },
-  confidenceContainer: {
+  scanMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  confidenceBar: {
-    flex: 1,
-    height: 6,
-    backgroundColor: '#e5e7eb',
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  confidenceFill: {
-    height: '100%',
-    borderRadius: 3,
-  },
-  confidenceText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#6b7280',
-    minWidth: 30,
-  },
-  itemRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  severityBadge: {
+  statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 8,
     gap: 4,
   },
-  severityText: {
+  statusText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  scanDate: {
+    fontSize: 12,
+  },
+  scanMeta: {
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  confidenceBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  confidenceText: {
+    color: '#fff',
     fontSize: 12,
     fontWeight: '600',
   },
-  // Empty State
+  severityBadge: {
+    padding: 4,
+    borderRadius: 4,
+  },
+  confidenceBar: {
+    height: 4,
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  confidenceFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
   emptyState: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 80,
+    paddingHorizontal: 20,
   },
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#6b7280',
     marginTop: 16,
     marginBottom: 8,
   },
   emptyText: {
     fontSize: 14,
-    color: '#9ca3af',
     textAlign: 'center',
-    maxWidth: '80%',
     lineHeight: 20,
+    marginBottom: 20,
+  },
+  resetFiltersButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  resetFiltersText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  deleteButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    marginBottom: 6,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    borderRadius: 10,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center',
+  },
+  modalIcon: {
+    marginBottom: 16,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalEmoji: {
+    fontSize: 48,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  modalDiseaseName: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonCancel: {
+    // backgroundColor: '#f3f4f6',
+    borderWidth: .5
+  },
+  modalButtonDelete: {
+    backgroundColor: '#ef4444',
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalButtonTextDelete: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
   },
 });

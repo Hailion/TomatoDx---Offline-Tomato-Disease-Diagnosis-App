@@ -1,110 +1,842 @@
 {
-  "home": { "subtitle": "Offline tomato disease diagnosis for smallholder farmers", "capture": "Capture", "history": "History", "settings": "Settings", "admin": "Admin" },
-  "settings": { 
-    "title": "Settings", 
-    "language": "Language", 
-    "theme": "Theme",
-    "themeSubtitle":"Choose your preferred appearance",
-    "light": "Light",
-    "dark": "Dark", 
-    "system": "System",
-    "profile":"Profile",
-    "edit":"Edit",
-    "appInfo":{
-      "title":"App Information",
-      "version":"Version",
-      "build":"Build",
-      "developer":"Developer",
-      "contact":"Contact",
-      "website":"Website",
-      "lastUpdated":"Last Updated"
-    }
-  },
-  "capture": { 
-    "title": "Capture Tomato", 
-    "subtitle": "Position the tomato within the frame", 
-    "preview": "Camera Preview", 
-    "align": "Align Tomato Here", 
-    "takePhoto": "Take Photo", 
-    "openGallery": "Open Gallery",
-    "permissionReq":"Permission Required', 'Media library permission is needed to access photos."
-  },
-  "history": { 
-    "title": "Scan History",
-    "subtitle":"recent tomato disease detections",
-    "total": "Total"
-   },
-  "result": { 
-    "title": "Diagnosis Result", 
-    "subtitle": "AI-powered tomato disease detection",
-    "confidenceLevel":"Confidence Level",
-    "recommendation":"Recommended Action",
-    "prevTips":"Prevention Tips",
-    "save": "Save Result", 
-    "share": "Share",
-    "saveSuccess": "Saved Successfully",
-    "saveMessage": "Your diagnosis has been saved to history.",
-    "ok": "OK",
-    "shareText": "Tomato Disease Diagnosis Result",
-    "disease": "Disease",
-    "confidence": "Confidence",
-    "advice": "Advice",
-    "shareTitle": "Share Diagnosis",
-    "shareError": "Share Error",
-    "shareNotAvailable": "Sharing is not available on this device.",
-    "shareFailed": "Failed to share the diagnosis."
-  },
-  "preview": { 
-    "title": "Photo Preview", 
-    "subtitle": "Review your captured tomato image",
-    "readyForAnalysis":"Ready for Analysis",
-    "retake": "Retake Photo", 
-    "analyzePhoto": "Analyze Photo" ,
-    "tip":"Ensure the tomato is well-lit and clearly visible for accurate diagnosis." },
-  "admin": { 
-    "title": "Admin Panel", 
-    "subtitle":"System management and configuration",
-    "online":"Online", 
-    "version": "Model version", 
-    "updateInstructions": "Model update instructions", 
-    "systemInformation": "System Information", 
-    "appVersion": "App Version", 
-    "modelVersion": "Model Version", 
-    "lastUpdated": "Last Updated", 
+  "home": {
+    "title": "Home",
+    "subtitle": "Offline tomato disease diagnosis for smallholder farmers",
+    "capture": "Capture",
+    "history": "History",
+    "settings": "Settings",
+    "tagline": "AI-powered tomato disease detection",
+    "quickScan": "Quick Scan",
+    "quickScanDesc": "Scan tomato leaves for instant diagnosis",
+    "scanHistory": "Scan History",
+    "scanHistoryDesc": "View your previous scan results",
+    "insights": "Insights",
+    "insightsDesc": "Get farming tips and recommendations",
+    "quickActions": "Quick Actions",
+    "recentActivity": "Recent Activity",
+    "lastScan": "Last scan completed",
     "totalScans": "Total Scans",
-    "modelManagement":{
-      "title":"Model Management",
-      "subtitle":"Update and manage the AI model for disease detection",
-      "updateInstructions": "Update Model Instructions",
-      "runSystemCheck":"Run System Check",
-      "currentModel":"Current Model",
-      "checkUpdates":"Check for Updates",
-      "lastChecked":"Last Checked",
-      "noUpdates":"No updates available",
-      "updateAvailable":"Update available",
-      "updating":"Updating...",
-      "updateSuccess":"Model updated successfully",
-      "updateFailed":"Model update failed"
+    "accuracy": "Accuracy",
+    "healthy": "Healthy",
+    "last7Days": "Last 7 days",
+    "noData": "No data"
+  },
+  "scan": {
+    "title": "Scan Leaf",
+    "navtitle": "Scan Leaf",
+    "subtitle": "Take or upload a photo of a tomato leaf",
+    "takePhoto": "Take Photo",
+    "takePhotoDesc": "Use your camera to capture a leaf",
+    "chooseGallery": "Choose from Gallery",
+    "chooseGalleryDesc": "Select an existing photo",
+    "tips": "How to take a good scan",
+    "tip1": "Hold the camera 20–30 cm away and fill most of the frame with a single tomato leaf.",
+    "tip2": "Keep your phone steady for 2–3 seconds so the leaf is sharp and not blurry.",
+    "tip3": "Use bright natural light and avoid strong shadows or very dark backgrounds.",
+    "recentScan": "Recent scans",
+    "recentScanDesc": "Review your last tomato leaf scans and quickly reopen their results",
+    "cameraPermission": "Camera Permission Required",
+    "cameraPermissionDesc": "Please grant camera access to scan leaves",
+    "grantPermission": "Grant Permission",
+    "alignGuide": "Align one tomato leaf inside the square frame below, then tap 'Take Photo'.",
+    "error": "Error",
+    "captureError": "Failed to capture photo",
+    "permissionDenied": "Permission Denied",
+    "galleryPermissionDesc": "Please grant gallery access to select photos",
+    "galleryError": "Failed to open gallery"
+  },
+  "preview": {
+    "title": "Preview",
+    "ready": "Ready for Analysis",
+    "highQuality": "High Quality",
+    "tipsTitle": "Analysis Ready",
+    "tipsText": "This image is perfect for analysis. Make sure the leaf is clearly visible and well-lit.",
+    "analyze": "Analyze Image",
+    "retake": "Retake Photo",
+    "analyzing": "Analyzing...",
+    "analyzeSuccess": "Analysis completed",
+    "analyzeFailed": "Analysis failed",
+    "error": "Error",
+    "analysisError": "Analysis failed",
+    "lowConfidence": "Low Confidence Result",
+    "lowConfidenceMessage": "The analysis confidence is below 60%. This may be due to poor lighting, unclear image, or unusual symptoms. We recommend retaking the photo for better accuracy.",
+    "retakeRecommended": "Retake Photo",
+    "proceedAnyway": "Proceed Anyway"
+  },
+  "result": {
+    "title": "Results",
+    "confidence": "Confidence Level",
+    "symptoms": "Symptoms",
+    "treatment": "Recommended Treatment",
+    "immediateActions": "Immediate Actions",
+    "longTermActions": "Long-term Actions",
+    "prevention": "Prevention Tips",
+    "quickActions": "Quick Actions",
+    "addNotes": "Add Notes",
+    "addNotesDesc": "Add notes about this diagnosis",
+    "notesPlaceholder": "Enter your notes here...",
+    "save": "Save Result",
+    "saved": "Saved",
+    "savedMessage": "Result saved to your history",
+    "share": "Share",
+    "shareMessage": "Share this result with others",
+    "newScan": "New Scan",
+    "noDescription": "No description available",
+    "noTreatment": "No treatment available",
+    "generalPrevention": "General Prevention",
+    "loading": "Loading...",
+    "error": "Error",
+    "notFound": "Diagnosis not found",
+    "loadError": "Failed to load diagnosis",
+    "shareTitle": "TomatoDx Diagnosis",
+    "disease": "Disease",
+    "severity": "Severity",
+    "downloadApp": "Download TomatoDx for accurate tomato disease diagnosis.",
+    "shareDesc": "Choose how you want to share this result",
+    "shareImage": "Share Image",
+    "shareImageDesc": "Share the diagnosis image",
+    "shareText": "Share Report",
+    "shareTextDesc": "Share the detailed diagnosis report",
+    "noImageError": "Image not available for sharing"
+  },
+  "history": {
+    "title": "History",
+    "subtitle": "{{count}} scans completed",
+    "totalScans": "Total Scans",
+    "accuracy": "Accuracy",
+    "recentScans": "Recent Scans",
+    "noScans": "No scans yet",
+    "noScansDesc": "Start by scanning your first tomato leaf to see results here",
+    "avgConfidence": "Average Confidence",
+    "healthy": "Healthy",
+    "noResults": "No results found",
+    "noResultsDesc": "No results found for this date range",
+    "resetFilters": "Reset Filters",
+    "status": {
+      "title": "Status",
+      "healthy": "Healthy",
+      "diseased": "Diseased",
+      "all": "All",
+      "highRisk": "High Risk",
+      "treated": "Treated",
+      "pending": "Pending"
     },
-    "dataManagement":{
-      "title":"Data Management",
-      "subtitle":"Manage captured images and diagnosis data",
-      "clearData":"Clear All Data",
-      "exportData":"Export Data",
-      "clearCache":"Clear Cache",
-      "confirmClear":"Are you sure you want to clear all data? This action cannot be undone.",
-      "clearSuccess":"All data cleared successfully",
-      "exportSuccess":"Data exported successfully",
-      "exportFailed":"Data export failed"    
+    "filters": {
+      "title": "Filters",
+      "healthy": "Healthy",
+      "diseased": "Diseased",
+      "all": "All",
+      "highRisk": "High Risk",
+      "treated": "Treated",
+      "pending": "Pending"
     },
-    "analytics":{
-      "title":"Analytics",
-      "subtitle":"View usage statistics and diagnosis trends",
-      "accuracy":"Accuracy",
-      "averageProcessingTime":"Avg. Processing",
-      "uptime":"Uptime"
-
+    "sort": {
+      "title": "Sort",
+      "date": "Date",
+      "confidence": "Confidence",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "highConfidence": "High Confidence",
+      "lowConfidence": "Low Confidence"
+    },
+    "deleteConfirmTitle": "Delete Diagnosis?",
+    "deleteConfirmMessage": "This will permanently delete this diagnosis from your history.",
+    "deleteError": "Failed to delete diagnosis"
+  },
+  "privacy": {
+    "title": "Privacy & Data",
+    "description": "TomatoDx processes all images locally on your device using AI. Your photos never leave your phone unless you explicitly choose to share them for research.",
+    "localProcessing": "All image analysis happens on your device",
+    "noDataCollection": "No personal data is collected or stored remotely",
+    "secureStorage": "Your scan history is stored securely on your device",
+    "researchTitle": "Help Improve TomatoDx",
+    "researchDescription": "Optionally share anonymized images to help us improve disease detection accuracy for all farmers.",
+    "researchOptIn": "Share anonymized images for research (optional)",
+    "acceptAndContinue": "Agree & Continue",
+    "decline": "Decline"
+  },
+  "profile": {
+    "title": "Profile",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "editProfile": "Edit Profile",
+    "name": "Name",
+    "namePlaceholder": "Enter name",
+    "nickname": "Nickname",
+    "nicknamePlaceholder": "Enter nickname",
+    "system": "System",
+    "settings": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "analytics": "Analytics",
+    "help": "Help & Support",
+    "about": "About",
+    "success": "Success",
+    "profileUpdated": "Profile updated successfully",
+    "error": "Error",
+    "dailyReminderEnabled": "Daily reminders enabled!",
+    "dailyReminderDisabled": "Daily reminders disabled!",
+    "notification": {
+      "title": "TomatoDx Checkup 🍅",
+      "body": "Time to check your tomatoes! Early detection saves your crop."
     }
+  },
+  "onboarding": {
+    "getStarted": "Get Started",
+    "steps": {
+      "welcome": {
+        "icon": "🍅",
+        "title": "Welcome to TomatoDx",
+        "description": "AI-powered tomato disease detection at your fingertips"
+      },
+      "capture": {
+        "icon": "📸",
+        "title": "Capture & Scan",
+        "description": "Take a photo or upload from gallery to analyze tomato health"
+      },
+      "analysis": {
+        "icon": "🤖",
+        "title": "AI Analysis",
+        "description": "Get instant, accurate diagnosis powered by machine learning"
+      },
+      "history": {
+        "icon": "📊",
+        "title": "Track History",
+        "description": "Save and review your past diagnoses for better crop management"
+      }
+    }
+  },
+  "help": {
+    "title": "Help & Support",
+    "navtitle": "Help/Support",
+    "welcomeTitle": "How can we help you?",
+    "welcomeText": "Find answers to common questions or get in touch with our support team.",
+    "faq": "Frequently Asked Questions",
+    "contact": "Get in Touch",
+    "tips": "Quick Tips for Better Results",
+    "faqs": {
+      "accuracy": {
+        "question": "How accurate is the disease detection?",
+        "answer": "Our AI model achieves 92% accuracy in detecting common tomato diseases under optimal conditions."
+      },
+      "diseases": {
+        "question": "What types of diseases can be detected?",
+        "answer": "We detect Early Blight, Late Blight, Bacterial Spot, Leaf Mold, and healthy plant status."
+      },
+      "photo": {
+        "question": "How do I take the best photo for scanning?",
+        "answer": "Ensure good lighting, focus on affected leaves, and keep the camera steady for clear images."
+      },
+      "unclear": {
+        "question": "What should I do if the results are unclear?",
+        "answer": "Retake the photo with better lighting or consult with agricultural experts for confirmation."
+      }
+    },
+    "contactMethods": {
+      "email": {
+        "title": "Email Support",
+        "description": "Get help via email"
+      },
+      "website": {
+        "title": "Website",
+        "description": "Visit our knowledge base"
+      },
+      "chat": {
+        "title": "Live Chat",
+        "description": "Chat with our experts"
+      }
+    },
+    "quickTips": {
+      "tip1": "Use natural daylight for photos",
+      "tip2": "Capture multiple angles of affected leaves",
+      "tip3": "Include both healthy and affected areas"
+    }
+  },
+  "about": {
+    "title": "About TomatoDx",
+    "subtitle": "AI-Powered Tomato Disease Detection",
+    "version": "Version",
+    "mission": "Our Mission",
+    "missiondesc": "TomatoDx empowers farmers and gardeners with instant, accurate tomato disease detection using artificial intelligence. Our goal is to make plant healthcare accessible to everyone, helping to increase crop yields and reduce pesticide misuse.",
+    "features": "Features",
+    "featuresList": {
+      "aiDetection": {
+        "title": "AI-Powered Detection",
+        "description": "Advanced machine learning for accurate disease identification"
+      },
+      "instantResults": {
+        "title": "Instant Results",
+        "description": "Get diagnosis in seconds with detailed treatment recommendations"
+      },
+      "scanHistory": {
+        "title": "Scan History",
+        "description": "Track your plant health over time with comprehensive history"
+      },
+      "multiLanguage": {
+        "title": "Multi-Language",
+        "description": "Available in English and Amharic for wider accessibility"
+      }
+    },
+    "technology": "Technology",
+    "techStack": {
+      "tensorFlow": "TensorFlow Lite",
+      "reactNative": "React Native",
+      "computerVision": "Computer Vision",
+      "privacyFirst": "Privacy-First"
+    },
+    "team": "Our Team",
+    "teamMembers": {
+      "mobileDevelopers": {
+        "title": "Mobile Developers",
+        "name": "Haileamlak Gashaw",
+        "role": "App Development",
+        "description": "Creating intuitive and user-friendly mobile experiences"
+      },
+      "agricultureExperts": {
+        "title": "Agriculture Experts",
+        "name": "Admassu Ejigu",
+        "role": "Plant Pathology",
+        "description": "Ensuring accurate disease identification and treatment recommendations"
+      },
+      "aiEngineers": {
+        "title": "AI Engineers",
+        "name": "Habtamu Mulusew",
+        "name2": "Kemal Seid",
+        "role": "Machine Learning",
+        "description": "Developing and training advanced computer vision models"
+      },
+      "dataAnalyst": {
+        "title": "Data Analyst",
+        "name": "Derara Waktola",
+        "role": "Data Analysis",
+        "description": "Analyzing and interpreting data to provide insights and recommendations"
+      }
+    },
+    "footer": {
+      "madeWith": "Specifically made for farmers and gardeners of Ethiopia",
+      "copyright": "2025 TomatoDx. All rights reserved.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
+    },
+    "modal": {
+      "title": "Admin Mode Unlocked",
+      "subtitle": "You now have access to the Admin panel.",
+      "goToAdmin": "Go  to Admin"
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "caution": "Admin Mode - Use with caution",
+    "online": "Online",
+    "updateInstructions": "Model update instructions",
+    "systemInformation": "System Information",
+    "appVersion": "App Version",
+    "modelVersion": "Model Version",
+    "lastUpdated": "Last Updated",
+    "totalScans": "Total Scans",
+    "modelManagement": {
+      "title": "Model Management",
+      "updateModel": {
+        "title": "Model Metadata (Local)",
+        "uploadModel": "Select Model Metadata",
+        "uploadModelDesc": "This tool only reads and registers model metadata locally on this device. It does not upload or replace the AI model used by TomatoDx. Official model updates are bundled with new app releases.",
+        "selectModelFile": "Select Model Metadata"
+      },
+      "updateInstructions": "Inspect or register local TensorFlow.js model metadata",
+      "runSystemCheck": "Run System Check",
+      "currentModel": "Current Model",
+      "checkUpdates": "Check for Updates",
+      "lastChecked": "Last Checked",
+      "noUpdates": "No updates available",
+      "updateAvailable": "Updates Available",
+      "updating": "Processing metadata...",
+      "updateSuccess": "Model metadata updated successfully.",
+      "updateFailed": "Failed to update model metadata."
+    },
+    "databaseManagement": {
+      "title": "Database Management",
+      "edit": {
+        "title": "Edit Database",
+        "titleDesc": "Database editor functionality. Edit disease information here.",
+        "editDisease": "Edit disease DB",
+        "editDiseaseDesc": "Modify diseases information"
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "overviewTitle": "Overview",
+      "loading": "Loading analytics…",
+      "summaryTitle": "Total diagnoses: {{count}}",
+      "avgConfidence": "Average confidence: {{value}}",
+      "healthyCount": "Healthy leaves: {{count}}",
+      "successRateLabel": "Success rate",
+      "topDisease": "Most common: {{name}} ({{count}} cases)",
+      "last7Days": "Scans in the last 7 days",
+      "levels": "Confidence levels - Low: {{low}}, Medium: {{medium}}, High: {{high}}",
+      "lowRisk": "Low risk",
+      "mediumRisk": "Medium risk",
+      "highRisk": "High risk",
+      "verifyingAccess": "Verifying admin access…",
+      "authError": "Unable to verify admin access.",
+      "loadError": "Failed to load analytics data.",
+      "exportData": "Export Data",
+      "exportSuccess": "Analytics data exported successfully.",
+      "exportError": "Failed to export analytics data.",
+      "exportLocation": {
+        "downloads": "Saved to Downloads folder.",
+        "internal": "Saved to internal app storage."
+      },
+      "subtitle": "Comprehensive Analysis & Insights",
+      "tabOverview": "Overview",
+      "tabDiseases": "Diseases",
+      "tabTrends": "Trends",
+      "totalScansLabel": "Total scans",
+      "healthyLabel": "Healthy leaves",
+      "atRiskLabel": "At-risk leaves",
+      "riskLabel": "Risk",
+      "lowRiskLabel": "Low",
+      "mediumRiskLabel": "Medium",
+      "highRiskLabel": "High",
+      "riskDistributionTitle": "Risk Distribution",
+      "sevenDayTrend": "7-Day Activity Trend",
+      "topDiseasesTitle": "Top Detected Diseases",
+      "topDiseasesSubtitle": "Most frequently identified conditions",
+      "monthlyTrendsTitle": "Monthly Trends",
+      "dataManagementTitle": "Data Management",
+      "exportDataButton": "Export Data",
+      "clearDataButton": "Clear Data",
+      "exportModal": {
+        "title": "Export",
+        "fileNamePlaceholder": "File name",
+        "json": "JSON",
+        "csv": "CSV",
+        "cancel": "Cancel"
+      },
+      "clearModal": {
+        "title": "Clear All Analytics Data?",
+        "message": "This will delete all stored analytics records. This cannot be undone."
+      },
+      "clearSuccess": "All analytics data has been cleared successfully.",
+      "clearError": "Failed to clear analytics data."
+    },
+    "system": {
+      "title": "Security",
+      "systemAdministration": "System Administration",
+      "lockAdmin": {
+        "title": "Lock Admin Mode",
+        "resetAdminAccess": "Reset Admin Access",
+        "resetQuestion": "Are you sure you want to lock admin mode?",
+        "description": "Locking admin mode will prevent unauthorized access to the admin panel."
+      },
+      "removeAdminAccess": "Remove Admin access"
+    },
+    "auth": {
+      "title": "Admin Authentication",
+      "subtitle": "Enter your admin password to unlock admin mode.",
+      "passwordPlaceholder": "Enter Password",
+      "unlockButton": "Unlock Admin Mode",
+      "errorAllRequired": "All fields are required",
+      "errorMismatch": "Passwords do not match",
+      "errorIncorrect": "Incorrect password",
+      "errorCurrentIncorrect": "Current password is incorrect",
+      "updateSuccess": "Password updated successfully.",
+      "updateError": "Failed to update password.",
+      "verifyError": "Unable to verify admin access."
+    },
+    "password": {
+      "changeTitle": "Change Password",
+      "changeDescription": "Enter your admin password to unlock admin mode.",
+      "changeMessage": "Enter your admin password to unlock admin mode.",
+      "currentPlaceholder": "Enter Current Password",
+      "newPlaceholder": "Enter New Password",
+      "confirmPlaceholder": "Confirm New Password",
+      "errorAllRequired": "All fields are required",
+      "errorMismatch": "Passwords do not match",
+      "errorCurrentIncorrect": "Current password is incorrect",
+      "errorTooShort": "Password must be at least 8 characters long.",
+      "changeButton": "Change Password",
+      "changeSuccess": "Password changed successfully.",
+      "changeError": "Failed to change password.",
+      "updateError": "Failed to update password."
+    },
+    "recentActivity": "Recent Activity",
+    "info": "Development admin panel. Production needs proper authentication."
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "save": "Save",
+    "share": "Share",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "skip": "Skip",
+    "continue": "Continue",
+    "back": "Back",
+    "getStarted": "Get Started",
+    "retry": "Retry",
+    "close": "Close",
+    "later": "Later",
+    "version": "Version"
+  },
+  "diseases": {
+    "early_blight": {
+      "name": "Early Blight",
+      "description": "A fungal disease that affects leaves, stems, and fruits of tomato plants",
+      "symptoms": [
+        "Dark brown spots on older leaves",
+        "Yellowing and browning of leaf edges",
+        "Concentric rings in lesions",
+        "Premature leaf drop"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove affected leaves immediately",
+          "Apply copper-based fungicide",
+          "Improve air circulation",
+          "Avoid overhead watering"
+        ],
+        "longTerm": [
+          "Rotate crops yearly",
+          "Use disease-resistant varieties",
+          "Practice proper plant spacing",
+          "Remove plant debris at season end"
+        ]
+      },
+      "prevention": [
+        "Water at the base of plants",
+        "Space plants 24-36 inches apart",
+        "Mulch around plants",
+        "Monitor plants weekly"
+      ]
+    },
+    "late_blight": {
+      "name": "Late Blight",
+      "description": "A destructive fungal disease affecting leaves, stems, and fruits",
+      "symptoms": [
+        "Greasy-looking dark green or gray lesions",
+        "White fungal growth on underside of leaves",
+        "Rapid plant collapse",
+        "Browning and rotting of fruits"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove all affected plants immediately",
+          "Apply chlorothalonil or mancozeb",
+          "Ensure proper drainage",
+          "Destroy infected plant material"
+        ],
+        "longTerm": [
+          "Plant resistant varieties",
+          "Practice crop rotation",
+          "Improve garden drainage",
+          "Remove volunteer plants"
+        ]
+      },
+      "prevention": [
+        "Avoid overhead irrigation",
+        "Provide adequate plant spacing",
+        "Use drip irrigation",
+        "Select resistant varieties"
+      ]
+    },
+    "healthy": {
+      "name": "Healthy",
+      "description": "Your tomato plant shows no signs of disease",
+      "symptoms": [
+        "Green, vibrant leaves",
+        "Strong stem growth",
+        "Normal fruit development"
+      ],
+      "treatment": {
+        "immediate": [
+          "Continue current care routine",
+          "Monitor for any changes",
+          "Maintain regular watering schedule"
+        ],
+        "longTerm": [
+          "Continue preventive measures",
+          "Maintain soil health",
+          "Provide consistent nutrition"
+        ]
+      },
+      "prevention": [
+        "Maintain current good practices",
+        "Regular monitoring",
+        "Proper watering schedule",
+        "Balanced fertilization"
+      ]
+    },
+    "leaf_mold": {
+      "name": "Leaf Mold",
+      "description": "A fungal disease that thrives in humid conditions",
+      "symptoms": [
+        "Pale green spots on upper leaf surface",
+        "Gray-brown velvety growth on underside",
+        "Leaf curling and yellowing",
+        "Defoliation in severe cases"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove affected leaves",
+          "Improve ventilation",
+          "Apply copper fungicide",
+          "Reduce humidity around plants"
+        ],
+        "longTerm": [
+          "Use fungicide sprays preventively",
+          "Control greenhouse humidity",
+          "Plant resistant varieties",
+          "Improve air circulation"
+        ]
+      },
+      "prevention": [
+        "Maintain humidity below 90%",
+        "Provide good air circulation",
+        "Space plants properly",
+        "Avoid wetting leaves"
+      ]
+    },
+    "septoria_leaf_spot": {
+      "name": "Septoria Leaf Spot",
+      "description": "Fungal disease causing small dark spots on leaves",
+      "symptoms": [
+        "Small dark brown spots on leaves",
+        "Yellow halos around spots",
+        "Black fruiting bodies in center",
+        "Progressive leaf yellowing"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove affected leaves",
+          "Apply chlorothalonil",
+          "Improve air circulation",
+          "Water at base only"
+        ],
+        "longTerm": [
+          "Remove plant debris",
+          "Rotate crops",
+          "Use resistant varieties",
+          "Sanitize garden tools"
+        ]
+      },
+      "prevention": [
+        "Water early in the day",
+        "Avoid overhead watering",
+        "Keep leaves dry",
+        "Remove lower leaves that touch soil"
+      ]
+    },
+    "tomato_mosaic_virus": {
+      "name": "Tomato Mosaic Virus",
+      "description": "Viral disease causing mottling and leaf distortion in tomatoes",
+      "symptoms": [
+        "Mottled light and dark green patterns on leaves",
+        "Leaf distortion and reduced leaf size",
+        "Stunted plant growth",
+        "Reduced fruit size and yield"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove and destroy infected plants",
+          "Disinfect tools after use",
+          "Control aphids and other vectors",
+          "Avoid working with plants when wet"
+        ],
+        "longTerm": [
+          "Use virus-free certified seeds",
+          "Plant resistant varieties",
+          "Rotate crops to non-hosts",
+          "Implement strict sanitation practices"
+        ]
+      },
+      "prevention": [
+        "Wash hands and tools before handling plants",
+        "Control insect vectors",
+        "Avoid tobacco use near plants",
+        "Maintain field hygiene"
+      ]
+    },
+    "tomato_yellow_leaf_curl": {
+      "name": "Tomato Yellow Leaf Curl Virus",
+      "description": "Whitefly-transmitted virus causing leaf curling and yellowing",
+      "symptoms": [
+        "Upward leaf curling",
+        "Yellowing between veins",
+        "Stunted growth and reduced vigor",
+        "Poor fruit set"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove infected plants",
+          "Control whiteflies with appropriate measures",
+          "Use physical barriers (row covers)",
+          "Eliminate nearby weed hosts"
+        ],
+        "longTerm": [
+          "Grow resistant/tolerant varieties",
+          "Implement integrated pest management",
+          "Rotate with non-host crops",
+          "Use yellow sticky traps to monitor"
+        ]
+      },
+      "prevention": [
+        "Manage whitefly populations",
+        "Use reflective mulches",
+        "Plant virus-free transplants",
+        "Maintain field sanitation"
+      ]
+    },
+    "target_spot": {
+      "name": "Target Spot",
+      "description": "Fungal disease causing concentric ring lesions on leaves and fruit",
+      "symptoms": [
+        "Circular spots with target-like rings",
+        "Leaf yellowing and drop",
+        "Stem and fruit lesions",
+        "Reduced plant vigor"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove affected leaves and fruits",
+          "Apply recommended fungicides",
+          "Improve air circulation",
+          "Avoid overhead irrigation"
+        ],
+        "longTerm": [
+          "Rotate with non-host crops",
+          "Use resistant varieties if available",
+          "Maintain proper plant spacing",
+          "Remove crop debris after harvest"
+        ]
+      },
+      "prevention": [
+        "Water at the base of plants",
+        "Ensure good drainage",
+        "Mulch to reduce soil splash",
+        "Monitor regularly for early signs"
+      ]
+    },
+    "spider_mites_two_spotted_spider_mites": {
+      "name": "Two-spotted Spider Mites",
+      "description": "Pest infestation causing stippling and webbing on leaves",
+      "symptoms": [
+        "Fine yellow stippling on leaves",
+        "Silky webbing on undersides",
+        "Leaf bronzing and drop",
+        "Overall plant stress"
+      ],
+      "treatment": {
+        "immediate": [
+          "Spray water to dislodge mites",
+          "Use insecticidal soap or miticide",
+          "Isolate heavily infested plants",
+          "Increase humidity if possible"
+        ],
+        "longTerm": [
+          "Encourage natural predators",
+          "Avoid broad-spectrum insecticides",
+          "Maintain plant health to reduce stress",
+          "Monitor with regular inspections"
+        ]
+      },
+      "prevention": [
+        "Keep plants well-watered",
+        "Reduce dusty, dry conditions",
+        "Quarantine new plants",
+        "Clean tools and benches"
+      ]
+    },
+    "bacterial_spot": {
+      "name": "Bacterial Spot",
+      "description": "Bacterial disease causing leaf spots and fruit blemishes",
+      "symptoms": [
+        "Small water-soaked leaf spots",
+        "Darkening and tearing of leaf tissue",
+        "Raised scabby spots on fruit",
+        "Premature defoliation"
+      ],
+      "treatment": {
+        "immediate": [
+          "Remove infected plant material",
+          "Apply copper-based bactericides",
+          "Avoid working plants when wet",
+          "Improve airflow around plants"
+        ],
+        "longTerm": [
+          "Rotate to non-host crops",
+          "Use certified disease-free seed",
+          "Plant resistant varieties",
+          "Implement strict sanitation"
+        ]
+      },
+      "prevention": [
+        "Avoid overhead watering",
+        "Disinfect tools and stakes",
+        "Control splashing with mulch",
+        "Space plants appropriately"
+      ]
+    },
+    "unknown": {
+      "name": "Unknown / Uncertain",
+      "description": "The disease could not be confidently identified.",
+      "symptoms": [
+        "Cannot identify specific symptoms"
+      ],
+      "treatment": {
+        "immediate": [
+          "Do not apply treatment without confirmation",
+          "Consult an agricultural expert"
+        ],
+        "longTerm": [
+          "Monitor plant progress"
+        ]
+      },
+      "prevention": [
+        "Regular monitoring"
+      ]
+    }
+  },
+  "diseaseEditor": {
+    "title": "Edit Diseases",
+    "selectDisease": "Select Disease",
+    "diseaseId": "Disease ID",
+    "diseaseInfo": "Disease Information",
+    "editDiseaseInfo": "Edit Disease Information",
+    "nameEn": "Name (English)",
+    "nameAm": "Name (Amharic)",
+    "nameEnPlaceholder": "Enter disease name in English",
+    "nameAmPlaceholder": "Enter disease name in Amharic",
+    "symptoms": "Symptoms",
+    "symptomsEn": "Symptoms (English)",
+    "symptomsAm": "Symptoms (Amharic)",
+    "symptomsEnPlaceholder": "Enter symptoms in English (one per line or comma-separated)",
+    "symptomsAmPlaceholder": "Enter symptoms in Amharic (one per line or comma-separated)",
+    "treatmentImmediate": "Immediate Treatment",
+    "treatmentImmediateEn": "Immediate Treatment (English)",
+    "treatmentImmediateAm": "Immediate Treatment (Amharic)",
+    "treatmentImmediateEnPlaceholder": "Enter immediate treatment actions in English (one per line or comma-separated)",
+    "treatmentImmediateAmPlaceholder": "Enter immediate treatment actions in Amharic (one per line or comma-separated)",
+    "treatmentLongTerm": "Long-term Treatment",
+    "treatmentLongTermEn": "Long-term Treatment (English)",
+    "treatmentLongTermAm": "Long-term Treatment (Amharic)",
+    "treatmentLongTermEnPlaceholder": "Enter long-term treatment actions in English (one per line or comma-separated)",
+    "treatmentLongTermAmPlaceholder": "Enter long-term treatment actions in Amharic (one per line or comma-separated)",
+    "prevention": "Prevention",
+    "preventionEn": "Prevention (English)",
+    "preventionAm": "Prevention (Amharic)",
+    "preventionEnPlaceholder": "Enter prevention tips in English (one per line or comma-separated)",
+    "preventionAmPlaceholder": "Enter prevention tips in Amharic (one per line or comma-separated)",
+    "saveButton": "Save Changes",
+    "cancelButton": "Cancel",
+    "saveSuccess": "Disease updated successfully",
+    "saveError": "Failed to save disease",
+    "selectDiseasePrompt": "Please select a disease first",
+    "loadingDiseases": "Loading diseases...",
+    "loadingDiseasesError": "Failed to load diseases"
   }
 }
-  

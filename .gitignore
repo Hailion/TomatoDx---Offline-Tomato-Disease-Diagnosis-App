@@ -5,3 +5,56 @@
 expo-env.d.ts
 # @end expo-cli
 node_modules
+
+# Expo
+.expo
+.idea/
+
+
+# Ignore Android release APKs
+android/app/release/*.apk
+
+android/app/release/*.aab
+android/app/release/
+
+# Ignore optimization guides
+APK_OPTIMIZATION_GUIDE.md
+OPTIMIZATION_SUMMARY.md
+# Ignore app flow description
+APP_FLOW_DESCRIPTION.md
+# Ignore system model
+CHAPTER_3_SYSTEM_MODEL.md
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment / secrets
+.env
+.env.*.local
+*.local
+
+# Expo / React Native build artifacts
+.expo-shared/
+.expo/*
+web-build/
+dist/
+build/
+
+# Android build artifacts & local config
+android/.gradle/
+android/.cxx/
+android/local.properties
+android/app/build/
+android/build/
+android/app/debug.keystore
+
+# iOS 
+ios/build/
+ios/Pods/
+ios/DerivedData/

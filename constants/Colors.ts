@@ -4,12 +4,15 @@ export type ThemeTokens = {
   backgroundAlt: string;
   surface: string;
   card: string;
+  cardOverlay: string;
   text: string;
   textSecondary: string;
   textTertiary: string;
   muted: string;
   mutedLight: string;
   border: string;
+  borderDark: string;
+  borderLight: string;
   primary: string;
   primaryDark: string;
   primaryDarker: string;
@@ -39,6 +42,7 @@ const light: ThemeTokens = {
   backgroundAlt: '#f8fffc',     // subtle alternate background found in files
   surface: '#ffffff',           // card / surface
   card: '#ffffff',
+  cardOverlay: '#ffffff9a',
   // text
   text: '#1f2937',              // primary text dark gray
   textSecondary: '#374151',     // secondary text
@@ -47,6 +51,8 @@ const light: ThemeTokens = {
   mutedLight: '#696f78ff',
   // borders / strokes
   border: '#a8b0c1ff',
+  borderDark: '#374151',
+  borderLight: '#a8b0c1ff',
   // primary / success / accent
   primary: '#22c55e',           // green (button backgrounds)
   primaryDark: '#16a34a',
@@ -80,14 +86,17 @@ const dark: ThemeTokens = {
   backgroundAlt: '#111827',    // alternative dark bg possibility
   surface: '#111827',          // dark card surface
   card: '#111827',
+  cardOverlay: '#1118279a',
   // text
-  text: '#f8fffc',             // bright text from files
+  text: '#c0c4c2ff',             // bright text from files
   textSecondary: '#e5e7eb',    // lighter secondary text in dark mode
   textTertiary: '#9ca3af',
   muted: '#9ca3af',
   mutedLight: '#6b7280',
   // borders / strokes
   border: '#374151',
+  borderDark: '#374151',
+  borderLight: '#6b7282ff',
   // primary / success / accent
   primary: '#22c55e',          // keep primary green same in dark
   primaryDark: '#16a34a',
@@ -99,7 +108,7 @@ const dark: ThemeTokens = {
   success: '#16a34a',
   successBg: '#052e0f',        // subtle dark friendly success background
   successBgLight: '#063816',
-  successOverlay: 'rgba(134, 239, 172, 0.05)',
+  successOverlay: 'hsla(142, 77%, 73%, 0.05)',
   successOverlay2: 'rgba(134, 239, 172, 0.15)',
   // negative / warning
   danger: '#dc2626',

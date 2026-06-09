@@ -1,64 +1,158 @@
-// _layout.tsx
-import { Stack } from 'expo-router';
+// app/tomatodx/_layout.tsx
+import Colors from '@/constants/Colors';
+import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
-const smoothTransition = {
-  gestureDirection: 'horizontal',
-  transitionSpec: {
-    open: {
-      animation: 'spring',
-      config: { stiffness: 1000, damping: 500, mass: 3, overshootClamping: true, restDisplacementThreshold: 0.01, restSpeedThreshold: 0.01 },
-    },
-    close: {
-      animation: 'spring',
-      config: { stiffness: 1000, damping: 500, mass: 3, overshootClamping: true, restDisplacementThreshold: 0.01, restSpeedThreshold: 0.01 },
-    },
-  },
-  cardStyleInterpolator: ({ current, next, layouts }: any) => ({
-    cardStyle: {
-      transform: [
-        {
-          translateX: current.progress.interpolate({
-            inputRange: [0, 1],
-            outputRange: [layouts.screen.width, 0],
-          }),
-        },
-        {
-          scale: current.progress.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0.95, 1],
-          }),
-        },
-      ],
-      opacity: current.progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1],
-      }),
-    },
-    overlayStyle: {
-      opacity: current.progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 0.3],
-      }),
-    },
-  }),
-};
-
-export default function TomatoDxLayout() {
+export default function TabLayout() {
+  const { theme } = useTheme();
   const { t } = useTranslation();
 
+  const colors = Colors[theme];
+
   return (
-    <Stack
-      screenOptions={{ headerShown: false, ...smoothTransition }}
+    <Tabs
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: theme === 'dark' ? `${colors.card}DD` : `${colors.card}`,
+          borderTopColor: colors.border,
+          marginBottom: 6,
+        },
+        tabBarActiveTintColor: colors.primary,
+        headerShown: false,
+      }}
     >
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="capture" options={{ title: t('capture.title') }} />
-      <Stack.Screen name="result" options={{ title: t('result.title') }} />
-      <Stack.Screen name="preview" options={{ title: t('preview.title') }} />
-      <Stack.Screen name="history" options={{ title: t('history.title') }} />
-      <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
-      <Stack.Screen name="admin" options={{ title: t('admin.title') }} />
-    </Stack>
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: t('home.title'),
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name="home" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: t('history.title'),
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name="time" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: t('scan.navtitle'),
+          tabBarIcon: ({ size, color, focused }) => (
+            <View style={styles.scanIconContainer}>
+              <View style={[
+                styles.scanIconBackground,
+                { backgroundColor: focused ? `${colors.primary}EE` : `${colors.card}`, borderColor: `${colors.border}` }
+              ]}>
+                <Ionicons
+                  name="camera"
+                  size={size * 1.4}
+                  color={focused ? '#ffffff' : colors.primary}
+                />
+              </View>
+            </View>
+          ),
+          tabBarButton: (props) => {
+            const { style, delayLongPress, disabled, ...restProps } = props;
+            const cleanProps: any = {
+              ...restProps,
+              ...(delayLongPress !== null && delayLongPress !== undefined ? { delayLongPress } : {}),
+              ...(disabled !== null && disabled !== undefined ? { disabled: !!disabled } : {}),
+            };
+            return (
+              <TouchableOpacity
+                {...cleanProps}
+                style={[style, styles.scanTabButton]}
+                activeOpacity={0.7}
+              />
+            );
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: t('profile.title'),
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="result"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="preview"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="about"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="help"
+        options={{
+          title: t('help.navtitle'),
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name="help-circle" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="insights"
+        options={{
+          href: null,
+        }}
+      />
+    </Tabs>
+
   );
 }
 
+const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  scanIconContainer: {
+    top: -16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scanIconBackground: {
+    width: 60,
+    height: 58,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderLeftWidth: .3,
+    borderRightWidth: .3,
+    borderBottomWidth: .1,
+  },
+  scanTabButton: {
+    top: 5,
+  },
+});

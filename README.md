@@ -1,50 +1,207 @@
-# Welcome to your Expo app 👋
+# TomatoDx
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Offline tomato disease diagnosis for smallholder farmers.**
 
-## Get started
+TomatoDx is a cross-platform mobile app that helps farmers and gardeners detect tomato plant diseases quickly and accurately. Using on-device machine learning, the app analyzes leaf photos locally, no internet connection required, and returns a diagnosis with treatment guidance in the user's preferred language.
 
-1. Install dependencies
+**Live demo:** [tomatodx.netlify.app](https://tomatodx.netlify.app/)
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## Screenshots
 
-   ```bash
-   npx expo start
-   ```
+<p align="center">
+  <img src="assets/screenshots/scan.png" width="200" />
+  <img src="assets/screenshots/result.png" width="200" />
+  <img src="assets/screenshots/history.png" width="200" />
+  <img src="assets/screenshots/home.png" width="200" />
+  <img src="assets/screenshots/language-selection.png" width="200" />
+</p>
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Features
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Instant leaf scanning** — Capture a photo with the camera or upload from the gallery.
+- **On-device AI inference** — TensorFlow.js runs entirely on the phone; images never leave the device unless you choose to share them.
+- **10 disease classes** — Detects common tomato diseases plus healthy-leaf classification.
+- **Actionable results** — View confidence scores, severity levels, symptoms, and treatment advice for each diagnosis.
+- **Scan history & insights** — Review past scans, track trends over time, and monitor crop health from the dashboard.
+- **Multilingual support** — English, Amharic (አማርኛ), and Afaan Oromoo.
+- **Ethiopian calendar** — Dates displayed using the Ethiopian calendar where applicable.
+- **Privacy-first design** — All processing happens locally; optional sharing for research is entirely user-controlled.
+- **Reminders** — Scheduled notifications to encourage regular crop checkups.
+- **Dark & light themes** — Automatic theme switching based on system preference.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## Model Evaluation
+
+The classifier was evaluated on a held-out test set of 15,253 images, separate from the training data, across all 10 disease classes plus an out-of-distribution "Unknown" class used to reject non-leaf or unrecognized inputs.
+
+**Overall Accuracy:** 91.65%
+**Macro F1 Score:** 0.8892
+**Weighted F1 Score:** 0.9147
+
+| Class                         | Precision | Recall | F1 Score |
+| ----------------------------- | --------- | ------ | -------- |
+| Tomato Yellow Leaf Curl Virus | 0.9958    | 0.9714 | 0.9835   |
+| Bacterial Spot                | 0.9811    | 0.9788 | 0.9800   |
+| Unknown                       | 0.9330    | 0.9984 | 0.9646   |
+| Leaf Mold                     | 0.9803    | 0.8468 | 0.9087   |
+| Spider Mites (Two-Spotted)    | 0.9517    | 0.8598 | 0.9034   |
+| Healthy                       | 0.9258    | 0.8815 | 0.9031   |
+| Late Blight                   | 0.8273    | 0.9417 | 0.8808   |
+| Septoria Leaf Spot            | 0.8600    | 0.8876 | 0.8736   |
+| Target Spot                   | 0.8202    | 0.7987 | 0.8093   |
+| Early Blight                  | 0.8051    | 0.7833 | 0.7941   |
+| Tomato Mosaic Virus           | 0.9290    | 0.6719 | 0.7798   |
+
+Full methodology, confusion matrix, and the evaluation script are documented separately and available on request.
+
+---
+
+## Known Limitations
+
+- **Not yet field-tested.** All evaluation was performed on curated dataset images. Real-world performance on farmer-captured photos, taken with varied lighting, angles, and camera quality, has not yet been measured.
+- **Weakest on visually similar diseases.** Tomato Mosaic Virus (F1 0.78) and Early Blight (F1 0.79) show reduced recall, largely confused with Early Blight and Late Blight respectively, conditions that are visually similar even to trained observers.
+- **Class imbalance in training data.** The Unknown category was trained with substantially more examples than individual disease classes, which biases the model toward Unknown under ambiguous or out-of-distribution input. This is mitigated but not fully resolved.
+- **No confidence calibration study.** Reported confidence scores have not been separately validated for calibration accuracy.
+
+---
+
+## Supported Conditions
+
+| Condition                  | Severity |
+| -------------------------- | -------- |
+| Early Blight               | High     |
+| Late Blight                | Critical |
+| Leaf Mold                  | Medium   |
+| Septoria Leaf Spot         | Medium   |
+| Tomato Yellow Leaf Curl    | Medium   |
+| Target Spot                | Medium   |
+| Spider Mites (Two-Spotted) | Medium   |
+| Tomato Mosaic Virus        | Medium   |
+| Bacterial Spot             | Medium   |
+| Healthy                    | —        |
+
+---
+
+## Tech Stack
+
+| Layer     | Technology                                                                          |
+| --------- | ----------------------------------------------------------------------------------- |
+| Framework | [Expo](https://expo.dev) ~54, [React Native](https://reactnative.dev) 0.81          |
+| Routing   | [Expo Router](https://docs.expo.dev/router/introduction/) (file-based)              |
+| Language  | TypeScript                                                                          |
+| ML        | [TensorFlow.js](https://www.tensorflow.org/js) + `@tensorflow/tfjs-react-native`    |
+| Database  | [react-native-quick-sqlite](https://github.com/ospfranco/react-native-quick-sqlite) |
+| i18n      | [i18next](https://www.i18next.com/) / react-i18next                                 |
+| UI        | React Native Reanimated, Expo Linear Gradient, Expo Vector Icons                    |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 18 or later
+- npm (included with Node.js)
+- [Expo CLI](https://docs.expo.dev/more/expo-cli/) (via `npx`)
+- For device builds: [Android Studio](https://developer.android.com/studio) and/or [Xcode](https://developer.apple.com/xcode/) (macOS only)
+
+### Installation
 
 ```bash
-npm run reset-project
+git clone <repository-url>
+cd TomatoDx
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Running the App
 
-## Learn more
+```bash
+# Start the Expo development server
+npm start
 
-To learn more about developing your project with Expo, look at the following resources:
+# Run on a specific platform
+npm run android
+npm run ios
+npm run web
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+After starting the dev server, open the app in:
 
-## Join the community
+- **Expo Go** — Quick testing on a physical device
+- **Android emulator** or **iOS simulator** — Full native experience
+- **Development build** — Required for full camera and ML capabilities in production-like environments
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project Structure
+
+```
+TomatoDx/
+├── app/                    # Expo Router screens
+│   ├── tomatodx/           # Main app flow (home, scan, results, history, settings)
+│   ├── onboarding.tsx      # First-launch walkthrough
+│   └── language-selection.tsx
+├── src/
+│   ├── ml/                 # Model loading, preprocessing, and inference
+│   ├── db/                 # SQLite schema, repository, and seed data
+│   ├── i18n/               # Translation files (en, am, oro)
+│   ├── data/                # Disease metadata
+│   ├── components/         # Shared UI components
+│   ├── contexts/           # Theme and toast providers
+│   └── utils/              # Calendar, sharing, notifications, animations
+├── assets/
+│   ├── models/tfjs/         # Bundled TensorFlow.js model and weights
+│   └── images/               # App icons, backgrounds, and UI assets
+└── components/               # Global themed components
+```
+
+---
+
+## How It Works
+
+1. **Capture** — The user photographs a tomato leaf using the in-app camera or selects an image from the gallery.
+2. **Preprocess** — The image is resized and converted to a tensor suitable for the model (224x224 input, normalized to [-1, 1] for MobileNetV2).
+3. **Infer** — The bundled TensorFlow.js model runs inference on-device and returns class probabilities.
+4. **Diagnose** — The top prediction is mapped to a disease profile with symptoms, severity, and treatment advice.
+5. **Store** — Results are saved locally in SQLite for history, analytics, and follow-up.
+
+---
+
+## Available Scripts
+
+| Command           | Description                       |
+| ----------------- | --------------------------------- |
+| `npm start`       | Start the Expo development server |
+| `npm run android` | Build and run on Android          |
+| `npm run ios`     | Build and run on iOS              |
+| `npm run web`     | Start the web development server  |
+| `npm run lint`    | Run ESLint                        |
+
+---
+
+## Privacy
+
+TomatoDx processes all images locally on your device. Photos are not uploaded to any server. Scan history is stored in a local SQLite database on the device. Sharing results is optional and initiated only by the user.
+
+---
+
+## Disclaimer
+
+TomatoDx is intended as a decision-support tool for farmers and gardeners. It does not replace professional agronomic advice or laboratory diagnosis. Always consult local agricultural extension services for critical crop health decisions.
+
+---
+
+## License
+
+MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+## Version
+
+Current release: **1.0.0**
